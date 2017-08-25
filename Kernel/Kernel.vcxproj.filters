@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="VBE">
+      <UniqueIdentifier>{5f46cc3c-4386-472b-b6f5-04806d960536}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Boot">
+      <UniqueIdentifier>{a7e931fd-b8c2-46a9-a775-bc874e342501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{a11b4cc8-60e9-4cfa-8ebe-9cb2cba21fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{5188153a-0584-4a7f-8001-b2010b0ce388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HAL">
+      <UniqueIdentifier>{f9070432-a4b9-4bed-974d-afc754c7e0f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers">
+      <UniqueIdentifier>{f1f2e4c0-c749-452c-8507-3c394f9d7fc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\RTC">
+      <UniqueIdentifier>{ec4e6d2b-7c4b-4007-a971-258affe01fb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\Input">
+      <UniqueIdentifier>{a0db4128-a4cd-41e6-a963-67bb2a534e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="API">
+      <UniqueIdentifier>{881724ea-7e51-4df9-9e83-75e2a6eab51e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{7bb70645-2dd0-42b1-a337-3b81f815e028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\Disk">
+      <UniqueIdentifier>{d097fe32-4427-4068-ac55-baef64bfc151}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\ATA">
+      <UniqueIdentifier>{7f7f2484-678a-44ba-ac58-fce665ea08e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\PCI">
+      <UniqueIdentifier>{268bc1c8-f0e2-4aae-9811-603f6bf02f35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drivers\Audio">
+      <UniqueIdentifier>{ba083bcd-e5fd-4d7b-bb92-0ebd8e7fc124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Net">
+      <UniqueIdentifier>{8c5fd9dd-6362-4c40-b3fa-d7eafb983704}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="vbe.cpp">
+      <Filter>VBE</Filter>
+    </ClCompile>
+    <ClCompile Include="cpu.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="kernel.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="exceptions.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="hal.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="idt.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="panic.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="rtc.cpp">
+      <Filter>Drivers\RTC</Filter>
+    </ClCompile>
+    <ClCompile Include="pit.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="pic.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse.cpp">
+      <Filter>Drivers\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>Drivers\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\KernelAPI.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="disk.cpp">
+      <Filter>Drivers\Disk</Filter>
+    </ClCompile>
+    <ClCompile Include="ata.cpp">
+      <Filter>Drivers\ATA</Filter>
+    </ClCompile>
+    <ClCompile Include="pci.cpp">
+      <Filter>Drivers\PCI</Filter>
+    </ClCompile>
+    <ClCompile Include="ac97.cpp">
+      <Filter>Drivers\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="i825.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="e1000.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="netinterface.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="task.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ne1000.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="net.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="multiboot.h">
+      <Filter>Boot</Filter>
+    </ClInclude>
+    <ClInclude Include="vbe.h">
+      <Filter>VBE</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="font.h">
+      <Filter>VBE</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="exceptions.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="hal.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="idt.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="panic.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="rtc.h">
+      <Filter>Drivers\RTC</Filter>
+    </ClInclude>
+    <ClInclude Include="pit.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="pic.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse.h">
+      <Filter>Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\KernelAPI.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="disk.h">
+      <Filter>Drivers\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="ata.h">
+      <Filter>Drivers\ATA</Filter>
+    </ClInclude>
+    <ClInclude Include="pci.h">
+      <Filter>Drivers\PCI</Filter>
+    </ClInclude>
+    <ClInclude Include="ac97.h">
+      <Filter>Drivers\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="i825.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="e1000.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="netinterface.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="ne1000.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="netpacket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="address.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="net.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Todo.txt" />
+  </ItemGroup>
+</Project>

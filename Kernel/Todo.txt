@@ -1,0 +1,58 @@
+-mem-
+get memory size
+get image size
+fix grub flags
+
+
+-string-
+fix memcpy and memset funtions for more sizes
+
+
+-vbe-
+use sse on clear function
+
+
+-math-
+fix tan
+fix log e
+make pow work with float exponent
+
+float to int casting
+ftoa base
+
+mouse and keyboard button same thing
+implement map
+use map in input axes
+
+Keyboard leds
+Multithreading
+
+Clean up stdio (vprintf)
+Mouse moves when usig keyboard
+
+templates
+
+heap memory
+new
+
+-Game-
+global transforms
+global vertex attributes
+static/dynamic objects
+
+memory dump debug function 
+
+disk identity
+check new operator length to blocks is correct
+
+memory leak in RenderMesh, verts array
+
+cleanup mouse code (initialization)
+mouse sensitivity
+
+exception class
+String max length is one block! buffer overflow
+
+pci CreateDevice memory leak
+
+check IPv4 operators

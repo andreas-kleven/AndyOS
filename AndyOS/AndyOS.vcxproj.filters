@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="File System">
+      <UniqueIdentifier>{28f8fd55-cdfc-4adc-a2c4-37623dd8cffd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File Formats">
+      <UniqueIdentifier>{e182c1f6-b754-449f-81ed-b0270f401cc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OS">
+      <UniqueIdentifier>{8926f176-0fd7-4540-9a01-3af4dfc247be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File Formats\BMP">
+      <UniqueIdentifier>{07b8bf87-b174-4cbf-9db7-e20a2176313e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\ISO">
+      <UniqueIdentifier>{8e1b4438-277a-49cc-a348-e2c57a1a7326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{87a312a9-64aa-4316-bfe6-a9f8cd0bc74f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{e9a014c7-ad66-41dd-90a0-26070776efbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Net">
+      <UniqueIdentifier>{524d63c2-9e6d-4276-9a63-ce12ef55ff9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stuff">
+      <UniqueIdentifier>{515565d0-0a0e-43a6-a2b9-dabf2ab036ae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="System.h">
+      <Filter>OS</Filter>
+    </ClInclude>
+    <ClInclude Include="OS.h">
+      <Filter>OS</Filter>
+    </ClInclude>
+    <ClInclude Include="iso.h">
+      <Filter>File System\ISO</Filter>
+    </ClInclude>
+    <ClInclude Include="bmp.h">
+      <Filter>File Formats\BMP</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="definitions.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="stdio.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem.h">
+      <Filter>File System</Filter>
+    </ClInclude>
+    <ClInclude Include="net.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="arp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="dhcp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="dns.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="eth.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="http.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="icmp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="ipv4.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="tcp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpsession.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpsocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="tcptypes.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="udp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="udpsocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Mandelbrot.h">
+      <Filter>Stuff</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OS.cpp">
+      <Filter>OS</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>OS</Filter>
+    </ClCompile>
+    <ClCompile Include="iso.cpp">
+      <Filter>File System\ISO</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp.cpp">
+      <Filter>File Formats\BMP</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="boot.cpp">
+      <Filter>OS</Filter>
+    </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>File System</Filter>
+    </ClCompile>
+    <ClCompile Include="arp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="dhcp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="dns.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="eth.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="http.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="icmp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="ipv4.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpsession.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpsocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="udp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="udpsocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="net.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Mandelbrot.cpp">
+      <Filter>Stuff</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
