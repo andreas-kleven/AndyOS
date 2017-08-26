@@ -13,8 +13,6 @@ public:
 	inline bool IsSphere() { return bIsSphere; }
 	inline bool IsBox() { return bIsBox; }
 
-	virtual 
-
 protected:
 	bool bIsSphere;
 	bool bIsBox;
