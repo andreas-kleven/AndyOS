@@ -96,6 +96,23 @@ void stuff()
 }
 #pragma optimize("", on)
 
+int GiveLastIteration(double Zx, double Zy, double Cx, double Cy, int IterationMax, int ER2)
+{
+	double Zx2, Zy2; /* Zx2=Zx*Zx;  Zy2=Zy*Zy  */
+	int i = 0;
+	Zx2 = Zx*Zx;
+	Zy2 = Zy*Zy;
+	while (i < IterationMax && (Zx2 + Zy2 < ER2)) /* ER2=ER*ER */
+	{
+		Zy = 2 * Zx*Zy + Cy;
+		Zx = Zx2 - Zy2 + Cx;
+		Zx2 = Zx*Zx;
+		Zy2 = Zy*Zy;
+		i += 1;
+	}
+	return i;
+}
+
 void Mandelbrot::Create(int width, int height)
 {
 	//stuff();
@@ -122,6 +139,8 @@ void Mandelbrot::Create(int width, int height)
 	double ofx = 0;
 	double ofy = 0;
 
+	double rot = 0;
+
 	int ticks = PIT::ticks;
 	double delta = 1;
 
@@ -140,6 +159,8 @@ void Mandelbrot::Create(int width, int height)
 		if (Keyboard::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
 		if (Keyboard::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
 
+		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
+
 		VBE::Clear(0);
 		Debug::x = 0;
 		Debug::y = 0;
@@ -147,41 +168,59 @@ void Mandelbrot::Create(int width, int height)
 		int index = 0;
 		uint32* buf = VBE::buffer;
 
-		double cr;
-		double ci;
-		double zr = 0;
-		double zi = 0;
-		double zrsqr = 0;
-		double zisqr = 0;
+		double cx;
+		double cy;
+		double zx = 0;
+		double zy = 0;
+		double Zx2 = 0;
+		double Zy2 = 0;
 
 		for (int _y = 0; _y < height; _y++)
 		{
 			for (int _x = 0; _x < width; _x++)
 			{
-				cr = (_x - width / 2) * asd1 + ofx;
-				ci = (_y - height / 2) * asd1 + ofy;
-				zr = 0;
-				zi = 0;
-				zrsqr = 0;
-				zisqr = 0;
+				cx = (_x - width / 2) * asd1 + ofx;
+				cy = (_y - height / 2) * asd1 + ofy;
+				zx = 0;
+				zy = 0;
+				Zx2 = 0;
+				Zy2 = 0;
 
-				int iter;
-				for (iter = 0; iter < iter_max && ((zrsqr + zisqr) < (1 << 16)); iter++)
+				int iter = 0;
+				/*for (iter = 0; iter < iter_max && ((Zx2 + Zy2) < (1 << 16)); iter++)
 				{
-					zi = zr * zi;
-					zi += zi;
-					zi += ci;
+					zy = zx * zy;
+					zy += zy;
+					zy += cy;
 
-					zr = zrsqr - zisqr + cr;
+					zx = Zx2 - Zy2 + cx;
 
-					zrsqr = zr * zr;
-					zisqr = zi * zi;
+					Zx2 = zx * zx;
+					Zy2 = zy * zy;
 
-					//zi = zr * zi * 2.0 + ci;
-					//zr = zrsqr - zisqr + cr;
+					//zy = zx * zy * 2.0 + cy;
+					//zx = Zx2 - Zy2 + cx;
 					//
-					//zrsqr = zr * zr;
-					//zisqr = zi * zi;
+					//Zx2 = zx * zx;
+					//Zy2 = zy * zy;
+				}*/
+
+				double Zx = cx;
+				double Zy = cy;
+
+				double Cx = 0.7885 * cos(rot);
+				double Cy = 0.7885 * sin(rot);
+
+				Zx2 = Zx*Zx;
+				Zy2 = Zy*Zy;
+
+				while (iter < iter_max && ((Zx2 + Zy2) < (1 << 16)))
+				{
+					Zy = 2 * Zx*Zy + Cy;
+					Zx = Zx2 - Zy2 + Cx;
+					Zx2 = Zx*Zx;
+					Zy2 = Zy*Zy;
+					iter++;
 				}
 
 				if (iter == iter_max)
@@ -193,17 +232,21 @@ void Mandelbrot::Create(int width, int height)
 					//*buf++ = iter;
 					//continue;
 
-					double zn = sqrt(zrsqr + zisqr);
+					double zn = sqrt(Zx2 + Zy2);
 					double hue = iter + 1.0 - log2(log(zn));  // 2 is escape radius
 					//int gg = clamp((int)(logn(hue, 200) * 0xFF), 0, 0xFF);
 
-					uint32 color = clamp((int)(logn(hue, 200) * 0xFF), 0, 0xFF);
+					uint32 color = (int)(logn(hue, 200) * 0xFF) % 0xFF;
+
 					//int g = clamp((int)(logn(logn(hue, 5), 5) * 0xFF), 0, 0xFF);
 					//int g2 = clamp((int)(logn(logn(hue, 6), 6) * 0xFF), 0, 0xFF);
 					//color += g2 << 16;
 					//color += g << 8;
 
 					*buf++ = color;
+
+					//*buf++ = palette.GetColor(iter);
+					//buf++ = palette.GetColor(color);
 				}
 
 				/*z.real = _x * asd1 - 2;

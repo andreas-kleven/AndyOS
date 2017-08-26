@@ -16,7 +16,7 @@ void OS::Main()
 	ISO_FS::Init();
 	//Net::Init();
 
-	Mandelbrot::Create(100, 100);
+	//Mandelbrot::Create(100, 100);
 
 	///
 	MyGame* game = new MyGame();
