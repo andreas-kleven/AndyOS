@@ -89,6 +89,9 @@
     <ClCompile Include="PhysicsComponent.cpp">
       <Filter>Components\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="PhysicsComponent.h">
       <Filter>Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

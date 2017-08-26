@@ -138,6 +138,7 @@
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Obj.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="Transform.h" />
