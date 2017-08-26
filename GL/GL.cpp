@@ -1,6 +1,6 @@
 #include "GL.h"
 #include "System.h"
-#include "Rasterize.h"
+#include "Rasterizer.h"
 #include "string.h"
 
 namespace gl

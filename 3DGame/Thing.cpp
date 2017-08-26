@@ -5,9 +5,11 @@
 #include "ModelLoader.h"
 #include "Engine.h"
 
+PhysicsComponent* phys;
+
 Thing::Thing()
 {
-	Model3D* mod = ModelLoader::LoadModel("model.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!ISO_FS::ReadFile("img.bmp", img_buf))
@@ -32,10 +34,13 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = mod->vertices;
 	mesh->vertex_count = mod->vertex_count;
-	mesh->tex_id = gl::GL::AddTexture(bmp);
+	mesh->texId = gl::GL::AddTexture(bmp);
 
 	SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	sphere->radius = 1;
+
+	phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
+	//phys->bEnabledGravity = 0;
 }
 
 float acc = -9.8 * 2;
@@ -43,18 +48,39 @@ float vel = 0;
 
 void Thing::Update(float delta)
 {
-	vel += acc * delta;
+	/*vel += acc * delta;
 	transform.position.y += vel * delta;
 
 	if (transform.position.y < 1)
 	{
 		vel = 0;
 		transform.position.y = 1;
-	}
+	}*/
+
+	float speed = 40;
 
 	if (Keyboard::GetKeyDown(KEY_SPACE))
 	{
-		if (vel < 10)
-			vel += 5;
+		phys->AddImpulse(Vector(0, speed * delta, 0));
+	}
+
+	if (Keyboard::GetKeyDown(KEY_L))
+	{
+		phys->AddImpulse(Vector(speed, 0, 0) * delta);
+	}
+
+	if (Keyboard::GetKeyDown(KEY_J))
+	{
+		phys->AddImpulse(Vector(-speed, 0, 0) * delta);
+	}
+
+	if (Keyboard::GetKeyDown(KEY_I))
+	{
+		phys->AddImpulse(Vector(0, 0, speed) * delta);
+	}
+
+	if (Keyboard::GetKeyDown(KEY_K))
+	{
+		phys->AddImpulse(Vector(0, 0, -speed) * delta);
 	}
 }

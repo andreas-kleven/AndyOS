@@ -13,5 +13,5 @@ private:
 	float axes[4];
 	float last_axes[4];
 
-	static void Update(float delta_time);
+	static void Update(float deltaTime);
 };

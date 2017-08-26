@@ -136,6 +136,7 @@
     <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Obj.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Model3D.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Obj.h" />
+    <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SphereCollider.h" />

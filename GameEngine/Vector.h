@@ -62,7 +62,12 @@ public:
 
 	Vector Normalized()
 	{
-		return *this / Magnitude();
+		float mag = Magnitude();
+
+		if (mag == 0)
+			return Vector(0, 0, 0);
+
+		return *this / mag;
 	}
 
 	float DotProduct(const Vector& v)

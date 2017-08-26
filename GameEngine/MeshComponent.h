@@ -5,7 +5,7 @@ class MeshComponent : public Component, public IMesh
 {
 public:
 	Transform transform;
-	int tex_id;
+	int texId;
 
 	MeshComponent();
 

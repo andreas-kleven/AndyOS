@@ -10,7 +10,7 @@ float Input::GetAxis(int axis)
 	return 0;
 }
 
-void Input::Update(float delta_time)
+void Input::Update(float deltaTime)
 {
 	
 }

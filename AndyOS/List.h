@@ -38,7 +38,9 @@ namespace std
 
 		void Add(T value);
 		void Insert(T value, int index);
-		void Remove(int index);
+		void RemoveAt(int index);
+		void Remove(T rem);
+		int IndexOf(T value);
 		void Clear();
 
 		int Count() { return count; }
@@ -108,10 +110,10 @@ namespace std
 	}
 
 	template<class T>
-	inline void List<T>::Remove(int index)
+	inline void List<T>::RemoveAt(int index)
 	{
 		if (index >= count)
-			OS::ThrowException("Index out of range exception", "List::Remove");
+			OS::ThrowException("Index out of range exception", "List::RemoveAt");
 
 		if (index == 0)
 		{
@@ -137,6 +139,43 @@ namespace std
 			count--;
 			delete node;
 		}
+	}
+
+	template<class T>
+	inline void List<T>::Remove(T rem)
+	{
+		OS::ThrowException("Not tested exception", "List::Remove");
+		Node<T>* node = root;
+
+		for (int i = 0; i < count; i++)
+		{
+			Node<T>* next = node->next;
+			if (next->value == rem)
+			{
+				node->next = next->next;
+				delete next;
+			}
+
+			node = next;
+		}
+	}
+
+	template<class T>
+	inline int List<T>::IndexOf(T value)
+	{
+		Node<T>* node = root;
+
+		for (int i = 0; i < count; i++)
+		{
+			if (node->value == value)
+			{
+				return i;
+			}
+
+			node = node->next;
+		}
+
+		return -1;
 	}
 
 	template<class T>

@@ -22,7 +22,7 @@ int ticks;
 GEngine::GEngine()
 {
 	active_game = 0;
-	delta_time = 0;
+	deltaTime = 1 / 100.0f;
 }
 
 void GEngine::StartGame(Game* game)
@@ -59,15 +59,21 @@ void GEngine::StartGame(Game* game)
 
 		if (PIT::ticks != ticks)
 		{
-			Debug::Print("FPS: %i\n", 1000 / (PIT::ticks - ticks));
+			Debug::Print("FPS: %i\tDT:%i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks);
 			//Debug::Print("AVG: %i\n", frames * 1000 / PIT::ticks);
 		}
 
 		Debug::Print("Ticks: %i\n", ticks);
 		Debug::Print("Free %i\n", Memory::num_free);
 
-		Debug::Print("%s\n", cam->GetTransform().ToString(buf));
-		Debug::Print("%s\n", thing->transform.ToString(buf));
+		Debug::Print("Cam: %s\n", cam->GetTransform().ToString(buf));
+		Debug::Print("P1: %s\n", thing->transform.ToString(buf));
+
+		if (thing->physicsComponent)
+		{
+			Vector vel = thing->physicsComponent->velocity;
+			Debug::Print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
+		}
 
 		Update();
 		Collision();
@@ -77,7 +83,7 @@ void GEngine::StartGame(Game* game)
 
 void GEngine::Update()
 {
-	delta_time = (PIT::ticks - ticks) / 1000.f;
+	deltaTime = (PIT::ticks - ticks) / 1000.f;
 	ticks = PIT::ticks;
 
 	if (Mouse::x == GL::m_width)
@@ -103,7 +109,7 @@ void GEngine::Update()
 	}
 
 	Vector mouse_pos(Mouse::x, Mouse::y, 0);
-	Vector mouse_axis = (mouse_pos - last_mouse_pos) * delta_time;
+	Vector mouse_axis = (mouse_pos - last_mouse_pos) * deltaTime;
 	last_mouse_pos = mouse_pos;
 
 
@@ -111,27 +117,27 @@ void GEngine::Update()
 
 	if (Keyboard::GetKeyDown(KEY_D1))
 	{
-		p1 += sign * delta_time * 2000;
-		active_game->objects[0]->transform.rotation.x += 2 * M_PI * delta_time * sign;
+		p1 += sign * deltaTime * 2000;
+		active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D2))
 	{
-		p2 += sign * delta_time * 400;
-		active_game->objects[0]->transform.rotation.y += 2 * M_PI * delta_time * sign;
+		p2 += sign * deltaTime * 400;
+		active_game->objects[0]->transform.rotation.y += 2 * M_PI * deltaTime * sign;
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D3))
 	{
-		p3 += sign * delta_time / 10;
-		active_game->objects[0]->transform.rotation.z += 2 * M_PI * delta_time * sign;
+		p3 += sign * deltaTime / 10;
+		active_game->objects[0]->transform.rotation.z += 2 * M_PI * deltaTime * sign;
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D4))
-		p4 += sign * delta_time * 0.1;
+		p4 += sign * deltaTime * 0.1;
 
 	if (Keyboard::GetKeyDown(KEY_D5))
-		p5 += sign * delta_time * 10;
+		p5 += sign * deltaTime * 10;
 
 	Camera* cam = active_game->GetActiveCamera();
 
@@ -147,22 +153,22 @@ void GEngine::Update()
 	float speed = 10;
 
 	if (Keyboard::GetKeyDown(KEY_D))
-		cam->Translate(cam->GetRightVector() * speed * delta_time);
+		cam->Translate(cam->GetRightVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_A))
-		cam->Translate(-cam->GetRightVector() * speed * delta_time);
+		cam->Translate(-cam->GetRightVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_W))
-		cam->Translate(cam->GetForwardVector() * speed * delta_time);
+		cam->Translate(cam->GetForwardVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_S))
-		cam->Translate(-cam->GetForwardVector() * speed * delta_time);
+		cam->Translate(-cam->GetForwardVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_E))
-		cam->Translate(cam->GetUpVector() * speed * delta_time);
+		cam->Translate(cam->GetUpVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_Q))
-		cam->Translate(-cam->GetUpVector() * speed * delta_time);
+		cam->Translate(-cam->GetUpVector() * speed * deltaTime);
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
 	{
 		GameObject* obj = active_game->objects[i];
-		obj->Update(delta_time);
+		obj->Update(deltaTime);
 	}
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
@@ -172,25 +178,37 @@ void GEngine::Update()
 		for (int j = 0; j < obj->components.Count(); j++)
 		{
 			Component* comp = obj->components[j];
-			comp->Update(delta_time);
+			comp->Update(deltaTime);
 		}
 	}
 }
 
+
 void GEngine::Collision()
 {
+	float energy = 0;
+
 	std::List<ColliderComponent*> all;
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
 	{
 		GameObject* obj = active_game->objects[i];
 
-		for (int j = 0; j < obj->collider_components.Count(); j++)
+		PhysicsComponent* comp = obj->physicsComponent;
+
+		if (comp->bEnabledGravity)
+			energy += 1 * 9.8 * (obj->GetWorldPosition().y + 1000);
+
+		energy += 0.5 * comp->SpeedSquared();
+
+		for (int j = 0; j < obj->colliderComponents.Count(); j++)
 		{
-			ColliderComponent* mesh = obj->collider_components[j];
+			ColliderComponent* mesh = obj->colliderComponents[j];
 			all.Add(mesh);
 		}
 	}
+
+	Debug::Print("Energy: %f\n", energy);
 
 	for (int i = 0; i < all.Count(); i++)
 	{
@@ -207,12 +225,39 @@ void GEngine::Collision()
 
 				Vector dp = posa - posb;
 
-				if (dp.Magnitude() < a->radius + b->radius)
+				float d = dp.Magnitude() / (a->radius + b->radius);
+				if (d < 1)
 				{
 					//a->parent->Translate(Vector(0, 10, 0));
 
 					if (a->OnCollision)
 						a->OnCollision();
+
+					PhysicsComponent* pha = a->parent->physicsComponent;
+					PhysicsComponent* phb = b->parent->physicsComponent;
+
+					Vector va;
+					Vector vb;
+
+					if (pha || pha)
+					{
+						if (pha)
+							va = pha->velocity;
+						if (phb)
+							vb = phb->velocity;
+
+						Vector dv = va - vb;
+						Vector dir = dp.Normalized();
+						Vector dirv = dv.Normalized();
+						float dot = dir.DotProduct(dirv);
+
+						if (dot < 0)
+						{
+							Vector imp = dir * dot * dv.Magnitude() / 1.5;
+							pha->AddImpulse(-imp);
+							phb->AddImpulse(imp);
+						}
+					}
 				}
 			}
 		}
@@ -236,9 +281,9 @@ void GEngine::Render()
 	{
 		GameObject* obj = active_game->objects[i];
 
-		for (int j = 0; j < obj->mesh_components.Count(); j++)
+		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
-			MeshComponent* mesh = obj->mesh_components[j];
+			MeshComponent* mesh = obj->meshComponents[j];
 
 			GameObject* parent = mesh->parent;
 			Transform* trans = &parent->GetWorldTransform();
@@ -247,7 +292,7 @@ void GEngine::Render()
 			GL::PushMatrix();
 			GL::MulMatrix(M);
 
-			GL::BindTexture(mesh->tex_id);
+			GL::BindTexture(mesh->texId);
 			GL::VertexPointer(mesh->vertices);
 			GL::Draw(0, mesh->vertex_count);
 

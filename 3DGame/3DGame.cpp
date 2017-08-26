@@ -25,5 +25,5 @@ MyGame::MyGame()
 	Box* box = CreateObject<Box>("Floor");
 	box->SetPosition(Vector(0, 0, 0));
 	box->SetRotation(Vector(0, 0, 0));
-	box->SetScale(Vector(10, 1, 10));
+	//box->SetScale(Vector(10, 1, 10));
 }

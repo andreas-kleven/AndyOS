@@ -123,16 +123,32 @@ void GameObject::AddComponent(Component* comp)
 	std::String compName = comp->GetName();
 	comp->parent = this;
 
-	components.Add(comp);
-
 	if (compName.Contains("Mesh"))
 	{
-		mesh_components.Add((MeshComponent*)comp);
+		meshComponents.Add((MeshComponent*)comp);
 	}
 	else if (compName.Contains("Collider"))
 	{
-		collider_components.Add((ColliderComponent*)comp);
+		colliderComponents.Add((ColliderComponent*)comp);
 	}
+	else if (compName.Contains("Physics"))
+	{
+		int index = components.IndexOf(physicsComponent);
+
+		if(index == -1)
+		{
+			physicsComponent = (PhysicsComponent*)comp;
+			components.Add(physicsComponent);
+		}
+		else
+		{
+			physicsComponent = (PhysicsComponent*)comp;
+			components[index] = physicsComponent;
+		}
+		return;
+	}
+
+	components.Add(comp);
 }
 
 Component* GameObject::GetComponent(std::String name)

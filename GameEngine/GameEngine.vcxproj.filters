@@ -24,6 +24,9 @@
     <Filter Include="Components\Collision">
       <UniqueIdentifier>{33e3c70c-ec3e-4490-86c6-6bbd39281fa5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics">
+      <UniqueIdentifier>{d42d2249-f24b-4b55-beb2-e90d588b3aee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="SphereCollider.cpp">
       <Filter>Components\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Components\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="SphereCollider.h">
       <Filter>Components\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Components\Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

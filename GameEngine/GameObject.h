@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "MeshComponent.h"
 #include "ColliderComponent.h"
+#include "PhysicsComponent.h"
 #include "List.h"
 
 class GameObject
@@ -14,13 +15,14 @@ public:
 	std::List<GameObject*> children;
 
 	std::List<Component*> components;
-	std::List<MeshComponent*> mesh_components;
-	std::List<ColliderComponent*> collider_components;
+	std::List<MeshComponent*> meshComponents;
+	std::List<ColliderComponent*> colliderComponents;
+	PhysicsComponent* physicsComponent;
 
 	GameObject();
 
 	virtual void Start() { }
-	virtual void Update(float delta_time) { }
+	virtual void Update(float deltaTime) { }
 
 	void SetName(std::String name);
 	std::String GetName();

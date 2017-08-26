@@ -12,7 +12,7 @@ class GEngine
 {
 public:
 	Game* active_game;
-	float delta_time;
+	float deltaTime;
 
 	GEngine();
 
@@ -20,8 +20,8 @@ public:
 
 private:
 	std::List<Component*> all_components;
-	std::List<MeshComponent*> mesh_components;
-	std::List<ColliderComponent*> collider_components;
+	std::List<MeshComponent*> meshComponents;
+	std::List<ColliderComponent*> colliderComponents;
 	std::List<Component*> physics_components;
 
 	void Update();

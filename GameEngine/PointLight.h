@@ -11,6 +11,6 @@ public:
 	virtual gl::ColRGB GetColor();
 
 	float intensity;
-	float max_dist;
+	float maxDist;
 	gl::ColRGB color;
 };
