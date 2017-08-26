@@ -4,7 +4,7 @@
 
 namespace gl
 {
-	static class Rasterize
+	static class Rasterizer
 	{
 	public:
 		static uint32* color_buffer;

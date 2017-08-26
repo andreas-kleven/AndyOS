@@ -10,6 +10,7 @@ namespace gl
 
 		Matrix();
 		Matrix(float elements[]);
+
 		float* GetElementsPointer();
 		static Matrix CreateTranslation(Vector4 translation);
 		static Matrix CreateRotation(Vector4 rot);

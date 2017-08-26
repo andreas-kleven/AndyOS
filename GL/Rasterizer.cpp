@@ -1,4 +1,4 @@
-#include "Rasterize.h"
+#include "Rasterizer.h"
 #include "System.h"
 #include "GL.h"
 #include "math.h"
@@ -10,10 +10,9 @@ namespace gl
 		return (c.mul_y - a.mul_y) * (b.mul_x - a.mul_x) - (c.mul_x - a.mul_x) * (b.mul_y - a.mul_y);
 	}
 
-	uint32* Rasterize::color_buffer;
-	float* Rasterize::depth_buffer;
+	float* Rasterizer::depth_buffer;
 
-	STATUS Rasterize::Init()
+	STATUS Rasterizer::Init()
 	{
 		uint32 pixels = GL::m_height * GL::m_width;
 		uint32 blocks = pixels * sizeof(uint32) / BLOCK_SIZE;
@@ -22,7 +21,7 @@ namespace gl
 		return STATUS_SUCCESS;
 	}
 
-	void Rasterize::DrawTriangle(Vertex* buffer, BMP* texture)
+	void Rasterizer::DrawTriangle(Vertex* buffer, BMP* texture)
 	{
 		uint32* colorBuffer = VBE::buffer;
 		uint32 stride = GL::m_width * 4;

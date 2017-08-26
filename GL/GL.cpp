@@ -29,7 +29,7 @@ namespace gl
 			{
 				//for (int c = 0; c < 10; c++)
 				//if (i < length * 3)
-					Rasterize::DrawTriangle(&vertex_buffer[i]);
+					Rasterizer::DrawTriangle(&vertex_buffer[i]);
 					 
 				//VBE::DrawLine((int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), (int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), 0xFF0000);
 				//VBE::DrawLine((int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), (int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), 0xFF0000);
@@ -64,7 +64,7 @@ namespace gl
 	int tex_index = 0;
 	int bound_tex = -1;
 
-	GLMatrixMode mat_mode;
+	GLMatrixMode mat_mode = GL_PROJECTION;
 	Matrix mat_projection;
 	Matrix mat_viewmodel;
 
@@ -76,7 +76,7 @@ namespace gl
 
 	STATUS GL::Init()
 	{
-		Rasterize::Init();
+		Rasterizer::Init();
 		return STATUS_SUCCESS;
 	}
 
@@ -138,7 +138,7 @@ namespace gl
 		VBE::Clear(color);
 
 		float val = 100000;
-		memset32(Rasterize::depth_buffer, *(uint32*)&val, m_width * m_height);
+		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
 	}
 
 	void GL::Draw(int start, int count)
@@ -171,7 +171,7 @@ namespace gl
 
 			if (a->mul_w > 0 && b->mul_w > 0 && c->mul_w > 0)
 			{
-				Rasterize::DrawTriangle(&vert_ptr[i], m_textures[bound_tex]);
+				Rasterizer::DrawTriangle(&vert_ptr[i], m_textures[bound_tex]);
 
 				//VBE::DrawLine((int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), (int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), 0xFF0000);
 				//VBE::DrawLine((int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), (int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), 0xFF0000);

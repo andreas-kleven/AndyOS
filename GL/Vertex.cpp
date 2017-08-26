@@ -4,13 +4,25 @@ namespace gl
 {
 	Vertex::Vertex()
 	{
+		this->x = 0;
+		this->y = 0;
+		this->z = 0;
+
+		this->tex_u = 0;
+		this->tex_v = 0;
+
+		this->mul_x = 0;
+		this->mul_y = 0;
+		this->mul_z = 0;
+		this->mul_w = 0;
 	}
 
-	Vertex::Vertex(float x, float y, float z, ColRGB col, Vector4 normal)
+	Vertex::Vertex(float x, float y, float z, ColRGB col, Vector4 normal) : Vertex()
 	{
 		this->x = x;
 		this->y = y;
 		this->z = z;
+
 		this->color = col;
 		this->normal = normal;
 	}
