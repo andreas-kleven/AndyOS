@@ -14,6 +14,8 @@ public:
 	Game* active_game;
 	float delta_time;
 
+	GEngine();
+
 	void StartGame(Game* game);
 
 private:

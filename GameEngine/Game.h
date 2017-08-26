@@ -9,6 +9,8 @@ public:
 	std::List<Camera*> cameras;
 	std::List<LightSource*> lights;
 
+	Game();
+
 	void AddObject(GameObject* object);
 	void AddCamera(Camera* cam);
 	void AddLightSource(LightSource* light);

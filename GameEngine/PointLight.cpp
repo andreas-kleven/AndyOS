@@ -2,9 +2,9 @@
 
 PointLight::PointLight()
 {
-	intensity = 1;
-	max_dist = 100;
-	color = gl::ColRGB(1, 1, 1);
+	this->intensity = 1;
+	this->max_dist = 100;
+	this->color = gl::ColRGB(1, 1, 1);
 }
 
 float PointLight::GetIntensityAtPoint(Vector point)

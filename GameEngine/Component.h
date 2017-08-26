@@ -8,6 +8,9 @@ class Component
 public:
 	GameObject* parent;
 
+	Component();
+
+	virtual void Start() { }
 	virtual void Update(float delta) { }
 
 	void SetName(std::String name);

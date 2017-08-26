@@ -8,6 +8,8 @@ public:
 
 	ColliderComponent();
 
+	void(*OnCollision)();
+
 	inline bool IsSphere() { return bIsSphere; }
 	inline bool IsCube() { return bIsCube; }
 

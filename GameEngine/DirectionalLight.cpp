@@ -2,8 +2,8 @@
 
 DirectionalLight::DirectionalLight()
 {
-	intensity = 1;
-	color = gl::ColRGB(1, 1, 1);
+	this->intensity = 1;
+	this->color = gl::ColRGB(1, 1, 1);
 }
 
 float DirectionalLight::GetIntensityAtPoint(Vector point)

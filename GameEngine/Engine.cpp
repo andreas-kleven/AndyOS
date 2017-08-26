@@ -19,6 +19,12 @@ float p5 = 60;
 Vector last_mouse_pos;
 int ticks;
 
+GEngine::GEngine()
+{
+	active_game = 0;
+	delta_time = 0;
+}
+
 void GEngine::StartGame(Game* game)
 {
 	GL::Init();
@@ -203,7 +209,10 @@ void GEngine::Collision()
 
 				if (dp.Magnitude() < a->radius + b->radius)
 				{
-					a->parent->Translate(Vector(0, 10, 0));
+					//a->parent->Translate(Vector(0, 10, 0));
+
+					if (a->OnCollision)
+						a->OnCollision();
 				}
 			}
 		}

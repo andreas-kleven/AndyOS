@@ -19,6 +19,7 @@ public:
 
 	GameObject();
 
+	virtual void Start() { }
 	virtual void Update(float delta_time) { }
 
 	void SetName(std::String name);

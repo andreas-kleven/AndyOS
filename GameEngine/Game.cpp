@@ -1,6 +1,11 @@
 #include "Game.h"
 #include "Engine.h"
 
+Game::Game()
+{
+	active_cam = 0;
+}
+
 void Game::AddObject(GameObject* object)
 {
 	objects.Add(object);

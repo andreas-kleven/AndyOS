@@ -3,6 +3,7 @@
 
 GameObject::GameObject()
 {
+	this->parent = 0;
 	this->name = "GameObject";
 }
 
