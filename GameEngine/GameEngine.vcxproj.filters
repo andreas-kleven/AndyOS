@@ -161,7 +161,7 @@
       <Filter>Components\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Quaternion.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ PhysicsComponent* phys;
 
 Thing::Thing()
 {
-	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("model.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!ISO_FS::ReadFile("img.bmp", img_buf))
@@ -40,6 +40,7 @@ Thing::Thing()
 	sphere->radius = 1;
 
 	phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
+	//phys->bEnabled = 0;
 	//phys->bEnabledGravity = 0;
 }
 

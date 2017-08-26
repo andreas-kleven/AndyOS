@@ -5,7 +5,7 @@ class PhysicsComponent : public Component
 {
 public:
 	Vector velocity;
-	Vector angVelocity;
+	Quaternion angVelocity;
 
 	float mass;
 	float drag;

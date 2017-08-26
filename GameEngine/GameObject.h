@@ -27,28 +27,10 @@ public:
 	void SetName(std::String name);
 	std::String GetName();
 
-	Transform GetTransform();
-	Vector GetPosition();
-	Vector GetRotation();
-	Vector GetScale();
-
-	void SetTransform(Transform trans);
-	void SetPosition(Vector pos);
-	void SetRotation(Vector rot);
-	void SetScale(Vector scale);
-
-	void Translate(Vector pos);
-	void Rotate(Vector rot);
-	void Scale(Vector scale);
-
 	Transform GetWorldTransform();
 	Vector GetWorldPosition();
-	Vector GetWorldRotation();
+	Quaternion GetWorldRotation();
 	Vector GetWorldScale();
-
-	Vector GetRightVector();
-	Vector GetUpVector();
-	Vector GetForwardVector();
 
 	void AddComponent(Component* comp);
 	Component* GetComponent(std::String name);

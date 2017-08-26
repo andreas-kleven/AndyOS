@@ -40,7 +40,7 @@ namespace gl
 			return *this / Magnitude();
 		}
 
-		float DotProduct(Vector4 v)
+		float Dot(Vector4 v)
 		{
 			return x * v.x + y * v.y + z * v.z;
 		}

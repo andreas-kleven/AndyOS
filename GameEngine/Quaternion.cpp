@@ -8,9 +8,19 @@ Quaternion::Quaternion()
 	w = 0;
 }
 
-inline Quaternion operator*(const Quaternion& Q1, const Quaternion& Q2)
+inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 {
-	Quaternion Q = Q1;
-	return Q *= Q2;
-	return Q;
+	Quaternion q = q1;
+	return q *= q2;
+	return q;
+}
+
+inline Vector operator*(Quaternion& q, Vector& v)
+{
+	Vector k(q.x, q.y, q.z);
+	float t = q.w;
+
+	return v * cos(t)
+		+ Vector::Cross(k, v) * sin(t) 
+		+ k * Vector::Dot(k, v) * (1 - cos(t));
 }

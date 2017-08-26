@@ -16,13 +16,13 @@ namespace gl
 			Vertex* b = &vertex_buffer[i + 1];
 			Vertex* c = &vertex_buffer[i + 2];
 
-			//float asd = -a->normal.Normalized().DotProduct(light);
+			//float asd = -a->normal.Normalized().Dot(light);
 			//Debug::Print("%f\n", asd);
 			//PIT::Sleep(10);
 
-			//a->built_color = (a->color * -a->normal.Normalized().DotProduct(light)) * 1 + (a->color * -a->normal.Normalized().DotProduct(light2)) * 0.1;
-			//b->built_color = (b->color * -b->normal.Normalized().DotProduct(light)) * 1 + (b->color * -b->normal.Normalized().DotProduct(light2)) * 0.1;
-			//c->built_color = (c->color * -c->normal.Normalized().DotProduct(light)) * 1 + (c->color * -c->normal.Normalized().DotProduct(light2)) * 0.1;
+			//a->built_color = (a->color * -a->normal.Normalized().Dot(light)) * 1 + (a->color * -a->normal.Normalized().Dot(light2)) * 0.1;
+			//b->built_color = (b->color * -b->normal.Normalized().Dot(light)) * 1 + (b->color * -b->normal.Normalized().Dot(light2)) * 0.1;
+			//c->built_color = (c->color * -c->normal.Normalized().Dot(light)) * 1 + (c->color * -c->normal.Normalized().Dot(light2)) * 0.1;
 			//Debug::Print("%f, %f, %f\n", a->built_color.r, a->built_color.g, a->built_color.b);
 
 			if (a->w > 0 && b->w > 0 && c->w > 0)
@@ -160,13 +160,13 @@ namespace gl
 			c->MulMatrix(M);
 
 
-			//float asd = -a->normal.Normalized().DotProduct(light);
+			//float asd = -a->normal.Normalized().Dot(light);
 			//Debug::Print("%f\n", asd);
 			//PIT::Sleep(10);
 
-			a->built_color = (a->color * -a->normal.DotProduct(light)) * 1 + (a->color * -a->normal.DotProduct(light2)) * 0.1;
-			b->built_color = (b->color * -b->normal.DotProduct(light)) * 1 + (b->color * -b->normal.DotProduct(light2)) * 0.1;
-			c->built_color = (c->color * -c->normal.DotProduct(light)) * 1 + (c->color * -c->normal.DotProduct(light2)) * 0.1;
+			a->built_color = (a->color * -a->normal.Dot(light)) * 1 + (a->color * -a->normal.Dot(light2)) * 0.1;
+			b->built_color = (b->color * -b->normal.Dot(light)) * 1 + (b->color * -b->normal.Dot(light2)) * 0.1;
+			c->built_color = (c->color * -c->normal.Dot(light)) * 1 + (c->color * -c->normal.Dot(light2)) * 0.1;
 			//Debug::Print("%f, %f, %f\n", a->built_color.r, a->built_color.g, a->built_color.b);
 
 			if (a->mul_w > 0 && b->mul_w > 0 && c->mul_w > 0)

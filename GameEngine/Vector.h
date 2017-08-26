@@ -14,12 +14,12 @@ public:
 	Vector EulerAngles();
 	gl::Vector4 ToVector4();
 
-	Vector operator +(const Vector& b)
+	Vector operator+(const Vector& b)
 	{
 		return Vector(x + b.x, y + b.y, z + b.z);
 	}
 
-	Vector& operator +=(const Vector& b)
+	Vector& operator+=(const Vector& b)
 	{
 		this->x += b.x;
 		this->y += b.y;
@@ -27,12 +27,12 @@ public:
 		return *this;
 	}
 
-	Vector operator -(const Vector& b)
+	Vector operator-(const Vector& b)
 	{
 		return Vector(x - b.x, y - b.y, z - b.z);
 	}
 
-	Vector& operator -=(const Vector& b)
+	Vector& operator-=(const Vector& b)
 	{
 		this->x -= b.x;
 		this->y -= b.y;
@@ -40,17 +40,17 @@ public:
 		return *this;
 	}
 
-	Vector operator -()
+	Vector operator-()
 	{
 		return Vector(-x, -y, -z);
 	}
 
-	Vector operator *(float f)
+	Vector operator*(float f)
 	{
 		return Vector(x * f, y * f, z * f);
 	}
 
-	Vector operator /(float f)
+	Vector operator/(float f)
 	{
 		return Vector(x / f, y / f, z / f);
 	}
@@ -70,15 +70,18 @@ public:
 		return *this / mag;
 	}
 
-	float DotProduct(const Vector& v)
+	float Dot(const Vector& v)
 	{
 		return x * v.x + y * v.y + z * v.z;
 	}
 
-	Vector CrossProduct(const Vector& v)
+	Vector Cross(const Vector& v)
 	{
 		return Vector(y * v.z - z * v.y,
 			z * v.x - x * v.z,
 			x * v.y - y * v.x);
 	}
+
+	static float Dot(const Vector& a, const Vector& b);
+	static Vector Cross(const Vector& a, const Vector& b);
 };

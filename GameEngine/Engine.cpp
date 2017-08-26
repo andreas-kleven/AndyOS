@@ -66,7 +66,7 @@ void GEngine::StartGame(Game* game)
 		Debug::Print("Ticks: %i\n", ticks);
 		Debug::Print("Free %i\n", Memory::num_free);
 
-		Debug::Print("Cam: %s\n", cam->GetTransform().ToString(buf));
+		Debug::Print("Cam: %s\n", cam->transform.ToString(buf));
 		Debug::Print("P1: %s\n", thing->transform.ToString(buf));
 
 		if (thing->physicsComponent)
@@ -118,19 +118,20 @@ void GEngine::Update()
 	if (Keyboard::GetKeyDown(KEY_D1))
 	{
 		p1 += sign * deltaTime * 2000;
-		active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
+		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
+		active_game->objects[0]->transform.rotation.Rotate(Vector(1, 0, 0), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
-		active_game->objects[0]->transform.rotation.y += 2 * M_PI * deltaTime * sign;
+		active_game->objects[0]->transform.rotation.Rotate(Vector(0, 1, 0), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D3))
 	{
 		p3 += sign * deltaTime / 10;
-		active_game->objects[0]->transform.rotation.z += 2 * M_PI * deltaTime * sign;
+		active_game->objects[0]->transform.rotation.Rotate(Vector(0, 0, 1), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D4))
@@ -141,9 +142,23 @@ void GEngine::Update()
 
 	Camera* cam = active_game->GetActiveCamera();
 
+	if (Keyboard::GetKeyDown(KEY_F))
+	{
+		active_game->objects[0]->transform.Rotate(Vector(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
+	}
+	if (Keyboard::GetKeyDown(KEY_G))
+	{
+		active_game->objects[0]->transform.Rotate(Vector(0, 4 * deltaTime, 0), -mouse_axis.x);
+	}
+
 	if (Mouse::mouse_R)
 	{
-		cam->Rotate(-Vector(mouse_axis.y, mouse_axis.x, 0) * 0.2);
+		//cam->transform.rotation.Rotate(Vector(1, 0, 0), -mouse_axis.y);
+		//cam->transform.rotation *= Quaternion(1, 0, 0, mouse_axis.x * deltaTime);
+		
+		//cam->transform.Rotate(Vector(0, 1, 0), mouse_axis.x);
+		//cam->Rotate(Vector(0, 1, 0) * -mouse_axis.x);
+		//cam->Rotate(-Vector(mouse_axis.y, mouse_axis.x, 0) * 0.2);
 	}
 	else if (Mouse::mouse_L)
 	{
@@ -153,17 +168,17 @@ void GEngine::Update()
 	float speed = 10;
 
 	if (Keyboard::GetKeyDown(KEY_D))
-		cam->Translate(cam->GetRightVector() * speed * deltaTime);
+		cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_A))
-		cam->Translate(-cam->GetRightVector() * speed * deltaTime);
+		cam->transform.Translate(-cam->transform.GetRightVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_W))
-		cam->Translate(cam->GetForwardVector() * speed * deltaTime);
+		cam->transform.Translate(cam->transform.GetForwardVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_S))
-		cam->Translate(-cam->GetForwardVector() * speed * deltaTime);
+		cam->transform.Translate(-cam->transform.GetForwardVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_E))
-		cam->Translate(cam->GetUpVector() * speed * deltaTime);
+		cam->transform.Translate(cam->transform.GetUpVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_Q))
-		cam->Translate(-cam->GetUpVector() * speed * deltaTime);
+		cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime);
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
 	{
@@ -249,7 +264,7 @@ void GEngine::Collision()
 						Vector dv = va - vb;
 						Vector dir = dp.Normalized();
 						Vector dirv = dv.Normalized();
-						float dot = dir.DotProduct(dirv);
+						float dot = dir.Dot(dirv);
 
 						if (dot < 0)
 						{
@@ -267,12 +282,15 @@ void GEngine::Collision()
 void GEngine::Render()
 {
 	Camera* cam = active_game->GetActiveCamera();
-	Vector4 camPos = cam->GetTransform().position.ToVector4();
 	Matrix V = Matrix::CreateView(
-		-cam->GetForwardVector().ToVector4(),
-		cam->GetUpVector().ToVector4(),
-		cam->GetRightVector().ToVector4(),
-		camPos);
+		-cam->transform.GetForwardVector().ToVector4(),
+		cam->transform.GetUpVector().ToVector4(),
+		cam->transform.GetRightVector().ToVector4(),
+		cam->transform.position.ToVector4());
+
+	//Matrix VT = Matrix::CreateTranslation(camPos);
+	//Matrix VR = cam->transform.rotation.ToMatrix();
+	//Matrix V = VT;
 
 	GL::Clear(0x7F7F7F);
 	GL::LoadMatrix(V);
@@ -287,7 +305,12 @@ void GEngine::Render()
 
 			GameObject* parent = mesh->parent;
 			Transform* trans = &parent->GetWorldTransform();
-			Matrix M = Matrix::CreateTransformation(trans->position.ToVector4(), trans->rotation.ToVector4(), trans->scale.ToVector4());
+			//Matrix M = Matrix::CreateTransformation(trans->position.ToVector4(), trans->rotation.ToMatrix(), trans->scale.ToVector4());
+			Matrix T = Matrix::CreateTranslation(trans->position.ToVector4());
+			Matrix R = trans->rotation.ToMatrix();
+			Matrix S = Matrix::CreateScale(trans->scale.ToVector4());
+
+			Matrix M = T * R * S;
 
 			GL::PushMatrix();
 			GL::MulMatrix(M);

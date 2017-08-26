@@ -12,18 +12,18 @@
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->SetPosition(Vector(0, 5, -15));
+	cam->transform.position = Vector(0, 5, -15);
 
 	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
 	//light->SetRotation(Vector(-1.6, 1, 0.5).Normalized());
 
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->SetPosition(Vector(0, 10, 0));
-	thing->SetRotation(Vector(0, 0, 0));
-	thing->SetScale(Vector(1, 1, 1));
+	thing->transform.position = Vector(0, 10, 0);
+	thing->transform.rotation = Quaternion();
+	thing->transform.scale = Vector(1, 1, 1);
 
 	Box* box = CreateObject<Box>("Floor");
-	box->SetPosition(Vector(0, 0, 0));
-	box->SetRotation(Vector(0, 0, 0));
+	box->transform.position = Vector(0, 0, 0);
+	box->transform.rotation = Quaternion();
 	//box->SetScale(Vector(10, 1, 10));
 }

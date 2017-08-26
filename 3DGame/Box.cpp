@@ -38,5 +38,6 @@ Box::Box()
 	sphere->radius = 1;
 
 	PhysicsComponent* phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
+	//phys->bEnabled = 0;
 	phys->bEnabledGravity = 0;
 }

@@ -22,12 +22,14 @@ void PhysicsComponent::Update(float delta)
 
 	velocity += impulse;
 	impulse = Vector();
-	parent->Translate(velocity * delta);
+	parent->transform.Translate(velocity * delta);
 
 	Vector F;
 
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
+
+	parent->transform.Rotate(angVelocity);
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
