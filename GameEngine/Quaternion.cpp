@@ -2,16 +2,21 @@
 
 Quaternion::Quaternion()
 {
-	x = 1;
+	x = 0;
 	y = 0;
 	z = 0;
-	w = 0;
+	w = 1;
+}
+
+inline Quaternion operator*(const Quaternion& q, const float f)
+{
+	return Quaternion(q.x, q.y, q.z, q.w * f);
 }
 
 inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 {
 	Quaternion q = q1;
-	return q *= q2;
+	q *= q2;
 	return q;
 }
 

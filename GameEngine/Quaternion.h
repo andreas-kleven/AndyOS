@@ -31,7 +31,6 @@ public:
 		local.z = axis.z * sin(ang / 2);
 
 		this->operator*=(local);
-		//w += ang;
 	}
 
 	float Magnitude()
@@ -111,9 +110,11 @@ public:
 		return *this;
 	}
 
+
 	//static Quaternion FromEuler(Vector vec);
 	//static Quaternion AngleAxis(Vector vec);
 };
 
+extern inline Quaternion operator*(const Quaternion& q, const float f);
 extern inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2);
 extern inline Vector operator*(Quaternion& q, Vector& vec);

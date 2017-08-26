@@ -1,6 +1,34 @@
 #include "PhysicsComponent.h"
 #include "GameObject.h"
 
+
+
+class Matrix6x6
+{
+public:
+	float elem[36];
+
+	Matrix6x6()
+	{
+		elem[0] = 1;
+		elem[7] = 1;
+		elem[14] = 1;
+		elem[21] = 1;
+		elem[28] = 1;
+		elem[35] = 1;
+	}
+
+	Matrix6x6 operator*(const Matrix6x6 rhs)
+	{
+
+	}
+};
+
+
+
+
+
+
 PhysicsComponent::PhysicsComponent()
 {
 	mass = 1;
@@ -29,7 +57,9 @@ void PhysicsComponent::Update(float delta)
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
 
-	parent->transform.Rotate(angVelocity);
+	//parent->transform.rotation.Rotate(Vector(1, 0, 0), 1 * delta);
+	//parent->transform.Rotate(Quaternion(0, 0.5 *delta, 0, 1).Normalized());
+
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
