@@ -1,6 +1,6 @@
 #include "3DGame.h"
 #include "System.h"
-#include "Box.h"
+#include "MyBox.h"
 #include "MeshComponent.h"
 #include "Model3D.h"
 #include "DirectionalLight.h"
@@ -22,7 +22,7 @@ MyGame::MyGame()
 	thing->transform.rotation = Quaternion();
 	thing->transform.scale = Vector(1, 1, 1);
 
-	Box* box = CreateObject<Box>("Floor");
+	MyBox* box = CreateObject<MyBox>("Floor");
 	box->transform.position = Vector(0, 0, 0);
 	box->transform.rotation = Quaternion();
 	box->transform.scale = Vector(1, 1, 1);

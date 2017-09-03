@@ -123,12 +123,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="3DGame.cpp" />
-    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="MyBox.cpp" />
     <ClCompile Include="Thing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DGame.h" />
-    <ClInclude Include="Box.h" />
+    <ClInclude Include="MyBox.h" />
     <ClInclude Include="Thing.h" />
   </ItemGroup>
   <ItemGroup>

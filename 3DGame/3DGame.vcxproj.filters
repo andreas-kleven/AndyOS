@@ -14,10 +14,10 @@
     <ClInclude Include="3DGame.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
+    <ClInclude Include="Thing.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Thing.h">
+    <ClInclude Include="MyBox.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -25,10 +25,10 @@
     <ClCompile Include="3DGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
+    <ClCompile Include="Thing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Thing.cpp">
+    <ClCompile Include="MyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

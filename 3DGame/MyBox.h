@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
-class Box : public GameObject
+class MyBox : public GameObject
 {
 public:
-	Box();
+	MyBox();
 };

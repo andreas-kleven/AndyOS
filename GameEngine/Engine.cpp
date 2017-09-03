@@ -5,6 +5,7 @@
 #include "MeshComponent.h"
 #include "ColliderComponent.h"
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 #include "DirectionalLight.h"
 #include "stdio.h"
 
@@ -60,6 +61,7 @@ void GEngine::StartGame(Game* game)
 		if (PIT::ticks != ticks)
 		{
 			Debug::Print("FPS: %i\tDT:%i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks);
+			char buf[20];
 			//Debug::Print("AVG: %i\n", frames * 1000 / PIT::ticks);
 		}
 
@@ -230,7 +232,52 @@ void GEngine::Collision()
 		int start = i + 1;
 		for (int j = start; j < all.Count(); j++)
 		{
-			if (all[i]->IsSphere() && all[j]->IsSphere())
+			if (all[i]->IsBox() && all[j]->IsBox())
+			{
+				BoxCollider* a = (BoxCollider*)all[i];
+				BoxCollider* b = (BoxCollider*)all[j];
+
+				if (a->IsColliding(b))
+				{
+					//Debug::color = 0xFF0000;
+					//Debug::Print("COLLISION");
+					//Debug::color = 0xFF00;
+
+					PhysicsComponent* pha = a->parent->physicsComponent;
+					PhysicsComponent* phb = b->parent->physicsComponent;
+
+					Vector va;
+					Vector vb;
+
+					Vector posa = a->parent->GetWorldPosition() + a->transform.position;
+					Vector posb = b->parent->GetWorldPosition() + b->transform.position;
+
+					Vector dp = posa - posb;
+
+					if (pha || pha)
+					{
+						if (pha)
+							va = pha->velocity;
+						if (phb)
+							vb = phb->velocity;
+
+						Vector dv = va - vb;
+						Vector dir = dp.Normalized();
+						Vector dirv = dv.Normalized();
+						float dot = dir.Dot(dirv);
+
+						if (dot < 0)
+						{
+							Vector imp = dir * dot * dv.Magnitude() / 1.5;
+							pha->AddImpulse(-imp);
+							phb->AddImpulse(imp);
+
+							pha->angVelocity = Quaternion(1, 2, 3, 0.1).Normalized();
+						}
+					}
+				}
+			}
+			else if (all[i]->IsSphere() && all[j]->IsSphere())
 			{
 				SphereCollider* a = (SphereCollider*)all[i];
 				SphereCollider* b = (SphereCollider*)all[j];

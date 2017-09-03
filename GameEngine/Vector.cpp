@@ -29,7 +29,7 @@ float Vector::Dot(const Vector& a, const Vector& b)
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-Vector Vector::Cross(const Vector & a, const Vector & b)
+Vector Vector::Cross(const Vector& a, const Vector& b)
 {
 	return Vector(a.y * b.z - a.z * b.y,
 		a.z * b.x - a.x * b.z,

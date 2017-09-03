@@ -22,10 +22,7 @@ inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 
 inline Vector operator*(Quaternion& q, Vector& v)
 {
-	Vector k(q.x, q.y, q.z);
-	float t = q.w;
-
-	return v * cos(t)
-		+ Vector::Cross(k, v) * sin(t) 
-		+ k * Vector::Dot(k, v) * (1 - cos(t));
+	Quaternion p = Quaternion(v.x, v.y, v.z, 0);
+	Quaternion qpq = q * p * -q;
+	return Vector(qpq.x, qpq.y, qpq.z);
 }

@@ -1,13 +1,14 @@
-#include "Box.h"
+#include "MyBox.h"
 #include "MeshComponent.h"
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 #include "PhysicsComponent.h"
 #include "Model3D.h"
 #include "ModelLoader.h"
 
-Box::Box()
+MyBox::MyBox()
 {
-	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 
 	char* img_buf;
 	if (!ISO_FS::ReadFile("img.bmp", img_buf))
@@ -34,8 +35,9 @@ Box::Box()
 	mesh->vertex_count = mod->vertex_count;
 	mesh->texId = gl::GL::AddTexture(bmp);
 
-	SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
-	sphere->radius = 1;
+	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
+	//sphere->radius = 1;
+	BoxCollider* collider = CreateComponent<BoxCollider>("BoxCollider");
 
 	PhysicsComponent* phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
 	//phys->bEnabled = 0;

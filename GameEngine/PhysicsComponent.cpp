@@ -59,7 +59,7 @@ void PhysicsComponent::Update(float delta)
 
 	//parent->transform.rotation.Rotate(Vector(1, 0, 0), 1 * delta);
 	//parent->transform.Rotate(Quaternion(0, 0.5 *delta, 0, 1).Normalized());
-
+	parent->transform.Rotate(angVelocity);
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
