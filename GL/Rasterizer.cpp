@@ -38,16 +38,10 @@ namespace gl
 		v1.mul_y = v1.mul_y * GL::m_height / v1.mul_w + GL::m_height / 2;
 		v2.mul_y = v2.mul_y * GL::m_height / v2.mul_w + GL::m_height / 2;
 
-		/*VBE::DrawLine((int)v0.mul_x, (int)v0.mul_y, (int)v1.mul_x, (int)v1.mul_y, 0xFF);
-		VBE::DrawLine((int)v1.mul_x, (int)v1.mul_y, (int)v2.mul_x, (int)v2.mul_y, 0xFF00);
-		VBE::DrawLine((int)v2.mul_x, (int)v2.mul_y, (int)v0.mul_x, (int)v0.mul_y, 0xFF0000);
-
-		Debug::Print("%i, %i\n", x1, y1);
-		Debug::Print("%i, %i\n", x2, y2);
-		Debug::Print("%i, %i\n", x3, y3);
-
-		VBE::Draw(); 
-		PIT::Sleep(10);*/
+		//VBE::DrawLine((int)v0.mul_x, (int)v0.mul_y, (int)v1.mul_x, (int)v1.mul_y, 0xFF);
+		//VBE::DrawLine((int)v1.mul_x, (int)v1.mul_y, (int)v2.mul_x, (int)v2.mul_y, 0xFF00);
+		//VBE::DrawLine((int)v2.mul_x, (int)v2.mul_y, (int)v0.mul_x, (int)v0.mul_y, 0xFF0000);
+		//return;
 
 		int minx = min(floor(v0.mul_x), floor(v1.mul_x), floor(v2.mul_x));
 		int maxx = max(floor(v0.mul_x), floor(v1.mul_x), floor(v2.mul_x));

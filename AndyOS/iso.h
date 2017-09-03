@@ -1,6 +1,8 @@
 #pragma once
 #include "definitions.h"
 
+#define ISO_SECTOR_SIZE 2048
+
 struct ISO_DATE
 {
 	uint8 years;
@@ -49,12 +51,13 @@ struct ISO_PRIMARYDESC
 	char reserved[653];
 };
 
-struct ISO_TABLEENTRY
+struct ISO_TABLE_ENTRY
 {
 	uint8 length;
 	uint8 attrib;
 	uint32 locationLBA;
 	uint16 parentDir;
+	char* name;
 };
 
 struct ISO_DIRECTORY
@@ -84,8 +87,4 @@ public:
 	static STATUS ReadFile(ISO_DIRECTORY* file, char*& buffer);
 	static STATUS ReadFile(char* name, char*& buffer);
 	static int ListFiles(char* path);
-
-private:
-	static ISO_PRIMARYDESC* desc;
-	static ISO_DIRECTORY* root;
 };

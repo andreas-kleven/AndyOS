@@ -10,7 +10,7 @@ Box::Box()
 	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 
 	char* img_buf;
-	if (!ISO_FS::ReadFile("_img.bmp", img_buf))
+	if (!ISO_FS::ReadFile("img.bmp", img_buf))
 	{
 		Debug::Print("bmp not found");
 		while (1);

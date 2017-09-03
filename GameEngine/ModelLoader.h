@@ -11,7 +11,4 @@ static class ModelLoader
 {
 public:
 	static Model3D* LoadModel(char* filename, Format3D format);
-
-private:
-	static char* buffer;
 };

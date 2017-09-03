@@ -14,13 +14,17 @@ STATUS ATA::Init()
 
 STATUS ATA::Read(int bus, int drive, int sector, char*& buffer, int length)
 {
+	if (length <= 0)
+		return STATUS_FAILED;
+
 	int sectors = (length - 1) / ATA_SECTOR_SIZE + 1;
 	sectors;
 	buffer = new char[length];
 
 	for (int i = 0; i < sectors; i++)
 	{
-		ReadSector(bus, drive, sector + i, &*buffer + i * ATA_SECTOR_SIZE);
+		if (!ReadSector(bus, drive, sector + i, &*buffer + i * ATA_SECTOR_SIZE))
+			return STATUS_FAILED;
 	}
 
 	return STATUS_SUCCESS;

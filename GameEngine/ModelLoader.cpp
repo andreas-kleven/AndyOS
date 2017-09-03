@@ -3,22 +3,30 @@
 #include "Obj.h"
 #include "A3D.h"
 
-char* ModelLoader::buffer;
-
 Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
-	FileSystem::ReadFile(filename, buffer);
+	char* buffer;
 
-	switch (format)
+	STATUS status = FileSystem::ReadFile(filename, buffer);
+
+	if (status)
 	{
-	case FORMAT_OBJ:
-		return new Obj(buffer);
+		switch (format)
+		{
+		case FORMAT_OBJ:
+			return new Obj(buffer);
 
-	case FORMAT_A3D:
-		return new A3D(buffer);
+		case FORMAT_A3D:
+			return new A3D(buffer);
 
-	default:
-		break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		Debug::Print("ERROR");
+		while (1);
 	}
 
 	return 0;

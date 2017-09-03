@@ -3,6 +3,5 @@
 
 STATUS FileSystem::ReadFile(char* name, char*& buffer)
 {
-	ISO_FS::ReadFile(name, buffer);
-	return STATUS_SUCCESS;
+	return ISO_FS::ReadFile(name, buffer);
 }

@@ -25,5 +25,6 @@ MyGame::MyGame()
 	Box* box = CreateObject<Box>("Floor");
 	box->transform.position = Vector(0, 0, 0);
 	box->transform.rotation = Quaternion();
+	box->transform.scale = Vector(1, 1, 1);
 	//box->SetScale(Vector(10, 1, 10));
 }
