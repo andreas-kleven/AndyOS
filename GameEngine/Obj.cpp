@@ -29,20 +29,20 @@ void Obj::ReadFile(char* file)
 			float x = atof(args[1].ToChar());
 			float y = atof(args[2].ToChar());
 			float z = atof(args[3].ToChar());
-			positions.Add(Vector(x, y, z));
+			positions.Add(Vector3(x, y, z));
 		}
 		else if (args[0] == "vt")
 		{
 			float u = atof(args[1].ToChar());
 			float v = atof(args[2].ToChar());
-			uvs.Add(Vector(u, v, 0));
+			uvs.Add(Vector3(u, v, 0));
 		}
 		else if (args[0] == "vn")
 		{
 			float x = atof(args[1].ToChar());
 			float y = atof(args[2].ToChar());
 			float z = atof(args[3].ToChar());
-			normals.Add(Vector(x, y, z));
+			normals.Add(Vector3(x, y, z));
 		}
 		else if (args[0] == "f")
 		{
@@ -82,15 +82,15 @@ void Obj::CreateVertices()
 		{
 			gl::Vertex vert;
 
-			Vector pos = positions[faces[i].positions[j] - 1];
+			Vector3 pos = positions[faces[i].positions[j] - 1];
 			vert.x = pos.x;
 			vert.y = pos.y;
 			vert.z = pos.z;
 
-			Vector norm = normals[faces[i].normals[j] - 1];
+			Vector3 norm = normals[faces[i].normals[j] - 1];
 			vert.normal = norm.ToVector4();
 
-			Vector uv = uvs[faces[i].uvs[j] - 1];
+			Vector3 uv = uvs[faces[i].uvs[j] - 1];
 			vert.tex_u = uv.x;
 			vert.tex_v = uv.y;
 

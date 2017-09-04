@@ -4,7 +4,7 @@
 class PhysicsComponent : public Component
 {
 public:
-	Vector velocity;
+	Vector3 velocity;
 	Quaternion angVelocity;
 
 	float mass;
@@ -19,11 +19,12 @@ public:
 	virtual void Start();
 	virtual void Update(float delta);
 
-	void AddImpulse(Vector imp);
+	void AddImpulse(Vector3 imp);
+	void AddImpulseAt(Vector3 imp, Vector3 pos);
 
 	float Speed();
 	float SpeedSquared();
 
 private:
-	Vector impulse;
+	Vector3 impulse;
 };

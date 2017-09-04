@@ -22,7 +22,7 @@ Transform GameObject::GetWorldTransform()
 	return Transform(GetWorldPosition(), GetWorldRotation(), GetWorldScale());
 }
 
-Vector GameObject::GetWorldPosition()
+Vector3 GameObject::GetWorldPosition()
 {
 	if (parent)
 		return parent->GetWorldPosition() + transform.position;
@@ -38,7 +38,7 @@ Quaternion GameObject::GetWorldRotation()
 	return transform.rotation;
 }
 
-Vector GameObject::GetWorldScale()
+Vector3 GameObject::GetWorldScale()
 {
 	if (parent)
 		return parent->GetWorldScale() + transform.scale;

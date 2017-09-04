@@ -7,17 +7,17 @@ PointLight::PointLight()
 	this->color = gl::ColRGB(1, 1, 1);
 }
 
-float PointLight::GetIntensityAtPoint(Vector point)
+float PointLight::GetIntensityAtPoint(Vector3 point)
 {
-	Vector deltaTime = point - transform.position;
+	Vector3 deltaTime = point - transform.position;
 	float i = intensity - deltaTime.Magnitude() / maxDist;
 	//Debug::Print("L: %f\n", i);
 	return clamp(i, 0.f, intensity);
 }
 
-Vector PointLight::GetDirectionVector(Vector point)
+Vector3 PointLight::GetDirectionVector(Vector3 point)
 {
-	Vector deltaTime = point - transform.position;
+	Vector3 deltaTime = point - transform.position;
 	return deltaTime.EulerAngles();
 }
 

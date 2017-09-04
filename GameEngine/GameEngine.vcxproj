@@ -133,6 +133,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Matrix3.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -143,7 +144,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="A3D.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="IMesh.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="Matrix3.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model3D.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -171,7 +173,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vector.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GL\GL.vcxproj">

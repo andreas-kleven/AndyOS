@@ -1,6 +1,6 @@
 #pragma once
 #include "../GL/GL.h"
-#include "Vector.h"
+#include "Vector3.h"
 
 struct Face
 {

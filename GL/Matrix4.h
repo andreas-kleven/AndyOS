@@ -4,23 +4,25 @@
 
 namespace gl
 {
-	struct Matrix
+	struct Matrix4
 	{
 		float m_elements[16];
 
-		Matrix();
-		Matrix(float elements[]);
+		Matrix4();
+		Matrix4(float elements[]);
+
+		Matrix4 Inverse();
 
 		float* GetElementsPointer();
-		static Matrix CreateTranslation(Vector4 translation);
-		static Matrix CreateRotation(Vector4 rot);
-		static Matrix CreateScale(Vector4 scale);
-		static Matrix CreateTransformation(Vector4 pos, Vector4 rot, Vector4 scale);
-		static Matrix CreateView(Vector4 forward, Vector4 up, Vector4 right, Vector4 position);
-		static Matrix CreatePerspectiveProjection(float width, float height, float fov, float nearPlane, float farPlane);
-		static Matrix CreateOrthographicProjection(float left, float right, float top, float bottom, float farPlane, float nearPlane);
+		static Matrix4 CreateTranslation(Vector4 translation);
+		static Matrix4 CreateRotation(Vector4 rot);
+		static Matrix4 CreateScale(Vector4 scale);
+		static Matrix4 CreateTransformation(Vector4 pos, Vector4 rot, Vector4 scale);
+		static Matrix4 CreateView(Vector4 forward, Vector4 up, Vector4 right, Vector4 position);
+		static Matrix4 CreatePerspectiveProjection(float width, float height, float fov, float nearPlane, float farPlane);
+		static Matrix4 CreateOrthographicProjection(float left, float right, float top, float bottom, float farPlane, float nearPlane);
 
-		inline Matrix& operator+=(const Matrix& rhs)
+		inline Matrix4& operator+=(const Matrix4& rhs)
 		{
 			for (int i = 0; i < 16; i++)
 			{
@@ -29,7 +31,7 @@ namespace gl
 			return *this;
 		}
 
-		inline Matrix& operator-=(const Matrix& rhs)
+		inline Matrix4& operator-=(const Matrix4& rhs)
 		{
 			for (int i = 0; i < 16; i++)
 			{
@@ -38,7 +40,7 @@ namespace gl
 			return *this;
 		}
 
-		inline Matrix& operator*=(const Matrix& rhs)
+		inline Matrix4& operator*=(const Matrix4& rhs)
 		{
 			float m_copy[16];
 			memcpy(m_copy, m_elements, sizeof(m_elements));
@@ -70,7 +72,7 @@ namespace gl
 			return m_elements[index];
 		}
 
-		inline Matrix& operator*=(const float& rhs)
+		inline Matrix4& operator*=(const float& rhs)
 		{
 			for (int i = 0; i < 16; i++)
 			{
@@ -80,10 +82,10 @@ namespace gl
 		}
 	};
 
-	extern inline Matrix operator+(const Matrix& lhs, const Matrix& rhs);
-	extern inline Matrix operator-(const Matrix& lhs, const Matrix& rhs);
-	extern inline Matrix operator*(const Matrix& lhs, const Matrix& rhs);
-	extern inline Matrix operator*(const Matrix& lhs, const float& rhs);
+	extern inline Matrix4 operator+(const Matrix4& lhs, const Matrix4& rhs);
+	extern inline Matrix4 operator-(const Matrix4& lhs, const Matrix4& rhs);
+	extern inline Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
+	extern inline Matrix4 operator*(const Matrix4& lhs, const float& rhs);
 
-	extern inline Vector4 operator*(const Vector4& vec, const Matrix& mat);
+	extern inline Vector4 operator*(const Matrix4& mat, const Vector4& vec);
 }

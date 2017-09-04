@@ -1,6 +1,6 @@
 #pragma once
-#include "../GL/Matrix.h"
-#include "Vector.h"
+#include "../GL/Matrix4.h"
+#include "Vector3.h"
 
 using namespace gl;
 
@@ -22,7 +22,7 @@ public:
 		this->w = w;
 	}
 
-	void Rotate(Vector axis, float ang)
+	void Rotate(Vector3 axis, float ang)
 	{
 		Quaternion local;
 		local.w = cos(ang / 2);
@@ -58,10 +58,10 @@ public:
 		return q;
 	}
 
-	Matrix ToMatrix()
+	Matrix4 ToMatrix()
 	{
 		//Normalize();
-		Matrix mat;
+		Matrix4 mat;
 
 		double sqw = w*w;
 		double sqx = x*x;
@@ -90,9 +90,9 @@ public:
 		return mat;
 	}
 
-	Vector ToEuler()
+	Vector3 ToEuler()
 	{
-		return Vector();
+		return Vector3();
 	}
 
 	Quaternion& operator-()
@@ -111,10 +111,10 @@ public:
 	}
 
 
-	//static Quaternion FromEuler(Vector vec);
-	//static Quaternion AngleAxis(Vector vec);
+	//static Quaternion FromEuler(Vector3 vec);
+	//static Quaternion AngleAxis(Vector3 vec);
 };
 
 extern inline Quaternion operator*(const Quaternion& q, const float f);
 extern inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2);
-extern inline Vector operator*(Quaternion& q, Vector& vec);
+extern inline Vector3 operator*(Quaternion& q, Vector3& vec);

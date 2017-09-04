@@ -1,5 +1,5 @@
 #pragma once
-#include "Matrix.h"
+#include "Matrix4.h"
 #include "Color.h"
 
 namespace gl
@@ -27,6 +27,6 @@ namespace gl
 		Vertex();
 		Vertex(float x, float y, float z, ColRGB col, Vector4 normal);
 
-		void MulMatrix(const Matrix& mat);
+		void MulMatrix(const Matrix4& mat);
 	};
 }

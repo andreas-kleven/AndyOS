@@ -3,7 +3,7 @@
 #include "System.h"
 #include "Vertex.h"
 #include "Vector4.h"
-#include "Matrix.h"
+#include "Matrix4.h"
 #include "Color.h"
 #include "List.h"
 
@@ -32,10 +32,10 @@ namespace gl
 		static void BindTexture(int id);
 
 		static void MatrixMode(GLMatrixMode mode);
-		static void MulMatrix(const Matrix& mat);
+		static void MulMatrix(const Matrix4& mat);
 
 		static void LoadIdentity();
-		static void LoadMatrix(const Matrix& mat);
+		static void LoadMatrix(const Matrix4& mat);
 
 		static void PushMatrix();
 		static void PopMatrix();
@@ -47,6 +47,6 @@ namespace gl
 		static void SwapBuffers();
 
 	private:
-		static Matrix& SelectedMatrix();
+		static Matrix4& SelectedMatrix();
 	};
 }

@@ -126,7 +126,7 @@
   <ItemGroup>
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="GL.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Matrix4.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="Vector4.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -134,7 +134,7 @@
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="GL.h" />
-    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="Vector4.h" />
     <ClInclude Include="Vertex.h" />

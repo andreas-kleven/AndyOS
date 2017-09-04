@@ -28,9 +28,9 @@ public:
 	std::String GetName();
 
 	Transform GetWorldTransform();
-	Vector GetWorldPosition();
+	Vector3 GetWorldPosition();
 	Quaternion GetWorldRotation();
-	Vector GetWorldScale();
+	Vector3 GetWorldScale();
 
 	void AddComponent(Component* comp);
 	Component* GetComponent(std::String name);

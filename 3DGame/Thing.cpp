@@ -64,36 +64,36 @@ void Thing::Update(float delta)
 
 	if (Keyboard::GetKeyDown(KEY_SPACE))
 	{
-		phys->AddImpulse(Vector(0, speed * delta, 0));
+		phys->AddImpulse(Vector3(0, speed * delta, 0));
 	}
 
 	if (Keyboard::GetKeyDown(KEY_L))
 	{
-		phys->AddImpulse(Vector(speed, 0, 0) * delta);
+		phys->AddImpulse(Vector3(speed, 0, 0) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_J))
 	{
-		phys->AddImpulse(Vector(-speed, 0, 0) * delta);
+		phys->AddImpulse(Vector3(-speed, 0, 0) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_I))
 	{
-		phys->AddImpulse(Vector(0, 0, speed) * delta);
+		phys->AddImpulse(Vector3(0, 0, speed) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_K))
 	{
-		phys->AddImpulse(Vector(0, 0, -speed) * delta);
+		phys->AddImpulse(Vector3(0, 0, -speed) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_U))
 	{
-		phys->AddImpulse(Vector(0, speed, 0) * delta);
+		phys->AddImpulse(Vector3(0, speed, 0) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_O))
 	{
-		phys->AddImpulse(Vector(0, -speed, 0) * delta);
+		phys->AddImpulse(Vector3(0, -speed, 0) * delta);
 	}
 }

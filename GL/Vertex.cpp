@@ -27,7 +27,7 @@ namespace gl
 		this->normal = normal;
 	}
 
-	void Vertex::MulMatrix(const Matrix& mat)
+	void Vertex::MulMatrix(const Matrix4& mat)
 	{
 		mul_x = mat.m_elements[0] * x + mat.m_elements[1] * y + mat.m_elements[2] * z + mat.m_elements[3];
 		mul_y = mat.m_elements[4] * x + mat.m_elements[5] * y + mat.m_elements[6] * z + mat.m_elements[7];

@@ -6,12 +6,12 @@ DirectionalLight::DirectionalLight()
 	this->color = gl::ColRGB(1, 1, 1);
 }
 
-float DirectionalLight::GetIntensityAtPoint(Vector point)
+float DirectionalLight::GetIntensityAtPoint(Vector3 point)
 {
 	return intensity;
 }
 
-Vector DirectionalLight::GetDirectionVector(Vector point)
+Vector3 DirectionalLight::GetDirectionVector(Vector3 point)
 {
 	return transform.GetForwardVector();
 }

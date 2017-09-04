@@ -20,9 +20,9 @@ inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 	return q;
 }
 
-inline Vector operator*(Quaternion& q, Vector& v)
+inline Vector3 operator*(Quaternion& q, Vector3& v)
 {
 	Quaternion p = Quaternion(v.x, v.y, v.z, 0);
 	Quaternion qpq = q * p * -q;
-	return Vector(qpq.x, qpq.y, qpq.z);
+	return Vector3(qpq.x, qpq.y, qpq.z);
 }

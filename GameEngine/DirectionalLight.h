@@ -6,8 +6,8 @@ class DirectionalLight : public LightSource
 public:
 	DirectionalLight();
 
-	virtual float GetIntensityAtPoint(Vector point);
-	virtual Vector GetDirectionVector(Vector point);
+	virtual float GetIntensityAtPoint(Vector3 point);
+	virtual Vector3 GetDirectionVector(Vector3 point);
 	virtual gl::ColRGB GetColor();
 
 	float intensity;

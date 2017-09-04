@@ -4,19 +4,19 @@
 
 Transform::Transform()
 {
-	this->position = Vector();
+	this->position = Vector3();
 	this->rotation = Quaternion();
-	this->scale = Vector(1, 1, 1);
+	this->scale = Vector3(1, 1, 1);
 }
 
-Transform::Transform(Vector pos, Quaternion rot, Vector scale)
+Transform::Transform(Vector3 pos, Quaternion rot, Vector3 scale)
 {
 	this->position = pos;
 	this->rotation = rot;
 	this->scale = scale;
 }
 
-void Transform::Translate(Vector pos)
+void Transform::Translate(Vector3 pos)
 {
 	this->position += pos;
 }
@@ -26,7 +26,7 @@ void Transform::Rotate(Quaternion rot)
 	this->rotation *= rot;
 }
 
-void Transform::Rotate(Vector axis, float ang)
+void Transform::Rotate(Vector3 axis, float ang)
 {
 	float yaw = axis.x;
 	float pitch = axis.y;
@@ -82,26 +82,26 @@ void Transform::Rotate(Vector axis, float ang)
 	this->rotation *= q;
 }
 
-void Transform::Scale(Vector scale)
+void Transform::Scale(Vector3 scale)
 {
 	this->scale.x *= scale.x;
 	this->scale.y *= scale.y;
 	this->scale.z *= scale.z;
 }
 
-Vector Transform::GetRightVector()
+Vector3 Transform::GetRightVector()
 {
-	return this->rotation * Vector(1, 0, 0);
+	return this->rotation * Vector3(1, 0, 0);
 }
 
-Vector Transform::GetUpVector()
+Vector3 Transform::GetUpVector()
 {
-	return this->rotation * Vector(0, 1, 0);
+	return this->rotation * Vector3(0, 1, 0);
 }
 
-Vector Transform::GetForwardVector()
+Vector3 Transform::GetForwardVector()
 {
-	return this->rotation * Vector(0, 0, 1);
+	return this->rotation * Vector3(0, 0, 1);
 }
 
 

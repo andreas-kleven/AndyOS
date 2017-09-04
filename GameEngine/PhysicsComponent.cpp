@@ -49,17 +49,16 @@ void PhysicsComponent::Update(float delta)
 		return;
 
 	velocity += impulse;
-	impulse = Vector();
+	impulse = Vector3();
 	parent->transform.Translate(velocity * delta);
 
-	Vector F;
+	Vector3 F;
 
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
 
-	//parent->transform.rotation.Rotate(Vector(1, 0, 0), 1 * delta);
+	//parent->transform.rotation.Rotate(Vector3(1, 0, 0), 1 * delta);
 	//parent->transform.Rotate(Quaternion(0, 0.5 *delta, 0, 1).Normalized());
-	parent->transform.Rotate(angVelocity);
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
@@ -67,9 +66,14 @@ void PhysicsComponent::Update(float delta)
 	velocity += F / mass * delta;
 }
 
-void PhysicsComponent::AddImpulse(Vector imp)
+void PhysicsComponent::AddImpulse(Vector3 imp)
 {
 	this->impulse += imp;
+}
+
+void PhysicsComponent::AddImpulseAt(Vector3 imp, Vector3 pos)
+{
+	
 }
 
 float PhysicsComponent::Speed()

@@ -65,10 +65,10 @@ namespace gl
 	int bound_tex = -1;
 
 	GLMatrixMode mat_mode = GL_PROJECTION;
-	Matrix mat_projection;
-	Matrix mat_viewmodel;
+	Matrix4 mat_projection;
+	Matrix4 mat_viewmodel;
 
-	Matrix mat_stack[GL_MATRIX_STACK_LENGTH];
+	Matrix4 mat_stack[GL_MATRIX_STACK_LENGTH];
 	int mat_stack_index = 0;
 
 	Vertex* vert_ptr;
@@ -100,18 +100,18 @@ namespace gl
 		mat_mode = mode;
 	}
 
-	void GL::MulMatrix(const Matrix& mat)
+	void GL::MulMatrix(const Matrix4& mat)
 	{
-		Matrix& m = SelectedMatrix();
+		Matrix4& m = SelectedMatrix();
 		m = m * mat;
 	}
 
 	void GL::LoadIdentity()
 	{
-		SelectedMatrix() = Matrix();
+		SelectedMatrix() = Matrix4();
 	}
 
-	void GL::LoadMatrix(const Matrix& mat)
+	void GL::LoadMatrix(const Matrix4& mat)
 	{
 		SelectedMatrix() = mat;
 	}
@@ -146,7 +146,7 @@ namespace gl
 		Vector4 light = Vector4(0.3, -1, 0.5, 0).Normalized();
 		Vector4 light2 = Vector4(-1, 0.8, -1, 0).Normalized();
 
-		Matrix M = mat_projection * mat_viewmodel;
+		Matrix4 M = mat_projection * mat_viewmodel;
 
 		int end = start + count;
 		for (int i = start; i < end; i += 3)
@@ -187,7 +187,7 @@ namespace gl
 	}
 
 
-	Matrix& GL::SelectedMatrix()
+	Matrix4& GL::SelectedMatrix()
 	{
 		switch (mat_mode)
 		{

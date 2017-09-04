@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "math.h"
 #include "../GL/GL.h"
+#include "Matrix3.h"
 #include "System.h"
 #include "MeshComponent.h"
 #include "ColliderComponent.h"
@@ -17,7 +18,7 @@ float p3 = 0;
 float p4 = 1;
 float p5 = 60;
 
-Vector last_mouse_pos;
+Vector3 last_mouse_pos;
 int ticks;
 
 GEngine::GEngine()
@@ -44,10 +45,10 @@ void GEngine::StartGame(Game* game)
 
 	char buf[256];
 
-	last_mouse_pos = Vector(Mouse::x, Mouse::y, 0);
+	last_mouse_pos = Vector3(Mouse::x, Mouse::y, 0);
 	ticks = PIT::ticks;
 
-	Matrix P = Matrix::CreatePerspectiveProjection(1024, 768, 90, 1, 10);
+	Matrix4 P = Matrix4::CreatePerspectiveProjection(1024, 768, 90, 1, 10);
 
 	GL::MatrixMode(GL_PROJECTION);
 	GL::LoadMatrix(P);
@@ -73,7 +74,7 @@ void GEngine::StartGame(Game* game)
 
 		if (thing->physicsComponent)
 		{
-			Vector vel = thing->physicsComponent->velocity;
+			Vector3 vel = thing->physicsComponent->velocity;
 			Debug::Print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
 		}
 
@@ -110,8 +111,8 @@ void GEngine::Update()
 		Mouse::y = GL::m_height - 1;
 	}
 
-	Vector mouse_pos(Mouse::x, Mouse::y, 0);
-	Vector mouse_axis = (mouse_pos - last_mouse_pos) * deltaTime;
+	Vector3 mouse_pos(Mouse::x, Mouse::y, 0);
+	Vector3 mouse_axis = (mouse_pos - last_mouse_pos) * deltaTime;
 	last_mouse_pos = mouse_pos;
 
 
@@ -121,19 +122,19 @@ void GEngine::Update()
 	{
 		p1 += sign * deltaTime * 2000;
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[0]->transform.rotation.Rotate(Vector(1, 0, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
-		active_game->objects[0]->transform.rotation.Rotate(Vector(0, 1, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D3))
 	{
 		p3 += sign * deltaTime / 10;
-		active_game->objects[0]->transform.rotation.Rotate(Vector(0, 0, 1), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), 2 * M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D4))
@@ -146,25 +147,25 @@ void GEngine::Update()
 
 	if (Keyboard::GetKeyDown(KEY_F))
 	{
-		active_game->objects[0]->transform.Rotate(Vector(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
+		active_game->objects[0]->transform.Rotate(Vector3(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
 	}
 	if (Keyboard::GetKeyDown(KEY_G))
 	{
-		active_game->objects[0]->transform.Rotate(Vector(0, 4 * deltaTime, 0), -mouse_axis.x);
+		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
 
 	if (Mouse::mouse_R)
 	{
-		//cam->transform.rotation.Rotate(Vector(1, 0, 0), -mouse_axis.y);
+		//cam->transform.rotation.Rotate(Vector3(1, 0, 0), -mouse_axis.y);
 		//cam->transform.rotation *= Quaternion(1, 0, 0, mouse_axis.x * deltaTime);
 		
-		//cam->transform.Rotate(Vector(0, 1, 0), mouse_axis.x);
-		//cam->Rotate(Vector(0, 1, 0) * -mouse_axis.x);
-		//cam->Rotate(-Vector(mouse_axis.y, mouse_axis.x, 0) * 0.2);
+		//cam->transform.Rotate(Vector3(0, 1, 0), mouse_axis.x);
+		//cam->Rotate(Vector3(0, 1, 0) * -mouse_axis.x);
+		//cam->Rotate(-Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.2);
 	}
 	else if (Mouse::mouse_L)
 	{
-		//light->Rotate(Vector(mouse_axis.y, mouse_axis.x, 0) * 0.2);
+		//light->Rotate(Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.2);
 	}
 
 	float speed = 10;
@@ -227,6 +228,27 @@ void GEngine::Collision()
 
 	Debug::Print("Energy: %f\n", energy);
 
+	/*Matrix mat;
+	mat[0] = 3;
+	mat[1] = 12;
+	mat[2] = 4;
+	mat[3] = 5;
+	mat[4] = 6;
+	mat[5] = 8;
+	mat[6] = 1;
+	mat[7] = 0;
+	mat[8] = 2;
+
+	Matrix m2 = mat.Inverse();
+	Debug::Clear(0);
+
+	for (int i = 0; i < 9; i++)
+	{
+		Debug::Print("%f\t", m2[i]);
+	}
+	while (1);*/
+	
+
 	for (int i = 0; i < all.Count(); i++)
 	{
 		int start = i + 1;
@@ -246,13 +268,13 @@ void GEngine::Collision()
 					PhysicsComponent* pha = a->parent->physicsComponent;
 					PhysicsComponent* phb = b->parent->physicsComponent;
 
-					Vector va;
-					Vector vb;
+					Vector3 va;
+					Vector3 vb;
 
-					Vector posa = a->parent->GetWorldPosition() + a->transform.position;
-					Vector posb = b->parent->GetWorldPosition() + b->transform.position;
+					Vector3 posa = a->parent->GetWorldPosition() + a->transform.position;
+					Vector3 posb = b->parent->GetWorldPosition() + b->transform.position;
 
-					Vector dp = posa - posb;
+					Vector3 dp = posa - posb;
 
 					if (pha || pha)
 					{
@@ -261,18 +283,80 @@ void GEngine::Collision()
 						if (phb)
 							vb = phb->velocity;
 
-						Vector dv = va - vb;
-						Vector dir = dp.Normalized();
-						Vector dirv = dv.Normalized();
+						Vector3 dv = va - vb;
+						Vector3 dir = dp.Normalized();
+						Vector3 dirv = dv.Normalized();
 						float dot = dir.Dot(dirv);
 
-						if (dot < 0)
+						//if (dot < 0)
 						{
-							Vector imp = dir * dot * dv.Magnitude() / 1.5;
-							pha->AddImpulse(-imp);
-							phb->AddImpulse(imp);
+							Vector3 imp = dir * dot * dv.Magnitude() / 1.5;
+							//pha->AddImpulse(-imp);
+							//phb->AddImpulse(imp);
 
-							pha->angVelocity = Quaternion(1, 2, 3, 0.1).Normalized();
+							//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
+
+							double e = 1;
+							double ma = pha->mass;
+							double mb = phb->mass;
+
+							Matrix3 Ia = Matrix3();
+							Matrix3 Ib = Matrix3();
+
+							for (int i = 0; i < 9; i++)
+							{
+								Ia[i] = 0;
+								Ib[i] = 0;
+							}
+
+
+							Vector3 ra = Vector3(0, -1, 0);
+							Vector3 rb = Vector3(0, 1, 0);
+
+							Vector3 n = dir;
+
+							Vector3 vai = pha->velocity;
+							Vector3 vbi = phb->velocity;
+
+							Vector3 wai = Vector3();
+							Vector3 wbi = Vector3();
+
+							Vector3 vaf;
+							Vector3 vbf;
+
+							Vector3 waf;
+							Vector3 wbf;
+
+							Matrix3 IaInverse = Ia.Inverse();
+							Vector3 normal = n.Normalized();
+
+							Vector3 angularVelChangea = normal; // start calculating the change in abgular rotation of a
+							angularVelChangea.Cross(ra);
+							angularVelChangea = IaInverse * angularVelChangea;
+
+							Vector3 vaLinDueToR = angularVelChangea.Cross(ra);  // calculate the linear velocity of collision point on a due to rotation of a
+							double scalar = 1 / ma + vaLinDueToR.Dot(normal);
+							Matrix3 IbInverse = Ib.Inverse();
+
+							Vector3 angularVelChangeb = normal; // start calculating the change in abgular rotation of b
+							angularVelChangeb.Cross(rb);
+							angularVelChangeb = IbInverse * angularVelChangeb;
+							Vector3 vbLinDueToR = angularVelChangeb.Cross(rb);  // calculate the linear velocity of collision point on b due to rotation of b
+
+							scalar += 1 / mb + vbLinDueToR.Dot(normal);
+
+							double Jmod = (e + 1)*(vai - vbi).Magnitude() / scalar;
+							Vector3 J = normal * Jmod;
+
+							vaf = vai - J * (1 / ma);
+							vbf = vbi - J * (1 / mb);
+							waf = wai - angularVelChangea;
+							wbf = wbi - angularVelChangeb;
+
+							Debug::Print("%f\t%f\t%f\n", vaf.x, vaf.y, vaf.z);
+							Debug::Print("%f\t%f\t%f\n\n", vbf.x, vbf.y, vbf.z);
+							Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
+							Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
 						}
 					}
 				}
@@ -282,15 +366,15 @@ void GEngine::Collision()
 				SphereCollider* a = (SphereCollider*)all[i];
 				SphereCollider* b = (SphereCollider*)all[j];
 
-				Vector posa = a->parent->GetWorldPosition() + a->transform.position;
-				Vector posb = b->parent->GetWorldPosition() + b->transform.position;
+				Vector3 posa = a->parent->GetWorldPosition() + a->transform.position;
+				Vector3 posb = b->parent->GetWorldPosition() + b->transform.position;
 
-				Vector dp = posa - posb;
+				Vector3 dp = posa - posb;
 
 				float d = dp.Magnitude() / (a->radius + b->radius);
 				if (d < 1)
 				{
-					//a->parent->Translate(Vector(0, 10, 0));
+					//a->parent->Translate(Vector3(0, 10, 0));
 
 					if (a->OnCollision)
 						a->OnCollision();
@@ -298,8 +382,8 @@ void GEngine::Collision()
 					PhysicsComponent* pha = a->parent->physicsComponent;
 					PhysicsComponent* phb = b->parent->physicsComponent;
 
-					Vector va;
-					Vector vb;
+					Vector3 va;
+					Vector3 vb;
 
 					if (pha || pha)
 					{
@@ -308,14 +392,14 @@ void GEngine::Collision()
 						if (phb)
 							vb = phb->velocity;
 
-						Vector dv = va - vb;
-						Vector dir = dp.Normalized();
-						Vector dirv = dv.Normalized();
+						Vector3 dv = va - vb;
+						Vector3 dir = dp.Normalized();
+						Vector3 dirv = dv.Normalized();
 						float dot = dir.Dot(dirv);
 
 						if (dot < 0)
 						{
-							Vector imp = dir * dot * dv.Magnitude() / 1.5;
+							Vector3 imp = dir * dot * dv.Magnitude() / 1.5;
 							pha->AddImpulse(-imp);
 							phb->AddImpulse(imp);
 						}
@@ -329,7 +413,7 @@ void GEngine::Collision()
 void GEngine::Render()
 {
 	Camera* cam = active_game->GetActiveCamera();
-	Matrix V = Matrix::CreateView(
+	Matrix4 V = Matrix4::CreateView(
 		-cam->transform.GetForwardVector().ToVector4(),
 		cam->transform.GetUpVector().ToVector4(),
 		cam->transform.GetRightVector().ToVector4(),
@@ -353,11 +437,11 @@ void GEngine::Render()
 			GameObject* parent = mesh->parent;
 			Transform* trans = &parent->GetWorldTransform();
 			//Matrix M = Matrix::CreateTransformation(trans->position.ToVector4(), trans->rotation.ToMatrix(), trans->scale.ToVector4());
-			Matrix T = Matrix::CreateTranslation(trans->position.ToVector4());
-			Matrix R = trans->rotation.ToMatrix();
-			Matrix S = Matrix::CreateScale(trans->scale.ToVector4());
+			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
+			Matrix4 R = trans->rotation.ToMatrix();
+			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
 
-			Matrix M = T * R * S;
+			Matrix4 M = T * R * S;
 
 			GL::PushMatrix();
 			GL::MulMatrix(M);
