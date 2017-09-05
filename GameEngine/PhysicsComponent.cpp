@@ -43,19 +43,29 @@ void PhysicsComponent::Start()
 {
 }
 
-void PhysicsComponent::Update(float delta)
+void PhysicsComponent::Update(float deltaTime)
 {
 	if (!bEnabled)
 		return;
 
-	velocity += impulse;
+	velocity += impulse / mass;
 	impulse = Vector3();
-	parent->transform.Translate(velocity * delta);
+	parent->transform.Translate(velocity * deltaTime);
 
 	Vector3 F;
 
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
+
+	//Vector3 rot = parent->transform.rotation.ToEuler();
+	//rot += angVelocity * deltaTime;
+	//parent->transform.rotation = Quaternion::FromEuler(rot);
+
+	//Vector3 rot;
+	//float ang;
+	//parent->transform.rotation.ToAxisAngle(rot, ang);
+	
+	parent->transform.rotation.Rotate(angVelocity.Normalized(), angVelocity.Magnitude() * deltaTime);
 
 	//parent->transform.rotation.Rotate(Vector3(1, 0, 0), 1 * delta);
 	//parent->transform.Rotate(Quaternion(0, 0.5 *delta, 0, 1).Normalized());
@@ -63,7 +73,10 @@ void PhysicsComponent::Update(float delta)
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
 
-	velocity += F / mass * delta;
+	//angVelocity.Normalize();
+	//parent->transform.rotation *= angVelocity;
+
+	velocity += F / mass * deltaTime;
 }
 
 void PhysicsComponent::AddImpulse(Vector3 imp)

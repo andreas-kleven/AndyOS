@@ -21,6 +21,8 @@ float p5 = 60;
 Vector3 last_mouse_pos;
 int ticks;
 
+bool BOOL1 = false;
+
 GEngine::GEngine()
 {
 	active_game = 0;
@@ -156,9 +158,14 @@ void GEngine::Update()
 
 	if (Mouse::mouse_R)
 	{
+		Vector3 euler = cam->transform.rotation.ToEuler();
+		euler.x += mouse_axis.y;
+		euler.y += mouse_axis.x;
+		cam->transform.rotation = Quaternion::FromEuler(euler);
+
 		//cam->transform.rotation.Rotate(Vector3(1, 0, 0), -mouse_axis.y);
 		//cam->transform.rotation *= Quaternion(1, 0, 0, mouse_axis.x * deltaTime);
-		
+
 		//cam->transform.Rotate(Vector3(0, 1, 0), mouse_axis.x);
 		//cam->Rotate(Vector3(0, 1, 0) * -mouse_axis.x);
 		//cam->Rotate(-Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.2);
@@ -201,7 +208,6 @@ void GEngine::Update()
 	}
 }
 
-
 void GEngine::Collision()
 {
 	float energy = 0;
@@ -216,7 +222,6 @@ void GEngine::Collision()
 
 		if (comp->bEnabledGravity)
 			energy += 1 * 9.8 * (obj->GetWorldPosition().y + 1000);
-
 		energy += 0.5 * comp->SpeedSquared();
 
 		for (int j = 0; j < obj->colliderComponents.Count(); j++)
@@ -247,7 +252,22 @@ void GEngine::Collision()
 		Debug::Print("%f\t", m2[i]);
 	}
 	while (1);*/
-	
+
+	/*Debug::color = 0xFFFF00;
+	Debug::Print("%f\n", atan2(1, 1));
+	Debug::Print("%f\n", tan(atan(4)));
+	Debug::Print("%f\n", atan(PIT::ticks / 1000.0f) - PIT::ticks / 1000.0f);
+
+	Vector3 start(M_PI, 0, 0);
+	Quaternion quat = Quaternion::FromEuler(start);
+	//quat.Rotate(Vector3(1, 0, 0), M_PI);
+	Vector3 ve = quat.ToEuler();
+	Quaternion quat2 = Quaternion::FromEuler(ve);
+
+	Debug::Print("%f\t%f\t%f\n", ve.x, ve.y, ve.z);
+	Debug::Print("%f\t%f\t%f\n", start.x, start.y, start.z);
+
+	Debug::color = 0xFF00;*/
 
 	for (int i = 0; i < all.Count(); i++)
 	{
@@ -259,7 +279,10 @@ void GEngine::Collision()
 				BoxCollider* a = (BoxCollider*)all[i];
 				BoxCollider* b = (BoxCollider*)all[j];
 
+				//a->parent->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
+
 				if (a->IsColliding(b))
+				//if(a->parent->transform.position.y < 0)
 				{
 					//Debug::color = 0xFF0000;
 					//Debug::Print("COLLISION");
@@ -275,7 +298,7 @@ void GEngine::Collision()
 					Vector3 posb = b->parent->GetWorldPosition() + b->transform.position;
 
 					Vector3 dp = posa - posb;
-
+					
 					if (pha || pha)
 					{
 						if (pha)
@@ -288,32 +311,43 @@ void GEngine::Collision()
 						Vector3 dirv = dv.Normalized();
 						float dot = dir.Dot(dirv);
 
-						//if (dot < 0)
+						if (dot < 0 && !BOOL1)
 						{
-							Vector3 imp = dir * dot * dv.Magnitude() / 1.5;
+							BOOL1 = 1;
+							//Vector3 imp = dir * dot * dv.Magnitude() / 1.5;
 							//pha->AddImpulse(-imp);
 							//phb->AddImpulse(imp);
 
 							//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
 
-							double e = 1;
-							double ma = pha->mass;
-							double mb = phb->mass;
+							pha->mass = 1;
+							phb->mass = 1;
+
+							float e = 0.5;
+							float ma = pha->mass;
+							float mb = phb->mass;
 
 							Matrix3 Ia = Matrix3();
 							Matrix3 Ib = Matrix3();
 
-							for (int i = 0; i < 9; i++)
-							{
-								Ia[i] = 0;
-								Ib[i] = 0;
-							}
+							Ia[0] = ma / 6;
+							Ia[4] = ma / 6;
+							Ia[8] = ma / 6;
 
+							Ib[0] = mb / 6;
+							Ib[4] = mb / 6;
+							Ib[8] = mb / 6;
 
-							Vector3 ra = Vector3(0, -1, 0);
-							Vector3 rb = Vector3(0, 1, 0);
+							//for (int i = 0; i < 9; i++)
+							//{
+							//	Ia[i] = 0;
+							//	Ib[i] = 0;
+							//}
 
-							Vector3 n = dir;
+							/*Vector3 ra = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
+							Vector3 rb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
+
+							Vector3 n = -dir;
 
 							Vector3 vai = pha->velocity;
 							Vector3 vbi = phb->velocity;
@@ -328,18 +362,19 @@ void GEngine::Collision()
 							Vector3 wbf;
 
 							Matrix3 IaInverse = Ia.Inverse();
-							Vector3 normal = n.Normalized();
-
-							Vector3 angularVelChangea = normal; // start calculating the change in abgular rotation of a
-							angularVelChangea.Cross(ra);
-							angularVelChangea = IaInverse * angularVelChangea;
-
-							Vector3 vaLinDueToR = angularVelChangea.Cross(ra);  // calculate the linear velocity of collision point on a due to rotation of a
-							double scalar = 1 / ma + vaLinDueToR.Dot(normal);
 							Matrix3 IbInverse = Ib.Inverse();
 
-							Vector3 angularVelChangeb = normal; // start calculating the change in abgular rotation of b
-							angularVelChangeb.Cross(rb);
+							Vector3 normal = n.Normalized();
+
+							Vector3 angularVelChangea = normal; // start calculating the change in angular rotation of a
+							angularVelChangea = angularVelChangea.Cross(ra);
+							angularVelChangea = IaInverse * angularVelChangea;
+							Vector3 vaLinDueToR = angularVelChangea.Cross(ra);  // calculate the linear velocity of collision point on a due to rotation of a
+
+							double scalar = 1 / ma + vaLinDueToR.Dot(normal);
+
+							Vector3 angularVelChangeb = normal; // start calculating the change in angular rotation of b
+							angularVelChangeb = angularVelChangeb.Cross(rb);
 							angularVelChangeb = IbInverse * angularVelChangeb;
 							Vector3 vbLinDueToR = angularVelChangeb.Cross(rb);  // calculate the linear velocity of collision point on b due to rotation of b
 
@@ -353,10 +388,62 @@ void GEngine::Collision()
 							waf = wai - angularVelChangea;
 							wbf = wbi - angularVelChangeb;
 
+							pha->velocity = vaf;
+							phb->velocity = -vbf;
+
+							Debug::color = 0xFF;
 							Debug::Print("%f\t%f\t%f\n", vaf.x, vaf.y, vaf.z);
 							Debug::Print("%f\t%f\t%f\n\n", vbf.x, vbf.y, vbf.z);
 							Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
 							Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
+							Debug::color = 0xFF00;
+
+							pha->angVelocity = waf;
+							phb->angVelocity = wbf;*/
+
+							Vector3 Xa = posa;
+							Vector3 Xb = posb;
+							float Vrel = (phb->velocity - pha->velocity).Magnitude();
+
+							Vector3 n = Vector3(0, -1, 0);
+							//Vector3 Pa = Vector3(0, -1, 0);
+							//Vector3 Pb = Vector3(0, 1, 0);
+							//Vector3 Pa = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
+							//Vector3 Pb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
+							//
+							//Vector3 ra = Pa - Xa;
+							//Vector3 rb = Pb - Xb;
+
+							Vector3 ra = Vector3((posb.x - posa.x) / -2, -1, (posb.z - posa.z) / -2);
+							Vector3 rb = Vector3((posb.x - posa.x) / 2, 1, (posb.z - posa.z) / 2);
+
+							Matrix3 inva = Ia.Inverse();
+							Matrix3 invb = Ib.Inverse();
+
+							float N = -(1 + e) * Vrel;
+							float t1 = 1 / ma;
+							float t2 = 1 / mb;
+							float t3 = n.Dot(inva * ra.Cross(n).Cross(ra));
+							float t4 = n.Dot(inva * ra.Cross(n).Cross(ra));
+
+							float J = N / (t1 + t2 + t3 + t4);
+							Vector3 force = n * J;
+							
+							pha->AddImpulse(force);
+							phb->AddImpulse(-force);
+
+							Vector3 waf = inva * Vector3::Cross(ra, force);
+							Vector3 wbf = invb * Vector3::Cross(rb, -force);
+
+							pha->angVelocity = -waf;
+							phb->angVelocity = -wbf;
+
+							Debug::color = 0xFF;
+							Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
+							Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
+							Debug::color = 0xFF00;
+
+							Debug::Print("J: %f\n", j);
 						}
 					}
 				}
@@ -419,6 +506,9 @@ void GEngine::Render()
 		cam->transform.GetRightVector().ToVector4(),
 		cam->transform.position.ToVector4());
 
+	Vector3 v = cam->transform.GetUpVector();
+	Debug::Print("%f\t%f\t%f", v.x, v.y, v.z);
+
 	//Matrix VT = Matrix::CreateTranslation(camPos);
 	//Matrix VR = cam->transform.rotation.ToMatrix();
 	//Matrix V = VT;
@@ -436,7 +526,6 @@ void GEngine::Render()
 
 			GameObject* parent = mesh->parent;
 			Transform* trans = &parent->GetWorldTransform();
-			//Matrix M = Matrix::CreateTransformation(trans->position.ToVector4(), trans->rotation.ToMatrix(), trans->scale.ToVector4());
 			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
 			Matrix4 R = trans->rotation.ToMatrix();
 			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());

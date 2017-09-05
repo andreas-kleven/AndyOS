@@ -8,21 +8,36 @@ Quaternion::Quaternion()
 	w = 1;
 }
 
-inline Quaternion operator*(const Quaternion& q, const float f)
+Quaternion Quaternion::FromEuler(const Vector3& euler)
 {
-	return Quaternion(q.x, q.y, q.z, q.w * f);
-}
+	Quaternion q;
+	float roll2 = euler.x * 0.5;
+	float pitch2 = euler.y * 0.5;
+	float yaw2 = euler.z * 0.5;
 
-inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
-{
-	Quaternion q = q1;
-	q *= q2;
+	float cr = cos(roll2);
+	float sr = sin(roll2);
+	float cp = cos(pitch2);
+	float sp = sin(pitch2);
+	float cy = cos(yaw2);
+	float sy = sin(yaw2);
+
+	q.x = cy * sr * cp - sy * cr * sp;
+	q.y = cy * cr * sp + sy * sr * cp;
+	q.z = sy * cr * cp - cy * sr * sp;
+	q.w = cy * cr * cp + sy * sr * sp;
 	return q;
 }
 
-inline Vector3 operator*(Quaternion& q, Vector3& v)
+Quaternion Quaternion::FromAxisAngle(const Vector3& axis, float ang)
 {
-	Quaternion p = Quaternion(v.x, v.y, v.z, 0);
-	Quaternion qpq = q * p * -q;
-	return Vector3(qpq.x, qpq.y, qpq.z);
+	Quaternion q;
+	float ang2 = ang * 0.5;
+	float sa = sin(ang2);
+
+	q.w = cos(ang2);
+	q.x = axis.x * sa;
+	q.y = axis.y * sa;
+	q.z = axis.z * sa;
+	return q;
 }

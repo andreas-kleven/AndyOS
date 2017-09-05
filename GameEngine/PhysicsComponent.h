@@ -1,11 +1,14 @@
 #pragma once
 #include "Component.h"
+#include "Matrix3.h"
 
 class PhysicsComponent : public Component
 {
 public:
 	Vector3 velocity;
-	Quaternion angVelocity;
+	Vector3 angVelocity;
+
+	Matrix3 rotInertia;
 
 	float mass;
 	float drag;

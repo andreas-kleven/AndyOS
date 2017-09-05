@@ -25,10 +25,13 @@ public:
 	void Rotate(Vector3 axis, float ang)
 	{
 		Quaternion local;
-		local.w = cos(ang / 2);
-		local.x = axis.x * sin(ang / 2);
-		local.y = axis.y * sin(ang / 2);
-		local.z = axis.z * sin(ang / 2);
+		float ang2 = ang * 0.5;
+		float sa = sin(ang2);
+
+		local.w = cos(ang2);
+		local.x = axis.x * sa;
+		local.y = axis.y * sa;
+		local.z = axis.z * sa;
 
 		this->operator*=(local);
 	}
@@ -83,8 +86,8 @@ public:
 		tmp2 = y*w;
 		mat[8] = 2.0 * (tmp1 - tmp2) * invs;
 		mat[2] = 2.0 * (tmp1 + tmp2) * invs;
-		tmp1 = y*z;					   
-		tmp2 = x*w;					   
+		tmp1 = y*z;
+		tmp2 = x*w;
 		mat[9] = 2.0 * (tmp1 + tmp2) * invs;
 		mat[6] = 2.0 * (tmp1 - tmp2) * invs;
 		return mat;
@@ -92,7 +95,45 @@ public:
 
 	Vector3 ToEuler()
 	{
-		return Vector3();
+		Vector3 euler;
+
+		// roll (x-axis rotation)
+		float sinr = 2.0 * (w * x + y * z);
+		float cosr = 1.0 - 2.0 * (x * x + y * y);
+		euler.x = atan2(sinr, cosr);
+
+		// pitch (y-axis rotation)
+		double sinp = 2.0 * (w * y - z * x);
+
+		if (abs(sinp) >= 1)
+			euler.y = copysign(M_PI_2, sinp); // use 90 degrees if out of range
+		else
+			euler.y = asin(sinp);
+
+		// yaw (z-axis rotation)
+		double siny = 2.0 * (w * z + x * y);
+		double cosy = 1.0 - 2.0 * (y * y + z * z);
+		euler.z = atan2(siny, cosy);
+
+		return euler;
+	}
+
+	void ToAxisAngle(Vector3& axis, float& ang)
+	{
+		if (abs(w) > 1.0f)
+			Normalize();
+
+		ang = 2.0f * (float)acos(w);
+		float den = (float)sqrt(1.0 - w * w);
+
+		if (den > 0.0001f)
+		{
+			axis = Vector3(x, y, z) / den;
+		}
+		else
+		{
+			axis = Vector3(1, 0, 0);
+		}
 	}
 
 	Quaternion& operator-()
@@ -100,21 +141,39 @@ public:
 		return Quaternion(-x, -y, -z, w);
 	}
 
-	Quaternion& operator*=(const Quaternion& q2)
+	Quaternion& operator*(const float f)
 	{
-		Quaternion q1 = *this;
-		w = (q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
-		x = (q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y);
-		y = (q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x);
-		z = (q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w);
+		return Quaternion(x * f, y * f, z * f, w * f).Normalized();
+	}
+
+	Quaternion& operator*(const Quaternion& quat)
+	{
+		Quaternion q = *this;
+		q *= quat;
+		return q;
+	}
+
+	Vector3& operator*(Vector3& vec)
+	{
+		Vector3 qv = Vector3(x, y, z);
+		Vector3 t = Vector3::Cross(qv, vec) * 2;
+		return vec + (t * w) + Vector3::Cross(qv, t);
+
+		//Quaternion p = Quaternion(vec.x, vec.y, vec.z, 0);
+		//Quaternion qpq = *this * p * -*this;
+		//return Vector3(qpq.x, qpq.y, qpq.z);
+	}
+
+	Quaternion& operator*=(const Quaternion& quat)
+	{
+		Quaternion q = *this;
+		w = (q.w * quat.w - q.x * quat.x - q.y * quat.y - q.z * quat.z);
+		x = (q.w * quat.x + q.x * quat.w + q.y * quat.z - q.z * quat.y);
+		y = (q.w * quat.y - q.x * quat.z + q.y * quat.w + q.z * quat.x);
+		z = (q.w * quat.z + q.x * quat.y - q.y * quat.x + q.z * quat.w);
 		return *this;
 	}
 
-
-	//static Quaternion FromEuler(Vector3 vec);
-	//static Quaternion AngleAxis(Vector3 vec);
+	static Quaternion FromEuler(const Vector3& euler);
+	static Quaternion FromAxisAngle(const Vector3& axis, float ang);
 };
-
-extern inline Quaternion operator*(const Quaternion& q, const float f);
-extern inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2);
-extern inline Vector3 operator*(Quaternion& q, Vector3& vec);

@@ -60,7 +60,7 @@ void Thing::Update(float delta)
 		transform.position.y = 1;
 	}*/
 
-	float speed = 40;
+	float speed = 20;
 
 	if (Keyboard::GetKeyDown(KEY_SPACE))
 	{

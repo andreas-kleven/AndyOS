@@ -1,15 +1,22 @@
 #pragma once
 
-#define M_PI 3.14159265359
-#define M_E 2.71828182845904523536
+#define M_PI	3.14159265359
+#define M_PI_2	M_PI / 2
+#define M_PI_4	M_PI / 4
+#define M_E		2.71828182845904523536
 
 float fact(float number);
 float pow(float x, int n);
 float sqrt(float square);
 
-float sin(float rad);
-float cos(float rad);
-float tan(float rad);
+float sin(float x);
+float cos(float x);
+float tan(float x);
+
+float asin(float x);
+float acos(float x);
+float atan(float x);
+float atan2(float y, float x);
 
 int floor(float val);
 int ceil(float val);
@@ -68,4 +75,10 @@ template <class T>
 inline T max(T a, T b, T c)
 {
 	return a > b ? (a > c ? a : c) : (b > c ? b : c);
+}
+
+template <class T>
+inline T copysign(T a, T b)
+{
+	return (a < 0) == (b < 0) ? a : -a;
 }
