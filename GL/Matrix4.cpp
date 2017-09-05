@@ -163,23 +163,30 @@ namespace gl
 
 	Matrix4 Matrix4::CreateRotation(Vector4 rot)
 	{
+		float sx = sin(-rot.x);
+		float cx = cos(-rot.x);
+		float sy = sin(-rot.y);
+		float cy = cos(-rot.y);
+		float sz = sin(-rot.z);
+		float cz = cos(-rot.z);
+
 		Matrix4 X;
-		X.m_elements[5] = cos(-rot.x);
-		X.m_elements[6] = -sin(-rot.x);
-		X.m_elements[9] = sin(-rot.x);
-		X.m_elements[10] = cos(-rot.x);
+		X.m_elements[5] = cx;
+		X.m_elements[6] = -sx;
+		X.m_elements[9] = sx;
+		X.m_elements[10] = cx;
 
 		Matrix4 Y;
-		Y.m_elements[0] = cos(-rot.y);
-		Y.m_elements[2] = sin(-rot.y);
-		Y.m_elements[8] = -sin(-rot.y);
-		Y.m_elements[10] = cos(-rot.y);
+		Y.m_elements[0] = cy;
+		Y.m_elements[2] = sy;
+		Y.m_elements[8] = -sy;
+		Y.m_elements[10] = cy;
 
 		Matrix4 Z;
-		Z.m_elements[0] = cos(-rot.z);
-		Z.m_elements[1] = -sin(-rot.z);
-		Z.m_elements[4] = sin(-rot.z);
-		Z.m_elements[5] = cos(-rot.z);
+		Z.m_elements[0] = cz;
+		Z.m_elements[1] = -sz;
+		Z.m_elements[4] = sz;
+		Z.m_elements[5] = cz;
 		return X * Y * Z;
 	}
 

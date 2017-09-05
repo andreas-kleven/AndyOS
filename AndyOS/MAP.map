@@ -1,17 +1,17 @@
  AndyOS
 
- Timestamp is 59af06de (Tue Sep  5 22:19:42 2017)
+ Timestamp is 59af1198 (Tue Sep  5 23:05:28 2017)
 
  Preferred load address is 00100000
 
  Start         Length     Name                   Class
  0001:00000000 00000060H .text$di                CODE
- 0001:00000060 0001091bH .text$mn                CODE
+ 0001:00000060 00010a9bH .text$mn                CODE
  0002:00000000 00000000H .gfids$y                DATA
- 0002:00000000 000008f4H .rdata                  DATA
- 0002:000008f4 000003d8H .rdata$r                DATA
- 0002:00000ccc 00000000H .edata                  DATA
- 0002:00000ccc 00000128H .rdata$zzzdbg           DATA
+ 0002:00000000 00000924H .rdata                  DATA
+ 0002:00000924 000003d8H .rdata$r                DATA
+ 0002:00000cfc 00000000H .edata                  DATA
+ 0002:00000cfc 00000128H .rdata$zzzdbg           DATA
  0003:00000000 0000402cH .data                   DATA
  0003:0000402c 00000154H .data$r                 DATA
  0003:00004180 0000376eH .bss                    DATA
@@ -19,20 +19,20 @@
 
   Address         Publics by Value              Rva+Base       Lib:Object
 
- 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
  0000:00000000       ___guard_iat_count         00000000     <absolute>
- 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
  0000:00000000       ___guard_iat_table         00000000     <absolute>
- 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
- 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
- 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
- 0000:00000000       ___enclave_config          00000000     <absolute>
- 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
  0000:00000000       ___hybrid_auxiliary_iat    00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
  0000:00000000       ___guard_fids_table        00000000     <absolute>
- 0000:00000000       ___guard_flags             00000000     <absolute>
- 0000:00000000       ___guard_fids_count        00000000     <absolute>
  0000:00000000       ___hybrid_code_map         00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
+ 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
+ 0000:00000000       ___guard_flags             00000000     <absolute>
+ 0000:00000000       ___enclave_config          00000000     <absolute>
+ 0000:00000000       ___guard_fids_count        00000000     <absolute>
  0001:00000060       ??0BMP@@QAE@PAX@Z          00100460 f   bmp.obj
  0001:000000e0       ??0BMP@@QAE@PAXHH@Z        001004e0 f   bmp.obj
  0001:00000130       ?OSBoot@@YAXPAUMULTIBOOT_HEADER@@@Z 00100530 f   boot.obj
@@ -156,592 +156,596 @@
  0001:00004550       ?CreateOrthographicProjection@Matrix4@gl@@SA?AU12@MMMMMM@Z 00104950 f   GL:Matrix4.obj
  0001:00004600       ?CreatePerspectiveProjection@Matrix4@gl@@SA?AU12@MMMMM@Z 00104a00 f   GL:Matrix4.obj
  0001:000046e0       ?CreateRotation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104ae0 f   GL:Matrix4.obj
- 0001:00004940       ?CreateScale@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104d40 f   GL:Matrix4.obj
- 0001:00004980       ?CreateTransformation@Matrix4@gl@@SA?AU12@UVector4@2@00@Z 00104d80 f   GL:Matrix4.obj
- 0001:00004cf0       ?CreateTranslation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 001050f0 f   GL:Matrix4.obj
- 0001:00004d50       ?CreateView@Matrix4@gl@@SA?AU12@UVector4@2@000@Z 00105150 f   GL:Matrix4.obj
- 0001:00004e70       ?GetElementsPointer@Matrix4@gl@@QAEPAMXZ 00105270 f   GL:Matrix4.obj
- 0001:00004e80       ?Inverse@Matrix4@gl@@QAE?AU12@XZ 00105280 f   GL:Matrix4.obj
- 0001:00005650       ??0ColRGB@gl@@QAE@I@Z      00105a50 f   GL:Color.obj
- 0001:000056e0       ??0ColRGB@gl@@QAE@MMM@Z    00105ae0 f   GL:Color.obj
- 0001:00005740       ??0ColRGB@gl@@QAE@XZ       00105b40 f   GL:Color.obj
- 0001:00005760       ??DColRGB@gl@@QAE?AU01@M@Z 00105b60 f   GL:Color.obj
- 0001:000057d0       ??HColRGB@gl@@QAE?AU01@U01@@Z 00105bd0 f   GL:Color.obj
- 0001:00005840       ??XColRGB@gl@@QAE?AU01@M@Z 00105c40 f   GL:Color.obj
- 0001:000058b0       ?Luminosity@ColRGB@gl@@QAEMXZ 00105cb0 f   GL:Color.obj
- 0001:00005900       ?ToInt@ColRGB@gl@@QAEIXZ   00105d00 f   GL:Color.obj
- 0001:00005940       ??0Vertex@gl@@QAE@MMMUColRGB@1@UVector4@1@@Z 00105d40 f   GL:Vertex.obj
- 0001:000059d0       ??0Vertex@gl@@QAE@XZ       00105dd0 f   GL:Vertex.obj
- 0001:00005a30       ?MulMatrix@Vertex@gl@@QAEXABUMatrix4@2@@Z 00105e30 f   GL:Vertex.obj
- 0001:00005b00       ?DrawTriangle@Rasterizer@gl@@SAXPAUVertex@2@PAVBMP@@@Z 00105f00 f   GL:Rasterizer.obj
- 0001:00006390       ?EdgeFunction@gl@@YAMABUVertex@1@00@Z 00106790 f   GL:Rasterizer.obj
- 0001:000063e0       ?Init@Rasterizer@gl@@SAIXZ 001067e0 f   GL:Rasterizer.obj
- 0001:00006410       ??0GEngine@@QAE@XZ         00106810 f   GameEngine:Engine.obj
- 0001:00006480       ?Add@?$List@PAVColliderComponent@@@std@@QAEXPAVColliderComponent@@@Z 00106880 f i GameEngine:Engine.obj
- 0001:00006500       ?Collision@GEngine@@AAEXXZ 00106900 f   GameEngine:Engine.obj
- 0001:00007870       ?Render@GEngine@@AAEXXZ    00107c70 f   GameEngine:Engine.obj
- 0001:00007ce0       ?Rotate@Quaternion@@QAEXUVector3@@M@Z 001080e0 f i GameEngine:Engine.obj
- 0001:00007e50       ?StartGame@GEngine@@QAEXPAVGame@@@Z 00108250 f   GameEngine:Engine.obj
- 0001:00008190       ?Update@GEngine@@AAEXXZ    00108590 f   GameEngine:Engine.obj
- 0001:00008f70       ??0Vector3@@QAE@MMM@Z      00109370 f   GameEngine:Vector3.obj
- 0001:00008fa0       ??0Vector3@@QAE@XZ         001093a0 f   GameEngine:Vector3.obj
- 0001:00008fc0       ?Cross@Vector3@@SA?AU1@ABU1@0@Z 001093c0 f   GameEngine:Vector3.obj
- 0001:00009020       ?Dot@Vector3@@SAMABU1@0@Z  00109420 f   GameEngine:Vector3.obj
- 0001:00009040       ?EulerAngles@Vector3@@QAE?AU1@XZ 00109440 f   GameEngine:Vector3.obj
- 0001:000090f0       ?ToVector4@Vector3@@QAE?AUVector4@gl@@XZ 001094f0 f   GameEngine:Vector3.obj
- 0001:00009130       ??0Quaternion@@QAE@XZ      00109530 f   GameEngine:Quaternion.obj
- 0001:00009150       ?FromAxisAngle@Quaternion@@SA?AU1@ABUVector3@@M@Z 00109550 f   GameEngine:Quaternion.obj
- 0001:000091f0       ?FromEuler@Quaternion@@SA?AU1@ABUVector3@@@Z 001095f0 f   GameEngine:Quaternion.obj
- 0001:00009360       ??0GameObject@@QAE@XZ      00109760 f   GameEngine:GameObject.obj
- 0001:00009430       ??A?$List@PAVComponent@@@std@@QAEAAPAVComponent@@H@Z 00109830 f i GameEngine:GameObject.obj
- 0001:00009480       ?Add@?$List@PAVComponent@@@std@@QAEXPAVComponent@@@Z 00109880 f i GameEngine:GameObject.obj
- 0001:00009500       ?Add@?$List@PAVMeshComponent@@@std@@QAEXPAVMeshComponent@@@Z 00109900 f i GameEngine:GameObject.obj
- 0001:00009580       ?AddComponent@GameObject@@QAEXPAVComponent@@@Z 00109980 f   GameEngine:GameObject.obj
- 0001:000097a0       ?Contains@String@std@@QAE_NV12@@Z 00109ba0 f i GameEngine:GameObject.obj
- 0001:00009800       ?GetComponent@GameObject@@QAEPAVComponent@@VString@std@@@Z 00109c00 f   GameEngine:GameObject.obj
- 0001:000098a0       ?GetName@GameObject@@QAE?AVString@std@@XZ 00109ca0 f   GameEngine:GameObject.obj
- 0001:000098b0       ?GetWorldPosition@GameObject@@QAE?AUVector3@@XZ 00109cb0 f   GameEngine:GameObject.obj
- 0001:00009930       ?GetWorldRotation@GameObject@@QAE?AUQuaternion@@XZ 00109d30 f   GameEngine:GameObject.obj
- 0001:00009950       ?GetWorldScale@GameObject@@QAE?AUVector3@@XZ 00109d50 f   GameEngine:GameObject.obj
- 0001:000099d0       ?GetWorldTransform@GameObject@@QAE?AUTransform@@XZ 00109dd0 f   GameEngine:GameObject.obj
- 0001:00009ae0       ?SetName@GameObject@@QAEXVString@std@@@Z 00109ee0 f   GameEngine:GameObject.obj
- 0001:00009b00       ??0Camera@@QAE@XZ          00109f00 f   GameEngine:Camera.obj
- 0001:00009b20       ??0Game@@QAE@XZ            00109f20 f   GameEngine:Game.obj
- 0001:00009b70       ?Add@?$List@PAVCamera@@@std@@QAEXPAVCamera@@@Z 00109f70 f i GameEngine:Game.obj
- 0001:00009bf0       ?Add@?$List@PAVGameObject@@@std@@QAEXPAVGameObject@@@Z 00109ff0 f i GameEngine:Game.obj
- 0001:00009c70       ?Add@?$List@PAVLightSource@@@std@@QAEXPAVLightSource@@@Z 0010a070 f i GameEngine:Game.obj
- 0001:00009cf0       ?AddCamera@Game@@QAEXPAVCamera@@@Z 0010a0f0 f   GameEngine:Game.obj
- 0001:00009d70       ?AddLightSource@Game@@QAEXPAVLightSource@@@Z 0010a170 f   GameEngine:Game.obj
- 0001:00009df0       ?AddObject@Game@@QAEXPAVGameObject@@@Z 0010a1f0 f   GameEngine:Game.obj
- 0001:00009e70       ?GetActiveCamera@Game@@QAEPAVCamera@@XZ 0010a270 f   GameEngine:Game.obj
- 0001:00009e80       ?GetCamera@Game@@QAEPAVCamera@@VString@std@@@Z 0010a280 f   GameEngine:Game.obj
- 0001:00009f20       ?GetLightSource@Game@@QAEPAVLightSource@@VString@std@@@Z 0010a320 f   GameEngine:Game.obj
- 0001:00009fc0       ?GetObject@Game@@QAEPAVGameObject@@VString@std@@@Z 0010a3c0 f   GameEngine:Game.obj
- 0001:0000a0d0       ?SetActiveCamera@Game@@QAEXPAVCamera@@@Z 0010a4d0 f   GameEngine:Game.obj
- 0001:0000a0e0       ??0Component@@QAE@XZ       0010a4e0 f   GameEngine:Component.obj
- 0001:0000a110       ?GetName@Component@@QAE?AVString@std@@XZ 0010a510 f   GameEngine:Component.obj
- 0001:0000a120       ?SetName@Component@@QAEXVString@std@@@Z 0010a520 f   GameEngine:Component.obj
- 0001:0000a140       ?Start@Component@@UAEXXZ   0010a540 f i GameEngine:Component.obj
- 0001:0000a150       ?Update@Component@@UAEXM@Z 0010a550 f i GameEngine:Component.obj
- 0001:0000a160       ??0MeshComponent@@QAE@XZ   0010a560 f   GameEngine:MeshComponent.obj
- 0001:0000a190       ?Update@MeshComponent@@UAEXM@Z 0010a590 f   GameEngine:MeshComponent.obj
- 0001:0000a1a0       ??0PhysicsComponent@@QAE@XZ 0010a5a0 f   GameEngine:PhysicsComponent.obj
- 0001:0000a1f0       ?AddImpulse@PhysicsComponent@@QAEXUVector3@@@Z 0010a5f0 f   GameEngine:PhysicsComponent.obj
- 0001:0000a230       ?AddImpulseAt@PhysicsComponent@@QAEXUVector3@@0@Z 0010a630 f   GameEngine:PhysicsComponent.obj
- 0001:0000a240       ?Speed@PhysicsComponent@@QAEMXZ 0010a640 f   GameEngine:PhysicsComponent.obj
- 0001:0000a280       ?SpeedSquared@PhysicsComponent@@QAEMXZ 0010a680 f   GameEngine:PhysicsComponent.obj
- 0001:0000a2d0       ?Start@PhysicsComponent@@UAEXXZ 0010a6d0 f   GameEngine:PhysicsComponent.obj
- 0001:0000a2e0       ?Update@PhysicsComponent@@UAEXM@Z 0010a6e0 f   GameEngine:PhysicsComponent.obj
- 0001:0000a6e0       ??0BoxCollider@@QAE@XZ     0010aae0 f   GameEngine:BoxCollider.obj
- 0001:0000a700       ??DQuaternion@@QAEAAUVector3@@AAU1@@Z 0010ab00 f i GameEngine:BoxCollider.obj
- 0001:0000a840       ?IsColliding@BoxCollider@@QAE_NPAV1@@Z 0010ac40 f   GameEngine:BoxCollider.obj
- 0001:0000af30       ?LoadModel@ModelLoader@@SAPAVModel3D@@PADW4Format3D@@@Z 0010b330 f   GameEngine:ModelLoader.obj
- 0001:0000afb0       ??0Transform@@QAE@UVector3@@UQuaternion@@0@Z 0010b3b0 f   GameEngine:Transform.obj
- 0001:0000b000       ??0Transform@@QAE@XZ       0010b400 f   GameEngine:Transform.obj
- 0001:0000b080       ?GetForwardVector@Transform@@QAE?AUVector3@@XZ 0010b480 f   GameEngine:Transform.obj
- 0001:0000b0d0       ?GetRightVector@Transform@@QAE?AUVector3@@XZ 0010b4d0 f   GameEngine:Transform.obj
- 0001:0000b120       ?GetUpVector@Transform@@QAE?AUVector3@@XZ 0010b520 f   GameEngine:Transform.obj
- 0001:0000b170       ?Rotate@Transform@@QAEXUQuaternion@@@Z 0010b570 f   GameEngine:Transform.obj
- 0001:0000b270       ?Rotate@Transform@@QAEXUVector3@@M@Z 0010b670 f   GameEngine:Transform.obj
- 0001:0000b490       ?Scale@Transform@@QAEXUVector3@@@Z 0010b890 f   GameEngine:Transform.obj
- 0001:0000b4d0       ?ToString@Transform@@QAEPADPAD@Z 0010b8d0 f   GameEngine:Transform.obj
- 0001:0000b580       ?Translate@Transform@@QAEXUVector3@@@Z 0010b980 f   GameEngine:Transform.obj
- 0001:0000b5c0       ??0Matrix3@@QAE@QAM@Z      0010b9c0 f   GameEngine:Matrix3.obj
- 0001:0000b600       ??0Matrix3@@QAE@XZ         0010ba00 f   GameEngine:Matrix3.obj
- 0001:0000b650       ??D@YA?AUMatrix3@@ABU0@0@Z 0010ba50 f i GameEngine:Matrix3.obj
- 0001:0000b820       ??D@YA?AUMatrix3@@ABU0@ABM@Z 0010bc20 f i GameEngine:Matrix3.obj
- 0001:0000b8c0       ??D@YA?AUVector3@@ABUMatrix3@@ABU0@@Z 0010bcc0 f i GameEngine:Matrix3.obj
- 0001:0000b960       ??G@YA?AUMatrix3@@ABU0@0@Z 0010bd60 f i GameEngine:Matrix3.obj
- 0001:0000ba10       ??H@YA?AUMatrix3@@ABU0@0@Z 0010be10 f i GameEngine:Matrix3.obj
- 0001:0000bac0       ?Inverse@Matrix3@@QAE?AU1@XZ 0010bec0 f   GameEngine:Matrix3.obj
- 0001:0000bcd0       ??0ColliderComponent@@QAE@XZ 0010c0d0 f   GameEngine:ColliderComponent.obj
- 0001:0000bcf0       ??0Obj@@QAE@PAD@Z          0010c0f0 f   GameEngine:Obj.obj
- 0001:0000bd60       ?Add@?$List@UFace@@@std@@QAEXUFace@@@Z 0010c160 f i GameEngine:Obj.obj
- 0001:0000be00       ?Add@?$List@UVector3@@@std@@QAEXUVector3@@@Z 0010c200 f i GameEngine:Obj.obj
- 0001:0000beb0       ?CreateVertices@Obj@@AAEXXZ 0010c2b0 f   GameEngine:Obj.obj
- 0001:0000c1b0       ?ReadFile@Obj@@AAEXPAD@Z   0010c5b0 f   GameEngine:Obj.obj
- 0001:0000c1c0       ??0A3D@@QAE@PAD@Z          0010c5c0 f   GameEngine:A3D.obj
- 0001:0000c360       ?memcmp@@YAHPBX0I@Z        0010c760 f   Lib:string.obj
- 0001:0000c3a0       ?memcpy@@YAPAXPAX0I@Z      0010c7a0 f   Lib:string.obj
- 0001:0000c3d0       ?memcpy_fast_128@@YAXPAX0I@Z 0010c7d0 f   Lib:string.obj
- 0001:0000c450       ?memset16@@YAPAXPAXGI@Z    0010c850 f   Lib:string.obj
- 0001:0000c470       ?memset32@@YAPAXPAXII@Z    0010c870 f   Lib:string.obj
- 0001:0000c490       ?memset_fast_128@@YAPAXPAXII@Z 0010c890 f   Lib:string.obj
- 0001:0000c510       ?strcat@@YAPADPADPBD@Z     0010c910 f   Lib:string.obj
- 0001:0000c540       ?strcmp@@YAIPBD0@Z         0010c940 f   Lib:string.obj
- 0001:0000c590       ?strcpy@@YAPADPADPBD@Z     0010c990 f   Lib:string.obj
- 0001:0000c5b0       ?strlen@@YAIPBD@Z          0010c9b0 f   Lib:string.obj
- 0001:0000c5d0       _memset                    0010c9d0 f   Lib:string.obj
- 0001:0000c5f0       ?acos@@YAMM@Z              0010c9f0 f   Lib:math.obj
- 0001:0000c650       ?asin@@YAMM@Z              0010ca50 f   Lib:math.obj
- 0001:0000c6b0       ?atan2@@YAMMM@Z            0010cab0 f   Lib:math.obj
- 0001:0000c7b0       ?atan@@YAMM@Z              0010cbb0 f   Lib:math.obj
- 0001:0000c7e0       ?ceil@@YAHM@Z              0010cbe0 f   Lib:math.obj
- 0001:0000c800       ?cos@@YAMM@Z               0010cc00 f   Lib:math.obj
- 0001:0000c820       ?fact@@YAMM@Z              0010cc20 f   Lib:math.obj
- 0001:0000c860       ?floor@@YAHM@Z             0010cc60 f   Lib:math.obj
- 0001:0000c880       ?log10@@YAMM@Z             0010cc80 f   Lib:math.obj
- 0001:0000c8a0       ?log2@@YAMM@Z              0010cca0 f   Lib:math.obj
- 0001:0000c8c0       ?log@@YAMM@Z               0010ccc0 f   Lib:math.obj
- 0001:0000c8e0       ?logn@@YAMMM@Z             0010cce0 f   Lib:math.obj
- 0001:0000c910       ?pow@@YAMMH@Z              0010cd10 f   Lib:math.obj
- 0001:0000c9f0       ?rand@@YAIXZ               0010cdf0 f   Lib:math.obj
- 0001:0000ca10       ?round@@YAHM@Z             0010ce10 f   Lib:math.obj
- 0001:0000ca30       ?sin@@YAMM@Z               0010ce30 f   Lib:math.obj
- 0001:0000ca50       ?sqrt@@YAMM@Z              0010ce50 f   Lib:math.obj
- 0001:0000ca70       ?srand@@YAXI@Z             0010ce70 f   Lib:math.obj
- 0001:0000ca80       ?tan@@YAMM@Z               0010ce80 f   Lib:math.obj
- 0001:0000cab0       ?atof@@YAMPBD@Z            0010ceb0 f   Lib:stdio.obj
- 0001:0000cb50       ?atoi@@YAHPBD@Z            0010cf50 f   Lib:stdio.obj
- 0001:0000cb70       ?ftoa@@YAPADMIPAD@Z        0010cf70 f   Lib:stdio.obj
- 0001:0000cca0       ?itoa@@YAPADHIPAD_N@Z      0010d0a0 f   Lib:stdio.obj
- 0001:0000cd30       ?strtol@@YAJPBDPAPADH@Z    0010d130 f   Lib:stdio.obj
- 0001:0000ce80       ?vprintf@@YAPADPADPBDZZ    0010d280 f   Lib:stdio.obj
- 0001:0000cea0       ?vsprintf@@YAPADPADPBDPAE@Z 0010d2a0 f   Lib:stdio.obj
- 0001:0000d210       ??2@YAPAXI@Z               0010d610 f   KERNEL:kernel.obj
- 0001:0000d260       ??3@YAXPAX@Z               0010d660 f   KERNEL:kernel.obj
- 0001:0000d280       ??_U@YAPAXI@Z              0010d680 f   KERNEL:kernel.obj
- 0001:0000d310       ??_V@YAXPAX@Z              0010d710 f   KERNEL:kernel.obj
- 0001:0000d320       ?Init@Kernel@@SAXPAUMULTIBOOT_INFO@@@Z 0010d720 f   KERNEL:kernel.obj
- 0001:0000d3f0       ?Clear@Debug@@SAXI@Z       0010d7f0 f   KERNEL:debug.obj
- 0001:0000d410       ?Dump@Debug@@SAXPAXH_N@Z   0010d810 f   KERNEL:debug.obj
- 0001:0000d550       ?Print@Debug@@SAXPADZZ     0010d950 f   KERNEL:debug.obj
- 0001:0000d6e0       ?Putc@Debug@@SAXD_N@Z      0010dae0 f   KERNEL:debug.obj
- 0001:0000d830       ?ATA_Interrupt@ATA@@CAXXZ  0010dc30 f   KERNEL:ata.obj
- 0001:0000d840       ?Init@ATA@@SAIXZ           0010dc40 f   KERNEL:ata.obj
- 0001:0000d870       ?Read@ATA@@SAIHHHAAPADH@Z  0010dc70 f   KERNEL:ata.obj
- 0001:0000da80       ?ReadSector@ATA@@CAIHHHPAD@Z 0010de80 f   KERNEL:ata.obj
- 0001:0000dc30       ?Clear@VBE@@SAXI@Z         0010e030 f   KERNEL:vbe.obj
- 0001:0000dc50       ?Draw@VBE@@SAXXZ           0010e050 f   KERNEL:vbe.obj
- 0001:0000dc70       ?DrawLine@VBE@@SAXIIIII@Z  0010e070 f   KERNEL:vbe.obj
- 0001:0000dda0       ?DrawText@VBE@@SAXIIPADI@Z 0010e1a0 f   KERNEL:vbe.obj
- 0001:0000de60       ?DrawText@VBE@@SAXIIPADII@Z 0010e260 f   KERNEL:vbe.obj
- 0001:0000df40       ?Init@VBE@@SAIPAUVBE_MODE_INFO@@@Z 0010e340 f   KERNEL:vbe.obj
- 0001:0000dfd0       ?SetPixel@VBE@@SAXIII@Z    0010e3d0 f   KERNEL:vbe.obj
- 0001:0000e000       ?DecodeAscii@Keyboard@@CAXAAUKEY_PACKET@@@Z 0010e400 f   KERNEL:keyboard.obj
- 0001:0000e290       ?DiscardLastKey@Keyboard@@SAXXZ 0010e690 f   KERNEL:keyboard.obj
- 0001:0000e2a0       ?GetKeyDown@Keyboard@@SA_NW4KEYCODE@@@Z 0010e6a0 f   KERNEL:keyboard.obj
- 0001:0000e2b0       ?GetLastKey@Keyboard@@SA?AUKEY_PACKET@@XZ 0010e6b0 f   KERNEL:keyboard.obj
- 0001:0000e2d0       ?Init@Keyboard@@SAIXZ      0010e6d0 f   KERNEL:keyboard.obj
- 0001:0000e2f0       ?Keyboard_ISR@Keyboard@@CAXXZ 0010e6f0 f   KERNEL:keyboard.obj
- 0001:0000e4e0       ?Init@PIT@@SAIXZ           0010e8e0 f   KERNEL:pit.obj
- 0001:0000e520       ?PIT_ISR@PIT@@CAXXZ        0010e920 f   KERNEL:pit.obj
- 0001:0000e530       ?ReadData@PIT@@CAEE@Z      0010e930 f   KERNEL:pit.obj
- 0001:0000e560       ?SendData@PIT@@CAXGE@Z     0010e960 f   KERNEL:pit.obj
- 0001:0000e5a0       ?Sleep@PIT@@SAXI@Z         0010e9a0 f   KERNEL:pit.obj
- 0001:0000e5c0       ?Start@PIT@@CAIXZ          0010e9c0 f   KERNEL:pit.obj
- 0001:0000e600       ?Init@Mouse@@SAIIIM@Z      0010ea00 f   KERNEL:mouse.obj
- 0001:0000e8f0       ?MouseRead@Mouse@@CAEXZ    0010ecf0 f   KERNEL:mouse.obj
- 0001:0000e920       ?MouseWait@Mouse@@CAXE@Z   0010ed20 f   KERNEL:mouse.obj
- 0001:0000e960       ?MouseWrite@Mouse@@CAXE@Z  0010ed60 f   KERNEL:mouse.obj
- 0001:0000e9c0       ?Mouse_ISR@Mouse@@CAXXZ    0010edc0 f   KERNEL:mouse.obj
- 0001:0000eb00       ?Checksum@KNet@@SAGPAXH@Z  0010ef00 f   KERNEL:net.obj
- 0001:0000eb80       ?ChecksumDouble@KNet@@SAGPAXH0H@Z 0010ef80 f   KERNEL:net.obj
- 0001:0000ec60       ?Init@KNet@@SAIXZ          0010f060 f   KERNEL:net.obj
- 0001:0000ecc0       ?PrintIP@KNet@@SAXPADUIPv4Address@@@Z 0010f0c0 f   KERNEL:net.obj
- 0001:0000ed00       ?PrintMac@KNet@@SAXPADUMacAddress@@@Z 0010f100 f   KERNEL:net.obj
- 0001:0000ed50       ?htonl@@YAII@Z             0010f150 f   KERNEL:net.obj
- 0001:0000ed60       ?htons@@YAGG@Z             0010f160 f   KERNEL:net.obj
- 0001:0000ed80       ?ntohl@@YAII@Z             0010f180 f   KERNEL:net.obj
- 0001:0000ed90       ?ntohs@@YAGG@Z             0010f190 f   KERNEL:net.obj
- 0001:0000edb0       ?KernelPanic@Panic@@SAXPAD0@Z 0010f1b0 f   KERNEL:panic.obj
- 0001:0000edf0       ?AllocBlocks@Memory@@SAPAXI@Z 0010f1f0 f   KERNEL:memory.obj
- 0001:0000ef20       ?DeInitRegion@Memory@@SAXPAXI@Z 0010f320 f   KERNEL:memory.obj
- 0001:0000ef70       ?FirstFree@Memory@@CAIXZ   0010f370 f   KERNEL:memory.obj
- 0001:0000efb0       ?FirstFreeNum@Memory@@CAII@Z 0010f3b0 f   KERNEL:memory.obj
- 0001:0000f0a0       ?FreeBlocks@Memory@@SAXPAXI@Z 0010f4a0 f   KERNEL:memory.obj
- 0001:0000f100       ?Init@Memory@@SAIIPAI@Z    0010f500 f   KERNEL:memory.obj
- 0001:0000f180       ?InitRegion@Memory@@SAXPAXI@Z 0010f580 f   KERNEL:memory.obj
- 0001:0000f1d0       ?EnableFPU@CPU@@CAIXZ      0010f5d0 f   KERNEL:cpu.obj
- 0001:0000f1f0       ?EnableSSE@CPU@@CAIXZ      0010f5f0 f   KERNEL:cpu.obj
- 0001:0000f220       ?Init@CPU@@SAIXZ           0010f620 f   KERNEL:cpu.obj
- 0001:0000f250       ?Init@HAL@@SAIXZ           0010f650 f   KERNEL:hal.obj
- 0001:0000f280       ?inb@@YAEG@Z               0010f680 f   KERNEL:hal.obj
- 0001:0000f2a0       ?inl@@YAIG@Z               0010f6a0 f   KERNEL:hal.obj
- 0001:0000f2c0       ?inw@@YAGG@Z               0010f6c0 f   KERNEL:hal.obj
- 0001:0000f2e0       ?outb@@YAXGE@Z             0010f6e0 f   KERNEL:hal.obj
- 0001:0000f2f0       ?outl@@YAXGI@Z             0010f6f0 f   KERNEL:hal.obj
- 0001:0000f300       ?outw@@YAXGG@Z             0010f700 f   KERNEL:hal.obj
- 0001:0000f310       ?DefaultISR@Exceptions@@SAXXZ 0010f710 f   KERNEL:exceptions.obj
- 0001:0000f330       ?ISR0@Exceptions@@CAXXZ    0010f730 f   KERNEL:exceptions.obj
- 0001:0000f350       ?ISR10@Exceptions@@CAXXZ   0010f750 f   KERNEL:exceptions.obj
- 0001:0000f370       ?ISR11@Exceptions@@CAXXZ   0010f770 f   KERNEL:exceptions.obj
- 0001:0000f390       ?ISR12@Exceptions@@CAXXZ   0010f790 f   KERNEL:exceptions.obj
- 0001:0000f3b0       ?ISR13@Exceptions@@CAXXZ   0010f7b0 f   KERNEL:exceptions.obj
- 0001:0000f3d0       ?ISR14@Exceptions@@CAXXZ   0010f7d0 f   KERNEL:exceptions.obj
- 0001:0000f3f0       ?ISR15@Exceptions@@CAXXZ   0010f7f0 f   KERNEL:exceptions.obj
- 0001:0000f410       ?ISR16@Exceptions@@CAXXZ   0010f810 f   KERNEL:exceptions.obj
- 0001:0000f430       ?ISR17@Exceptions@@CAXXZ   0010f830 f   KERNEL:exceptions.obj
- 0001:0000f450       ?ISR18@Exceptions@@CAXXZ   0010f850 f   KERNEL:exceptions.obj
- 0001:0000f470       ?ISR19@Exceptions@@CAXXZ   0010f870 f   KERNEL:exceptions.obj
- 0001:0000f490       ?ISR1@Exceptions@@CAXXZ    0010f890 f   KERNEL:exceptions.obj
- 0001:0000f4b0       ?ISR2@Exceptions@@CAXXZ    0010f8b0 f   KERNEL:exceptions.obj
- 0001:0000f4d0       ?ISR3@Exceptions@@CAXXZ    0010f8d0 f   KERNEL:exceptions.obj
- 0001:0000f4f0       ?ISR4@Exceptions@@CAXXZ    0010f8f0 f   KERNEL:exceptions.obj
- 0001:0000f510       ?ISR5@Exceptions@@CAXXZ    0010f910 f   KERNEL:exceptions.obj
- 0001:0000f530       ?ISR6@Exceptions@@CAXIII@Z 0010f930 f   KERNEL:exceptions.obj
- 0001:0000f5b0       ?ISR7@Exceptions@@CAXXZ    0010f9b0 f   KERNEL:exceptions.obj
- 0001:0000f5d0       ?ISR8@Exceptions@@CAXXZ    0010f9d0 f   KERNEL:exceptions.obj
- 0001:0000f5f0       ?ISR9@Exceptions@@CAXXZ    0010f9f0 f   KERNEL:exceptions.obj
- 0001:0000f610       ?Init@Exceptions@@SAIXZ    0010fa10 f   KERNEL:exceptions.obj
- 0001:0000f710       ?Create@PCI@@CAPAUPCI_DEVICE@@EEE@Z 0010fb10 f   KERNEL:pci.obj
- 0001:0000f7d0       ?GetDevice@PCI@@SAPAUPCI_DEVICE@@HHH@Z 0010fbd0 f   KERNEL:pci.obj
- 0001:0000f980       ?Init@PCI@@SAIXZ           0010fd80 f   KERNEL:pci.obj
- 0001:0000f990       ?Read@PCI@@CAIEEEEE@Z      0010fd90 f   KERNEL:pci.obj
- 0001:0000fa00       ?printdev@@YAXPAUPCI_DEVICE@@@Z 0010fe00 f   KERNEL:pci.obj
- 0001:0000fa40       ??0E1000@@QAE@PAUPCI_DEVICE@@@Z 0010fe40 f   KERNEL:ne1000.obj
- 0001:0000fb60       ?DetectEEPROM@E1000@@AAE_NXZ 0010ff60 f   KERNEL:ne1000.obj
- 0001:0000fbd0       ?E1000_Interrupt@E1000@@CAXXZ 0010ffd0 f   KERNEL:ne1000.obj
- 0001:0000fc30       ?EnableIRQ@E1000@@AAEXXZ   00110030 f   KERNEL:ne1000.obj
- 0001:0000fcc0       ?GetIP@E1000@@UAE?AUIPv4Address@@XZ 001100c0 f   KERNEL:ne1000.obj
- 0001:0000fce0       ?GetMac@E1000@@UAE?AUMacAddress@@XZ 001100e0 f   KERNEL:ne1000.obj
- 0001:0000fd00       ?InitRX@E1000@@AAEXXZ      00110100 f   KERNEL:ne1000.obj
- 0001:0000fe60       ?InitTX@E1000@@AAEXXZ      00110260 f   KERNEL:ne1000.obj
- 0001:0000ffe0       ?Linkup@E1000@@AAEXXZ      001103e0 f   KERNEL:ne1000.obj
- 0001:00010030       ?Poll@E1000@@UAEXXZ        00110430 f   KERNEL:ne1000.obj
- 0001:000100d0       ?ReadCommand@E1000@@AAEIG@Z 001104d0 f   KERNEL:ne1000.obj
- 0001:00010100       ?ReadEEPROM@E1000@@AAEIE@Z 00110500 f   KERNEL:ne1000.obj
- 0001:000101c0       ?ReadMac@E1000@@AAEXXZ     001105c0 f   KERNEL:ne1000.obj
- 0001:00010200       ?Send@E1000@@UAEXPAUNetPacket@@@Z 00110600 f   KERNEL:ne1000.obj
- 0001:000102a0       ?Start@E1000@@AAEXXZ       001106a0 f   KERNEL:ne1000.obj
- 0001:000106b0       ?WriteCommand@E1000@@AAEXGI@Z 00110ab0 f   KERNEL:ne1000.obj
- 0001:000106f0       ?EmptyISR@IDT@@SAXXZ       00110af0 f   KERNEL:idt.obj
- 0001:00010700       ?GetIR@IDT@@SAPAUIDT_DESCRIPTOR@@I@Z 00110b00 f   KERNEL:idt.obj
- 0001:00010710       ?Init@IDT@@SAIXZ           00110b10 f   KERNEL:idt.obj
- 0001:00010780       ?SetISR@IDT@@SAIIP6AXXZ@Z  00110b80 f   KERNEL:idt.obj
- 0001:000107c0       ?Init@PIC@@SAIXZ           00110bc0 f   KERNEL:pic.obj
- 0001:00010820       ?InterruptDone@PIC@@SAXG@Z 00110c20 f   KERNEL:pic.obj
- 0001:00010850       ?ReadData@PIC@@CAEE@Z      00110c50 f   KERNEL:pic.obj
- 0001:00010880       ?SendCommand@PIC@@CAXEE@Z  00110c80 f   KERNEL:pic.obj
- 0001:000108b0       ?SendData@PIC@@CAXGE@Z     00110cb0 f   KERNEL:pic.obj
- 0001:000108e0       ??0NetInterface@@QAE@PAUPCI_DEVICE@@@Z 00110ce0 f   KERNEL:netinterface.obj
- 0001:00010900       ?GetIP@NetInterface@@UAE?AUIPv4Address@@XZ 00110d00 f i KERNEL:netinterface.obj
- 0001:00010910       ?GetMac@NetInterface@@UAE?AUMacAddress@@XZ 00110d10 f i KERNEL:netinterface.obj
- 0001:00010930       ?Poll@NetInterface@@UAEXXZ 00110d30 f i KERNEL:netinterface.obj
- 0001:00010940       ?Send@NetInterface@@UAEXPAUNetPacket@@@Z 00110d40 f i KERNEL:netinterface.obj
- 0001:00010943       ??1type_info@@UAE@XZ       00110d43 f   LIBCMT:std_type_info_static.obj
- 0001:0001094a       ??_Gtype_info@@UAEPAXI@Z   00110d4a f i LIBCMT:std_type_info_static.obj
- 0001:0001094a       ??_Etype_info@@UAEPAXI@Z   00110d4a f i LIBCMT:std_type_info_static.obj
- 0001:0001096d       ??3@YAXPAXI@Z              00110d6d f   LIBCMT:delete_scalar_size.obj
- 0002:00000000       ??_C@_06JJGECBPI@?$CFs?5?$CFi?6?$AA@ 00110e00     iso.obj
- 0002:00000008       ??_C@_03OFAPEBGM@?$CFs?6?$AA@ 00110e08     iso.obj
- 0002:0000000c       ??_C@_03PELOGHMK@?$CFi?6?$AA@ 00110e0c     Mandelbrot.obj
- 0002:00000010       ??_C@_06CMGOICJA@Start?6?$AA@ 00110e10     Mandelbrot.obj
- 0002:00000018       ??_C@_0BD@OAOOOKEK@Ticks?3?5?$CFi?7FPS?3?5?$CFi?6?$AA@ 00110e18     Mandelbrot.obj
- 0002:0000002c       ??_C@_09JHEKFLJE@Zoom?3?5?$CFf?6?$AA@ 00110e2c     Mandelbrot.obj
- 0002:00000038       __real@1adaca00            00110e38     Mandelbrot.obj
- 0002:00000040       __real@3fe0000000000000    00110e40     Mandelbrot.obj
- 0002:00000048       __real@3fe93b645a1cac08    00110e48     Mandelbrot.obj
- 0002:00000050       __real@3ff0000000000000    00110e50     Mandelbrot.obj
- 0002:00000058       __real@4010000000000000    00110e58     Mandelbrot.obj
- 0002:00000060       __real@4088000000000000    00110e60     Mandelbrot.obj
- 0002:00000068       __real@40f0000000000000    00110e68     Mandelbrot.obj
- 0002:00000070       __real@437f0000            00110e70     Mandelbrot.obj
- 0002:00000074       __real@447a0000            00110e74     Mandelbrot.obj
- 0002:00000078       ??_C@_0BJ@FHJFEPME@arp?3?5sending?5request?5to?5?$AA@ 00110e78     arp.obj
- 0002:00000094       ??_C@_0BH@NFEPIOCG@arp?3?5sending?5reply?5to?5?$AA@ 00110e94     arp.obj
- 0002:000000ac       ??_C@_0BB@NPEPEJMJ@ARP?5added?5entry?5?$AA@ 00110eac     arp.obj
- 0002:000000c0       ??_C@_0O@MBFFJLEF@DHCP?5RECEIVE?6?$AA@ 00110ec0     dhcp.obj
- 0002:000000d0       ??_C@_0O@IJAKJLNJ@Received?5DNS?6?$AA@ 00110ed0     dns.obj
- 0002:000000e0       ??_C@_0BF@DPFFLPFA@DNS?5added?5entry?3?5?$CFs?5?$AA@ 00110ee0     dns.obj
- 0002:000000f5       ??_C@_00CNPNBAHC@?$AA@     00110ef5     dns.obj
- 0002:000000f8       ??_C@_0M@KNKKGHNO@PARSED?5IP?3?5?$AA@ 00110ef8     http.obj
- 0002:00000104       ??_C@_0BO@OHMKJDEI@Flags?3?5?$CFux?7ACK?3?5?$CFui?7SEQ?3?5?$CFui?6?$AA@ 00110f04     tcpsession.obj
- 0002:00000124       ??_C@_0L@EIILFCEB@Connected?6?$AA@ 00110f24     tcpsession.obj
- 0002:00000130       ??_C@_07IPMAGINO@Closed?6?$AA@ 00110f30     tcpsession.obj
- 0002:00000138       ??_C@_0BA@FHBAHEGN@Timeout?5closed?6?$AA@ 00110f38     tcpsession.obj
- 0002:00000148       ??_C@_04CDEGOFNM@Cam1?$AA@ 00110f48     3DGame:3DGame.obj
- 0002:00000150       ??_C@_05FOLLILPC@Thing?$AA@ 00110f50     3DGame:3DGame.obj
- 0002:00000158       ??_C@_05PGDJFNFN@Floor?$AA@ 00110f58     3DGame:3DGame.obj
- 0002:00000160       __real@3f800000            00110f60     3DGame:3DGame.obj
- 0002:00000164       __real@40a00000            00110f64     3DGame:3DGame.obj
- 0002:00000168       __real@41200000            00110f68     3DGame:3DGame.obj
- 0002:0000016c       __real@c1700000            00110f6c     3DGame:3DGame.obj
- 0002:00000174       ??_7MyBox@@6B@             00110f74     3DGame:MyBox.obj
- 0002:0000017c       ??_C@_08GGPPOII@cube?4a3d?$AA@ 00110f7c     3DGame:MyBox.obj
- 0002:00000188       ??_C@_07CKAHAGKJ@img?4bmp?$AA@ 00110f88     3DGame:MyBox.obj
- 0002:00000190       ??_C@_0O@NJFLLBAD@bmp?5not?5found?$AA@ 00110f90     3DGame:MyBox.obj
- 0002:000001a0       ??_C@_04GONFKEIN@Mesh?$AA@ 00110fa0     3DGame:MyBox.obj
- 0002:000001a8       ??_C@_0M@NAEHLENP@BoxCollider?$AA@ 00110fa8     3DGame:MyBox.obj
- 0002:000001b4       ??_C@_0BB@OKIMFPDP@PhysicsComponent?$AA@ 00110fb4     3DGame:MyBox.obj
- 0002:000001cc       ??_7Thing@@6B@             00110fcc     3DGame:Thing.obj
- 0002:000001d4       ??_C@_09PCLIKNNA@earth?4bmp?$AA@ 00110fd4     3DGame:Thing.obj
- 0002:000001e0       __real@41a00000            00110fe0     3DGame:Thing.obj
- 0002:000001f0       __xmm@80000000800000008000000080000000 00110ff0     3DGame:Thing.obj
- 0002:00000200       __real@0000000000000000    00111000     GL:Matrix4.obj
- 0002:00000208       __real@40000000            00111008     GL:Matrix4.obj
- 0002:00000210       __real@400921fb54442eea    00111010     GL:Matrix4.obj
- 0002:00000218       __real@4066800000000000    00111018     GL:Matrix4.obj
- 0002:00000220       __real@3fb1eb851eb851ec    00111020     GL:Color.obj
- 0002:00000228       __real@3fcae147ae147ae1    00111028     GL:Color.obj
- 0002:00000230       __real@3fe70a3d70a3d70a    00111030     GL:Color.obj
- 0002:00000240       __xmm@41f00000000000000000000000000000 00111040     GL:Color.obj
- 0002:00000250       ??_C@_05JODGIKH@Light?$AA@ 00111050     GameEngine:Engine.obj
- 0002:00000258       ??_C@_06LOJNHMMK@Thing2?$AA@ 00111058     GameEngine:Engine.obj
- 0002:00000260       ??_C@_0P@ILNAIKMC@FPS?3?5?$CFi?7DT?3?$CFi?6?$AA@ 00111060     GameEngine:Engine.obj
- 0002:00000270       ??_C@_0L@KCHEIND@Ticks?3?5?$CFi?6?$AA@ 00111070     GameEngine:Engine.obj
- 0002:0000027c       ??_C@_08DAHIJCLH@Free?5?$CFi?6?$AA@ 0011107c     GameEngine:Engine.obj
- 0002:00000288       ??_C@_08FHFNDDND@Cam?3?5?$CFs?6?$AA@ 00111088     GameEngine:Engine.obj
- 0002:00000294       ??_C@_07JOHLBHPG@P1?3?5?$CFs?6?$AA@ 00111094     GameEngine:Engine.obj
- 0002:0000029c       ??_C@_0BC@KLOOLLKI@V1?3?5?$FL?$CFf?0?5?$CFf?0?5?$CFf?$FN?6?$AA@ 0011109c     GameEngine:Engine.obj
- 0002:000002b0       ??_C@_0M@CBHEFHKI@Energy?3?5?$CFf?6?$AA@ 001110b0     GameEngine:Engine.obj
- 0002:000002bc       ??_C@_09OKFGCEAB@?$CFf?7?$CFf?7?$CFf?6?$AA@ 001110bc     GameEngine:Engine.obj
- 0002:000002c8       ??_C@_06MHJBABGN@J?3?5?$CFf?6?$AA@ 001110c8     GameEngine:Engine.obj
- 0002:000002d0       ??_C@_08GDLGNBJK@?$CFf?7?$CFf?7?$CFf?$AA@ 001110d0     GameEngine:Engine.obj
- 0002:000002dc       ??_C@_0BB@PIJAIOHM@List?3?3operator?$FL?$FN?$AA@ 001110dc     GameEngine:Engine.obj
- 0002:000002f0       ??_C@_0BN@NJEFJLOF@Index?5out?5of?5range?5exception?$AA@ 001110f0     GameEngine:Engine.obj
- 0002:00000310       __real@00000000            00111110     GameEngine:Engine.obj
- 0002:00000314       __real@3f000000            00111114     GameEngine:Engine.obj
- 0002:00000318       __real@3fb999999999999a    00111118     GameEngine:Engine.obj
- 0002:00000320       __real@3fc00000            00111120     GameEngine:Engine.obj
- 0002:00000328       __real@3ff921fb54442eea    00111128     GameEngine:Engine.obj
- 0002:00000330       __real@401921fb54442eea    00111130     GameEngine:Engine.obj
- 0002:00000338       __real@402399999999999a    00111138     GameEngine:Engine.obj
- 0002:00000340       __real@40800000            00111140     GameEngine:Engine.obj
- 0002:00000344       __real@40c00000            00111144     GameEngine:Engine.obj
- 0002:00000348       __real@43c80000            00111148     GameEngine:Engine.obj
- 0002:0000034c       __real@44fa0000            0011114c     GameEngine:Engine.obj
- 0002:00000350       __real@bf000000            00111150     GameEngine:Engine.obj
- 0002:00000354       __real@bfc00000            00111154     GameEngine:Engine.obj
- 0002:00000358       __real@bff921fb54442eea    00111158     GameEngine:Engine.obj
- 0002:00000360       __xmm@7fffffffffffffff7fffffffffffffff 00111160     GameEngine:Engine.obj
- 0002:00000370       __xmm@80000000000000008000000000000000 00111170     GameEngine:Engine.obj
- 0002:00000384       ??_7GameObject@@6B@        00111184     GameEngine:GameObject.obj
- 0002:0000038c       ??_C@_0L@EJMOOPIK@GameObject?$AA@ 0011118c     GameEngine:GameObject.obj
- 0002:00000398       ??_C@_08LHHBOIOD@Collider?$AA@ 00111198     GameEngine:GameObject.obj
- 0002:000003a4       ??_C@_07ONFAPAAB@Physics?$AA@ 001111a4     GameEngine:GameObject.obj
- 0002:000003b0       ??_7Camera@@6B@            001111b0     GameEngine:Camera.obj
- 0002:000003bc       ??_7Component@@6B@         001111bc     GameEngine:Component.obj
- 0002:000003c8       ??_7MeshComponent@@6B@     001111c8     GameEngine:MeshComponent.obj
- 0002:000003d4       ??_7PhysicsComponent@@6B@  001111d4     GameEngine:PhysicsComponent.obj
- 0002:000003e0       ??_7BoxCollider@@6B@       001111e0     GameEngine:BoxCollider.obj
- 0002:000003f0       __xmm@7fffffff7fffffff7fffffff7fffffff 001111f0     GameEngine:BoxCollider.obj
- 0002:00000400       ??_C@_05MBDEGLCK@ERROR?$AA@ 00111200     GameEngine:ModelLoader.obj
- 0002:00000408       ??_C@_0CL@CEJFKDDD@?$FL?$CFf?0?5?$CFf?0?5?$CFf?$FN?5?$FL?$CFf?0?5?$CFf?0?5?$CFf?0?5?$CFf?$FN?5?$FL?$CF@ 00111208     GameEngine:Transform.obj
- 0002:00000438       ??_7ColliderComponent@@6B@ 00111238     GameEngine:ColliderComponent.obj
- 0002:00000440       __real@3e8f5c29            00111240     Lib:math.obj
- 0002:00000444       __real@40490fdb            00111244     Lib:math.obj
- 0002:00000448       __real@bfc90fdb            00111248     Lib:math.obj
- 0002:0000044c       ??_C@_03LHCJEHON@nan?$AA@  0011124c     Lib:stdio.obj
- 0002:00000450       ??_C@_03OJHLLCGB@inf?$AA@  00111250     Lib:stdio.obj
- 0002:00000454       ??_C@_01GBGANLPD@0?$AA@    00111254     Lib:stdio.obj
- 0002:00000458       __real@3f1a36e2eb1c432d    00111258     Lib:stdio.obj
- 0002:00000460       __real@bf800000            00111260     Lib:stdio.obj
- 0002:00000470       __xmm@46454443424139383736353433323130 00111270     Lib:stdio.obj
- 0002:00000480       ??_C@_0BE@FFHLEPEC@Found?5network?5card?6?$AA@ 00111280     KERNEL:kernel.obj
- 0002:00000494       __real@39800000            00111294     KERNEL:kernel.obj
- 0002:00000498       ??_C@_04PFOHOKJK@?5?5?5?5?$AA@ 00111298     KERNEL:debug.obj
- 0002:000004a0       ??_C@_01CLKCMJKC@?5?$AA@   001112a0     KERNEL:debug.obj
- 0002:000004a4       ??_C@_03IKGEINEE@?$CFs?5?$AA@ 001112a4     KERNEL:debug.obj
- 0002:00000618       ??_C@_0P@JJOCPBNH@?$CFs?$CFi?4?$CFi?4?$CFi?4?$CFi?6?$AA@ 00111418     KERNEL:net.obj
- 0002:00000628       ??_C@_0BF@MCJEFIGG@?$CFs?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?6?$AA@ 00111428     KERNEL:net.obj
- 0002:00000640       ??_C@_0BK@KHJFGGEJ@Default?5interrupt?5handler?$AA@ 00111440     KERNEL:exceptions.obj
- 0002:0000065c       ??_C@_0BB@CAGHCAFL@Division?5by?5zero?$AA@ 0011145c     KERNEL:exceptions.obj
- 0002:00000670       ??_C@_05GCIPIGEI@Debug?$AA@ 00111470     KERNEL:exceptions.obj
- 0002:00000678       ??_C@_0BH@DLMGGJOP@Non?9Maskable?5interrupt?$AA@ 00111478     KERNEL:exceptions.obj
- 0002:00000690       ??_C@_0L@DEJAMIEF@Breakpoint?$AA@ 00111490     KERNEL:exceptions.obj
- 0002:0000069c       ??_C@_08KJPBNJGC@Overflow?$AA@ 0011149c     KERNEL:exceptions.obj
- 0002:000006a8       ??_C@_0BF@KABNNNC@Bound?5range?5exceeded?$AA@ 001114a8     KERNEL:exceptions.obj
- 0002:000006c0       ??_C@_0BJ@JILCCCBH@0x?$CFux?70x?$CFux?70x?$CFux?70x?$CFux?6?$AA@ 001114c0     KERNEL:exceptions.obj
- 0002:000006dc       ??_C@_06NIEMCLMH@0x?$CFux?6?$AA@ 001114dc     KERNEL:exceptions.obj
- 0002:000006e4       ??_C@_0P@GJJPHHDN@Invalid?5opcode?$AA@ 001114e4     KERNEL:exceptions.obj
- 0002:000006f4       ??_C@_0BF@COPPNEEP@Device?5not?5available?$AA@ 001114f4     KERNEL:exceptions.obj
- 0002:0000070c       ??_C@_0N@EMHPBCJE@Double?5fault?$AA@ 0011150c     KERNEL:exceptions.obj
- 0002:0000071c       ??_C@_0BM@FLNHCLJG@Coprocessor?5segment?5overrun?$AA@ 0011151c     KERNEL:exceptions.obj
- 0002:00000738       ??_C@_0M@OLMALBPG@Invalid?5TSS?$AA@ 00111538     KERNEL:exceptions.obj
- 0002:00000744       ??_C@_0BE@FPPPAKKN@Segment?5not?5present?$AA@ 00111544     KERNEL:exceptions.obj
- 0002:00000758       ??_C@_0BE@OLMOIPB@Stack?9segment?5fault?$AA@ 00111558     KERNEL:exceptions.obj
- 0002:0000076c       ??_C@_0BJ@LDJBBLLL@General?5protection?5fault?$AA@ 0011156c     KERNEL:exceptions.obj
- 0002:00000788       ??_C@_0L@JBNHOLPF@Page?5fault?$AA@ 00111588     KERNEL:exceptions.obj
- 0002:00000794       ??_C@_0O@EBPJONIA@15?5?$CIReserved?$CJ?$AA@ 00111594     KERNEL:exceptions.obj
- 0002:000007a4       ??_C@_0BN@OAPCMCOK@x87?5Floating?9point?5exception?$AA@ 001115a4     KERNEL:exceptions.obj
- 0002:000007c4       ??_C@_0BA@DMDLEFCI@Alignment?5check?$AA@ 001115c4     KERNEL:exceptions.obj
- 0002:000007d4       ??_C@_0O@LHBOKIFP@Machine?5check?$AA@ 001115d4     KERNEL:exceptions.obj
- 0002:000007e4       ??_C@_0BO@PAHIJHOM@SIMD?5floating?9point?5exception?$AA@ 001115e4     KERNEL:exceptions.obj
- 0002:00000808       ??_C@_0EO@NIHBEAOP@Bus?3?5?$CFx?5Device?3?5?$CFx?5Function?3?5?$CFx?5@ 00111608     KERNEL:pci.obj
- 0002:0000085c       ??_7E1000@@6B@             0011165c     KERNEL:ne1000.obj
- 0002:0000086c       ??_C@_04BLELHJJM@IP?3?5?$AA@ 0011166c     KERNEL:ne1000.obj
- 0002:00000874       ??_C@_05MMECAFBK@Mac?3?5?$AA@ 00111674     KERNEL:ne1000.obj
- 0002:00000880       ??_7NetInterface@@6B@      00111680     KERNEL:netinterface.obj
- 0002:00000894       ??_7type_info@@6B@         00111694     LIBCMT:std_type_info_static.obj
- 0002:000008f4       ??_R4MyBox@@6B@            001116f4     3DGame:MyBox.obj
- 0002:00000908       ??_R3MyBox@@8              00111708     3DGame:MyBox.obj
- 0002:00000918       ??_R2MyBox@@8              00111718     3DGame:MyBox.obj
- 0002:00000924       ??_R1A@?0A@EA@MyBox@@8     00111724     3DGame:MyBox.obj
- 0002:00000940       ??_R1A@?0A@EA@GameObject@@8 00111740     3DGame:MyBox.obj
- 0002:0000095c       ??_R3GameObject@@8         0011175c     3DGame:MyBox.obj
- 0002:0000096c       ??_R2GameObject@@8         0011176c     3DGame:MyBox.obj
- 0002:00000974       ??_R4Thing@@6B@            00111774     3DGame:Thing.obj
- 0002:00000988       ??_R3Thing@@8              00111788     3DGame:Thing.obj
- 0002:00000998       ??_R2Thing@@8              00111798     3DGame:Thing.obj
- 0002:000009a4       ??_R1A@?0A@EA@Thing@@8     001117a4     3DGame:Thing.obj
- 0002:000009c0       ??_R4GameObject@@6B@       001117c0     GameEngine:GameObject.obj
- 0002:000009d4       ??_R4Camera@@6B@           001117d4     GameEngine:Camera.obj
- 0002:000009e8       ??_R3Camera@@8             001117e8     GameEngine:Camera.obj
- 0002:000009f8       ??_R2Camera@@8             001117f8     GameEngine:Camera.obj
- 0002:00000a04       ??_R1A@?0A@EA@Camera@@8    00111804     GameEngine:Camera.obj
- 0002:00000a20       ??_R4Component@@6B@        00111820     GameEngine:Component.obj
- 0002:00000a34       ??_R3Component@@8          00111834     GameEngine:Component.obj
- 0002:00000a44       ??_R2Component@@8          00111844     GameEngine:Component.obj
- 0002:00000a4c       ??_R1A@?0A@EA@Component@@8 0011184c     GameEngine:Component.obj
- 0002:00000a68       ??_R4MeshComponent@@6B@    00111868     GameEngine:MeshComponent.obj
- 0002:00000a7c       ??_R3MeshComponent@@8      0011187c     GameEngine:MeshComponent.obj
- 0002:00000a8c       ??_R2MeshComponent@@8      0011188c     GameEngine:MeshComponent.obj
- 0002:00000a9c       ??_R1A@?0A@EA@MeshComponent@@8 0011189c     GameEngine:MeshComponent.obj
- 0002:00000ab8       ??_R1M@?0A@EA@IMesh@@8     001118b8     GameEngine:MeshComponent.obj
- 0002:00000ad4       ??_R3IMesh@@8              001118d4     GameEngine:MeshComponent.obj
- 0002:00000ae4       ??_R2IMesh@@8              001118e4     GameEngine:MeshComponent.obj
- 0002:00000aec       ??_R1A@?0A@EA@IMesh@@8     001118ec     GameEngine:MeshComponent.obj
- 0002:00000b08       ??_R4PhysicsComponent@@6B@ 00111908     GameEngine:PhysicsComponent.obj
- 0002:00000b1c       ??_R3PhysicsComponent@@8   0011191c     GameEngine:PhysicsComponent.obj
- 0002:00000b2c       ??_R2PhysicsComponent@@8   0011192c     GameEngine:PhysicsComponent.obj
- 0002:00000b38       ??_R1A@?0A@EA@PhysicsComponent@@8 00111938     GameEngine:PhysicsComponent.obj
- 0002:00000b54       ??_R4BoxCollider@@6B@      00111954     GameEngine:BoxCollider.obj
- 0002:00000b68       ??_R3BoxCollider@@8        00111968     GameEngine:BoxCollider.obj
- 0002:00000b78       ??_R2BoxCollider@@8        00111978     GameEngine:BoxCollider.obj
- 0002:00000b88       ??_R1A@?0A@EA@BoxCollider@@8 00111988     GameEngine:BoxCollider.obj
- 0002:00000ba4       ??_R1A@?0A@EA@ColliderComponent@@8 001119a4     GameEngine:BoxCollider.obj
- 0002:00000bc0       ??_R3ColliderComponent@@8  001119c0     GameEngine:BoxCollider.obj
- 0002:00000bd0       ??_R2ColliderComponent@@8  001119d0     GameEngine:BoxCollider.obj
- 0002:00000bdc       ??_R4ColliderComponent@@6B@ 001119dc     GameEngine:ColliderComponent.obj
- 0002:00000bf0       ??_R4E1000@@6B@            001119f0     KERNEL:ne1000.obj
- 0002:00000c04       ??_R3E1000@@8              00111a04     KERNEL:ne1000.obj
- 0002:00000c14       ??_R2E1000@@8              00111a14     KERNEL:ne1000.obj
- 0002:00000c20       ??_R1A@?0A@EA@E1000@@8     00111a20     KERNEL:ne1000.obj
- 0002:00000c3c       ??_R1A@?0A@EA@NetInterface@@8 00111a3c     KERNEL:ne1000.obj
- 0002:00000c58       ??_R3NetInterface@@8       00111a58     KERNEL:ne1000.obj
- 0002:00000c68       ??_R2NetInterface@@8       00111a68     KERNEL:ne1000.obj
- 0002:00000c70       ??_R4NetInterface@@6B@     00111a70     KERNEL:netinterface.obj
- 0002:00000c84       ??_R4type_info@@6B@        00111a84     LIBCMT:std_type_info_static.obj
- 0002:00000c98       ??_R3type_info@@8          00111a98     LIBCMT:std_type_info_static.obj
- 0002:00000ca8       ??_R2type_info@@8          00111aa8     LIBCMT:std_type_info_static.obj
- 0002:00000cb0       ??_R1A@?0A@EA@type_info@@8 00111ab0     LIBCMT:std_type_info_static.obj
- 0003:00000000       ?count@@3HA                00111c00     Mandelbrot.obj
- 0003:00003008       ?acc@@3MA                  00114c08     3DGame:Thing.obj
- 0003:0000300c       ?m_width@GL@gl@@2IA        00114c0c     GL:GL.obj
- 0003:00003010       ?m_height@GL@gl@@2IA       00114c10     GL:GL.obj
- 0003:00003014       ?bound_tex@gl@@3HA         00114c14     GL:GL.obj
- 0003:00003018       ?p4@@3MA                   00114c18     GameEngine:Engine.obj
- 0003:0000301c       ?p5@@3MA                   00114c1c     GameEngine:Engine.obj
- 0003:00003024       ?color@Debug@@2IA          00114c24     KERNEL:debug.obj
- 0003:00004028       __fltused                  00115c28     LIBCMT:fltused.obj
- 0003:0000402c       ??_R0?AVMyBox@@@8          00115c2c     3DGame:MyBox.obj
- 0003:00004040       ??_R0?AVGameObject@@@8     00115c40     3DGame:MyBox.obj
- 0003:0000405c       ??_R0?AVThing@@@8          00115c5c     3DGame:Thing.obj
- 0003:00004070       ??_R0?AVCamera@@@8         00115c70     GameEngine:Camera.obj
- 0003:00004088       ??_R0?AVComponent@@@8      00115c88     GameEngine:Component.obj
- 0003:000040a0       ??_R0?AVMeshComponent@@@8  00115ca0     GameEngine:MeshComponent.obj
- 0003:000040bc       ??_R0?AVIMesh@@@8          00115cbc     GameEngine:MeshComponent.obj
- 0003:000040d0       ??_R0?AVPhysicsComponent@@@8 00115cd0     GameEngine:PhysicsComponent.obj
- 0003:000040f0       ??_R0?AVBoxCollider@@@8    00115cf0     GameEngine:BoxCollider.obj
- 0003:0000410c       ??_R0?AVColliderComponent@@@8 00115d0c     GameEngine:BoxCollider.obj
- 0003:0000412c       ??_R0?AVE1000@@@8          00115d2c     KERNEL:ne1000.obj
- 0003:00004140       ??_R0?AVNetInterface@@@8   00115d40     KERNEL:ne1000.obj
- 0003:0000415c       ??_R0?AVtype_info@@@8      00115d5c     LIBCMT:std_type_info_static.obj
- 0003:00004180       ?_kernel_stack@@3PADA      00115d80     boot.obj
- 0003:00006120       ?desc@@3PAUISO_PRIMARYDESC@@A 00117d20     iso.obj
- 0003:00006124       ?root@@3PAUISO_DIRECTORY@@A 00117d24     iso.obj
- 0003:00006128       ?tz@@3UComplex@@A          00117d28     Mandelbrot.obj
- 0003:00006130       ?arp_cache@ARP@@0PAUARP_TABLE_ENTRY@@A 00117d30     arp.obj
- 0003:00006270       ?dns_server@DNS@@2UIPv4Address@@A 00117e70     dns.obj
- 0003:00006278       ?dns_cache@DNS@@0PAUDNS_TABLE_ENTRY@@A 00117e78     dns.obj
- 0003:00006478       ?sessions@TCP@@2PAPAVTcpSession@@A 00118078     tcp.obj
- 0003:000064f8       ?phys@@3PAVPhysicsComponent@@A 001180f8     3DGame:Thing.obj
- 0003:000064fc       ?vel@@3MA                  001180fc     3DGame:Thing.obj
- 0003:00006500       ?m_textures@GL@gl@@2PAPAVBMP@@A 00118100     GL:GL.obj
- 0003:00006580       ?tex_index@gl@@3HA         00118180     GL:GL.obj
- 0003:00006584       ?mat_mode@gl@@3W4GLMatrixMode@@A 00118184     GL:GL.obj
- 0003:00006588       ?mat_stack_index@gl@@3HA   00118188     GL:GL.obj
- 0003:0000658c       ?vert_ptr@gl@@3PAUVertex@1@A 0011818c     GL:GL.obj
- 0003:00006590       ?mat_viewmodel@gl@@3UMatrix4@1@A 00118190     GL:GL.obj
- 0003:000065d0       ?mat_stack@gl@@3PAUMatrix4@1@A 001181d0     GL:GL.obj
- 0003:00006dd0       ?mat_projection@gl@@3UMatrix4@1@A 001189d0     GL:GL.obj
- 0003:00006e10       ?depth_buffer@Rasterizer@gl@@2PAMA 00118a10     GL:Rasterizer.obj
- 0003:00006e14       ?p1@@3HA                   00118a14     GameEngine:Engine.obj
- 0003:00006e18       ?p2@@3MA                   00118a18     GameEngine:Engine.obj
- 0003:00006e1c       ?p3@@3MA                   00118a1c     GameEngine:Engine.obj
- 0003:00006e20       ?ticks@@3HA                00118a20     GameEngine:Engine.obj
- 0003:00006e24       ?BOOL1@@3_NA               00118a24     GameEngine:Engine.obj
- 0003:00006e28       ?last_mouse_pos@@3UVector3@@A 00118a28     GameEngine:Engine.obj
- 0003:00006e34       ?mem_left@@3HA             00118a34     KERNEL:kernel.obj
- 0003:00006e38       ?mem_ptr@@3PAEA            00118a38     KERNEL:kernel.obj
- 0003:00006e3c       ?x@Debug@@2HA              00118a3c     KERNEL:debug.obj
- 0003:00006e40       ?y@Debug@@2HA              00118a40     KERNEL:debug.obj
- 0003:00006e44       ?bcolor@Debug@@2IA         00118a44     KERNEL:debug.obj
- 0003:00006e48       ?mode@VBE@@2UVBE_MODE_INFO@@A 00118a48     KERNEL:vbe.obj
- 0003:00006f48       ?buffer@VBE@@2PAIA         00118b48     KERNEL:vbe.obj
- 0003:00006f4c       ?mem_base@VBE@@0PAIA       00118b4c     KERNEL:vbe.obj
- 0003:00006f50       ?mem_max@VBE@@0PAIA        00118b50     KERNEL:vbe.obj
- 0003:00006f54       ?mem_size@VBE@@0IA         00118b54     KERNEL:vbe.obj
- 0003:00006f58       ?bytes_per_pixel@VBE@@0IA  00118b58     KERNEL:vbe.obj
- 0003:00006f5c       ?pixel_count@VBE@@0IA      00118b5c     KERNEL:vbe.obj
- 0003:00006f60       ?ctrl@Keyboard@@2_NA       00118b60     KERNEL:keyboard.obj
- 0003:00006f61       ?shift@Keyboard@@2_NA      00118b61     KERNEL:keyboard.obj
- 0003:00006f62       ?alt@Keyboard@@2_NA        00118b62     KERNEL:keyboard.obj
- 0003:00006f63       ?caps@Keyboard@@2_NA       00118b63     KERNEL:keyboard.obj
- 0003:00006f64       ?num@Keyboard@@2_NA        00118b64     KERNEL:keyboard.obj
- 0003:00006f65       ?scroll@Keyboard@@2_NA     00118b65     KERNEL:keyboard.obj
- 0003:00006f66       ?extended@@3_NA            00118b66     KERNEL:keyboard.obj
- 0003:00006f67       ?scancode@@3EA             00118b67     KERNEL:keyboard.obj
- 0003:00006f68       ?keystates@@3PA_NA         00118b68     KERNEL:keyboard.obj
- 0003:00007067       ?scan@@3EA                 00118c67     KERNEL:keyboard.obj
- 0003:00007068       ?last_key@@3UKEY_PACKET@@A 00118c68     KERNEL:keyboard.obj
- 0003:00007074       ?pressed@@3_NA             00118c74     KERNEL:keyboard.obj
- 0003:00007078       ?key@@3W4KEYCODE@@A        00118c78     KERNEL:keyboard.obj
- 0003:0000707c       ?ticks@PIT@@2IA            00118c7c     KERNEL:pit.obj
- 0003:00007080       ?x@Mouse@@2HA              00118c80     KERNEL:mouse.obj
- 0003:00007084       ?y@Mouse@@2HA              00118c84     KERNEL:mouse.obj
- 0003:00007088       ?sensitivity@Mouse@@2MA    00118c88     KERNEL:mouse.obj
- 0003:0000708c       ?mouse_L@Mouse@@2_NA       00118c8c     KERNEL:mouse.obj
- 0003:0000708d       ?mouse_R@Mouse@@2_NA       00118c8d     KERNEL:mouse.obj
- 0003:0000708e       ?mouse_M@Mouse@@2_NA       00118c8e     KERNEL:mouse.obj
- 0003:0000708f       ?mouse_cycle@Mouse@@0EA    00118c8f     KERNEL:mouse.obj
- 0003:00007090       ?scroll_x@Mouse@@2HA       00118c90     KERNEL:mouse.obj
- 0003:00007094       ?scroll_y@Mouse@@2HA       00118c94     KERNEL:mouse.obj
- 0003:00007098       ?w@Mouse@@0IA              00118c98     KERNEL:mouse.obj
- 0003:0000709c       ?h@Mouse@@0IA              00118c9c     KERNEL:mouse.obj
- 0003:000070a0       ?mouse_byte@Mouse@@0PACA   00118ca0     KERNEL:mouse.obj
- 0003:000070a4       ?initialized@Mouse@@0_NA   00118ca4     KERNEL:mouse.obj
- 0003:000070a8       ?intf@KNet@@2PAVNetInterface@@A 00118ca8     KERNEL:net.obj
- 0003:000070ac       ?GatewayIPv4@KNet@@2UIPv4Address@@A 00118cac     KERNEL:net.obj
- 0003:000070b0       ?GatewayMAC@KNet@@2UMacAddress@@A 00118cb0     KERNEL:net.obj
- 0003:000070b8       ?BroadcastMAC@KNet@@2UMacAddress@@A 00118cb8     KERNEL:net.obj
- 0003:000070c0       ?BroadcastIPv4@KNet@@2UIPv4Address@@A 00118cc0     KERNEL:net.obj
- 0003:000070c4       ?NullMAC@KNet@@2UMacAddress@@A 00118cc4     KERNEL:net.obj
- 0003:000070cc       ?NullIPv4@KNet@@2UIPv4Address@@A 00118ccc     KERNEL:net.obj
- 0003:000070d0       ?num_blocks@Memory@@2IA    00118cd0     KERNEL:memory.obj
- 0003:000070d4       ?num_free@Memory@@2IA      00118cd4     KERNEL:memory.obj
- 0003:000070d8       ?mem_size@Memory@@2IA      00118cd8     KERNEL:memory.obj
- 0003:000070dc       ?mem_map@Memory@@0PAIA     00118cdc     KERNEL:memory.obj
- 0003:000070e0       ?global_e@E1000@@0PAV1@A   00118ce0     KERNEL:ne1000.obj
- 0003:000070e8       ?idt@IDT@@0PAUIDT_DESCRIPTOR@@A 00118ce8     KERNEL:idt.obj
- 0003:000078e8       ?idt_reg@IDT@@0UIDT_REG@@A 001194e8     KERNEL:idt.obj
+ 0001:000048f0       ?CreateScale@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104cf0 f   GL:Matrix4.obj
+ 0001:00004930       ?CreateTransformation@Matrix4@gl@@SA?AU12@UVector4@2@00@Z 00104d30 f   GL:Matrix4.obj
+ 0001:00004c70       ?CreateTranslation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00105070 f   GL:Matrix4.obj
+ 0001:00004cd0       ?CreateView@Matrix4@gl@@SA?AU12@UVector4@2@000@Z 001050d0 f   GL:Matrix4.obj
+ 0001:00004df0       ?GetElementsPointer@Matrix4@gl@@QAEPAMXZ 001051f0 f   GL:Matrix4.obj
+ 0001:00004e00       ?Inverse@Matrix4@gl@@QAE?AU12@XZ 00105200 f   GL:Matrix4.obj
+ 0001:000055d0       ??0ColRGB@gl@@QAE@I@Z      001059d0 f   GL:Color.obj
+ 0001:00005660       ??0ColRGB@gl@@QAE@MMM@Z    00105a60 f   GL:Color.obj
+ 0001:000056c0       ??0ColRGB@gl@@QAE@XZ       00105ac0 f   GL:Color.obj
+ 0001:000056e0       ??DColRGB@gl@@QAE?AU01@M@Z 00105ae0 f   GL:Color.obj
+ 0001:00005750       ??HColRGB@gl@@QAE?AU01@U01@@Z 00105b50 f   GL:Color.obj
+ 0001:000057c0       ??XColRGB@gl@@QAE?AU01@M@Z 00105bc0 f   GL:Color.obj
+ 0001:00005830       ?Luminosity@ColRGB@gl@@QAEMXZ 00105c30 f   GL:Color.obj
+ 0001:00005880       ?ToInt@ColRGB@gl@@QAEIXZ   00105c80 f   GL:Color.obj
+ 0001:000058c0       ??0Vertex@gl@@QAE@MMMUColRGB@1@UVector4@1@@Z 00105cc0 f   GL:Vertex.obj
+ 0001:00005950       ??0Vertex@gl@@QAE@XZ       00105d50 f   GL:Vertex.obj
+ 0001:000059b0       ?MulMatrix@Vertex@gl@@QAEXABUMatrix4@2@@Z 00105db0 f   GL:Vertex.obj
+ 0001:00005a80       ?DrawTriangle@Rasterizer@gl@@SAXPAUVertex@2@PAVBMP@@@Z 00105e80 f   GL:Rasterizer.obj
+ 0001:00006310       ?EdgeFunction@gl@@YAMABUVertex@1@00@Z 00106710 f   GL:Rasterizer.obj
+ 0001:00006360       ?Init@Rasterizer@gl@@SAIXZ 00106760 f   GL:Rasterizer.obj
+ 0001:00006390       ??0GEngine@@QAE@XZ         00106790 f   GameEngine:Engine.obj
+ 0001:00006400       ?Add@?$List@PAVColliderComponent@@@std@@QAEXPAVColliderComponent@@@Z 00106800 f i GameEngine:Engine.obj
+ 0001:00006480       ?Collision@GEngine@@AAEXXZ 00106880 f   GameEngine:Engine.obj
+ 0001:000077f0       ?Render@GEngine@@AAEXXZ    00107bf0 f   GameEngine:Engine.obj
+ 0001:00007c60       ?Rotate@Quaternion@@QAEXUVector3@@M@Z 00108060 f i GameEngine:Engine.obj
+ 0001:00007dd0       ?StartGame@GEngine@@QAEXPAVGame@@@Z 001081d0 f   GameEngine:Engine.obj
+ 0001:00008110       ?Update@GEngine@@AAEXXZ    00108510 f   GameEngine:Engine.obj
+ 0001:00008ef0       ??0Vector3@@QAE@MMM@Z      001092f0 f   GameEngine:Vector3.obj
+ 0001:00008f20       ??0Vector3@@QAE@XZ         00109320 f   GameEngine:Vector3.obj
+ 0001:00008f40       ?Cross@Vector3@@SA?AU1@ABU1@0@Z 00109340 f   GameEngine:Vector3.obj
+ 0001:00008fa0       ?Dot@Vector3@@SAMABU1@0@Z  001093a0 f   GameEngine:Vector3.obj
+ 0001:00008fc0       ?EulerAngles@Vector3@@QAE?AU1@XZ 001093c0 f   GameEngine:Vector3.obj
+ 0001:00009070       ?ToVector4@Vector3@@QAE?AUVector4@gl@@XZ 00109470 f   GameEngine:Vector3.obj
+ 0001:000090b0       ??0Quaternion@@QAE@XZ      001094b0 f   GameEngine:Quaternion.obj
+ 0001:000090d0       ?FromAxisAngle@Quaternion@@SA?AU1@ABUVector3@@M@Z 001094d0 f   GameEngine:Quaternion.obj
+ 0001:00009170       ?FromEuler@Quaternion@@SA?AU1@ABUVector3@@@Z 00109570 f   GameEngine:Quaternion.obj
+ 0001:000092e0       ??0GameObject@@QAE@XZ      001096e0 f   GameEngine:GameObject.obj
+ 0001:000093b0       ??A?$List@PAVComponent@@@std@@QAEAAPAVComponent@@H@Z 001097b0 f i GameEngine:GameObject.obj
+ 0001:00009400       ?Add@?$List@PAVComponent@@@std@@QAEXPAVComponent@@@Z 00109800 f i GameEngine:GameObject.obj
+ 0001:00009480       ?Add@?$List@PAVMeshComponent@@@std@@QAEXPAVMeshComponent@@@Z 00109880 f i GameEngine:GameObject.obj
+ 0001:00009500       ?AddComponent@GameObject@@QAEXPAVComponent@@@Z 00109900 f   GameEngine:GameObject.obj
+ 0001:00009720       ?Contains@String@std@@QAE_NV12@@Z 00109b20 f i GameEngine:GameObject.obj
+ 0001:00009780       ?GetComponent@GameObject@@QAEPAVComponent@@VString@std@@@Z 00109b80 f   GameEngine:GameObject.obj
+ 0001:00009820       ?GetName@GameObject@@QAE?AVString@std@@XZ 00109c20 f   GameEngine:GameObject.obj
+ 0001:00009830       ?GetWorldPosition@GameObject@@QAE?AUVector3@@XZ 00109c30 f   GameEngine:GameObject.obj
+ 0001:000098b0       ?GetWorldRotation@GameObject@@QAE?AUQuaternion@@XZ 00109cb0 f   GameEngine:GameObject.obj
+ 0001:000098d0       ?GetWorldScale@GameObject@@QAE?AUVector3@@XZ 00109cd0 f   GameEngine:GameObject.obj
+ 0001:00009950       ?GetWorldTransform@GameObject@@QAE?AUTransform@@XZ 00109d50 f   GameEngine:GameObject.obj
+ 0001:00009a60       ?SetName@GameObject@@QAEXVString@std@@@Z 00109e60 f   GameEngine:GameObject.obj
+ 0001:00009a80       ??0Camera@@QAE@XZ          00109e80 f   GameEngine:Camera.obj
+ 0001:00009aa0       ??0Game@@QAE@XZ            00109ea0 f   GameEngine:Game.obj
+ 0001:00009af0       ?Add@?$List@PAVCamera@@@std@@QAEXPAVCamera@@@Z 00109ef0 f i GameEngine:Game.obj
+ 0001:00009b70       ?Add@?$List@PAVGameObject@@@std@@QAEXPAVGameObject@@@Z 00109f70 f i GameEngine:Game.obj
+ 0001:00009bf0       ?Add@?$List@PAVLightSource@@@std@@QAEXPAVLightSource@@@Z 00109ff0 f i GameEngine:Game.obj
+ 0001:00009c70       ?AddCamera@Game@@QAEXPAVCamera@@@Z 0010a070 f   GameEngine:Game.obj
+ 0001:00009cf0       ?AddLightSource@Game@@QAEXPAVLightSource@@@Z 0010a0f0 f   GameEngine:Game.obj
+ 0001:00009d70       ?AddObject@Game@@QAEXPAVGameObject@@@Z 0010a170 f   GameEngine:Game.obj
+ 0001:00009df0       ?GetActiveCamera@Game@@QAEPAVCamera@@XZ 0010a1f0 f   GameEngine:Game.obj
+ 0001:00009e00       ?GetCamera@Game@@QAEPAVCamera@@VString@std@@@Z 0010a200 f   GameEngine:Game.obj
+ 0001:00009ea0       ?GetLightSource@Game@@QAEPAVLightSource@@VString@std@@@Z 0010a2a0 f   GameEngine:Game.obj
+ 0001:00009f40       ?GetObject@Game@@QAEPAVGameObject@@VString@std@@@Z 0010a340 f   GameEngine:Game.obj
+ 0001:0000a050       ?SetActiveCamera@Game@@QAEXPAVCamera@@@Z 0010a450 f   GameEngine:Game.obj
+ 0001:0000a060       ??0Component@@QAE@XZ       0010a460 f   GameEngine:Component.obj
+ 0001:0000a090       ?GetName@Component@@QAE?AVString@std@@XZ 0010a490 f   GameEngine:Component.obj
+ 0001:0000a0a0       ?SetName@Component@@QAEXVString@std@@@Z 0010a4a0 f   GameEngine:Component.obj
+ 0001:0000a0c0       ?Start@Component@@UAEXXZ   0010a4c0 f i GameEngine:Component.obj
+ 0001:0000a0d0       ?Update@Component@@UAEXM@Z 0010a4d0 f i GameEngine:Component.obj
+ 0001:0000a0e0       ??0MeshComponent@@QAE@XZ   0010a4e0 f   GameEngine:MeshComponent.obj
+ 0001:0000a110       ?Update@MeshComponent@@UAEXM@Z 0010a510 f   GameEngine:MeshComponent.obj
+ 0001:0000a120       ??0PhysicsComponent@@QAE@XZ 0010a520 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a170       ?AddImpulse@PhysicsComponent@@QAEXUVector3@@@Z 0010a570 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a1b0       ?AddImpulseAt@PhysicsComponent@@QAEXUVector3@@0@Z 0010a5b0 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a1c0       ?Speed@PhysicsComponent@@QAEMXZ 0010a5c0 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a200       ?SpeedSquared@PhysicsComponent@@QAEMXZ 0010a600 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a250       ?Start@PhysicsComponent@@UAEXXZ 0010a650 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a260       ?Update@PhysicsComponent@@UAEXM@Z 0010a660 f   GameEngine:PhysicsComponent.obj
+ 0001:0000a660       ??0BoxCollider@@QAE@XZ     0010aa60 f   GameEngine:BoxCollider.obj
+ 0001:0000a680       ??DQuaternion@@QAEAAUVector3@@AAU1@@Z 0010aa80 f i GameEngine:BoxCollider.obj
+ 0001:0000a7c0       ?IsColliding@BoxCollider@@QAE_NPAV1@@Z 0010abc0 f   GameEngine:BoxCollider.obj
+ 0001:0000aeb0       ?LoadModel@ModelLoader@@SAPAVModel3D@@PADW4Format3D@@@Z 0010b2b0 f   GameEngine:ModelLoader.obj
+ 0001:0000af30       ??0Transform@@QAE@UVector3@@UQuaternion@@0@Z 0010b330 f   GameEngine:Transform.obj
+ 0001:0000af80       ??0Transform@@QAE@XZ       0010b380 f   GameEngine:Transform.obj
+ 0001:0000b000       ?GetForwardVector@Transform@@QAE?AUVector3@@XZ 0010b400 f   GameEngine:Transform.obj
+ 0001:0000b050       ?GetRightVector@Transform@@QAE?AUVector3@@XZ 0010b450 f   GameEngine:Transform.obj
+ 0001:0000b0a0       ?GetUpVector@Transform@@QAE?AUVector3@@XZ 0010b4a0 f   GameEngine:Transform.obj
+ 0001:0000b0f0       ?Rotate@Transform@@QAEXUQuaternion@@@Z 0010b4f0 f   GameEngine:Transform.obj
+ 0001:0000b1f0       ?Rotate@Transform@@QAEXUVector3@@M@Z 0010b5f0 f   GameEngine:Transform.obj
+ 0001:0000b410       ?Scale@Transform@@QAEXUVector3@@@Z 0010b810 f   GameEngine:Transform.obj
+ 0001:0000b450       ?ToString@Transform@@QAEPADPAD@Z 0010b850 f   GameEngine:Transform.obj
+ 0001:0000b500       ?Translate@Transform@@QAEXUVector3@@@Z 0010b900 f   GameEngine:Transform.obj
+ 0001:0000b540       ??0Matrix3@@QAE@QAM@Z      0010b940 f   GameEngine:Matrix3.obj
+ 0001:0000b580       ??0Matrix3@@QAE@XZ         0010b980 f   GameEngine:Matrix3.obj
+ 0001:0000b5d0       ??D@YA?AUMatrix3@@ABU0@0@Z 0010b9d0 f i GameEngine:Matrix3.obj
+ 0001:0000b7a0       ??D@YA?AUMatrix3@@ABU0@ABM@Z 0010bba0 f i GameEngine:Matrix3.obj
+ 0001:0000b840       ??D@YA?AUVector3@@ABUMatrix3@@ABU0@@Z 0010bc40 f i GameEngine:Matrix3.obj
+ 0001:0000b8e0       ??G@YA?AUMatrix3@@ABU0@0@Z 0010bce0 f i GameEngine:Matrix3.obj
+ 0001:0000b990       ??H@YA?AUMatrix3@@ABU0@0@Z 0010bd90 f i GameEngine:Matrix3.obj
+ 0001:0000ba40       ?CreateRotation@Matrix3@@SA?AU1@UVector3@@@Z 0010be40 f   GameEngine:Matrix3.obj
+ 0001:0000bbd0       ?Inverse@Matrix3@@QAE?AU1@XZ 0010bfd0 f   GameEngine:Matrix3.obj
+ 0001:0000bde0       ?Transpose@Matrix3@@QAE?AU1@XZ 0010c1e0 f   GameEngine:Matrix3.obj
+ 0001:0000be30       ??0ColliderComponent@@QAE@XZ 0010c230 f   GameEngine:ColliderComponent.obj
+ 0001:0000be50       ??0Obj@@QAE@PAD@Z          0010c250 f   GameEngine:Obj.obj
+ 0001:0000bec0       ?Add@?$List@UFace@@@std@@QAEXUFace@@@Z 0010c2c0 f i GameEngine:Obj.obj
+ 0001:0000bf60       ?Add@?$List@UVector3@@@std@@QAEXUVector3@@@Z 0010c360 f i GameEngine:Obj.obj
+ 0001:0000c010       ?CreateVertices@Obj@@AAEXXZ 0010c410 f   GameEngine:Obj.obj
+ 0001:0000c310       ?ReadFile@Obj@@AAEXPAD@Z   0010c710 f   GameEngine:Obj.obj
+ 0001:0000c320       ??0A3D@@QAE@PAD@Z          0010c720 f   GameEngine:A3D.obj
+ 0001:0000c4c0       ?memcmp@@YAHPBX0I@Z        0010c8c0 f   Lib:string.obj
+ 0001:0000c500       ?memcpy@@YAPAXPAX0I@Z      0010c900 f   Lib:string.obj
+ 0001:0000c530       ?memcpy_fast_128@@YAXPAX0I@Z 0010c930 f   Lib:string.obj
+ 0001:0000c5b0       ?memset16@@YAPAXPAXGI@Z    0010c9b0 f   Lib:string.obj
+ 0001:0000c5d0       ?memset32@@YAPAXPAXII@Z    0010c9d0 f   Lib:string.obj
+ 0001:0000c5f0       ?memset_fast_128@@YAPAXPAXII@Z 0010c9f0 f   Lib:string.obj
+ 0001:0000c670       ?strcat@@YAPADPADPBD@Z     0010ca70 f   Lib:string.obj
+ 0001:0000c6a0       ?strcmp@@YAIPBD0@Z         0010caa0 f   Lib:string.obj
+ 0001:0000c6f0       ?strcpy@@YAPADPADPBD@Z     0010caf0 f   Lib:string.obj
+ 0001:0000c710       ?strlen@@YAIPBD@Z          0010cb10 f   Lib:string.obj
+ 0001:0000c730       _memset                    0010cb30 f   Lib:string.obj
+ 0001:0000c750       ?acos@@YAMM@Z              0010cb50 f   Lib:math.obj
+ 0001:0000c7b0       ?asin@@YAMM@Z              0010cbb0 f   Lib:math.obj
+ 0001:0000c810       ?atan2@@YAMMM@Z            0010cc10 f   Lib:math.obj
+ 0001:0000c910       ?atan@@YAMM@Z              0010cd10 f   Lib:math.obj
+ 0001:0000c940       ?ceil@@YAHM@Z              0010cd40 f   Lib:math.obj
+ 0001:0000c960       ?cos@@YAMM@Z               0010cd60 f   Lib:math.obj
+ 0001:0000c980       ?fact@@YAMM@Z              0010cd80 f   Lib:math.obj
+ 0001:0000c9c0       ?floor@@YAHM@Z             0010cdc0 f   Lib:math.obj
+ 0001:0000c9e0       ?log10@@YAMM@Z             0010cde0 f   Lib:math.obj
+ 0001:0000ca00       ?log2@@YAMM@Z              0010ce00 f   Lib:math.obj
+ 0001:0000ca20       ?log@@YAMM@Z               0010ce20 f   Lib:math.obj
+ 0001:0000ca40       ?logn@@YAMMM@Z             0010ce40 f   Lib:math.obj
+ 0001:0000ca70       ?pow@@YAMMH@Z              0010ce70 f   Lib:math.obj
+ 0001:0000cb50       ?rand@@YAIXZ               0010cf50 f   Lib:math.obj
+ 0001:0000cb70       ?round@@YAHM@Z             0010cf70 f   Lib:math.obj
+ 0001:0000cb90       ?sin@@YAMM@Z               0010cf90 f   Lib:math.obj
+ 0001:0000cbb0       ?sqrt@@YAMM@Z              0010cfb0 f   Lib:math.obj
+ 0001:0000cbd0       ?srand@@YAXI@Z             0010cfd0 f   Lib:math.obj
+ 0001:0000cbe0       ?tan@@YAMM@Z               0010cfe0 f   Lib:math.obj
+ 0001:0000cc10       ?atof@@YAMPBD@Z            0010d010 f   Lib:stdio.obj
+ 0001:0000ccb0       ?atoi@@YAHPBD@Z            0010d0b0 f   Lib:stdio.obj
+ 0001:0000ccd0       ?ftoa@@YAPADMIPAD@Z        0010d0d0 f   Lib:stdio.obj
+ 0001:0000ce00       ?itoa@@YAPADHIPAD_N@Z      0010d200 f   Lib:stdio.obj
+ 0001:0000ce90       ?strtol@@YAJPBDPAPADH@Z    0010d290 f   Lib:stdio.obj
+ 0001:0000cfe0       ?vprintf@@YAPADPADPBDZZ    0010d3e0 f   Lib:stdio.obj
+ 0001:0000d000       ?vsprintf@@YAPADPADPBDPAE@Z 0010d400 f   Lib:stdio.obj
+ 0001:0000d370       ??2@YAPAXI@Z               0010d770 f   KERNEL:kernel.obj
+ 0001:0000d3c0       ??3@YAXPAX@Z               0010d7c0 f   KERNEL:kernel.obj
+ 0001:0000d3e0       ??_U@YAPAXI@Z              0010d7e0 f   KERNEL:kernel.obj
+ 0001:0000d470       ??_V@YAXPAX@Z              0010d870 f   KERNEL:kernel.obj
+ 0001:0000d480       ?Init@Kernel@@SAXPAUMULTIBOOT_INFO@@@Z 0010d880 f   KERNEL:kernel.obj
+ 0001:0000d550       ?Clear@Debug@@SAXI@Z       0010d950 f   KERNEL:debug.obj
+ 0001:0000d570       ?Dump@Debug@@SAXPAXH_N@Z   0010d970 f   KERNEL:debug.obj
+ 0001:0000d6b0       ?Print@Debug@@SAXPADZZ     0010dab0 f   KERNEL:debug.obj
+ 0001:0000d840       ?Putc@Debug@@SAXD_N@Z      0010dc40 f   KERNEL:debug.obj
+ 0001:0000d990       ?ATA_Interrupt@ATA@@CAXXZ  0010dd90 f   KERNEL:ata.obj
+ 0001:0000d9a0       ?Init@ATA@@SAIXZ           0010dda0 f   KERNEL:ata.obj
+ 0001:0000d9d0       ?Read@ATA@@SAIHHHAAPADH@Z  0010ddd0 f   KERNEL:ata.obj
+ 0001:0000dbe0       ?ReadSector@ATA@@CAIHHHPAD@Z 0010dfe0 f   KERNEL:ata.obj
+ 0001:0000dd90       ?Clear@VBE@@SAXI@Z         0010e190 f   KERNEL:vbe.obj
+ 0001:0000ddb0       ?Draw@VBE@@SAXXZ           0010e1b0 f   KERNEL:vbe.obj
+ 0001:0000ddd0       ?DrawLine@VBE@@SAXIIIII@Z  0010e1d0 f   KERNEL:vbe.obj
+ 0001:0000df00       ?DrawText@VBE@@SAXIIPADI@Z 0010e300 f   KERNEL:vbe.obj
+ 0001:0000dfc0       ?DrawText@VBE@@SAXIIPADII@Z 0010e3c0 f   KERNEL:vbe.obj
+ 0001:0000e0a0       ?Init@VBE@@SAIPAUVBE_MODE_INFO@@@Z 0010e4a0 f   KERNEL:vbe.obj
+ 0001:0000e130       ?SetPixel@VBE@@SAXIII@Z    0010e530 f   KERNEL:vbe.obj
+ 0001:0000e160       ?DecodeAscii@Keyboard@@CAXAAUKEY_PACKET@@@Z 0010e560 f   KERNEL:keyboard.obj
+ 0001:0000e3f0       ?DiscardLastKey@Keyboard@@SAXXZ 0010e7f0 f   KERNEL:keyboard.obj
+ 0001:0000e400       ?GetKeyDown@Keyboard@@SA_NW4KEYCODE@@@Z 0010e800 f   KERNEL:keyboard.obj
+ 0001:0000e410       ?GetLastKey@Keyboard@@SA?AUKEY_PACKET@@XZ 0010e810 f   KERNEL:keyboard.obj
+ 0001:0000e430       ?Init@Keyboard@@SAIXZ      0010e830 f   KERNEL:keyboard.obj
+ 0001:0000e450       ?Keyboard_ISR@Keyboard@@CAXXZ 0010e850 f   KERNEL:keyboard.obj
+ 0001:0000e640       ?Init@PIT@@SAIXZ           0010ea40 f   KERNEL:pit.obj
+ 0001:0000e680       ?PIT_ISR@PIT@@CAXXZ        0010ea80 f   KERNEL:pit.obj
+ 0001:0000e690       ?ReadData@PIT@@CAEE@Z      0010ea90 f   KERNEL:pit.obj
+ 0001:0000e6c0       ?SendData@PIT@@CAXGE@Z     0010eac0 f   KERNEL:pit.obj
+ 0001:0000e700       ?Sleep@PIT@@SAXI@Z         0010eb00 f   KERNEL:pit.obj
+ 0001:0000e720       ?Start@PIT@@CAIXZ          0010eb20 f   KERNEL:pit.obj
+ 0001:0000e760       ?Init@Mouse@@SAIIIM@Z      0010eb60 f   KERNEL:mouse.obj
+ 0001:0000ea50       ?MouseRead@Mouse@@CAEXZ    0010ee50 f   KERNEL:mouse.obj
+ 0001:0000ea80       ?MouseWait@Mouse@@CAXE@Z   0010ee80 f   KERNEL:mouse.obj
+ 0001:0000eac0       ?MouseWrite@Mouse@@CAXE@Z  0010eec0 f   KERNEL:mouse.obj
+ 0001:0000eb40       ?Mouse_ISR@Mouse@@CAXXZ    0010ef40 f   KERNEL:mouse.obj
+ 0001:0000ec80       ?Checksum@KNet@@SAGPAXH@Z  0010f080 f   KERNEL:net.obj
+ 0001:0000ed00       ?ChecksumDouble@KNet@@SAGPAXH0H@Z 0010f100 f   KERNEL:net.obj
+ 0001:0000ede0       ?Init@KNet@@SAIXZ          0010f1e0 f   KERNEL:net.obj
+ 0001:0000ee40       ?PrintIP@KNet@@SAXPADUIPv4Address@@@Z 0010f240 f   KERNEL:net.obj
+ 0001:0000ee80       ?PrintMac@KNet@@SAXPADUMacAddress@@@Z 0010f280 f   KERNEL:net.obj
+ 0001:0000eed0       ?htonl@@YAII@Z             0010f2d0 f   KERNEL:net.obj
+ 0001:0000eee0       ?htons@@YAGG@Z             0010f2e0 f   KERNEL:net.obj
+ 0001:0000ef00       ?ntohl@@YAII@Z             0010f300 f   KERNEL:net.obj
+ 0001:0000ef10       ?ntohs@@YAGG@Z             0010f310 f   KERNEL:net.obj
+ 0001:0000ef30       ?KernelPanic@Panic@@SAXPAD0@Z 0010f330 f   KERNEL:panic.obj
+ 0001:0000ef70       ?AllocBlocks@Memory@@SAPAXI@Z 0010f370 f   KERNEL:memory.obj
+ 0001:0000f0a0       ?DeInitRegion@Memory@@SAXPAXI@Z 0010f4a0 f   KERNEL:memory.obj
+ 0001:0000f0f0       ?FirstFree@Memory@@CAIXZ   0010f4f0 f   KERNEL:memory.obj
+ 0001:0000f130       ?FirstFreeNum@Memory@@CAII@Z 0010f530 f   KERNEL:memory.obj
+ 0001:0000f220       ?FreeBlocks@Memory@@SAXPAXI@Z 0010f620 f   KERNEL:memory.obj
+ 0001:0000f280       ?Init@Memory@@SAIIPAI@Z    0010f680 f   KERNEL:memory.obj
+ 0001:0000f300       ?InitRegion@Memory@@SAXPAXI@Z 0010f700 f   KERNEL:memory.obj
+ 0001:0000f350       ?EnableFPU@CPU@@CAIXZ      0010f750 f   KERNEL:cpu.obj
+ 0001:0000f370       ?EnableSSE@CPU@@CAIXZ      0010f770 f   KERNEL:cpu.obj
+ 0001:0000f3a0       ?Init@CPU@@SAIXZ           0010f7a0 f   KERNEL:cpu.obj
+ 0001:0000f3d0       ?Init@HAL@@SAIXZ           0010f7d0 f   KERNEL:hal.obj
+ 0001:0000f400       ?inb@@YAEG@Z               0010f800 f   KERNEL:hal.obj
+ 0001:0000f420       ?inl@@YAIG@Z               0010f820 f   KERNEL:hal.obj
+ 0001:0000f440       ?inw@@YAGG@Z               0010f840 f   KERNEL:hal.obj
+ 0001:0000f460       ?outb@@YAXGE@Z             0010f860 f   KERNEL:hal.obj
+ 0001:0000f470       ?outl@@YAXGI@Z             0010f870 f   KERNEL:hal.obj
+ 0001:0000f480       ?outw@@YAXGG@Z             0010f880 f   KERNEL:hal.obj
+ 0001:0000f490       ?DefaultISR@Exceptions@@SAXXZ 0010f890 f   KERNEL:exceptions.obj
+ 0001:0000f4b0       ?ISR0@Exceptions@@CAXXZ    0010f8b0 f   KERNEL:exceptions.obj
+ 0001:0000f4d0       ?ISR10@Exceptions@@CAXXZ   0010f8d0 f   KERNEL:exceptions.obj
+ 0001:0000f4f0       ?ISR11@Exceptions@@CAXXZ   0010f8f0 f   KERNEL:exceptions.obj
+ 0001:0000f510       ?ISR12@Exceptions@@CAXXZ   0010f910 f   KERNEL:exceptions.obj
+ 0001:0000f530       ?ISR13@Exceptions@@CAXXZ   0010f930 f   KERNEL:exceptions.obj
+ 0001:0000f550       ?ISR14@Exceptions@@CAXXZ   0010f950 f   KERNEL:exceptions.obj
+ 0001:0000f570       ?ISR15@Exceptions@@CAXXZ   0010f970 f   KERNEL:exceptions.obj
+ 0001:0000f590       ?ISR16@Exceptions@@CAXXZ   0010f990 f   KERNEL:exceptions.obj
+ 0001:0000f5b0       ?ISR17@Exceptions@@CAXXZ   0010f9b0 f   KERNEL:exceptions.obj
+ 0001:0000f5d0       ?ISR18@Exceptions@@CAXXZ   0010f9d0 f   KERNEL:exceptions.obj
+ 0001:0000f5f0       ?ISR19@Exceptions@@CAXXZ   0010f9f0 f   KERNEL:exceptions.obj
+ 0001:0000f610       ?ISR1@Exceptions@@CAXXZ    0010fa10 f   KERNEL:exceptions.obj
+ 0001:0000f630       ?ISR2@Exceptions@@CAXXZ    0010fa30 f   KERNEL:exceptions.obj
+ 0001:0000f650       ?ISR3@Exceptions@@CAXXZ    0010fa50 f   KERNEL:exceptions.obj
+ 0001:0000f670       ?ISR4@Exceptions@@CAXXZ    0010fa70 f   KERNEL:exceptions.obj
+ 0001:0000f690       ?ISR5@Exceptions@@CAXXZ    0010fa90 f   KERNEL:exceptions.obj
+ 0001:0000f6b0       ?ISR6@Exceptions@@CAXIII@Z 0010fab0 f   KERNEL:exceptions.obj
+ 0001:0000f730       ?ISR7@Exceptions@@CAXXZ    0010fb30 f   KERNEL:exceptions.obj
+ 0001:0000f750       ?ISR8@Exceptions@@CAXXZ    0010fb50 f   KERNEL:exceptions.obj
+ 0001:0000f770       ?ISR9@Exceptions@@CAXXZ    0010fb70 f   KERNEL:exceptions.obj
+ 0001:0000f790       ?Init@Exceptions@@SAIXZ    0010fb90 f   KERNEL:exceptions.obj
+ 0001:0000f890       ?Create@PCI@@CAPAUPCI_DEVICE@@EEE@Z 0010fc90 f   KERNEL:pci.obj
+ 0001:0000f950       ?GetDevice@PCI@@SAPAUPCI_DEVICE@@HHH@Z 0010fd50 f   KERNEL:pci.obj
+ 0001:0000fb00       ?Init@PCI@@SAIXZ           0010ff00 f   KERNEL:pci.obj
+ 0001:0000fb10       ?Read@PCI@@CAIEEEEE@Z      0010ff10 f   KERNEL:pci.obj
+ 0001:0000fb80       ?printdev@@YAXPAUPCI_DEVICE@@@Z 0010ff80 f   KERNEL:pci.obj
+ 0001:0000fbc0       ??0E1000@@QAE@PAUPCI_DEVICE@@@Z 0010ffc0 f   KERNEL:ne1000.obj
+ 0001:0000fce0       ?DetectEEPROM@E1000@@AAE_NXZ 001100e0 f   KERNEL:ne1000.obj
+ 0001:0000fd50       ?E1000_Interrupt@E1000@@CAXXZ 00110150 f   KERNEL:ne1000.obj
+ 0001:0000fdb0       ?EnableIRQ@E1000@@AAEXXZ   001101b0 f   KERNEL:ne1000.obj
+ 0001:0000fe40       ?GetIP@E1000@@UAE?AUIPv4Address@@XZ 00110240 f   KERNEL:ne1000.obj
+ 0001:0000fe60       ?GetMac@E1000@@UAE?AUMacAddress@@XZ 00110260 f   KERNEL:ne1000.obj
+ 0001:0000fe80       ?InitRX@E1000@@AAEXXZ      00110280 f   KERNEL:ne1000.obj
+ 0001:0000ffe0       ?InitTX@E1000@@AAEXXZ      001103e0 f   KERNEL:ne1000.obj
+ 0001:00010160       ?Linkup@E1000@@AAEXXZ      00110560 f   KERNEL:ne1000.obj
+ 0001:000101b0       ?Poll@E1000@@UAEXXZ        001105b0 f   KERNEL:ne1000.obj
+ 0001:00010250       ?ReadCommand@E1000@@AAEIG@Z 00110650 f   KERNEL:ne1000.obj
+ 0001:00010280       ?ReadEEPROM@E1000@@AAEIE@Z 00110680 f   KERNEL:ne1000.obj
+ 0001:00010340       ?ReadMac@E1000@@AAEXXZ     00110740 f   KERNEL:ne1000.obj
+ 0001:00010380       ?Send@E1000@@UAEXPAUNetPacket@@@Z 00110780 f   KERNEL:ne1000.obj
+ 0001:00010420       ?Start@E1000@@AAEXXZ       00110820 f   KERNEL:ne1000.obj
+ 0001:00010830       ?WriteCommand@E1000@@AAEXGI@Z 00110c30 f   KERNEL:ne1000.obj
+ 0001:00010870       ?EmptyISR@IDT@@SAXXZ       00110c70 f   KERNEL:idt.obj
+ 0001:00010880       ?GetIR@IDT@@SAPAUIDT_DESCRIPTOR@@I@Z 00110c80 f   KERNEL:idt.obj
+ 0001:00010890       ?Init@IDT@@SAIXZ           00110c90 f   KERNEL:idt.obj
+ 0001:00010900       ?SetISR@IDT@@SAIIP6AXXZ@Z  00110d00 f   KERNEL:idt.obj
+ 0001:00010940       ?Init@PIC@@SAIXZ           00110d40 f   KERNEL:pic.obj
+ 0001:000109a0       ?InterruptDone@PIC@@SAXG@Z 00110da0 f   KERNEL:pic.obj
+ 0001:000109d0       ?ReadData@PIC@@CAEE@Z      00110dd0 f   KERNEL:pic.obj
+ 0001:00010a00       ?SendCommand@PIC@@CAXEE@Z  00110e00 f   KERNEL:pic.obj
+ 0001:00010a30       ?SendData@PIC@@CAXGE@Z     00110e30 f   KERNEL:pic.obj
+ 0001:00010a60       ??0NetInterface@@QAE@PAUPCI_DEVICE@@@Z 00110e60 f   KERNEL:netinterface.obj
+ 0001:00010a80       ?GetIP@NetInterface@@UAE?AUIPv4Address@@XZ 00110e80 f i KERNEL:netinterface.obj
+ 0001:00010a90       ?GetMac@NetInterface@@UAE?AUMacAddress@@XZ 00110e90 f i KERNEL:netinterface.obj
+ 0001:00010ab0       ?Poll@NetInterface@@UAEXXZ 00110eb0 f i KERNEL:netinterface.obj
+ 0001:00010ac0       ?Send@NetInterface@@UAEXPAUNetPacket@@@Z 00110ec0 f i KERNEL:netinterface.obj
+ 0001:00010ac3       ??1type_info@@UAE@XZ       00110ec3 f   LIBCMT:std_type_info_static.obj
+ 0001:00010aca       ??_Etype_info@@UAEPAXI@Z   00110eca f i LIBCMT:std_type_info_static.obj
+ 0001:00010aca       ??_Gtype_info@@UAEPAXI@Z   00110eca f i LIBCMT:std_type_info_static.obj
+ 0001:00010aed       ??3@YAXPAXI@Z              00110eed f   LIBCMT:delete_scalar_size.obj
+ 0002:00000000       ??_C@_06JJGECBPI@?$CFs?5?$CFi?6?$AA@ 00111000     iso.obj
+ 0002:00000008       ??_C@_03OFAPEBGM@?$CFs?6?$AA@ 00111008     iso.obj
+ 0002:0000000c       ??_C@_03PELOGHMK@?$CFi?6?$AA@ 0011100c     Mandelbrot.obj
+ 0002:00000010       ??_C@_06CMGOICJA@Start?6?$AA@ 00111010     Mandelbrot.obj
+ 0002:00000018       ??_C@_0BD@OAOOOKEK@Ticks?3?5?$CFi?7FPS?3?5?$CFi?6?$AA@ 00111018     Mandelbrot.obj
+ 0002:0000002c       ??_C@_09JHEKFLJE@Zoom?3?5?$CFf?6?$AA@ 0011102c     Mandelbrot.obj
+ 0002:00000038       __real@1adaca00            00111038     Mandelbrot.obj
+ 0002:00000040       __real@3fe0000000000000    00111040     Mandelbrot.obj
+ 0002:00000048       __real@3fe93b645a1cac08    00111048     Mandelbrot.obj
+ 0002:00000050       __real@3ff0000000000000    00111050     Mandelbrot.obj
+ 0002:00000058       __real@4010000000000000    00111058     Mandelbrot.obj
+ 0002:00000060       __real@4088000000000000    00111060     Mandelbrot.obj
+ 0002:00000068       __real@40f0000000000000    00111068     Mandelbrot.obj
+ 0002:00000070       __real@437f0000            00111070     Mandelbrot.obj
+ 0002:00000074       __real@447a0000            00111074     Mandelbrot.obj
+ 0002:00000078       ??_C@_0BJ@FHJFEPME@arp?3?5sending?5request?5to?5?$AA@ 00111078     arp.obj
+ 0002:00000094       ??_C@_0BH@NFEPIOCG@arp?3?5sending?5reply?5to?5?$AA@ 00111094     arp.obj
+ 0002:000000ac       ??_C@_0BB@NPEPEJMJ@ARP?5added?5entry?5?$AA@ 001110ac     arp.obj
+ 0002:000000c0       ??_C@_0O@MBFFJLEF@DHCP?5RECEIVE?6?$AA@ 001110c0     dhcp.obj
+ 0002:000000d0       ??_C@_0O@IJAKJLNJ@Received?5DNS?6?$AA@ 001110d0     dns.obj
+ 0002:000000e0       ??_C@_0BF@DPFFLPFA@DNS?5added?5entry?3?5?$CFs?5?$AA@ 001110e0     dns.obj
+ 0002:000000f5       ??_C@_00CNPNBAHC@?$AA@     001110f5     dns.obj
+ 0002:000000f8       ??_C@_0M@KNKKGHNO@PARSED?5IP?3?5?$AA@ 001110f8     http.obj
+ 0002:00000104       ??_C@_0BO@OHMKJDEI@Flags?3?5?$CFux?7ACK?3?5?$CFui?7SEQ?3?5?$CFui?6?$AA@ 00111104     tcpsession.obj
+ 0002:00000124       ??_C@_0L@EIILFCEB@Connected?6?$AA@ 00111124     tcpsession.obj
+ 0002:00000130       ??_C@_07IPMAGINO@Closed?6?$AA@ 00111130     tcpsession.obj
+ 0002:00000138       ??_C@_0BA@FHBAHEGN@Timeout?5closed?6?$AA@ 00111138     tcpsession.obj
+ 0002:00000148       ??_C@_04CDEGOFNM@Cam1?$AA@ 00111148     3DGame:3DGame.obj
+ 0002:00000150       ??_C@_05FOLLILPC@Thing?$AA@ 00111150     3DGame:3DGame.obj
+ 0002:00000158       ??_C@_05PGDJFNFN@Floor?$AA@ 00111158     3DGame:3DGame.obj
+ 0002:00000160       __real@3f800000            00111160     3DGame:3DGame.obj
+ 0002:00000164       __real@40a00000            00111164     3DGame:3DGame.obj
+ 0002:00000168       __real@41200000            00111168     3DGame:3DGame.obj
+ 0002:0000016c       __real@c1700000            0011116c     3DGame:3DGame.obj
+ 0002:00000174       ??_7MyBox@@6B@             00111174     3DGame:MyBox.obj
+ 0002:0000017c       ??_C@_08GGPPOII@cube?4a3d?$AA@ 0011117c     3DGame:MyBox.obj
+ 0002:00000188       ??_C@_07CKAHAGKJ@img?4bmp?$AA@ 00111188     3DGame:MyBox.obj
+ 0002:00000190       ??_C@_0O@NJFLLBAD@bmp?5not?5found?$AA@ 00111190     3DGame:MyBox.obj
+ 0002:000001a0       ??_C@_04GONFKEIN@Mesh?$AA@ 001111a0     3DGame:MyBox.obj
+ 0002:000001a8       ??_C@_0M@NAEHLENP@BoxCollider?$AA@ 001111a8     3DGame:MyBox.obj
+ 0002:000001b4       ??_C@_0BB@OKIMFPDP@PhysicsComponent?$AA@ 001111b4     3DGame:MyBox.obj
+ 0002:000001cc       ??_7Thing@@6B@             001111cc     3DGame:Thing.obj
+ 0002:000001d4       ??_C@_09PCLIKNNA@earth?4bmp?$AA@ 001111d4     3DGame:Thing.obj
+ 0002:000001e0       __real@41a00000            001111e0     3DGame:Thing.obj
+ 0002:000001f0       __xmm@80000000800000008000000080000000 001111f0     3DGame:Thing.obj
+ 0002:00000200       __real@0000000000000000    00111200     GL:Matrix4.obj
+ 0002:00000208       __real@40000000            00111208     GL:Matrix4.obj
+ 0002:00000210       __real@400921fb54442eea    00111210     GL:Matrix4.obj
+ 0002:00000218       __real@4066800000000000    00111218     GL:Matrix4.obj
+ 0002:00000220       __real@3fb1eb851eb851ec    00111220     GL:Color.obj
+ 0002:00000228       __real@3fcae147ae147ae1    00111228     GL:Color.obj
+ 0002:00000230       __real@3fe70a3d70a3d70a    00111230     GL:Color.obj
+ 0002:00000240       __xmm@41f00000000000000000000000000000 00111240     GL:Color.obj
+ 0002:00000250       ??_C@_05JODGIKH@Light?$AA@ 00111250     GameEngine:Engine.obj
+ 0002:00000258       ??_C@_06LOJNHMMK@Thing2?$AA@ 00111258     GameEngine:Engine.obj
+ 0002:00000260       ??_C@_0P@ILNAIKMC@FPS?3?5?$CFi?7DT?3?$CFi?6?$AA@ 00111260     GameEngine:Engine.obj
+ 0002:00000270       ??_C@_0L@KCHEIND@Ticks?3?5?$CFi?6?$AA@ 00111270     GameEngine:Engine.obj
+ 0002:0000027c       ??_C@_08DAHIJCLH@Free?5?$CFi?6?$AA@ 0011127c     GameEngine:Engine.obj
+ 0002:00000288       ??_C@_08FHFNDDND@Cam?3?5?$CFs?6?$AA@ 00111288     GameEngine:Engine.obj
+ 0002:00000294       ??_C@_07JOHLBHPG@P1?3?5?$CFs?6?$AA@ 00111294     GameEngine:Engine.obj
+ 0002:0000029c       ??_C@_0BC@KLOOLLKI@V1?3?5?$FL?$CFf?0?5?$CFf?0?5?$CFf?$FN?6?$AA@ 0011129c     GameEngine:Engine.obj
+ 0002:000002b0       ??_C@_0M@CBHEFHKI@Energy?3?5?$CFf?6?$AA@ 001112b0     GameEngine:Engine.obj
+ 0002:000002bc       ??_C@_09OKFGCEAB@?$CFf?7?$CFf?7?$CFf?6?$AA@ 001112bc     GameEngine:Engine.obj
+ 0002:000002c8       ??_C@_06MHJBABGN@J?3?5?$CFf?6?$AA@ 001112c8     GameEngine:Engine.obj
+ 0002:000002d0       ??_C@_08GDLGNBJK@?$CFf?7?$CFf?7?$CFf?$AA@ 001112d0     GameEngine:Engine.obj
+ 0002:000002dc       ??_C@_0BB@PIJAIOHM@List?3?3operator?$FL?$FN?$AA@ 001112dc     GameEngine:Engine.obj
+ 0002:000002f0       ??_C@_0BN@NJEFJLOF@Index?5out?5of?5range?5exception?$AA@ 001112f0     GameEngine:Engine.obj
+ 0002:00000310       __real@00000000            00111310     GameEngine:Engine.obj
+ 0002:00000314       __real@3f000000            00111314     GameEngine:Engine.obj
+ 0002:00000318       __real@3fb999999999999a    00111318     GameEngine:Engine.obj
+ 0002:00000320       __real@3fc00000            00111320     GameEngine:Engine.obj
+ 0002:00000328       __real@3ff921fb54442eea    00111328     GameEngine:Engine.obj
+ 0002:00000330       __real@401921fb54442eea    00111330     GameEngine:Engine.obj
+ 0002:00000338       __real@402399999999999a    00111338     GameEngine:Engine.obj
+ 0002:00000340       __real@40800000            00111340     GameEngine:Engine.obj
+ 0002:00000344       __real@40c00000            00111344     GameEngine:Engine.obj
+ 0002:00000348       __real@43c80000            00111348     GameEngine:Engine.obj
+ 0002:0000034c       __real@44fa0000            0011134c     GameEngine:Engine.obj
+ 0002:00000350       __real@bf000000            00111350     GameEngine:Engine.obj
+ 0002:00000354       __real@bfc00000            00111354     GameEngine:Engine.obj
+ 0002:00000358       __real@bff921fb54442eea    00111358     GameEngine:Engine.obj
+ 0002:00000360       __xmm@7fffffffffffffff7fffffffffffffff 00111360     GameEngine:Engine.obj
+ 0002:00000370       __xmm@80000000000000008000000000000000 00111370     GameEngine:Engine.obj
+ 0002:00000384       ??_7GameObject@@6B@        00111384     GameEngine:GameObject.obj
+ 0002:0000038c       ??_C@_0L@EJMOOPIK@GameObject?$AA@ 0011138c     GameEngine:GameObject.obj
+ 0002:00000398       ??_C@_08LHHBOIOD@Collider?$AA@ 00111398     GameEngine:GameObject.obj
+ 0002:000003a4       ??_C@_07ONFAPAAB@Physics?$AA@ 001113a4     GameEngine:GameObject.obj
+ 0002:000003b0       ??_7Camera@@6B@            001113b0     GameEngine:Camera.obj
+ 0002:000003bc       ??_7Component@@6B@         001113bc     GameEngine:Component.obj
+ 0002:000003c8       ??_7MeshComponent@@6B@     001113c8     GameEngine:MeshComponent.obj
+ 0002:000003d4       ??_7PhysicsComponent@@6B@  001113d4     GameEngine:PhysicsComponent.obj
+ 0002:000003e0       ??_7BoxCollider@@6B@       001113e0     GameEngine:BoxCollider.obj
+ 0002:000003f0       __xmm@7fffffff7fffffff7fffffff7fffffff 001113f0     GameEngine:BoxCollider.obj
+ 0002:00000400       ??_C@_05MBDEGLCK@ERROR?$AA@ 00111400     GameEngine:ModelLoader.obj
+ 0002:00000408       ??_C@_0CL@CEJFKDDD@?$FL?$CFf?0?5?$CFf?0?5?$CFf?$FN?5?$FL?$CFf?0?5?$CFf?0?5?$CFf?0?5?$CFf?$FN?5?$FL?$CF@ 00111408     GameEngine:Transform.obj
+ 0002:00000440       __xmm@0000000000000000000000003f800000 00111440     GameEngine:Matrix3.obj
+ 0002:00000450       __xmm@3f800000000000000000000000000000 00111450     GameEngine:Matrix3.obj
+ 0002:00000464       ??_7ColliderComponent@@6B@ 00111464     GameEngine:ColliderComponent.obj
+ 0002:0000046c       __real@3e8f5c29            0011146c     Lib:math.obj
+ 0002:00000470       __real@40490fdb            00111470     Lib:math.obj
+ 0002:00000474       __real@bfc90fdb            00111474     Lib:math.obj
+ 0002:00000478       ??_C@_03LHCJEHON@nan?$AA@  00111478     Lib:stdio.obj
+ 0002:0000047c       ??_C@_03OJHLLCGB@inf?$AA@  0011147c     Lib:stdio.obj
+ 0002:00000480       ??_C@_01GBGANLPD@0?$AA@    00111480     Lib:stdio.obj
+ 0002:00000488       __real@3f1a36e2eb1c432d    00111488     Lib:stdio.obj
+ 0002:00000490       __real@bf800000            00111490     Lib:stdio.obj
+ 0002:000004a0       __xmm@46454443424139383736353433323130 001114a0     Lib:stdio.obj
+ 0002:000004b0       ??_C@_0BE@FFHLEPEC@Found?5network?5card?6?$AA@ 001114b0     KERNEL:kernel.obj
+ 0002:000004c4       __real@39800000            001114c4     KERNEL:kernel.obj
+ 0002:000004c8       ??_C@_04PFOHOKJK@?5?5?5?5?$AA@ 001114c8     KERNEL:debug.obj
+ 0002:000004d0       ??_C@_01CLKCMJKC@?5?$AA@   001114d0     KERNEL:debug.obj
+ 0002:000004d4       ??_C@_03IKGEINEE@?$CFs?5?$AA@ 001114d4     KERNEL:debug.obj
+ 0002:00000648       ??_C@_0P@JJOCPBNH@?$CFs?$CFi?4?$CFi?4?$CFi?4?$CFi?6?$AA@ 00111648     KERNEL:net.obj
+ 0002:00000658       ??_C@_0BF@MCJEFIGG@?$CFs?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?6?$AA@ 00111658     KERNEL:net.obj
+ 0002:00000670       ??_C@_0BK@KHJFGGEJ@Default?5interrupt?5handler?$AA@ 00111670     KERNEL:exceptions.obj
+ 0002:0000068c       ??_C@_0BB@CAGHCAFL@Division?5by?5zero?$AA@ 0011168c     KERNEL:exceptions.obj
+ 0002:000006a0       ??_C@_05GCIPIGEI@Debug?$AA@ 001116a0     KERNEL:exceptions.obj
+ 0002:000006a8       ??_C@_0BH@DLMGGJOP@Non?9Maskable?5interrupt?$AA@ 001116a8     KERNEL:exceptions.obj
+ 0002:000006c0       ??_C@_0L@DEJAMIEF@Breakpoint?$AA@ 001116c0     KERNEL:exceptions.obj
+ 0002:000006cc       ??_C@_08KJPBNJGC@Overflow?$AA@ 001116cc     KERNEL:exceptions.obj
+ 0002:000006d8       ??_C@_0BF@KABNNNC@Bound?5range?5exceeded?$AA@ 001116d8     KERNEL:exceptions.obj
+ 0002:000006f0       ??_C@_0BJ@JILCCCBH@0x?$CFux?70x?$CFux?70x?$CFux?70x?$CFux?6?$AA@ 001116f0     KERNEL:exceptions.obj
+ 0002:0000070c       ??_C@_06NIEMCLMH@0x?$CFux?6?$AA@ 0011170c     KERNEL:exceptions.obj
+ 0002:00000714       ??_C@_0P@GJJPHHDN@Invalid?5opcode?$AA@ 00111714     KERNEL:exceptions.obj
+ 0002:00000724       ??_C@_0BF@COPPNEEP@Device?5not?5available?$AA@ 00111724     KERNEL:exceptions.obj
+ 0002:0000073c       ??_C@_0N@EMHPBCJE@Double?5fault?$AA@ 0011173c     KERNEL:exceptions.obj
+ 0002:0000074c       ??_C@_0BM@FLNHCLJG@Coprocessor?5segment?5overrun?$AA@ 0011174c     KERNEL:exceptions.obj
+ 0002:00000768       ??_C@_0M@OLMALBPG@Invalid?5TSS?$AA@ 00111768     KERNEL:exceptions.obj
+ 0002:00000774       ??_C@_0BE@FPPPAKKN@Segment?5not?5present?$AA@ 00111774     KERNEL:exceptions.obj
+ 0002:00000788       ??_C@_0BE@OLMOIPB@Stack?9segment?5fault?$AA@ 00111788     KERNEL:exceptions.obj
+ 0002:0000079c       ??_C@_0BJ@LDJBBLLL@General?5protection?5fault?$AA@ 0011179c     KERNEL:exceptions.obj
+ 0002:000007b8       ??_C@_0L@JBNHOLPF@Page?5fault?$AA@ 001117b8     KERNEL:exceptions.obj
+ 0002:000007c4       ??_C@_0O@EBPJONIA@15?5?$CIReserved?$CJ?$AA@ 001117c4     KERNEL:exceptions.obj
+ 0002:000007d4       ??_C@_0BN@OAPCMCOK@x87?5Floating?9point?5exception?$AA@ 001117d4     KERNEL:exceptions.obj
+ 0002:000007f4       ??_C@_0BA@DMDLEFCI@Alignment?5check?$AA@ 001117f4     KERNEL:exceptions.obj
+ 0002:00000804       ??_C@_0O@LHBOKIFP@Machine?5check?$AA@ 00111804     KERNEL:exceptions.obj
+ 0002:00000814       ??_C@_0BO@PAHIJHOM@SIMD?5floating?9point?5exception?$AA@ 00111814     KERNEL:exceptions.obj
+ 0002:00000838       ??_C@_0EO@NIHBEAOP@Bus?3?5?$CFx?5Device?3?5?$CFx?5Function?3?5?$CFx?5@ 00111838     KERNEL:pci.obj
+ 0002:0000088c       ??_7E1000@@6B@             0011188c     KERNEL:ne1000.obj
+ 0002:0000089c       ??_C@_04BLELHJJM@IP?3?5?$AA@ 0011189c     KERNEL:ne1000.obj
+ 0002:000008a4       ??_C@_05MMECAFBK@Mac?3?5?$AA@ 001118a4     KERNEL:ne1000.obj
+ 0002:000008b0       ??_7NetInterface@@6B@      001118b0     KERNEL:netinterface.obj
+ 0002:000008c4       ??_7type_info@@6B@         001118c4     LIBCMT:std_type_info_static.obj
+ 0002:00000924       ??_R4MyBox@@6B@            00111924     3DGame:MyBox.obj
+ 0002:00000938       ??_R3MyBox@@8              00111938     3DGame:MyBox.obj
+ 0002:00000948       ??_R2MyBox@@8              00111948     3DGame:MyBox.obj
+ 0002:00000954       ??_R1A@?0A@EA@MyBox@@8     00111954     3DGame:MyBox.obj
+ 0002:00000970       ??_R1A@?0A@EA@GameObject@@8 00111970     3DGame:MyBox.obj
+ 0002:0000098c       ??_R3GameObject@@8         0011198c     3DGame:MyBox.obj
+ 0002:0000099c       ??_R2GameObject@@8         0011199c     3DGame:MyBox.obj
+ 0002:000009a4       ??_R4Thing@@6B@            001119a4     3DGame:Thing.obj
+ 0002:000009b8       ??_R3Thing@@8              001119b8     3DGame:Thing.obj
+ 0002:000009c8       ??_R2Thing@@8              001119c8     3DGame:Thing.obj
+ 0002:000009d4       ??_R1A@?0A@EA@Thing@@8     001119d4     3DGame:Thing.obj
+ 0002:000009f0       ??_R4GameObject@@6B@       001119f0     GameEngine:GameObject.obj
+ 0002:00000a04       ??_R4Camera@@6B@           00111a04     GameEngine:Camera.obj
+ 0002:00000a18       ??_R3Camera@@8             00111a18     GameEngine:Camera.obj
+ 0002:00000a28       ??_R2Camera@@8             00111a28     GameEngine:Camera.obj
+ 0002:00000a34       ??_R1A@?0A@EA@Camera@@8    00111a34     GameEngine:Camera.obj
+ 0002:00000a50       ??_R4Component@@6B@        00111a50     GameEngine:Component.obj
+ 0002:00000a64       ??_R3Component@@8          00111a64     GameEngine:Component.obj
+ 0002:00000a74       ??_R2Component@@8          00111a74     GameEngine:Component.obj
+ 0002:00000a7c       ??_R1A@?0A@EA@Component@@8 00111a7c     GameEngine:Component.obj
+ 0002:00000a98       ??_R4MeshComponent@@6B@    00111a98     GameEngine:MeshComponent.obj
+ 0002:00000aac       ??_R3MeshComponent@@8      00111aac     GameEngine:MeshComponent.obj
+ 0002:00000abc       ??_R2MeshComponent@@8      00111abc     GameEngine:MeshComponent.obj
+ 0002:00000acc       ??_R1A@?0A@EA@MeshComponent@@8 00111acc     GameEngine:MeshComponent.obj
+ 0002:00000ae8       ??_R1M@?0A@EA@IMesh@@8     00111ae8     GameEngine:MeshComponent.obj
+ 0002:00000b04       ??_R3IMesh@@8              00111b04     GameEngine:MeshComponent.obj
+ 0002:00000b14       ??_R2IMesh@@8              00111b14     GameEngine:MeshComponent.obj
+ 0002:00000b1c       ??_R1A@?0A@EA@IMesh@@8     00111b1c     GameEngine:MeshComponent.obj
+ 0002:00000b38       ??_R4PhysicsComponent@@6B@ 00111b38     GameEngine:PhysicsComponent.obj
+ 0002:00000b4c       ??_R3PhysicsComponent@@8   00111b4c     GameEngine:PhysicsComponent.obj
+ 0002:00000b5c       ??_R2PhysicsComponent@@8   00111b5c     GameEngine:PhysicsComponent.obj
+ 0002:00000b68       ??_R1A@?0A@EA@PhysicsComponent@@8 00111b68     GameEngine:PhysicsComponent.obj
+ 0002:00000b84       ??_R4BoxCollider@@6B@      00111b84     GameEngine:BoxCollider.obj
+ 0002:00000b98       ??_R3BoxCollider@@8        00111b98     GameEngine:BoxCollider.obj
+ 0002:00000ba8       ??_R2BoxCollider@@8        00111ba8     GameEngine:BoxCollider.obj
+ 0002:00000bb8       ??_R1A@?0A@EA@BoxCollider@@8 00111bb8     GameEngine:BoxCollider.obj
+ 0002:00000bd4       ??_R1A@?0A@EA@ColliderComponent@@8 00111bd4     GameEngine:BoxCollider.obj
+ 0002:00000bf0       ??_R3ColliderComponent@@8  00111bf0     GameEngine:BoxCollider.obj
+ 0002:00000c00       ??_R2ColliderComponent@@8  00111c00     GameEngine:BoxCollider.obj
+ 0002:00000c0c       ??_R4ColliderComponent@@6B@ 00111c0c     GameEngine:ColliderComponent.obj
+ 0002:00000c20       ??_R4E1000@@6B@            00111c20     KERNEL:ne1000.obj
+ 0002:00000c34       ??_R3E1000@@8              00111c34     KERNEL:ne1000.obj
+ 0002:00000c44       ??_R2E1000@@8              00111c44     KERNEL:ne1000.obj
+ 0002:00000c50       ??_R1A@?0A@EA@E1000@@8     00111c50     KERNEL:ne1000.obj
+ 0002:00000c6c       ??_R1A@?0A@EA@NetInterface@@8 00111c6c     KERNEL:ne1000.obj
+ 0002:00000c88       ??_R3NetInterface@@8       00111c88     KERNEL:ne1000.obj
+ 0002:00000c98       ??_R2NetInterface@@8       00111c98     KERNEL:ne1000.obj
+ 0002:00000ca0       ??_R4NetInterface@@6B@     00111ca0     KERNEL:netinterface.obj
+ 0002:00000cb4       ??_R4type_info@@6B@        00111cb4     LIBCMT:std_type_info_static.obj
+ 0002:00000cc8       ??_R3type_info@@8          00111cc8     LIBCMT:std_type_info_static.obj
+ 0002:00000cd8       ??_R2type_info@@8          00111cd8     LIBCMT:std_type_info_static.obj
+ 0002:00000ce0       ??_R1A@?0A@EA@type_info@@8 00111ce0     LIBCMT:std_type_info_static.obj
+ 0003:00000000       ?count@@3HA                00112000     Mandelbrot.obj
+ 0003:00003008       ?acc@@3MA                  00115008     3DGame:Thing.obj
+ 0003:0000300c       ?m_width@GL@gl@@2IA        0011500c     GL:GL.obj
+ 0003:00003010       ?m_height@GL@gl@@2IA       00115010     GL:GL.obj
+ 0003:00003014       ?bound_tex@gl@@3HA         00115014     GL:GL.obj
+ 0003:00003018       ?p4@@3MA                   00115018     GameEngine:Engine.obj
+ 0003:0000301c       ?p5@@3MA                   0011501c     GameEngine:Engine.obj
+ 0003:00003024       ?color@Debug@@2IA          00115024     KERNEL:debug.obj
+ 0003:00004028       __fltused                  00116028     LIBCMT:fltused.obj
+ 0003:0000402c       ??_R0?AVMyBox@@@8          0011602c     3DGame:MyBox.obj
+ 0003:00004040       ??_R0?AVGameObject@@@8     00116040     3DGame:MyBox.obj
+ 0003:0000405c       ??_R0?AVThing@@@8          0011605c     3DGame:Thing.obj
+ 0003:00004070       ??_R0?AVCamera@@@8         00116070     GameEngine:Camera.obj
+ 0003:00004088       ??_R0?AVComponent@@@8      00116088     GameEngine:Component.obj
+ 0003:000040a0       ??_R0?AVMeshComponent@@@8  001160a0     GameEngine:MeshComponent.obj
+ 0003:000040bc       ??_R0?AVIMesh@@@8          001160bc     GameEngine:MeshComponent.obj
+ 0003:000040d0       ??_R0?AVPhysicsComponent@@@8 001160d0     GameEngine:PhysicsComponent.obj
+ 0003:000040f0       ??_R0?AVBoxCollider@@@8    001160f0     GameEngine:BoxCollider.obj
+ 0003:0000410c       ??_R0?AVColliderComponent@@@8 0011610c     GameEngine:BoxCollider.obj
+ 0003:0000412c       ??_R0?AVE1000@@@8          0011612c     KERNEL:ne1000.obj
+ 0003:00004140       ??_R0?AVNetInterface@@@8   00116140     KERNEL:ne1000.obj
+ 0003:0000415c       ??_R0?AVtype_info@@@8      0011615c     LIBCMT:std_type_info_static.obj
+ 0003:00004180       ?_kernel_stack@@3PADA      00116180     boot.obj
+ 0003:00006120       ?desc@@3PAUISO_PRIMARYDESC@@A 00118120     iso.obj
+ 0003:00006124       ?root@@3PAUISO_DIRECTORY@@A 00118124     iso.obj
+ 0003:00006128       ?tz@@3UComplex@@A          00118128     Mandelbrot.obj
+ 0003:00006130       ?arp_cache@ARP@@0PAUARP_TABLE_ENTRY@@A 00118130     arp.obj
+ 0003:00006270       ?dns_server@DNS@@2UIPv4Address@@A 00118270     dns.obj
+ 0003:00006278       ?dns_cache@DNS@@0PAUDNS_TABLE_ENTRY@@A 00118278     dns.obj
+ 0003:00006478       ?sessions@TCP@@2PAPAVTcpSession@@A 00118478     tcp.obj
+ 0003:000064f8       ?phys@@3PAVPhysicsComponent@@A 001184f8     3DGame:Thing.obj
+ 0003:000064fc       ?vel@@3MA                  001184fc     3DGame:Thing.obj
+ 0003:00006500       ?m_textures@GL@gl@@2PAPAVBMP@@A 00118500     GL:GL.obj
+ 0003:00006580       ?tex_index@gl@@3HA         00118580     GL:GL.obj
+ 0003:00006584       ?mat_mode@gl@@3W4GLMatrixMode@@A 00118584     GL:GL.obj
+ 0003:00006588       ?mat_stack_index@gl@@3HA   00118588     GL:GL.obj
+ 0003:0000658c       ?vert_ptr@gl@@3PAUVertex@1@A 0011858c     GL:GL.obj
+ 0003:00006590       ?mat_viewmodel@gl@@3UMatrix4@1@A 00118590     GL:GL.obj
+ 0003:000065d0       ?mat_stack@gl@@3PAUMatrix4@1@A 001185d0     GL:GL.obj
+ 0003:00006dd0       ?mat_projection@gl@@3UMatrix4@1@A 00118dd0     GL:GL.obj
+ 0003:00006e10       ?depth_buffer@Rasterizer@gl@@2PAMA 00118e10     GL:Rasterizer.obj
+ 0003:00006e14       ?p1@@3HA                   00118e14     GameEngine:Engine.obj
+ 0003:00006e18       ?p2@@3MA                   00118e18     GameEngine:Engine.obj
+ 0003:00006e1c       ?p3@@3MA                   00118e1c     GameEngine:Engine.obj
+ 0003:00006e20       ?ticks@@3HA                00118e20     GameEngine:Engine.obj
+ 0003:00006e24       ?BOOL1@@3_NA               00118e24     GameEngine:Engine.obj
+ 0003:00006e28       ?last_mouse_pos@@3UVector3@@A 00118e28     GameEngine:Engine.obj
+ 0003:00006e34       ?mem_left@@3HA             00118e34     KERNEL:kernel.obj
+ 0003:00006e38       ?mem_ptr@@3PAEA            00118e38     KERNEL:kernel.obj
+ 0003:00006e3c       ?x@Debug@@2HA              00118e3c     KERNEL:debug.obj
+ 0003:00006e40       ?y@Debug@@2HA              00118e40     KERNEL:debug.obj
+ 0003:00006e44       ?bcolor@Debug@@2IA         00118e44     KERNEL:debug.obj
+ 0003:00006e48       ?mode@VBE@@2UVBE_MODE_INFO@@A 00118e48     KERNEL:vbe.obj
+ 0003:00006f48       ?buffer@VBE@@2PAIA         00118f48     KERNEL:vbe.obj
+ 0003:00006f4c       ?mem_base@VBE@@0PAIA       00118f4c     KERNEL:vbe.obj
+ 0003:00006f50       ?mem_max@VBE@@0PAIA        00118f50     KERNEL:vbe.obj
+ 0003:00006f54       ?mem_size@VBE@@0IA         00118f54     KERNEL:vbe.obj
+ 0003:00006f58       ?bytes_per_pixel@VBE@@0IA  00118f58     KERNEL:vbe.obj
+ 0003:00006f5c       ?pixel_count@VBE@@0IA      00118f5c     KERNEL:vbe.obj
+ 0003:00006f60       ?ctrl@Keyboard@@2_NA       00118f60     KERNEL:keyboard.obj
+ 0003:00006f61       ?shift@Keyboard@@2_NA      00118f61     KERNEL:keyboard.obj
+ 0003:00006f62       ?alt@Keyboard@@2_NA        00118f62     KERNEL:keyboard.obj
+ 0003:00006f63       ?caps@Keyboard@@2_NA       00118f63     KERNEL:keyboard.obj
+ 0003:00006f64       ?num@Keyboard@@2_NA        00118f64     KERNEL:keyboard.obj
+ 0003:00006f65       ?scroll@Keyboard@@2_NA     00118f65     KERNEL:keyboard.obj
+ 0003:00006f66       ?extended@@3_NA            00118f66     KERNEL:keyboard.obj
+ 0003:00006f67       ?scancode@@3EA             00118f67     KERNEL:keyboard.obj
+ 0003:00006f68       ?keystates@@3PA_NA         00118f68     KERNEL:keyboard.obj
+ 0003:00007067       ?scan@@3EA                 00119067     KERNEL:keyboard.obj
+ 0003:00007068       ?last_key@@3UKEY_PACKET@@A 00119068     KERNEL:keyboard.obj
+ 0003:00007074       ?pressed@@3_NA             00119074     KERNEL:keyboard.obj
+ 0003:00007078       ?key@@3W4KEYCODE@@A        00119078     KERNEL:keyboard.obj
+ 0003:0000707c       ?ticks@PIT@@2IA            0011907c     KERNEL:pit.obj
+ 0003:00007080       ?x@Mouse@@2HA              00119080     KERNEL:mouse.obj
+ 0003:00007084       ?y@Mouse@@2HA              00119084     KERNEL:mouse.obj
+ 0003:00007088       ?sensitivity@Mouse@@2MA    00119088     KERNEL:mouse.obj
+ 0003:0000708c       ?mouse_L@Mouse@@2_NA       0011908c     KERNEL:mouse.obj
+ 0003:0000708d       ?mouse_R@Mouse@@2_NA       0011908d     KERNEL:mouse.obj
+ 0003:0000708e       ?mouse_M@Mouse@@2_NA       0011908e     KERNEL:mouse.obj
+ 0003:0000708f       ?mouse_cycle@Mouse@@0EA    0011908f     KERNEL:mouse.obj
+ 0003:00007090       ?scroll_x@Mouse@@2HA       00119090     KERNEL:mouse.obj
+ 0003:00007094       ?scroll_y@Mouse@@2HA       00119094     KERNEL:mouse.obj
+ 0003:00007098       ?w@Mouse@@0IA              00119098     KERNEL:mouse.obj
+ 0003:0000709c       ?h@Mouse@@0IA              0011909c     KERNEL:mouse.obj
+ 0003:000070a0       ?mouse_byte@Mouse@@0PACA   001190a0     KERNEL:mouse.obj
+ 0003:000070a4       ?initialized@Mouse@@0_NA   001190a4     KERNEL:mouse.obj
+ 0003:000070a8       ?intf@KNet@@2PAVNetInterface@@A 001190a8     KERNEL:net.obj
+ 0003:000070ac       ?GatewayIPv4@KNet@@2UIPv4Address@@A 001190ac     KERNEL:net.obj
+ 0003:000070b0       ?GatewayMAC@KNet@@2UMacAddress@@A 001190b0     KERNEL:net.obj
+ 0003:000070b8       ?BroadcastMAC@KNet@@2UMacAddress@@A 001190b8     KERNEL:net.obj
+ 0003:000070c0       ?BroadcastIPv4@KNet@@2UIPv4Address@@A 001190c0     KERNEL:net.obj
+ 0003:000070c4       ?NullMAC@KNet@@2UMacAddress@@A 001190c4     KERNEL:net.obj
+ 0003:000070cc       ?NullIPv4@KNet@@2UIPv4Address@@A 001190cc     KERNEL:net.obj
+ 0003:000070d0       ?num_blocks@Memory@@2IA    001190d0     KERNEL:memory.obj
+ 0003:000070d4       ?num_free@Memory@@2IA      001190d4     KERNEL:memory.obj
+ 0003:000070d8       ?mem_size@Memory@@2IA      001190d8     KERNEL:memory.obj
+ 0003:000070dc       ?mem_map@Memory@@0PAIA     001190dc     KERNEL:memory.obj
+ 0003:000070e0       ?global_e@E1000@@0PAV1@A   001190e0     KERNEL:ne1000.obj
+ 0003:000070e8       ?idt@IDT@@0PAUIDT_DESCRIPTOR@@A 001190e8     KERNEL:idt.obj
+ 0003:000078e8       ?idt_reg@IDT@@0UIDT_REG@@A 001198e8     KERNEL:idt.obj
 
  entry point at        0000:00000000
 
  Static symbols
 
- 0002:fffef200       __guard_fids__             00100000     LIBCMT:std_type_info_static.obj
+ 0002:fffef000       __guard_fids__             00100000     LIBCMT:std_type_info_static.obj
  0001:00000000       ??__Emat_projection@gl@@YAXXZ 00100400 f   GL:GL.obj
  0001:00000010       ??__Emat_stack@gl@@YAXXZ   00100410 f   GL:GL.obj
  0001:00000040       ??__Emat_viewmodel@gl@@YAXXZ 00100440 f   GL:GL.obj
  0001:00000050       ??__Elast_mouse_pos@@YAXXZ 00100450 f   GameEngine:Engine.obj
  0001:000022a8       $LN28                      001026a8     tcpsession.obj
- 0001:0000d1d0       $LN49                      0010d5d0     Lib:stdio.obj
- 0001:0000d1ec       $LN44                      0010d5ec     Lib:stdio.obj
- 0001:0000d6c8       $LN28                      0010dac8     KERNEL:debug.obj
- 0001:0000d818       $LN21                      0010dc18     KERNEL:debug.obj
- 0001:0000e1d0       $LN59                      0010e5d0     KERNEL:keyboard.obj
- 0001:0000e1f8       $LN60                      0010e5f8     KERNEL:keyboard.obj
- 0001:0000e228       $LN61                      0010e628     KERNEL:keyboard.obj
- 0001:0000e260       $LN56                      0010e660     KERNEL:keyboard.obj
- 0002:000004a8       ?scancodes@@3QBW4KEYCODE@@B 001112a8     KERNEL:keyboard.obj
- 0003:00000008       ?DEFAULT_FONT@@3PAEA       00111c08     3DGame:3DGame.obj
- 0003:00001008       ?DEFAULT_FONT@@3PAEA       00112c08     3DGame:MyBox.obj
- 0003:00002008       ?DEFAULT_FONT@@3PAEA       00113c08     3DGame:Thing.obj
- 0003:00003020       ?next@@3KA                 00114c20     Lib:math.obj
- 0003:00003028       ?DEFAULT_FONT@@3PAEA       00114c28     KERNEL:vbe.obj
- 0004:00000000       ?mat_projection$initializer$@gl@@3P6AXXZA 00119600     GL:GL.obj
- 0004:00000004       ?mat_viewmodel$initializer$@gl@@3P6AXXZA 00119604     GL:GL.obj
- 0004:00000008       ?mat_stack$initializer$@gl@@3P6AXXZA 00119608     GL:GL.obj
- 0004:0000000c       ?last_mouse_pos$initializer$@@3P6AXXZA 0011960c     GameEngine:Engine.obj
+ 0001:0000d330       $LN49                      0010d730     Lib:stdio.obj
+ 0001:0000d34c       $LN44                      0010d74c     Lib:stdio.obj
+ 0001:0000d828       $LN28                      0010dc28     KERNEL:debug.obj
+ 0001:0000d978       $LN21                      0010dd78     KERNEL:debug.obj
+ 0001:0000e330       $LN59                      0010e730     KERNEL:keyboard.obj
+ 0001:0000e358       $LN60                      0010e758     KERNEL:keyboard.obj
+ 0001:0000e388       $LN61                      0010e788     KERNEL:keyboard.obj
+ 0001:0000e3c0       $LN56                      0010e7c0     KERNEL:keyboard.obj
+ 0002:000004d8       ?scancodes@@3QBW4KEYCODE@@B 001114d8     KERNEL:keyboard.obj
+ 0003:00000008       ?DEFAULT_FONT@@3PAEA       00112008     3DGame:3DGame.obj
+ 0003:00001008       ?DEFAULT_FONT@@3PAEA       00113008     3DGame:MyBox.obj
+ 0003:00002008       ?DEFAULT_FONT@@3PAEA       00114008     3DGame:Thing.obj
+ 0003:00003020       ?next@@3KA                 00115020     Lib:math.obj
+ 0003:00003028       ?DEFAULT_FONT@@3PAEA       00115028     KERNEL:vbe.obj
+ 0004:00000000       ?mat_projection$initializer$@gl@@3P6AXXZA 00119a00     GL:GL.obj
+ 0004:00000004       ?mat_viewmodel$initializer$@gl@@3P6AXXZA 00119a04     GL:GL.obj
+ 0004:00000008       ?mat_stack$initializer$@gl@@3P6AXXZA 00119a08     GL:GL.obj
+ 0004:0000000c       ?last_mouse_pos$initializer$@@3P6AXXZA 00119a0c     GameEngine:Engine.obj

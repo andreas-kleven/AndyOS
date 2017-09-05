@@ -38,8 +38,8 @@ Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
 
 /*inline Vector3 operator*(const gl::Matrix& mat, const Vector3& vec)
 {
-	float nx = mat.m_elements[0] * vec.x + mat.m_elements[1] * vec.y + mat.m_elements[2] * vec.z + mat.m_elements[3];
-	float ny = mat.m_elements[4] * vec.x + mat.m_elements[5] * vec.y + mat.m_elements[6] * vec.z + mat.m_elements[7];
-	float nz = mat.m_elements[8] * vec.x + mat.m_elements[9] * vec.y + mat.m_elements[10] * vec.z + mat.m_elements[11];
+	float nx = mat.elems[0] * vec.x + mat.elems[1] * vec.y + mat.elems[2] * vec.z + mat.elems[3];
+	float ny = mat.elems[4] * vec.x + mat.elems[5] * vec.y + mat.elems[6] * vec.z + mat.elems[7];
+	float nz = mat.elems[8] * vec.x + mat.elems[9] * vec.y + mat.elems[10] * vec.z + mat.elems[11];
 	return Vector3(nx, ny, nz);
 }*/

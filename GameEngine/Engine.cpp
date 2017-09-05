@@ -338,6 +338,10 @@ void GEngine::Collision()
 							Ib[4] = mb / 6;
 							Ib[8] = mb / 6;
 
+
+							//Matrix3 MatR = Matrix3::CreateRotation(pha->parent->transform.rotation.ToEuler());
+							//Ia = (MatR * Ia * MatR.Transpose());
+
 							//for (int i = 0; i < 9; i++)
 							//{
 							//	Ia[i] = 0;
