@@ -27,7 +27,8 @@ namespace gl
 
 		Vector4 operator/ (float f)
 		{
-			return Vector4(x / f, y / f, z / f, w);
+			float inv = 1 / f;
+			return Vector4(x * inv, y * inv, z * inv, w);
 		}
 
 		float Magnitude()

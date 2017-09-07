@@ -6,11 +6,11 @@
 #include "ModelLoader.h"
 #include "Engine.h"
 
-PhysicsComponent* phys;
+Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!ISO_FS::ReadFile("earth.bmp", img_buf))
@@ -39,11 +39,11 @@ Thing::Thing()
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	//sphere->radius = 1;
-	BoxCollider* collider = CreateComponent<BoxCollider>("BoxCollider");
+	phys = CreateComponent<Rigidbody>("Rigidbody");
+	phys->collider = new BoxCollider();
 
-	phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
 	//phys->bEnabled = 0;
-	phys->bEnabledGravity = 0;
+	//phys->bEnabledGravity = 0;
 }
 
 float acc = -9.8 * 2;

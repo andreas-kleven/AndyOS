@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Vector3.h"
 #include "Transform.h"
 #include "GameObject.h"
@@ -21,7 +20,7 @@ public:
 private:
 	std::List<Component*> all_components;
 	std::List<MeshComponent*> meshComponents;
-	std::List<ColliderComponent*> colliderComponents;
+	std::List<Rigidbody*> rigidbodies;
 	std::List<Component*> physics_components;
 
 	void Update();

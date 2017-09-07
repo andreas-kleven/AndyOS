@@ -24,11 +24,14 @@
     <Filter Include="Components\Collision">
       <UniqueIdentifier>{33e3c70c-ec3e-4490-86c6-6bbd39281fa5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Physics">
-      <UniqueIdentifier>{d42d2249-f24b-4b55-beb2-e90d588b3aee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{4a646616-6437-4965-ac9d-3eda5ac8e1e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{8476abbb-73e8-471f-aa9f-76ce85cc2ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Collider">
+      <UniqueIdentifier>{c4f3468a-5691-43f3-aa94-a47c4dfa835d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -80,26 +83,29 @@
     <ClCompile Include="A3D.cpp">
       <Filter>Header Files\File Formats</Filter>
     </ClCompile>
-    <ClCompile Include="ColliderComponent.cpp">
-      <Filter>Components\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereCollider.cpp">
-      <Filter>Components\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsComponent.cpp">
-      <Filter>Components\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="Quaternion.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BoxCollider.cpp">
-      <Filter>Components\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Matrix3.cpp">
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Rigidbody.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,20 +163,8 @@
     <ClInclude Include="A3D.h">
       <Filter>Header Files\File Formats</Filter>
     </ClInclude>
-    <ClInclude Include="ColliderComponent.h">
-      <Filter>Components\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereCollider.h">
-      <Filter>Components\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsComponent.h">
-      <Filter>Components\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxCollider.h">
-      <Filter>Components\Collision</Filter>
     </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>Math</Filter>
@@ -183,6 +177,21 @@
     </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Rigidbody.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

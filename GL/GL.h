@@ -42,11 +42,15 @@ namespace gl
 
 		static void VertexPointer(Vertex* ptr);
 
+		//static void LightingFunction()
+
 		static void Clear(uint32 color);
 		static void Draw(int start, int count);
 		static void SwapBuffers();
 
 	private:
 		static Matrix4& SelectedMatrix();
+
+		static ColRGB (*LightingFunction)(int x, int y, int z);
 	};
 }

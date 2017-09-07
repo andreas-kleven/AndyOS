@@ -14,6 +14,11 @@ public:
 	Vector3 EulerAngles();
 	gl::Vector4 ToVector4();
 
+	bool operator==(const Vector3& b)
+	{
+		return x == b.x && y == b.y && z == b.z;
+	}
+
 	Vector3 operator+(const Vector3& b)
 	{
 		return Vector3(x + b.x, y + b.y, z + b.z);
@@ -52,7 +57,8 @@ public:
 
 	Vector3 operator/(float f)
 	{
-		return Vector3(x / f, y / f, z / f);
+		float inv = 1 / f;
+		return Vector3(x * inv, y * inv, z * inv);
 	}
 
 	float Magnitude()

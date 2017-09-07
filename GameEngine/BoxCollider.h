@@ -1,13 +1,18 @@
 #pragma once
-#include "ColliderComponent.h"
+#include "Collider.h"
 #include "Box.h"
 
-class BoxCollider : public ColliderComponent
+struct CollisionManifold
+{
+
+};
+
+class BoxCollider : public Collider
 {
 public:
 	BoxCollider();
 
-	bool IsColliding(BoxCollider* other);
+	bool IsColliding(BoxCollider* other, Vector3& mtv);
 
 	//Box GetBoundingBox();
 };

@@ -2,7 +2,7 @@
 #include "MeshComponent.h"
 #include "SphereCollider.h"
 #include "BoxCollider.h"
-#include "PhysicsComponent.h"
+#include "Rigidbody.h"
 #include "Model3D.h"
 #include "ModelLoader.h"
 
@@ -37,9 +37,9 @@ MyBox::MyBox()
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	//sphere->radius = 1;
-	BoxCollider* collider = CreateComponent<BoxCollider>("BoxCollider");
 
-	PhysicsComponent* phys = CreateComponent<PhysicsComponent>("PhysicsComponent");
+	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
+	phys->collider = new BoxCollider();
 	//phys->bEnabled = 0;
 	phys->bEnabledGravity = 0;
 }

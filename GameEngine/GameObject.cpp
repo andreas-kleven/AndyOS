@@ -55,23 +55,19 @@ void GameObject::AddComponent(Component* comp)
 	{
 		meshComponents.Add((MeshComponent*)comp);
 	}
-	else if (compName.Contains("Collider"))
+	else if (compName.Contains("Rigidbody"))
 	{
-		colliderComponents.Add((ColliderComponent*)comp);
-	}
-	else if (compName.Contains("Physics"))
-	{
-		int index = components.IndexOf(physicsComponent);
+		int index = components.IndexOf(rigidbody);
 
 		if(index == -1)
 		{
-			physicsComponent = (PhysicsComponent*)comp;
-			components.Add(physicsComponent);
+			rigidbody = (Rigidbody*)comp;
+			components.Add(rigidbody);
 		}
 		else
 		{
-			physicsComponent = (PhysicsComponent*)comp;
-			components[index] = physicsComponent;
+			rigidbody = (Rigidbody*)comp;
+			components[index] = rigidbody;
 		}
 		return;
 	}

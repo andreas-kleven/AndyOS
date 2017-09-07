@@ -2,8 +2,7 @@
 #include "Transform.h"
 #include "Component.h"
 #include "MeshComponent.h"
-#include "ColliderComponent.h"
-#include "PhysicsComponent.h"
+#include "Rigidbody.h"
 #include "List.h"
 
 class GameObject
@@ -16,8 +15,7 @@ public:
 
 	std::List<Component*> components;
 	std::List<MeshComponent*> meshComponents;
-	std::List<ColliderComponent*> colliderComponents;
-	PhysicsComponent* physicsComponent;
+	Rigidbody* rigidbody;
 
 	GameObject();
 

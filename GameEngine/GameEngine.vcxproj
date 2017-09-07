@@ -125,7 +125,8 @@
     <ClCompile Include="A3D.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="ColliderComponent.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -138,7 +139,7 @@
     <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Obj.cpp" />
-    <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -152,7 +153,8 @@
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BoxMesh.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="ColliderComponent.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Engine.h" />
@@ -166,7 +168,7 @@
     <ClInclude Include="Model3D.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Obj.h" />
-    <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Scene.h" />
