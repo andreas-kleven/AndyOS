@@ -21,6 +21,8 @@ float p5 = 60;
 
 Vector3 last_mouse_pos;
 int ticks;
+int totalFrames = 0;
+int startTicks = 0;
 
 bool BOOL1 = false;
 
@@ -34,6 +36,8 @@ void GEngine::StartGame(Game* game)
 {
 	GL::Init();
 	active_game = game;
+
+	startTicks = PIT::ticks;
 
 	Camera* cam = active_game->GetActiveCamera();
 	LightSource* light = (LightSource*)active_game->GetLightSource("Light");
@@ -63,8 +67,9 @@ void GEngine::StartGame(Game* game)
 		Debug::y = 0;
 
 		if (PIT::ticks != ticks)
+
 		{
-			Debug::Print("FPS: %i\tDT:%i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks);
+			Debug::Print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks, (ticks - startTicks) / totalFrames);
 			char buf[20];
 			//Debug::Print("AVG: %i\n", frames * 1000 / PIT::ticks);
 		}
@@ -84,6 +89,8 @@ void GEngine::StartGame(Game* game)
 		Update();
 		Collision();
 		Render();
+
+		totalFrames++;
 	}
 }
 
