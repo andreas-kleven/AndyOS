@@ -17,4 +17,16 @@ namespace gl
 		this->z = z;
 		this->w = w;
 	}
+
+	float Vector4::Dot(const Vector4& a, const Vector4& b)
+	{
+		return a.x * b.x + a.y * b.y + a.z * b.z;
+	}
+
+	Vector4 Vector4::Cross(const Vector4& a, const Vector4& b)
+	{
+		return Vector4(a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x, a.w);
+	}
 }

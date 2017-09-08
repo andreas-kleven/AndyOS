@@ -30,7 +30,7 @@ namespace gl
 				//for (int c = 0; c < 10; c++)
 				//if (i < length * 3)
 					Rasterizer::DrawTriangle(&vertex_buffer[i]);
-					 
+
 				//VBE::DrawLine((int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), (int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), 0xFF0000);
 				//VBE::DrawLine((int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), (int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), 0xFF0000);
 				//VBE::DrawLine((int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), (int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), 0xFF0000);
@@ -59,6 +59,7 @@ namespace gl
 
 	uint32 GL::m_width = 1024;
 	uint32 GL::m_height = 768;
+	uint32 GL::m_stride = m_width * 4;
 
 	BMP* GL::m_textures[GL_MAX_TEXTURES];
 	int tex_index = 0;
@@ -151,32 +152,21 @@ namespace gl
 		int end = start + count;
 		for (int i = start; i < end; i += 3)
 		{
-			Vertex* a = &vert_ptr[i];
-			Vertex* b = &vert_ptr[i + 1];
-			Vertex* c = &vert_ptr[i + 2];
+			Vertex& a = vert_ptr[i];
+			Vertex& b = vert_ptr[i + 1];
+			Vertex& c = vert_ptr[i + 2];
 
-			a->MulMatrix(M);
-			b->MulMatrix(M);
-			c->MulMatrix(M);
+			a.MulMatrix(M);
+			b.MulMatrix(M);
+			c.MulMatrix(M);
 
+			a.built_color = (a.color * -a.normal.Dot(light)) * 1 + (a.color * -a.normal.Dot(light2)) * 0.1;
+			b.built_color = (b.color * -b.normal.Dot(light)) * 1 + (b.color * -b.normal.Dot(light2)) * 0.1;
+			c.built_color = (c.color * -c.normal.Dot(light)) * 1 + (c.color * -c.normal.Dot(light2)) * 0.1;
 
-			//float asd = -a->normal.Normalized().Dot(light);
-			//Debug::Print("%f\n", asd);
-			//PIT::Sleep(10);
-
-			a->built_color = (a->color * -a->normal.Dot(light)) * 1 + (a->color * -a->normal.Dot(light2)) * 0.1;
-			b->built_color = (b->color * -b->normal.Dot(light)) * 1 + (b->color * -b->normal.Dot(light2)) * 0.1;
-			c->built_color = (c->color * -c->normal.Dot(light)) * 1 + (c->color * -c->normal.Dot(light2)) * 0.1;
-			//Debug::Print("%f, %f, %f\n", a->built_color.r, a->built_color.g, a->built_color.b);
-
-			if (a->mul_w > 0 && b->mul_w > 0 && c->mul_w > 0)
+			if (a.mul_w > 0 && b.mul_w > 0 && c.mul_w > 0)
 			{
-				Rasterizer::DrawTriangle(&vert_ptr[i], m_textures[bound_tex]);
-
-				//VBE::DrawLine((int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), (int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), 0xFF0000);
-				//VBE::DrawLine((int)(b->x * GL::m_width / b->w + m_width / 2), (int)(b->y * GL::m_height / b->w + m_height / 2), (int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), 0xFF0000);
-				//VBE::DrawLine((int)(c->x * GL::m_width / c->w + m_width / 2), (int)(c->y * GL::m_height / c->w + m_height / 2), (int)(a->x * GL::m_width / a->w + m_width / 2), (int)(a->y * GL::m_height / a->w + m_height / 2), 0xFF0000);
-
+				Rasterizer::DrawTriangle(a, b, c, m_textures[bound_tex]);
 			}
 		}
 	}

@@ -29,9 +29,9 @@ namespace gl
 
 	void Vertex::MulMatrix(const Matrix4& mat)
 	{
-		mul_x = mat.m_elements[0] * x + mat.m_elements[1] * y + mat.m_elements[2] * z + mat.m_elements[3];
-		mul_y = mat.m_elements[4] * x + mat.m_elements[5] * y + mat.m_elements[6] * z + mat.m_elements[7];
-		mul_z = mat.m_elements[8] * x + mat.m_elements[9] * y + mat.m_elements[10] * z + mat.m_elements[11];
-		mul_w = mat.m_elements[12] * x + mat.m_elements[13] * y + mat.m_elements[14] * z + mat.m_elements[15];
+		mul_x = mat.elems[0] * x + mat.elems[1] * y + mat.elems[2] * z + mat.elems[3];
+		mul_y = mat.elems[4] * x + mat.elems[5] * y + mat.elems[6] * z + mat.elems[7];
+		mul_z = mat.elems[8] * x + mat.elems[9] * y + mat.elems[10] * z + mat.elems[11];
+		mul_w = mat.elems[12] * x + mat.elems[13] * y + mat.elems[14] * z + mat.elems[15];
 	}
 }

@@ -23,6 +23,7 @@ namespace gl
 	public:
 		static uint32 m_width;
 		static uint32 m_height;
+		static uint32 m_stride;
 
 		static BMP* m_textures[];
 

@@ -21,14 +21,8 @@ namespace gl
 		return STATUS_SUCCESS;
 	}
 
-	void Rasterizer::DrawTriangle(Vertex* buffer, BMP* texture)
+	void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 	{
-		uint32 stride = GL::m_width * 4;
-
-		Vertex& v0 = buffer[0];
-		Vertex& v1 = buffer[1];
-		Vertex& v2 = buffer[2];
-
 		v0.mul_w = 1 / v0.mul_w;
 		v1.mul_w = 1 / v1.mul_w;
 		v2.mul_w = 1 / v2.mul_w;
@@ -40,6 +34,14 @@ namespace gl
 		v0.mul_y = v0.mul_y * GL::m_height * v0.mul_w + GL::m_height * 0.5;
 		v1.mul_y = v1.mul_y * GL::m_height * v1.mul_w + GL::m_height * 0.5;
 		v2.mul_y = v2.mul_y * GL::m_height * v2.mul_w + GL::m_height * 0.5;
+
+		Vector4 pa(v0.mul_x, v0.mul_y, v0.mul_z, 0);
+		Vector4 pb(v1.mul_x, v1.mul_y, v1.mul_z, 0);
+		Vector4 pc(v2.mul_x, v2.mul_y, v2.mul_z, 0);
+		Vector4 normal = Vector4::Cross(pb - pa, pc - pa);
+
+		if (normal.z < 0)
+			return;
 
 		//VBE::DrawLine((int)v0.mul_x, (int)v0.mul_y, (int)v1.mul_x, (int)v1.mul_y, 0xFF);
 		//VBE::DrawLine((int)v1.mul_x, (int)v1.mul_y, (int)v2.mul_x, (int)v2.mul_y, 0xFF00);

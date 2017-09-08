@@ -6,7 +6,7 @@ namespace gl
 {
 	struct Matrix4
 	{
-		float m_elements[16];
+		float elems[16];
 
 		Matrix4();
 		Matrix4(float elements[]);
@@ -26,7 +26,7 @@ namespace gl
 		{
 			for (int i = 0; i < 16; i++)
 			{
-				m_elements[i] += rhs.m_elements[i];
+				elems[i] += rhs.elems[i];
 			}
 			return *this;
 		}
@@ -35,7 +35,7 @@ namespace gl
 		{
 			for (int i = 0; i < 16; i++)
 			{
-				m_elements[i] -= rhs.m_elements[i];
+				elems[i] -= rhs.elems[i];
 			}
 			return *this;
 		}
@@ -43,40 +43,40 @@ namespace gl
 		inline Matrix4& operator*=(const Matrix4& rhs)
 		{
 			float m_copy[16];
-			memcpy(m_copy, m_elements, sizeof(m_elements));
+			memcpy(m_copy, elems, sizeof(elems));
 
-			m_elements[0] = m_copy[0] * rhs.m_elements[0] + m_copy[1] * rhs.m_elements[4] + m_copy[2] * rhs.m_elements[8] + m_copy[3] * rhs.m_elements[12];
-			m_elements[1] = m_copy[0] * rhs.m_elements[1] + m_copy[1] * rhs.m_elements[5] + m_copy[2] * rhs.m_elements[9] + m_copy[3] * rhs.m_elements[13];
-			m_elements[2] = m_copy[0] * rhs.m_elements[2] + m_copy[1] * rhs.m_elements[6] + m_copy[2] * rhs.m_elements[10] + m_copy[3] * rhs.m_elements[14];
-			m_elements[3] = m_copy[0] * rhs.m_elements[3] + m_copy[1] * rhs.m_elements[7] + m_copy[2] * rhs.m_elements[11] + m_copy[3] * rhs.m_elements[15];
+			elems[0] = m_copy[0] * rhs.elems[0] + m_copy[1] * rhs.elems[4] + m_copy[2] * rhs.elems[8] + m_copy[3] * rhs.elems[12];
+			elems[1] = m_copy[0] * rhs.elems[1] + m_copy[1] * rhs.elems[5] + m_copy[2] * rhs.elems[9] + m_copy[3] * rhs.elems[13];
+			elems[2] = m_copy[0] * rhs.elems[2] + m_copy[1] * rhs.elems[6] + m_copy[2] * rhs.elems[10] + m_copy[3] * rhs.elems[14];
+			elems[3] = m_copy[0] * rhs.elems[3] + m_copy[1] * rhs.elems[7] + m_copy[2] * rhs.elems[11] + m_copy[3] * rhs.elems[15];
 
-			m_elements[4] = m_copy[4] * rhs.m_elements[0] + m_copy[5] * rhs.m_elements[4] + m_copy[6] * rhs.m_elements[8] + m_copy[7] * rhs.m_elements[12];
-			m_elements[5] = m_copy[4] * rhs.m_elements[1] + m_copy[5] * rhs.m_elements[5] + m_copy[6] * rhs.m_elements[9] + m_copy[7] * rhs.m_elements[13];
-			m_elements[6] = m_copy[4] * rhs.m_elements[2] + m_copy[5] * rhs.m_elements[6] + m_copy[6] * rhs.m_elements[10] + m_copy[7] * rhs.m_elements[14];
-			m_elements[7] = m_copy[4] * rhs.m_elements[3] + m_copy[5] * rhs.m_elements[7] + m_copy[6] * rhs.m_elements[11] + m_copy[7] * rhs.m_elements[15];
+			elems[4] = m_copy[4] * rhs.elems[0] + m_copy[5] * rhs.elems[4] + m_copy[6] * rhs.elems[8] + m_copy[7] * rhs.elems[12];
+			elems[5] = m_copy[4] * rhs.elems[1] + m_copy[5] * rhs.elems[5] + m_copy[6] * rhs.elems[9] + m_copy[7] * rhs.elems[13];
+			elems[6] = m_copy[4] * rhs.elems[2] + m_copy[5] * rhs.elems[6] + m_copy[6] * rhs.elems[10] + m_copy[7] * rhs.elems[14];
+			elems[7] = m_copy[4] * rhs.elems[3] + m_copy[5] * rhs.elems[7] + m_copy[6] * rhs.elems[11] + m_copy[7] * rhs.elems[15];
 
-			m_elements[8] = m_copy[8] * rhs.m_elements[0] + m_copy[9] * rhs.m_elements[4] + m_copy[10] * rhs.m_elements[8] + m_copy[11] * rhs.m_elements[12];
-			m_elements[9] = m_copy[8] * rhs.m_elements[1] + m_copy[9] * rhs.m_elements[5] + m_copy[10] * rhs.m_elements[9] + m_copy[11] * rhs.m_elements[13];
-			m_elements[10] = m_copy[8] * rhs.m_elements[2] + m_copy[9] * rhs.m_elements[6] + m_copy[10] * rhs.m_elements[10] + m_copy[11] * rhs.m_elements[14];
-			m_elements[11] = m_copy[8] * rhs.m_elements[3] + m_copy[9] * rhs.m_elements[7] + m_copy[10] * rhs.m_elements[11] + m_copy[11] * rhs.m_elements[15];
+			elems[8] = m_copy[8] * rhs.elems[0] + m_copy[9] * rhs.elems[4] + m_copy[10] * rhs.elems[8] + m_copy[11] * rhs.elems[12];
+			elems[9] = m_copy[8] * rhs.elems[1] + m_copy[9] * rhs.elems[5] + m_copy[10] * rhs.elems[9] + m_copy[11] * rhs.elems[13];
+			elems[10] = m_copy[8] * rhs.elems[2] + m_copy[9] * rhs.elems[6] + m_copy[10] * rhs.elems[10] + m_copy[11] * rhs.elems[14];
+			elems[11] = m_copy[8] * rhs.elems[3] + m_copy[9] * rhs.elems[7] + m_copy[10] * rhs.elems[11] + m_copy[11] * rhs.elems[15];
 
-			m_elements[12] = m_copy[12] * rhs.m_elements[0] + m_copy[13] * rhs.m_elements[4] + m_copy[14] * rhs.m_elements[8] + m_copy[15] * rhs.m_elements[12];
-			m_elements[13] = m_copy[12] * rhs.m_elements[1] + m_copy[13] * rhs.m_elements[5] + m_copy[14] * rhs.m_elements[9] + m_copy[15] * rhs.m_elements[13];
-			m_elements[14] = m_copy[12] * rhs.m_elements[2] + m_copy[13] * rhs.m_elements[6] + m_copy[14] * rhs.m_elements[10] + m_copy[15] * rhs.m_elements[14];
-			m_elements[15] = m_copy[12] * rhs.m_elements[3] + m_copy[13] * rhs.m_elements[7] + m_copy[14] * rhs.m_elements[11] + m_copy[15] * rhs.m_elements[15];
+			elems[12] = m_copy[12] * rhs.elems[0] + m_copy[13] * rhs.elems[4] + m_copy[14] * rhs.elems[8] + m_copy[15] * rhs.elems[12];
+			elems[13] = m_copy[12] * rhs.elems[1] + m_copy[13] * rhs.elems[5] + m_copy[14] * rhs.elems[9] + m_copy[15] * rhs.elems[13];
+			elems[14] = m_copy[12] * rhs.elems[2] + m_copy[13] * rhs.elems[6] + m_copy[14] * rhs.elems[10] + m_copy[15] * rhs.elems[14];
+			elems[15] = m_copy[12] * rhs.elems[3] + m_copy[13] * rhs.elems[7] + m_copy[14] * rhs.elems[11] + m_copy[15] * rhs.elems[15];
 			return *this;
 		}
 
 		inline float& operator[](const int index)
 		{
-			return m_elements[index];
+			return elems[index];
 		}
 
 		inline Matrix4& operator*=(const float& rhs)
 		{
 			for (int i = 0; i < 16; i++)
 			{
-				m_elements[i] *= rhs;
+				elems[i] *= rhs;
 			}
 			return *this;
 		}
