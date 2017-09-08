@@ -20,7 +20,7 @@ MyGame::MyGame()
 	Thing* thing = CreateObject<Thing>("Thing");
 	thing->transform.position = Vector3(0, 10, 0);
 	thing->transform.rotation = Quaternion();
-	thing->transform.scale = Vector3(1, 1, 1) * 0.05 * 10;
+	thing->transform.scale = Vector3(1, 1, 1);
 
 	MyBox* box = CreateObject<MyBox>("Floor");
 	box->transform.position = Vector3(0, 0, 0);

@@ -8,6 +8,7 @@
 #include "List.h"
 
 #define GL_MAX_TEXTURES 32
+#define GL_MAX_LIGHTSOURCES 4
 #define GL_MATRIX_STACK_LENGTH 32
 
 enum GLMatrixMode
@@ -31,6 +32,8 @@ namespace gl
 
 		static int AddTexture(BMP* bmp);
 		static void BindTexture(int id);
+
+		static int LightSource(Vector4 light);
 
 		static void MatrixMode(GLMatrixMode mode);
 		static void MulMatrix(const Matrix4& mat);

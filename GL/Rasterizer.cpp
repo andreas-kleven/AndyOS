@@ -88,8 +88,6 @@ namespace gl
 		float w1_row = EdgeFunction(v2, v0, p) * inv_area;
 		float w2_row = EdgeFunction(v0, v1, p) * inv_area;
 
-		float c0 = co[0][0];
-
 		//float Z = 1 / (v0.mul_w * w0 + v1.mul_w * w1 + v2.mul_w * w2);
 		//float U = ((w0_row * v0.tex_u * v0.mul_w) + (w1_row * v1.tex_u * v1.mul_w) + (w2_row * v2.tex_u * v2.mul_w)) * Z;
 		//float V = ((w0_row * v0.tex_v * v0.mul_w) + (w1_row * v1.tex_v * v1.mul_w) + (w2_row * v2.tex_v * v2.mul_w)) * Z;
@@ -100,8 +98,6 @@ namespace gl
 			float w1 = w1_row;
 			float w2 = w2_row;
 
-			float c01 = c0;
-
 			for (int x = minx; x <= maxx; x++)
 			{
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
@@ -111,32 +107,33 @@ namespace gl
 					float b = (co[2][0] * w0 + co[2][1] * w1 + co[2][2] * w2);
 
 					float Z = 1 / (v0.mul_w * w0 + v1.mul_w * w1 + v2.mul_w * w2);
-					float U = ((w0 * v0.tex_u * v0.mul_w) + (w1 * v1.tex_u * v1.mul_w) + (w2 * v2.tex_u * v2.mul_w)) * Z;
-					float V = ((w0 * v0.tex_v * v0.mul_w) + (w1 * v1.tex_v * v1.mul_w) + (w2 * v2.tex_v * v2.mul_w)) * Z;
-
-					r *= Z;
-					g *= Z;
-					b *= Z;
-
-					float lum = 0.21 * r + 0.72 * g + 0.07 * b;
-					
-					int X = texture->width * U;
-					int Y = texture->height * V;
-					
-					uint32 color = texture->pixels[(int)(Y * texture->width + X)];
-					r = lum * (uint8)(color >> 16);
-					g = lum * (uint8)(color >> 8);
-					b = lum * (uint8)(color >> 0);
-
-					int col = ((int)(r) << 16) | ((int)(g) << 8) | (int)(b);
 
 					if (Z < *depth_ptr)
 					{
+						float U = ((w0 * v0.tex_u * v0.mul_w) + (w1 * v1.tex_u * v1.mul_w) + (w2 * v2.tex_u * v2.mul_w)) * Z;
+						float V = ((w0 * v0.tex_v * v0.mul_w) + (w1 * v1.tex_v * v1.mul_w) + (w2 * v2.tex_v * v2.mul_w)) * Z;
+
+						r *= Z;
+						g *= Z;
+						b *= Z;
+
+						float lum = 0.21 * r + 0.72 * g + 0.07 * b;
+
+						int X = texture->width * U;
+						int Y = texture->height * V;
+
+						uint32 color = texture->pixels[(int)(Y * texture->width + X)];
+						r = lum * (uint8)(color >> 16);
+						g = lum * (uint8)(color >> 8);
+						b = lum * (uint8)(color >> 0);
+
+						int col = ((int)(r) << 16) | ((int)(g) << 8) | (int)(b);
+
 						*color_ptr = col;
 						*depth_ptr = Z;
 					}
 				}
-				
+
 				w0 += A12;
 				w1 += A20;
 				w2 += A01;

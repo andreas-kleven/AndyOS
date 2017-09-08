@@ -10,7 +10,7 @@ Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* mod = ModelLoader::LoadModel("aura3.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!ISO_FS::ReadFile("earth.bmp", img_buf))

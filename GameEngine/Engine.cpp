@@ -55,10 +55,8 @@ void GEngine::StartGame(Game* game)
 	last_mouse_pos = Vector3(Mouse::x, Mouse::y, 0);
 	ticks = PIT::ticks;
 
-	Matrix4 P = Matrix4::CreatePerspectiveProjection(1024, 768, 90, 1, 10);
-
 	GL::MatrixMode(GL_PROJECTION);
-	GL::LoadMatrix(P);
+	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1024, 768, 90, 1, 10));
 	GL::MatrixMode(GL_MODELVIEW);
 
 	while (1)
@@ -67,7 +65,6 @@ void GEngine::StartGame(Game* game)
 		Debug::y = 0;
 
 		if (PIT::ticks != ticks)
-
 		{
 			Debug::Print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks, (ticks - startTicks) / totalFrames);
 			char buf[20];
@@ -84,6 +81,13 @@ void GEngine::StartGame(Game* game)
 		{
 			Vector3 vel = thing->rigidbody->velocity;
 			Debug::Print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
+		}
+
+		if (Keyboard::GetKeyDown(KEY_TAB))
+		{
+			GL::MatrixMode(GL_PROJECTION);
+			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920, 1080, 90, 1, 10));
+			GL::MatrixMode(GL_MODELVIEW);
 		}
 
 		Update();
@@ -533,10 +537,6 @@ void GEngine::Render()
 
 	Vector3 v = cam->transform.GetUpVector();
 	Debug::Print("%f\t%f\t%f", v.x, v.y, v.z);
-
-	//Matrix VT = Matrix::CreateTranslation(camPos);
-	//Matrix VR = cam->transform.rotation.ToMatrix();
-	//Matrix V = VT;
 
 	GL::Clear(0x7F7F7F);
 	GL::LoadMatrix(V);
