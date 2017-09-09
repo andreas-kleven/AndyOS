@@ -5,9 +5,14 @@
 
 namespace gl
 {
-	float EdgeFunction(const Vertex& a, const Vertex& b, const Vertex& c)
+	float EdgeFunction(const Vector4& a, const Vector4& b, const Vector4& c)
 	{
-		return (c.mul_y - a.mul_y) * (b.mul_x - a.mul_x) - (c.mul_x - a.mul_x) * (b.mul_y - a.mul_y);
+		return (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y);
+	}
+
+	float EdgeFunction(const Vector4& a, const Vector4& b, float cx, float cy)
+	{
+		return (cy - a.y) * (b.x - a.x) - (cx - a.x) * (b.y - a.y);
 	}
 
 	float* Rasterizer::depth_buffer;
@@ -23,75 +28,75 @@ namespace gl
 
 	void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 	{
-		v0.mul_w = 1 / v0.mul_w;
-		v1.mul_w = 1 / v1.mul_w;
-		v2.mul_w = 1 / v2.mul_w;
+		//Calculate values
+		v0.mul_pos.w = 1 / v0.mul_pos.w;
+		v1.mul_pos.w = 1 / v1.mul_pos.w;
+		v2.mul_pos.w = 1 / v2.mul_pos.w;
 
-		v0.mul_x = v0.mul_x * GL::m_width * v0.mul_w + GL::m_width * 0.5;
-		v1.mul_x = v1.mul_x * GL::m_width * v1.mul_w + GL::m_width * 0.5;
-		v2.mul_x = v2.mul_x * GL::m_width * v2.mul_w + GL::m_width * 0.5;
+		v0.mul_pos.x = v0.mul_pos.x * GL::m_width * v0.mul_pos.w + GL::m_width * 0.5;
+		v1.mul_pos.x = v1.mul_pos.x * GL::m_width * v1.mul_pos.w + GL::m_width * 0.5;
+		v2.mul_pos.x = v2.mul_pos.x * GL::m_width * v2.mul_pos.w + GL::m_width * 0.5;
 
-		v0.mul_y = v0.mul_y * GL::m_height * v0.mul_w + GL::m_height * 0.5;
-		v1.mul_y = v1.mul_y * GL::m_height * v1.mul_w + GL::m_height * 0.5;
-		v2.mul_y = v2.mul_y * GL::m_height * v2.mul_w + GL::m_height * 0.5;
+		v0.mul_pos.y = v0.mul_pos.y * GL::m_height * v0.mul_pos.w + GL::m_height * 0.5;
+		v1.mul_pos.y = v1.mul_pos.y * GL::m_height * v1.mul_pos.w + GL::m_height * 0.5;
+		v2.mul_pos.y = v2.mul_pos.y * GL::m_height * v2.mul_pos.w + GL::m_height * 0.5;
 
-		Vector4 pa(v0.mul_x, v0.mul_y, v0.mul_z, 0);
-		Vector4 pb(v1.mul_x, v1.mul_y, v1.mul_z, 0);
-		Vector4 pc(v2.mul_x, v2.mul_y, v2.mul_z, 0);
+		//Backface culling
+		Vector4 pa(v0.mul_pos.x, v0.mul_pos.y, v0.mul_pos.z, 0);
+		Vector4 pb(v1.mul_pos.x, v1.mul_pos.y, v1.mul_pos.z, 0);
+		Vector4 pc(v2.mul_pos.x, v2.mul_pos.y, v2.mul_pos.z, 0);
 		Vector4 normal = Vector4::Cross(pb - pa, pc - pa);
 
 		if (normal.z < 0)
 			return;
 
-		//VBE::DrawLine((int)v0.mul_x, (int)v0.mul_y, (int)v1.mul_x, (int)v1.mul_y, 0xFF);
-		//VBE::DrawLine((int)v1.mul_x, (int)v1.mul_y, (int)v2.mul_x, (int)v2.mul_y, 0xFF00);
-		//VBE::DrawLine((int)v2.mul_x, (int)v2.mul_y, (int)v0.mul_x, (int)v0.mul_y, 0xFF0000);
+		//VBE::DrawLine((int)v0.mul_pos.x, (int)v0.mul_pos.y, (int)v1.mul_pos.x, (int)v1.mul_pos.y, 0xFF);
+		//VBE::DrawLine((int)v1.mul_pos.x, (int)v1.mul_pos.y, (int)v2.mul_pos.x, (int)v2.mul_pos.y, 0xFF00);
+		//VBE::DrawLine((int)v2.mul_pos.x, (int)v2.mul_pos.y, (int)v0.mul_pos.x, (int)v0.mul_pos.y, 0xFF0000);
 		//return;
 
-		int minx = min(floor(v0.mul_x), floor(v1.mul_x), floor(v2.mul_x));
-		int maxx = max(floor(v0.mul_x), floor(v1.mul_x), floor(v2.mul_x));
-		int miny = min(floor(v0.mul_y), floor(v1.mul_y), floor(v2.mul_y));
-		int maxy = max(floor(v0.mul_y), floor(v1.mul_y), floor(v2.mul_y));
+		DrawTriangle2(v0, v1, v2, texture);
+	}
+
+	void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
+	{
+		//Clamping
+		int minx = min(floor(v0.mul_pos.x), floor(v1.mul_pos.x), floor(v2.mul_pos.x));
+		int maxx = max(floor(v0.mul_pos.x), floor(v1.mul_pos.x), floor(v2.mul_pos.x));
+		int miny = min(floor(v0.mul_pos.y), floor(v1.mul_pos.y), floor(v2.mul_pos.y));
+		int maxy = max(floor(v0.mul_pos.y), floor(v1.mul_pos.y), floor(v2.mul_pos.y));
 
 		minx = clamp(minx, 0, (int)GL::m_width - 1);
 		maxx = clamp(maxx, 0, (int)GL::m_width - 1);
 		miny = clamp(miny, 0, (int)GL::m_height - 1);
 		maxy = clamp(maxy, 0, (int)GL::m_height - 1);
 
-		float area = EdgeFunction(v0, v1, v2); // area of the triangle multiplied by 2 
+		float area = EdgeFunction(v0.mul_pos, v1.mul_pos, v2.mul_pos);
 		float inv_area = 1 / area;
+
+		int line_delta = GL::m_width - (maxx - minx) - 1;
 
 		uint32* color_ptr = (uint32*)(VBE::buffer + miny * GL::m_width + minx);
 		float* depth_ptr = (float*)(depth_buffer + miny * GL::m_width + minx);
 
-		int line_delta = GL::m_width - (maxx - minx) - 1;
-
 		float co[3][3] = {
-			{ v0.built_color.r * v0.mul_w, v1.built_color.r * v1.mul_w , v2.built_color.r * v2.mul_w },
-			{ v0.built_color.g * v0.mul_w, v1.built_color.g * v1.mul_w , v2.built_color.g * v2.mul_w },
-			{ v0.built_color.b * v0.mul_w, v1.built_color.b * v1.mul_w , v2.built_color.b * v2.mul_w }
+			{ v0.built_color.r * v0.mul_pos.w, v1.built_color.r * v1.mul_pos.w , v2.built_color.r * v2.mul_pos.w },
+			{ v0.built_color.g * v0.mul_pos.w, v1.built_color.g * v1.mul_pos.w , v2.built_color.g * v2.mul_pos.w },
+			{ v0.built_color.b * v0.mul_pos.w, v1.built_color.b * v1.mul_pos.w , v2.built_color.b * v2.mul_pos.w }
 		};
 
+		float A01 = (v0.mul_pos.y - v1.mul_pos.y) * inv_area;
+		float B01 = (v1.mul_pos.x - v0.mul_pos.x) * inv_area;
+		float A12 = (v1.mul_pos.y - v2.mul_pos.y) * inv_area;
+		float B12 = (v2.mul_pos.x - v1.mul_pos.x) * inv_area;
+		float A20 = (v2.mul_pos.y - v0.mul_pos.y) * inv_area;
+		float B20 = (v0.mul_pos.x - v2.mul_pos.x) * inv_area;
 
-		Vertex p;
-		p.mul_x = minx;
-		p.mul_y = miny;
+		float w0_row = EdgeFunction(v1.mul_pos, v2.mul_pos, minx, miny) * inv_area;
+		float w1_row = EdgeFunction(v2.mul_pos, v0.mul_pos, minx, miny) * inv_area;
+		float w2_row = EdgeFunction(v0.mul_pos, v1.mul_pos, minx, miny) * inv_area;
 
-		float A01 = (v0.mul_y - v1.mul_y) * inv_area;
-		float B01 = (v1.mul_x - v0.mul_x) * inv_area;
-		float A12 = (v1.mul_y - v2.mul_y) * inv_area;
-		float B12 = (v2.mul_x - v1.mul_x) * inv_area;
-		float A20 = (v2.mul_y - v0.mul_y) * inv_area;
-		float B20 = (v0.mul_x - v2.mul_x) * inv_area;
-
-		float w0_row = EdgeFunction(v1, v2, p) * inv_area;
-		float w1_row = EdgeFunction(v2, v0, p) * inv_area;
-		float w2_row = EdgeFunction(v0, v1, p) * inv_area;
-
-		//float Z = 1 / (v0.mul_w * w0 + v1.mul_w * w1 + v2.mul_w * w2);
-		//float U = ((w0_row * v0.tex_u * v0.mul_w) + (w1_row * v1.tex_u * v1.mul_w) + (w2_row * v2.tex_u * v2.mul_w)) * Z;
-		//float V = ((w0_row * v0.tex_v * v0.mul_w) + (w1_row * v1.tex_v * v1.mul_w) + (w2_row * v2.tex_v * v2.mul_w)) * Z;
-
+		//Drawing loop
 		for (int y = miny; y <= maxy; y++)
 		{
 			float w0 = w0_row;
@@ -102,16 +107,16 @@ namespace gl
 			{
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
 				{
-					float r = (co[0][0] * w0 + co[0][1] * w1 + co[0][2] * w2);
-					float g = (co[1][0] * w0 + co[1][1] * w1 + co[1][2] * w2);
-					float b = (co[2][0] * w0 + co[2][1] * w1 + co[2][2] * w2);
-
-					float Z = 1 / (v0.mul_w * w0 + v1.mul_w * w1 + v2.mul_w * w2);
+					float Z = 1 / (v0.mul_pos.w * w0 + v1.mul_pos.w * w1 + v2.mul_pos.w * w2);
 
 					if (Z < *depth_ptr)
 					{
-						float U = ((w0 * v0.tex_u * v0.mul_w) + (w1 * v1.tex_u * v1.mul_w) + (w2 * v2.tex_u * v2.mul_w)) * Z;
-						float V = ((w0 * v0.tex_v * v0.mul_w) + (w1 * v1.tex_v * v1.mul_w) + (w2 * v2.tex_v * v2.mul_w)) * Z;
+						float U = ((w0 * v0.tex_u * v0.mul_pos.w) + (w1 * v1.tex_u * v1.mul_pos.w) + (w2 * v2.tex_u * v2.mul_pos.w)) * Z;
+						float V = ((w0 * v0.tex_v * v0.mul_pos.w) + (w1 * v1.tex_v * v1.mul_pos.w) + (w2 * v2.tex_v * v2.mul_pos.w)) * Z;
+
+						float r = (co[0][0] * w0 + co[0][1] * w1 + co[0][2] * w2);
+						float g = (co[1][0] * w0 + co[1][1] * w1 + co[1][2] * w2);
+						float b = (co[2][0] * w0 + co[2][1] * w1 + co[2][2] * w2);
 
 						r *= Z;
 						g *= Z;

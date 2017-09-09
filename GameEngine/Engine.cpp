@@ -90,6 +90,9 @@ void GEngine::StartGame(Game* game)
 			GL::MatrixMode(GL_MODELVIEW);
 		}
 
+		if (Keyboard::GetKeyDown(KEY_ESCAPE))
+			break;
+
 		Update();
 		Collision();
 		Render();

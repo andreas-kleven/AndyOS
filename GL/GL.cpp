@@ -28,6 +28,11 @@ namespace gl
 
 	STATUS GL::Init()
 	{
+		tex_index = 0;
+		bound_tex = -1;
+		light_index = 0;
+		mat_stack_index = 0;
+
 		Rasterizer::Init();
 		return STATUS_SUCCESS;
 	}
@@ -103,7 +108,7 @@ namespace gl
 	{
 		VBE::Clear(color);
 
-		float val = 100000;
+		float val = 1e100;
 		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
 	}
 
@@ -153,7 +158,7 @@ namespace gl
 			b.built_color = (b.color * lb);
 			c.built_color = (c.color * lc);
 
-			if (a.mul_w > 0 && b.mul_w > 0 && c.mul_w > 0)
+			if (a.mul_pos.w > 0 && b.mul_pos.w > 0 && c.mul_pos.w > 0)
 			{
 				Rasterizer::DrawTriangle(a, b, c, m_textures[bound_tex]);
 			}

@@ -13,5 +13,6 @@ namespace gl
 		static STATUS Init();
 
 		static void DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
+		static void DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
 	};
 }

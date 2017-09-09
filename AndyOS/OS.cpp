@@ -19,9 +19,12 @@ void OS::Main()
 	//Mandelbrot::Create(100, 100);
 
 	///
-	MyGame* game = new MyGame();
-	GEngine* engine = new GEngine();
-	engine->StartGame(game);
+	while (1)
+	{
+		MyGame* game = new MyGame();
+		GEngine* engine = new GEngine();
+		engine->StartGame(game);
+	}
 	return;
 	///
 

@@ -1,6 +1,6 @@
  AndyOS
 
- Timestamp is 59b2fecc (Fri Sep  8 22:34:20 2017)
+ Timestamp is 59b3d4a8 (Sat Sep  9 13:46:48 2017)
 
  Preferred load address is 00100000
 
@@ -19,20 +19,20 @@
 
   Address         Publics by Value              Rva+Base       Lib:Object
 
- 0000:00000000       ___guard_fids_table        00000000     <absolute>
- 0000:00000000       ___guard_iat_count         00000000     <absolute>
- 0000:00000000       ___guard_fids_count        00000000     <absolute>
  0000:00000000       ___guard_longjmp_count     00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
+ 0000:00000000       ___hybrid_auxiliary_iat    00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map         00000000     <absolute>
+ 0000:00000000       ___guard_fids_table        00000000     <absolute>
  0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
  0000:00000000       ___enclave_config          00000000     <absolute>
- 0000:00000000       ___hybrid_auxiliary_iat    00000000     <absolute>
- 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
- 0000:00000000       ___guard_iat_table         00000000     <absolute>
- 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
- 0000:00000000       ___hybrid_code_map         00000000     <absolute>
- 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
- 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0000:00000000       ___guard_fids_count        00000000     <absolute>
  0000:00000000       ___guard_flags             00000000     <absolute>
+ 0000:00000000       ___guard_iat_table         00000000     <absolute>
+ 0000:00000000       ___guard_iat_count         00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
  0001:000000e0       ??0BMP@@QAE@PAX@Z          001004e0 f   bmp.obj
  0001:00000160       ??0BMP@@QAE@PAXHH@Z        00100560 f   bmp.obj
  0001:000001b0       ?OSBoot@@YAXPAUMULTIBOOT_HEADER@@@Z 001005b0 f   boot.obj
@@ -132,160 +132,162 @@
  0001:00003600       ?Clear@GL@gl@@SAXI@Z       00103a00 f   GL:GL.obj
  0001:00003640       ?Draw@GL@gl@@SAXHH@Z       00103a40 f   GL:GL.obj
  0001:00003990       ?Init@GL@gl@@SAIXZ         00103d90 f   GL:GL.obj
- 0001:000039a0       ?LightSource@GL@gl@@SAHUVector4@2@@Z 00103da0 f   GL:GL.obj
- 0001:00003a20       ?LoadIdentity@GL@gl@@SAXXZ 00103e20 f   GL:GL.obj
- 0001:00003a80       ?LoadMatrix@GL@gl@@SAXABUMatrix4@2@@Z 00103e80 f   GL:GL.obj
- 0001:00003ad0       ?MatrixMode@GL@gl@@SAXW4GLMatrixMode@@@Z 00103ed0 f   GL:GL.obj
- 0001:00003ae0       ?MulMatrix@GL@gl@@SAXABUMatrix4@2@@Z 00103ee0 f   GL:GL.obj
- 0001:00003b40       ?PopMatrix@GL@gl@@SAXXZ    00103f40 f   GL:GL.obj
- 0001:00003ba0       ?PushMatrix@GL@gl@@SAXXZ   00103fa0 f   GL:GL.obj
- 0001:00003c00       ?SelectedMatrix@GL@gl@@CAAAUMatrix4@2@XZ 00104000 f   GL:GL.obj
- 0001:00003c20       ?SwapBuffers@GL@gl@@SAXXZ  00104020 f   GL:GL.obj
- 0001:00003c30       ?VertexPointer@GL@gl@@SAXPAUVertex@2@@Z 00104030 f   GL:GL.obj
- 0001:00003c40       ??0Vector4@gl@@QAE@MMMM@Z  00104040 f   GL:Vector4.obj
- 0001:00003c70       ??0Vector4@gl@@QAE@XZ      00104070 f   GL:Vector4.obj
- 0001:00003c90       ?Cross@Vector4@gl@@SA?AU12@ABU12@0@Z 00104090 f   GL:Vector4.obj
- 0001:00003d00       ?Dot@Vector4@gl@@SAMABU12@0@Z 00104100 f   GL:Vector4.obj
- 0001:00003d20       ??0Matrix4@gl@@QAE@QAM@Z   00104120 f   GL:Matrix4.obj
- 0001:00003d90       ??0Matrix4@gl@@QAE@XZ      00104190 f   GL:Matrix4.obj
- 0001:00003dc0       ??Dgl@@YA?AUMatrix4@0@ABU10@0@Z 001041c0 f i GL:Matrix4.obj
- 0001:00003e00       ??Dgl@@YA?AUMatrix4@0@ABU10@ABM@Z 00104200 f i GL:Matrix4.obj
- 0001:00003e40       ??Dgl@@YA?AUVector4@0@ABUMatrix4@0@ABU10@@Z 00104240 f i GL:Matrix4.obj
- 0001:00003f40       ??Ggl@@YA?AUMatrix4@0@ABU10@0@Z 00104340 f i GL:Matrix4.obj
- 0001:00003fb0       ??Hgl@@YA?AUMatrix4@0@ABU10@0@Z 001043b0 f i GL:Matrix4.obj
- 0001:00004020       ??XMatrix4@gl@@QAEAAU01@ABM@Z 00104420 f i GL:Matrix4.obj
- 0001:000040c0       ??XMatrix4@gl@@QAEAAU01@ABU01@@Z 001044c0 f i GL:Matrix4.obj
- 0001:00004470       ?CreateOrthographicProjection@Matrix4@gl@@SA?AU12@MMMMMM@Z 00104870 f   GL:Matrix4.obj
- 0001:00004520       ?CreatePerspectiveProjection@Matrix4@gl@@SA?AU12@MMMMM@Z 00104920 f   GL:Matrix4.obj
- 0001:00004600       ?CreateRotation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104a00 f   GL:Matrix4.obj
- 0001:00004810       ?CreateScale@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104c10 f   GL:Matrix4.obj
- 0001:00004850       ?CreateTransformation@Matrix4@gl@@SA?AU12@UVector4@2@00@Z 00104c50 f   GL:Matrix4.obj
- 0001:00004b90       ?CreateTranslation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104f90 f   GL:Matrix4.obj
- 0001:00004bf0       ?CreateView@Matrix4@gl@@SA?AU12@UVector4@2@000@Z 00104ff0 f   GL:Matrix4.obj
- 0001:00004d10       ?GetElementsPointer@Matrix4@gl@@QAEPAMXZ 00105110 f   GL:Matrix4.obj
- 0001:00004d20       ?Inverse@Matrix4@gl@@QAE?AU12@XZ 00105120 f   GL:Matrix4.obj
- 0001:000054f0       ??0ColRGB@gl@@QAE@I@Z      001058f0 f   GL:Color.obj
- 0001:00005580       ??0ColRGB@gl@@QAE@MMM@Z    00105980 f   GL:Color.obj
- 0001:000055e0       ??0ColRGB@gl@@QAE@XZ       001059e0 f   GL:Color.obj
- 0001:00005600       ??DColRGB@gl@@QAE?AU01@M@Z 00105a00 f   GL:Color.obj
- 0001:00005670       ??HColRGB@gl@@QAE?AU01@U01@@Z 00105a70 f   GL:Color.obj
- 0001:000056e0       ??XColRGB@gl@@QAE?AU01@M@Z 00105ae0 f   GL:Color.obj
- 0001:00005750       ?Luminosity@ColRGB@gl@@QAEMXZ 00105b50 f   GL:Color.obj
- 0001:000057a0       ?ToInt@ColRGB@gl@@QAEIXZ   00105ba0 f   GL:Color.obj
- 0001:000057e0       ??0Vertex@gl@@QAE@MMMUColRGB@1@UVector4@1@@Z 00105be0 f   GL:Vertex.obj
- 0001:00005870       ??0Vertex@gl@@QAE@XZ       00105c70 f   GL:Vertex.obj
+ 0001:000039d0       ?LightSource@GL@gl@@SAHUVector4@2@@Z 00103dd0 f   GL:GL.obj
+ 0001:00003a50       ?LoadIdentity@GL@gl@@SAXXZ 00103e50 f   GL:GL.obj
+ 0001:00003ab0       ?LoadMatrix@GL@gl@@SAXABUMatrix4@2@@Z 00103eb0 f   GL:GL.obj
+ 0001:00003b00       ?MatrixMode@GL@gl@@SAXW4GLMatrixMode@@@Z 00103f00 f   GL:GL.obj
+ 0001:00003b10       ?MulMatrix@GL@gl@@SAXABUMatrix4@2@@Z 00103f10 f   GL:GL.obj
+ 0001:00003b70       ?PopMatrix@GL@gl@@SAXXZ    00103f70 f   GL:GL.obj
+ 0001:00003bd0       ?PushMatrix@GL@gl@@SAXXZ   00103fd0 f   GL:GL.obj
+ 0001:00003c30       ?SelectedMatrix@GL@gl@@CAAAUMatrix4@2@XZ 00104030 f   GL:GL.obj
+ 0001:00003c50       ?SwapBuffers@GL@gl@@SAXXZ  00104050 f   GL:GL.obj
+ 0001:00003c60       ?VertexPointer@GL@gl@@SAXPAUVertex@2@@Z 00104060 f   GL:GL.obj
+ 0001:00003c70       ??0Vector4@gl@@QAE@MMMM@Z  00104070 f   GL:Vector4.obj
+ 0001:00003ca0       ??0Vector4@gl@@QAE@XZ      001040a0 f   GL:Vector4.obj
+ 0001:00003cc0       ?Cross@Vector4@gl@@SA?AU12@ABU12@0@Z 001040c0 f   GL:Vector4.obj
+ 0001:00003d30       ?Dot@Vector4@gl@@SAMABU12@0@Z 00104130 f   GL:Vector4.obj
+ 0001:00003d50       ??0Matrix4@gl@@QAE@QAM@Z   00104150 f   GL:Matrix4.obj
+ 0001:00003dc0       ??0Matrix4@gl@@QAE@XZ      001041c0 f   GL:Matrix4.obj
+ 0001:00003df0       ??Dgl@@YA?AUMatrix4@0@ABU10@0@Z 001041f0 f i GL:Matrix4.obj
+ 0001:00003e30       ??Dgl@@YA?AUMatrix4@0@ABU10@ABM@Z 00104230 f i GL:Matrix4.obj
+ 0001:00003e70       ??Dgl@@YA?AUVector4@0@ABUMatrix4@0@ABU10@@Z 00104270 f i GL:Matrix4.obj
+ 0001:00003f70       ??Ggl@@YA?AUMatrix4@0@ABU10@0@Z 00104370 f i GL:Matrix4.obj
+ 0001:00003fe0       ??Hgl@@YA?AUMatrix4@0@ABU10@0@Z 001043e0 f i GL:Matrix4.obj
+ 0001:00004050       ??XMatrix4@gl@@QAEAAU01@ABM@Z 00104450 f i GL:Matrix4.obj
+ 0001:000040f0       ??XMatrix4@gl@@QAEAAU01@ABU01@@Z 001044f0 f i GL:Matrix4.obj
+ 0001:000044a0       ?CreateOrthographicProjection@Matrix4@gl@@SA?AU12@MMMMMM@Z 001048a0 f   GL:Matrix4.obj
+ 0001:00004550       ?CreatePerspectiveProjection@Matrix4@gl@@SA?AU12@MMMMM@Z 00104950 f   GL:Matrix4.obj
+ 0001:00004630       ?CreateRotation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104a30 f   GL:Matrix4.obj
+ 0001:00004840       ?CreateScale@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104c40 f   GL:Matrix4.obj
+ 0001:00004880       ?CreateTransformation@Matrix4@gl@@SA?AU12@UVector4@2@00@Z 00104c80 f   GL:Matrix4.obj
+ 0001:00004bc0       ?CreateTranslation@Matrix4@gl@@SA?AU12@UVector4@2@@Z 00104fc0 f   GL:Matrix4.obj
+ 0001:00004c20       ?CreateView@Matrix4@gl@@SA?AU12@UVector4@2@000@Z 00105020 f   GL:Matrix4.obj
+ 0001:00004d40       ?GetElementsPointer@Matrix4@gl@@QAEPAMXZ 00105140 f   GL:Matrix4.obj
+ 0001:00004d50       ?Inverse@Matrix4@gl@@QAE?AU12@XZ 00105150 f   GL:Matrix4.obj
+ 0001:00005520       ??0ColRGB@gl@@QAE@I@Z      00105920 f   GL:Color.obj
+ 0001:000055b0       ??0ColRGB@gl@@QAE@MMM@Z    001059b0 f   GL:Color.obj
+ 0001:00005610       ??0ColRGB@gl@@QAE@XZ       00105a10 f   GL:Color.obj
+ 0001:00005630       ??DColRGB@gl@@QAE?AU01@M@Z 00105a30 f   GL:Color.obj
+ 0001:000056a0       ??HColRGB@gl@@QAE?AU01@U01@@Z 00105aa0 f   GL:Color.obj
+ 0001:00005710       ??XColRGB@gl@@QAE?AU01@M@Z 00105b10 f   GL:Color.obj
+ 0001:00005780       ?Luminosity@ColRGB@gl@@QAEMXZ 00105b80 f   GL:Color.obj
+ 0001:000057d0       ?ToInt@ColRGB@gl@@QAEIXZ   00105bd0 f   GL:Color.obj
+ 0001:00005810       ??0Vertex@gl@@QAE@MMMUColRGB@1@UVector4@1@@Z 00105c10 f   GL:Vertex.obj
+ 0001:00005890       ??0Vertex@gl@@QAE@XZ       00105c90 f   GL:Vertex.obj
  0001:000058d0       ?MulMatrix@Vertex@gl@@QAEXABUMatrix4@2@@Z 00105cd0 f   GL:Vertex.obj
- 0001:000059a0       ?DrawTriangle@Rasterizer@gl@@SAXAAUVertex@2@00PAVBMP@@@Z 00105da0 f   GL:Rasterizer.obj
- 0001:00006450       ?EdgeFunction@gl@@YAMABUVertex@1@00@Z 00106850 f   GL:Rasterizer.obj
- 0001:000064a0       ?Init@Rasterizer@gl@@SAIXZ 001068a0 f   GL:Rasterizer.obj
- 0001:000064d0       ??0GEngine@@QAE@XZ         001068d0 f   GameEngine:Engine.obj
- 0001:00006540       ?Add@?$List@PAVRigidbody@@@std@@QAEXPAVRigidbody@@@Z 00106940 f i GameEngine:Engine.obj
- 0001:000065c0       ?Collision@GEngine@@AAEXXZ 001069c0 f   GameEngine:Engine.obj
- 0001:00006cc0       ?Render@GEngine@@AAEXXZ    001070c0 f   GameEngine:Engine.obj
- 0001:00007120       ?Rotate@Quaternion@@QAEXUVector3@@M@Z 00107520 f i GameEngine:Engine.obj
- 0001:00007290       ?StartGame@GEngine@@QAEXPAVGame@@@Z 00107690 f   GameEngine:Engine.obj
- 0001:00007650       ?Update@GEngine@@AAEXXZ    00107a50 f   GameEngine:Engine.obj
- 0001:000085c0       ??0Vector3@@QAE@MMM@Z      001089c0 f   GameEngine:Vector3.obj
- 0001:000085f0       ??0Vector3@@QAE@XZ         001089f0 f   GameEngine:Vector3.obj
- 0001:00008610       ?Cross@Vector3@@SA?AU1@ABU1@0@Z 00108a10 f   GameEngine:Vector3.obj
- 0001:00008670       ?Dot@Vector3@@SAMABU1@0@Z  00108a70 f   GameEngine:Vector3.obj
- 0001:00008690       ?EulerAngles@Vector3@@QAE?AU1@XZ 00108a90 f   GameEngine:Vector3.obj
- 0001:00008740       ?ToVector4@Vector3@@QAE?AUVector4@gl@@XZ 00108b40 f   GameEngine:Vector3.obj
- 0001:00008780       ??0Quaternion@@QAE@XZ      00108b80 f   GameEngine:Quaternion.obj
- 0001:000087a0       ?FromAxisAngle@Quaternion@@SA?AU1@ABUVector3@@M@Z 00108ba0 f   GameEngine:Quaternion.obj
- 0001:00008840       ?FromEuler@Quaternion@@SA?AU1@ABUVector3@@@Z 00108c40 f   GameEngine:Quaternion.obj
- 0001:000089b0       ??0GameObject@@QAE@XZ      00108db0 f   GameEngine:GameObject.obj
- 0001:00008a60       ??A?$List@PAVComponent@@@std@@QAEAAPAVComponent@@H@Z 00108e60 f i GameEngine:GameObject.obj
- 0001:00008ab0       ?Add@?$List@PAVComponent@@@std@@QAEXPAVComponent@@@Z 00108eb0 f i GameEngine:GameObject.obj
- 0001:00008b30       ?Add@?$List@PAVMeshComponent@@@std@@QAEXPAVMeshComponent@@@Z 00108f30 f i GameEngine:GameObject.obj
- 0001:00008bb0       ?AddComponent@GameObject@@QAEXPAVComponent@@@Z 00108fb0 f   GameEngine:GameObject.obj
- 0001:00008d30       ?Contains@String@std@@QAE_NV12@@Z 00109130 f i GameEngine:GameObject.obj
- 0001:00008d90       ?GetComponent@GameObject@@QAEPAVComponent@@VString@std@@@Z 00109190 f   GameEngine:GameObject.obj
- 0001:00008e30       ?GetName@GameObject@@QAE?AVString@std@@XZ 00109230 f   GameEngine:GameObject.obj
- 0001:00008e40       ?GetWorldPosition@GameObject@@QAE?AUVector3@@XZ 00109240 f   GameEngine:GameObject.obj
- 0001:00008ec0       ?GetWorldRotation@GameObject@@QAE?AUQuaternion@@XZ 001092c0 f   GameEngine:GameObject.obj
- 0001:00008ee0       ?GetWorldScale@GameObject@@QAE?AUVector3@@XZ 001092e0 f   GameEngine:GameObject.obj
- 0001:00008f60       ?GetWorldTransform@GameObject@@QAE?AUTransform@@XZ 00109360 f   GameEngine:GameObject.obj
- 0001:00009070       ?SetName@GameObject@@QAEXVString@std@@@Z 00109470 f   GameEngine:GameObject.obj
- 0001:00009090       ??0Camera@@QAE@XZ          00109490 f   GameEngine:Camera.obj
- 0001:000090b0       ??0Game@@QAE@XZ            001094b0 f   GameEngine:Game.obj
- 0001:00009100       ?Add@?$List@PAVCamera@@@std@@QAEXPAVCamera@@@Z 00109500 f i GameEngine:Game.obj
- 0001:00009180       ?Add@?$List@PAVGameObject@@@std@@QAEXPAVGameObject@@@Z 00109580 f i GameEngine:Game.obj
- 0001:00009200       ?Add@?$List@PAVLightSource@@@std@@QAEXPAVLightSource@@@Z 00109600 f i GameEngine:Game.obj
- 0001:00009280       ?AddCamera@Game@@QAEXPAVCamera@@@Z 00109680 f   GameEngine:Game.obj
- 0001:00009300       ?AddLightSource@Game@@QAEXPAVLightSource@@@Z 00109700 f   GameEngine:Game.obj
- 0001:00009380       ?AddObject@Game@@QAEXPAVGameObject@@@Z 00109780 f   GameEngine:Game.obj
- 0001:00009400       ?GetActiveCamera@Game@@QAEPAVCamera@@XZ 00109800 f   GameEngine:Game.obj
- 0001:00009410       ?GetCamera@Game@@QAEPAVCamera@@VString@std@@@Z 00109810 f   GameEngine:Game.obj
- 0001:000094b0       ?GetLightSource@Game@@QAEPAVLightSource@@VString@std@@@Z 001098b0 f   GameEngine:Game.obj
- 0001:00009550       ?GetObject@Game@@QAEPAVGameObject@@VString@std@@@Z 00109950 f   GameEngine:Game.obj
- 0001:00009660       ?SetActiveCamera@Game@@QAEXPAVCamera@@@Z 00109a60 f   GameEngine:Game.obj
- 0001:00009670       ??0Component@@QAE@XZ       00109a70 f   GameEngine:Component.obj
- 0001:000096a0       ?GetName@Component@@QAE?AVString@std@@XZ 00109aa0 f   GameEngine:Component.obj
- 0001:000096b0       ?SetName@Component@@QAEXVString@std@@@Z 00109ab0 f   GameEngine:Component.obj
- 0001:000096d0       ?Start@Component@@UAEXXZ   00109ad0 f i GameEngine:Component.obj
- 0001:000096e0       ?Update@Component@@UAEXM@Z 00109ae0 f i GameEngine:Component.obj
- 0001:000096f0       ??0MeshComponent@@QAE@XZ   00109af0 f   GameEngine:MeshComponent.obj
- 0001:00009720       ?Update@MeshComponent@@UAEXM@Z 00109b20 f   GameEngine:MeshComponent.obj
- 0001:00009730       ??0Rigidbody@@QAE@XZ       00109b30 f   GameEngine:Rigidbody.obj
- 0001:00009780       ?AddImpulse@Rigidbody@@QAEXUVector3@@@Z 00109b80 f   GameEngine:Rigidbody.obj
- 0001:000097c0       ?AddImpulseAt@Rigidbody@@QAEXUVector3@@0@Z 00109bc0 f   GameEngine:Rigidbody.obj
- 0001:000097d0       ?Speed@Rigidbody@@QAEMXZ   00109bd0 f   GameEngine:Rigidbody.obj
- 0001:00009810       ?SpeedSquared@Rigidbody@@QAEMXZ 00109c10 f   GameEngine:Rigidbody.obj
- 0001:00009860       ?Start@Rigidbody@@UAEXXZ   00109c60 f   GameEngine:Rigidbody.obj
- 0001:00009870       ?Update@Rigidbody@@UAEXM@Z 00109c70 f   GameEngine:Rigidbody.obj
- 0001:00009c90       ??0BoxCollider@@QAE@XZ     0010a090 f   GameEngine:BoxCollider.obj
- 0001:00009cb0       ?GetEdge@Collider@@UAEPAUVector3@@H@Z 0010a0b0 f i GameEngine:BoxCollider.obj
- 0001:00009e10       ?GetEdgeDir@Collider@@UAE?AUVector3@@H@Z 0010a210 f i GameEngine:BoxCollider.obj
- 0001:00009f00       ?GetFaceDir@Collider@@UAE?AUVector3@@H@Z 0010a300 f i GameEngine:BoxCollider.obj
- 0001:00009fd0       ?GetVertex@Collider@@UAE?AUVector3@@H@Z 0010a3d0 f i GameEngine:BoxCollider.obj
- 0001:0000a190       ?IsColliding@BoxCollider@@QAE_NPAV1@AAUVector3@@@Z 0010a590 f   GameEngine:BoxCollider.obj
- 0001:0000a1a0       ?Normalized@Vector3@@QAE?AU1@XZ 0010a5a0 f i GameEngine:BoxCollider.obj
- 0001:0000a260       ?SupportFunction@@YA?AUVector3@@U1@UTransform@@@Z 0010a660 f   GameEngine:BoxCollider.obj
- 0001:0000a630       ?cross_aba@@YA?AUVector3@@ABU1@0@Z 0010aa30 f i GameEngine:BoxCollider.obj
- 0001:0000a660       ?update@@YA_NUVector3@@@Z  0010aa60 f   GameEngine:BoxCollider.obj
- 0001:0000b050       ?LoadModel@ModelLoader@@SAPAVModel3D@@PADW4Format3D@@@Z 0010b450 f   GameEngine:ModelLoader.obj
- 0001:0000b0d0       ??0Transform@@QAE@UVector3@@UQuaternion@@0@Z 0010b4d0 f   GameEngine:Transform.obj
- 0001:0000b120       ??0Transform@@QAE@XZ       0010b520 f   GameEngine:Transform.obj
- 0001:0000b1a0       ??DQuaternion@@QAEAAUVector3@@AAU1@@Z 0010b5a0 f i GameEngine:Transform.obj
- 0001:0000b2e0       ?GetForwardVector@Transform@@QAE?AUVector3@@XZ 0010b6e0 f   GameEngine:Transform.obj
- 0001:0000b330       ?GetRightVector@Transform@@QAE?AUVector3@@XZ 0010b730 f   GameEngine:Transform.obj
- 0001:0000b380       ?GetUpVector@Transform@@QAE?AUVector3@@XZ 0010b780 f   GameEngine:Transform.obj
- 0001:0000b3d0       ?Rotate@Transform@@QAEXUQuaternion@@@Z 0010b7d0 f   GameEngine:Transform.obj
- 0001:0000b4d0       ?Rotate@Transform@@QAEXUVector3@@M@Z 0010b8d0 f   GameEngine:Transform.obj
- 0001:0000b6f0       ?Scale@Transform@@QAEXUVector3@@@Z 0010baf0 f   GameEngine:Transform.obj
- 0001:0000b730       ?ToString@Transform@@QAEPADPAD@Z 0010bb30 f   GameEngine:Transform.obj
- 0001:0000b7e0       ?Translate@Transform@@QAEXUVector3@@@Z 0010bbe0 f   GameEngine:Transform.obj
- 0001:0000b820       ??0Matrix3@@QAE@QAM@Z      0010bc20 f   GameEngine:Matrix3.obj
- 0001:0000b860       ??0Matrix3@@QAE@XZ         0010bc60 f   GameEngine:Matrix3.obj
- 0001:0000b8b0       ??D@YA?AUMatrix3@@ABU0@0@Z 0010bcb0 f i GameEngine:Matrix3.obj
- 0001:0000ba80       ??D@YA?AUMatrix3@@ABU0@ABM@Z 0010be80 f i GameEngine:Matrix3.obj
- 0001:0000bb20       ??D@YA?AUVector3@@ABUMatrix3@@ABU0@@Z 0010bf20 f i GameEngine:Matrix3.obj
- 0001:0000bbc0       ??G@YA?AUMatrix3@@ABU0@0@Z 0010bfc0 f i GameEngine:Matrix3.obj
- 0001:0000bc70       ??H@YA?AUMatrix3@@ABU0@0@Z 0010c070 f i GameEngine:Matrix3.obj
- 0001:0000bd20       ?CreateRotation@Matrix3@@SA?AU1@UVector3@@@Z 0010c120 f   GameEngine:Matrix3.obj
- 0001:0000beb0       ?Inverse@Matrix3@@QAE?AU1@XZ 0010c2b0 f   GameEngine:Matrix3.obj
- 0001:0000c0c0       ?Transpose@Matrix3@@QAE?AU1@XZ 0010c4c0 f   GameEngine:Matrix3.obj
- 0001:0000c110       ??0Collider@@QAE@XZ        0010c510 f   GameEngine:Collider.obj
- 0001:0000c170       ??0Obj@@QAE@PAD@Z          0010c570 f   GameEngine:Obj.obj
- 0001:0000c1e0       ?Add@?$List@UFace@@@std@@QAEXUFace@@@Z 0010c5e0 f i GameEngine:Obj.obj
- 0001:0000c280       ?Add@?$List@UVector3@@@std@@QAEXUVector3@@@Z 0010c680 f i GameEngine:Obj.obj
- 0001:0000c330       ?CreateVertices@Obj@@AAEXXZ 0010c730 f   GameEngine:Obj.obj
- 0001:0000c630       ?ReadFile@Obj@@AAEXPAD@Z   0010ca30 f   GameEngine:Obj.obj
- 0001:0000c640       ??0A3D@@QAE@PAD@Z          0010ca40 f   GameEngine:A3D.obj
- 0001:0000c7e0       ?memcmp@@YAHPBX0I@Z        0010cbe0 f   Lib:string.obj
- 0001:0000c820       ?memcpy@@YAPAXPAX0I@Z      0010cc20 f   Lib:string.obj
- 0001:0000c850       ?memcpy_fast_128@@YAXPAX0I@Z 0010cc50 f   Lib:string.obj
- 0001:0000c8d0       ?memset16@@YAPAXPAXGI@Z    0010ccd0 f   Lib:string.obj
- 0001:0000c8f0       ?memset32@@YAPAXPAXII@Z    0010ccf0 f   Lib:string.obj
- 0001:0000c910       ?memset_fast_128@@YAPAXPAXII@Z 0010cd10 f   Lib:string.obj
- 0001:0000c990       ?strcat@@YAPADPADPBD@Z     0010cd90 f   Lib:string.obj
- 0001:0000c9c0       ?strcmp@@YAIPBD0@Z         0010cdc0 f   Lib:string.obj
- 0001:0000ca10       ?strcpy@@YAPADPADPBD@Z     0010ce10 f   Lib:string.obj
- 0001:0000ca30       ?strlen@@YAIPBD@Z          0010ce30 f   Lib:string.obj
- 0001:0000ca50       _memset                    0010ce50 f   Lib:string.obj
- 0001:0000ca70       ?acos@@YAMM@Z              0010ce70 f   Lib:math.obj
- 0001:0000cad0       ?asin@@YAMM@Z              0010ced0 f   Lib:math.obj
+ 0001:000059a0       ?DrawTriangle2@Rasterizer@gl@@SAXAAUVertex@2@00PAVBMP@@@Z 00105da0 f   GL:Rasterizer.obj
+ 0001:00006080       ?DrawTriangle@Rasterizer@gl@@SAXAAUVertex@2@00PAVBMP@@@Z 00106480 f   GL:Rasterizer.obj
+ 0001:00006410       ?EdgeFunction@gl@@YAMABUVector4@1@00@Z 00106810 f   GL:Rasterizer.obj
+ 0001:00006460       ?EdgeFunction@gl@@YAMABUVector4@1@0MM@Z 00106860 f   GL:Rasterizer.obj
+ 0001:000064b0       ?Init@Rasterizer@gl@@SAIXZ 001068b0 f   GL:Rasterizer.obj
+ 0001:000064e0       ??0GEngine@@QAE@XZ         001068e0 f   GameEngine:Engine.obj
+ 0001:00006550       ?Add@?$List@PAVRigidbody@@@std@@QAEXPAVRigidbody@@@Z 00106950 f i GameEngine:Engine.obj
+ 0001:000065d0       ?Collision@GEngine@@AAEXXZ 001069d0 f   GameEngine:Engine.obj
+ 0001:00006cd0       ?Render@GEngine@@AAEXXZ    001070d0 f   GameEngine:Engine.obj
+ 0001:00007130       ?Rotate@Quaternion@@QAEXUVector3@@M@Z 00107530 f i GameEngine:Engine.obj
+ 0001:000072a0       ?StartGame@GEngine@@QAEXPAVGame@@@Z 001076a0 f   GameEngine:Engine.obj
+ 0001:00007670       ?Update@GEngine@@AAEXXZ    00107a70 f   GameEngine:Engine.obj
+ 0001:000085e0       ??0Vector3@@QAE@MMM@Z      001089e0 f   GameEngine:Vector3.obj
+ 0001:00008610       ??0Vector3@@QAE@XZ         00108a10 f   GameEngine:Vector3.obj
+ 0001:00008630       ?Cross@Vector3@@SA?AU1@ABU1@0@Z 00108a30 f   GameEngine:Vector3.obj
+ 0001:00008690       ?Dot@Vector3@@SAMABU1@0@Z  00108a90 f   GameEngine:Vector3.obj
+ 0001:000086b0       ?EulerAngles@Vector3@@QAE?AU1@XZ 00108ab0 f   GameEngine:Vector3.obj
+ 0001:00008760       ?ToVector4@Vector3@@QAE?AUVector4@gl@@XZ 00108b60 f   GameEngine:Vector3.obj
+ 0001:000087a0       ??0Quaternion@@QAE@XZ      00108ba0 f   GameEngine:Quaternion.obj
+ 0001:000087c0       ?FromAxisAngle@Quaternion@@SA?AU1@ABUVector3@@M@Z 00108bc0 f   GameEngine:Quaternion.obj
+ 0001:00008860       ?FromEuler@Quaternion@@SA?AU1@ABUVector3@@@Z 00108c60 f   GameEngine:Quaternion.obj
+ 0001:000089d0       ??0GameObject@@QAE@XZ      00108dd0 f   GameEngine:GameObject.obj
+ 0001:00008a80       ??A?$List@PAVComponent@@@std@@QAEAAPAVComponent@@H@Z 00108e80 f i GameEngine:GameObject.obj
+ 0001:00008ad0       ?Add@?$List@PAVComponent@@@std@@QAEXPAVComponent@@@Z 00108ed0 f i GameEngine:GameObject.obj
+ 0001:00008b50       ?Add@?$List@PAVMeshComponent@@@std@@QAEXPAVMeshComponent@@@Z 00108f50 f i GameEngine:GameObject.obj
+ 0001:00008bd0       ?AddComponent@GameObject@@QAEXPAVComponent@@@Z 00108fd0 f   GameEngine:GameObject.obj
+ 0001:00008d50       ?Contains@String@std@@QAE_NV12@@Z 00109150 f i GameEngine:GameObject.obj
+ 0001:00008db0       ?GetComponent@GameObject@@QAEPAVComponent@@VString@std@@@Z 001091b0 f   GameEngine:GameObject.obj
+ 0001:00008e50       ?GetName@GameObject@@QAE?AVString@std@@XZ 00109250 f   GameEngine:GameObject.obj
+ 0001:00008e60       ?GetWorldPosition@GameObject@@QAE?AUVector3@@XZ 00109260 f   GameEngine:GameObject.obj
+ 0001:00008ee0       ?GetWorldRotation@GameObject@@QAE?AUQuaternion@@XZ 001092e0 f   GameEngine:GameObject.obj
+ 0001:00008f00       ?GetWorldScale@GameObject@@QAE?AUVector3@@XZ 00109300 f   GameEngine:GameObject.obj
+ 0001:00008f80       ?GetWorldTransform@GameObject@@QAE?AUTransform@@XZ 00109380 f   GameEngine:GameObject.obj
+ 0001:00009090       ?SetName@GameObject@@QAEXVString@std@@@Z 00109490 f   GameEngine:GameObject.obj
+ 0001:000090b0       ??0Camera@@QAE@XZ          001094b0 f   GameEngine:Camera.obj
+ 0001:000090d0       ??0Game@@QAE@XZ            001094d0 f   GameEngine:Game.obj
+ 0001:00009120       ?Add@?$List@PAVCamera@@@std@@QAEXPAVCamera@@@Z 00109520 f i GameEngine:Game.obj
+ 0001:000091a0       ?Add@?$List@PAVGameObject@@@std@@QAEXPAVGameObject@@@Z 001095a0 f i GameEngine:Game.obj
+ 0001:00009220       ?Add@?$List@PAVLightSource@@@std@@QAEXPAVLightSource@@@Z 00109620 f i GameEngine:Game.obj
+ 0001:000092a0       ?AddCamera@Game@@QAEXPAVCamera@@@Z 001096a0 f   GameEngine:Game.obj
+ 0001:00009320       ?AddLightSource@Game@@QAEXPAVLightSource@@@Z 00109720 f   GameEngine:Game.obj
+ 0001:000093a0       ?AddObject@Game@@QAEXPAVGameObject@@@Z 001097a0 f   GameEngine:Game.obj
+ 0001:00009420       ?GetActiveCamera@Game@@QAEPAVCamera@@XZ 00109820 f   GameEngine:Game.obj
+ 0001:00009430       ?GetCamera@Game@@QAEPAVCamera@@VString@std@@@Z 00109830 f   GameEngine:Game.obj
+ 0001:000094d0       ?GetLightSource@Game@@QAEPAVLightSource@@VString@std@@@Z 001098d0 f   GameEngine:Game.obj
+ 0001:00009570       ?GetObject@Game@@QAEPAVGameObject@@VString@std@@@Z 00109970 f   GameEngine:Game.obj
+ 0001:00009680       ?SetActiveCamera@Game@@QAEXPAVCamera@@@Z 00109a80 f   GameEngine:Game.obj
+ 0001:00009690       ??0Component@@QAE@XZ       00109a90 f   GameEngine:Component.obj
+ 0001:000096c0       ?GetName@Component@@QAE?AVString@std@@XZ 00109ac0 f   GameEngine:Component.obj
+ 0001:000096d0       ?SetName@Component@@QAEXVString@std@@@Z 00109ad0 f   GameEngine:Component.obj
+ 0001:000096f0       ?Start@Component@@UAEXXZ   00109af0 f i GameEngine:Component.obj
+ 0001:00009700       ?Update@Component@@UAEXM@Z 00109b00 f i GameEngine:Component.obj
+ 0001:00009710       ??0MeshComponent@@QAE@XZ   00109b10 f   GameEngine:MeshComponent.obj
+ 0001:00009740       ?Update@MeshComponent@@UAEXM@Z 00109b40 f   GameEngine:MeshComponent.obj
+ 0001:00009750       ??0Rigidbody@@QAE@XZ       00109b50 f   GameEngine:Rigidbody.obj
+ 0001:000097a0       ?AddImpulse@Rigidbody@@QAEXUVector3@@@Z 00109ba0 f   GameEngine:Rigidbody.obj
+ 0001:000097e0       ?AddImpulseAt@Rigidbody@@QAEXUVector3@@0@Z 00109be0 f   GameEngine:Rigidbody.obj
+ 0001:000097f0       ?Speed@Rigidbody@@QAEMXZ   00109bf0 f   GameEngine:Rigidbody.obj
+ 0001:00009830       ?SpeedSquared@Rigidbody@@QAEMXZ 00109c30 f   GameEngine:Rigidbody.obj
+ 0001:00009880       ?Start@Rigidbody@@UAEXXZ   00109c80 f   GameEngine:Rigidbody.obj
+ 0001:00009890       ?Update@Rigidbody@@UAEXM@Z 00109c90 f   GameEngine:Rigidbody.obj
+ 0001:00009cb0       ??0BoxCollider@@QAE@XZ     0010a0b0 f   GameEngine:BoxCollider.obj
+ 0001:00009cd0       ?GetEdge@Collider@@UAEPAUVector3@@H@Z 0010a0d0 f i GameEngine:BoxCollider.obj
+ 0001:00009e30       ?GetEdgeDir@Collider@@UAE?AUVector3@@H@Z 0010a230 f i GameEngine:BoxCollider.obj
+ 0001:00009f20       ?GetFaceDir@Collider@@UAE?AUVector3@@H@Z 0010a320 f i GameEngine:BoxCollider.obj
+ 0001:00009ff0       ?GetVertex@Collider@@UAE?AUVector3@@H@Z 0010a3f0 f i GameEngine:BoxCollider.obj
+ 0001:0000a1b0       ?IsColliding@BoxCollider@@QAE_NPAV1@AAUVector3@@@Z 0010a5b0 f   GameEngine:BoxCollider.obj
+ 0001:0000a1c0       ?Normalized@Vector3@@QAE?AU1@XZ 0010a5c0 f i GameEngine:BoxCollider.obj
+ 0001:0000a280       ?SupportFunction@@YA?AUVector3@@U1@UTransform@@@Z 0010a680 f   GameEngine:BoxCollider.obj
+ 0001:0000a650       ?cross_aba@@YA?AUVector3@@ABU1@0@Z 0010aa50 f i GameEngine:BoxCollider.obj
+ 0001:0000a680       ?update@@YA_NUVector3@@@Z  0010aa80 f   GameEngine:BoxCollider.obj
+ 0001:0000b070       ?LoadModel@ModelLoader@@SAPAVModel3D@@PADW4Format3D@@@Z 0010b470 f   GameEngine:ModelLoader.obj
+ 0001:0000b0f0       ??0Transform@@QAE@UVector3@@UQuaternion@@0@Z 0010b4f0 f   GameEngine:Transform.obj
+ 0001:0000b140       ??0Transform@@QAE@XZ       0010b540 f   GameEngine:Transform.obj
+ 0001:0000b1c0       ??DQuaternion@@QAEAAUVector3@@AAU1@@Z 0010b5c0 f i GameEngine:Transform.obj
+ 0001:0000b300       ?GetForwardVector@Transform@@QAE?AUVector3@@XZ 0010b700 f   GameEngine:Transform.obj
+ 0001:0000b350       ?GetRightVector@Transform@@QAE?AUVector3@@XZ 0010b750 f   GameEngine:Transform.obj
+ 0001:0000b3a0       ?GetUpVector@Transform@@QAE?AUVector3@@XZ 0010b7a0 f   GameEngine:Transform.obj
+ 0001:0000b3f0       ?Rotate@Transform@@QAEXUQuaternion@@@Z 0010b7f0 f   GameEngine:Transform.obj
+ 0001:0000b4f0       ?Rotate@Transform@@QAEXUVector3@@M@Z 0010b8f0 f   GameEngine:Transform.obj
+ 0001:0000b710       ?Scale@Transform@@QAEXUVector3@@@Z 0010bb10 f   GameEngine:Transform.obj
+ 0001:0000b750       ?ToString@Transform@@QAEPADPAD@Z 0010bb50 f   GameEngine:Transform.obj
+ 0001:0000b800       ?Translate@Transform@@QAEXUVector3@@@Z 0010bc00 f   GameEngine:Transform.obj
+ 0001:0000b840       ??0Matrix3@@QAE@QAM@Z      0010bc40 f   GameEngine:Matrix3.obj
+ 0001:0000b880       ??0Matrix3@@QAE@XZ         0010bc80 f   GameEngine:Matrix3.obj
+ 0001:0000b8d0       ??D@YA?AUMatrix3@@ABU0@0@Z 0010bcd0 f i GameEngine:Matrix3.obj
+ 0001:0000baa0       ??D@YA?AUMatrix3@@ABU0@ABM@Z 0010bea0 f i GameEngine:Matrix3.obj
+ 0001:0000bb40       ??D@YA?AUVector3@@ABUMatrix3@@ABU0@@Z 0010bf40 f i GameEngine:Matrix3.obj
+ 0001:0000bbe0       ??G@YA?AUMatrix3@@ABU0@0@Z 0010bfe0 f i GameEngine:Matrix3.obj
+ 0001:0000bc90       ??H@YA?AUMatrix3@@ABU0@0@Z 0010c090 f i GameEngine:Matrix3.obj
+ 0001:0000bd40       ?CreateRotation@Matrix3@@SA?AU1@UVector3@@@Z 0010c140 f   GameEngine:Matrix3.obj
+ 0001:0000bed0       ?Inverse@Matrix3@@QAE?AU1@XZ 0010c2d0 f   GameEngine:Matrix3.obj
+ 0001:0000c0e0       ?Transpose@Matrix3@@QAE?AU1@XZ 0010c4e0 f   GameEngine:Matrix3.obj
+ 0001:0000c130       ??0Collider@@QAE@XZ        0010c530 f   GameEngine:Collider.obj
+ 0001:0000c190       ??0Obj@@QAE@PAD@Z          0010c590 f   GameEngine:Obj.obj
+ 0001:0000c200       ?Add@?$List@UFace@@@std@@QAEXUFace@@@Z 0010c600 f i GameEngine:Obj.obj
+ 0001:0000c2a0       ?Add@?$List@UVector3@@@std@@QAEXUVector3@@@Z 0010c6a0 f i GameEngine:Obj.obj
+ 0001:0000c350       ?CreateVertices@Obj@@AAEXXZ 0010c750 f   GameEngine:Obj.obj
+ 0001:0000c640       ?ReadFile@Obj@@AAEXPAD@Z   0010ca40 f   GameEngine:Obj.obj
+ 0001:0000c650       ??0A3D@@QAE@PAD@Z          0010ca50 f   GameEngine:A3D.obj
+ 0001:0000c7f0       ?memcmp@@YAHPBX0I@Z        0010cbf0 f   Lib:string.obj
+ 0001:0000c830       ?memcpy@@YAPAXPAX0I@Z      0010cc30 f   Lib:string.obj
+ 0001:0000c860       ?memcpy_fast_128@@YAXPAX0I@Z 0010cc60 f   Lib:string.obj
+ 0001:0000c8e0       ?memset16@@YAPAXPAXGI@Z    0010cce0 f   Lib:string.obj
+ 0001:0000c900       ?memset32@@YAPAXPAXII@Z    0010cd00 f   Lib:string.obj
+ 0001:0000c920       ?memset_fast_128@@YAPAXPAXII@Z 0010cd20 f   Lib:string.obj
+ 0001:0000c9a0       ?strcat@@YAPADPADPBD@Z     0010cda0 f   Lib:string.obj
+ 0001:0000c9d0       ?strcmp@@YAIPBD0@Z         0010cdd0 f   Lib:string.obj
+ 0001:0000ca20       ?strcpy@@YAPADPADPBD@Z     0010ce20 f   Lib:string.obj
+ 0001:0000ca40       ?strlen@@YAIPBD@Z          0010ce40 f   Lib:string.obj
+ 0001:0000ca60       _memset                    0010ce60 f   Lib:string.obj
+ 0001:0000ca80       ?acos@@YAMM@Z              0010ce80 f   Lib:math.obj
+ 0001:0000cae0       ?asin@@YAMM@Z              0010cee0 f   Lib:math.obj
  0001:0000cb50       ?atan2@@YAMMM@Z            0010cf50 f   Lib:math.obj
  0001:0000cc50       ?atan@@YAMM@Z              0010d050 f   Lib:math.obj
  0001:0000cc80       ?ceil@@YAHM@Z              0010d080 f   Lib:math.obj
@@ -449,7 +451,7 @@
  0002:00000168       __real@41200000            00110768     3DGame:3DGame.obj
  0002:0000016c       __real@c1700000            0011076c     3DGame:3DGame.obj
  0002:00000174       ??_7MyBox@@6B@             00110774     3DGame:MyBox.obj
- 0002:0000017c       ??_C@_08GGPPOII@cube?4a3d?$AA@ 0011077c     3DGame:MyBox.obj
+ 0002:0000017c       ??_C@_09BFENJNLM@plane?4a3d?$AA@ 0011077c     3DGame:MyBox.obj
  0002:00000188       ??_C@_07CKAHAGKJ@img?4bmp?$AA@ 00110788     3DGame:MyBox.obj
  0002:00000190       ??_C@_0O@NJFLLBAD@bmp?5not?5found?$AA@ 00110790     3DGame:MyBox.obj
  0002:000001a0       ??_C@_04GONFKEIN@Mesh?$AA@ 001107a0     3DGame:MyBox.obj
@@ -716,9 +718,9 @@
  0001:000000c0       ??__Ed@@YAXXZ              001004c0 f   GameEngine:BoxCollider.obj
  0001:000000d0       ??__Ev@@YAXXZ              001004d0 f   GameEngine:BoxCollider.obj
  0001:00002328       $LN28                      00102728     tcpsession.obj
- 0001:00009dd4       $LN29                      0010a1d4     GameEngine:BoxCollider.obj
- 0001:0000a170       $LN20                      0010a570     GameEngine:BoxCollider.obj
- 0001:0000b028       $LN70                      0010b428     GameEngine:BoxCollider.obj
+ 0001:00009df4       $LN29                      0010a1f4     GameEngine:BoxCollider.obj
+ 0001:0000a190       $LN20                      0010a590     GameEngine:BoxCollider.obj
+ 0001:0000b048       $LN70                      0010b448     GameEngine:BoxCollider.obj
  0001:0000d670       $LN49                      0010da70     Lib:stdio.obj
  0001:0000d68c       $LN44                      0010da8c     Lib:stdio.obj
  0001:0000db28       $LN28                      0010df28     KERNEL:debug.obj

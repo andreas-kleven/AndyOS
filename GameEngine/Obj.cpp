@@ -83,9 +83,9 @@ void Obj::CreateVertices()
 			gl::Vertex vert;
 
 			Vector3 pos = positions[faces[i].positions[j] - 1];
-			vert.x = pos.x;
-			vert.y = pos.y;
-			vert.z = pos.z;
+			vert.pos.x = pos.x;
+			vert.pos.y = pos.y;
+			vert.pos.z = pos.z;
 
 			Vector3 norm = normals[faces[i].normals[j] - 1];
 			vert.normal = norm.ToVector4();

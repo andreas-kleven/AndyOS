@@ -7,14 +7,8 @@ namespace gl
 	struct Vertex
 	{
 	public:
-		float x;
-		float y;
-		float z;
-
-		float mul_x;
-		float mul_y;
-		float mul_z;
-		float mul_w;
+		Vector4 pos;
+		Vector4 mul_pos;
 
 		ColRGB color;
 		Vector4 normal;
