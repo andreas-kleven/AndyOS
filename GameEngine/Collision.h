@@ -30,7 +30,7 @@ public:
 	float point_depth = 0;
 	std::List<Manifold*> points;
 
-	bool TestIntersection(Rigidbody& o1, Rigidbody& o2);
+	bool TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv);
 
 	void GetInterval(Rigidbody& o, Vector3 axis, float& min, float& max);
 

@@ -295,23 +295,29 @@ void GEngine::Collision()
 		for (int j = start; j < all.Count(); j++)
 		{
 			//if (all[i]->IsBox() && all[j]->IsBox())
-			if (0)
+			if (1)
 			{
 				Rigidbody* a = (Rigidbody*)all[i];
 				Rigidbody* b = (Rigidbody*)all[j];
 
 				//a->parent->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
 
-				Vector3 mtv;
+				Vector3 mtv(0, 0, 0);
 
 				//if (a->IsColliding(b, mtv))
 					//if(a->parent->transform.position.y < 0)
 
 				::Collision test;
 
-				if (test.TestIntersection(*a, *b))
+				if (test.TestIntersection(*a, *b, &mtv))
 				{
-					//a->parent->transform.position += -mtv;
+					Debug::color = 0xFFFFFF;
+					//Render();
+					//Debug::Print("%f %f %f\n", mtv.x, mtv.y, mtv.z);
+					//PIT::Sleep(2000);
+					//a->parent->transform.position += mtv;
+					a->velocity = Vector3();
+					a->parent->transform.position += mtv;
 
 					//Debug::Print("COLLISION");
 
@@ -557,6 +563,9 @@ void GEngine::Render()
 			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
 			Matrix4 R = trans->rotation.ToMatrix();
 			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
+
+			for (int v = 0; v < mesh->vertex_count; v++)
+				mesh->vertices[v].worldNormal = R * mesh->vertices[v].normal;
 
 			Matrix4 M = T * R * S;
 

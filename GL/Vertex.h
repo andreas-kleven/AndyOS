@@ -8,12 +8,13 @@ namespace gl
 	{
 	public:
 		Vector4 pos;
-		Vector4 mul_pos;
+		Vector4 tmpPos;
 
 		ColRGB color;
-		Vector4 normal;
+		ColRGB builtColor;
 
-		ColRGB built_color;
+		Vector4 normal;
+		Vector4 worldNormal;
 
 		float tex_u;
 		float tex_v;

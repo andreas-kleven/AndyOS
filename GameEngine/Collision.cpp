@@ -6,8 +6,134 @@
 #define EPSILON 0.00001f
 #define DEPSILON 0.05f
 
-bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2)
+/*void GetInterval(Rigidbody o, Vector3 axis, float &min, float &max)
 {
+	min = max = Vector3::Dot(axis, o.collider->GetVertex(0));
+
+	for (int i = 1; i < 8; i++)
+	{
+		float value = Vector3::Dot(axis, o.collider->GetVertex(i));
+		min = ::min(min, value);
+		max = ::max(max, value);
+	}
+}*/
+
+
+bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv)
+{
+	float min1, max1, min2, max2;
+
+	float lowest = 1e100;
+	Vector3 la;
+
+	/*for (int i = 0; i < 6; i++)
+	{
+		GetInterval(o1, o1.collider->GetFaceDir(i), min1, max1);
+		GetInterval(o2, o1.collider->GetFaceDir(i), min2, max2);
+
+		if (max1 < min2 || max2 < min1)
+		{
+			Debug::Print("FACE2");
+			return 0;
+		}
+
+		float m = max(max1 - min2, -max2 + min1);
+
+		if (m < lowest)
+		{
+			lowest = m;
+			la = o1.collider->GetFaceDir(i);
+		}
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		GetInterval(o1, o2.collider->GetFaceDir(i), min1, max1);
+		GetInterval(o2, o2.collider->GetFaceDir(i), min2, max2);
+
+		if (max1 < min2 || max2 < min1)
+		{
+			Debug::Print("FACE2");
+			return 0;
+		}
+
+		float m = max(max1 - min2, -max2 + min1);
+
+		if (m < lowest)
+		{
+			lowest = m;
+			la = o2.collider->GetFaceDir(i);
+		}
+	}*/
+
+	Vector3 axes[15];
+	axes[0] = o1.parent->GetWorldRotation() * Vector3(1, 0, 0);
+	axes[1] = o1.parent->GetWorldRotation() * Vector3(0, 1, 0);
+	axes[2] = o1.parent->GetWorldRotation() * Vector3(0, 0, 1);
+	axes[3] = o2.parent->GetWorldRotation() * Vector3(1, 0, 0);
+	axes[4] = o2.parent->GetWorldRotation() * Vector3(0, 1, 0);
+	axes[5] = o2.parent->GetWorldRotation() * Vector3(0, 0, 1);
+
+	axes[6] = Vector3::Cross(axes[0], axes[3]);
+	axes[7] = Vector3::Cross(axes[0], axes[4]);
+	axes[8] = Vector3::Cross(axes[0], axes[5]);
+
+	axes[9] = Vector3::Cross(axes[1], axes[3]);
+	axes[10] = Vector3::Cross(axes[1], axes[4]);
+	axes[11] = Vector3::Cross(axes[1], axes[5]);
+
+	axes[12] = Vector3::Cross(axes[2], axes[3]);
+	axes[13] = Vector3::Cross(axes[2], axes[4]);
+	axes[14] = Vector3::Cross(axes[2], axes[5]);
+
+	for (int i = 0; i < 6; i++)
+	{
+		Vector3& axis = axes[i];
+
+		GetInterval(o1, axis, min1, max1);
+		GetInterval(o2, axis, min2, max2);
+
+		if (max1 < min2 || max2 < min1)
+			return 0;
+
+		float m = max(max1 - min2, -max2 + min1);
+
+		if (m < lowest)
+		{
+			lowest = m;
+			la = axis;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			Vector3 axis = Vector3::Cross(axes[i], axes[j + 3]);
+
+			GetInterval(o1, axis, min1, max1);
+			GetInterval(o2, axis, min2, max2);
+
+			if (max1 < min2 || max2 < min1)
+				return 0;
+
+			float m = max(max1 - min2, -max2 + min1);
+
+			if (m < lowest)
+			{
+				lowest = m;
+				la = axis;
+			}
+		}
+	}
+
+	Debug::Print("%f\n", lowest);
+	*mtv = la * -lowest;
+
+	//CollisionPoint(o1, o2);
+
+	return 1;
+
 	//SAT with quick exit, for pseudo broadphase
 	/*float min1, max1, min2, max2;
 	//Faces' projection check
@@ -65,7 +191,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2)
 	axes[14] = Vector3::Cross(axes[2], axes[5]);
 
 	float smallest = 1e100;
-	int smallestIndex = 0;
+	int smallestIndex = -1;
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -73,15 +199,15 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2)
 
 		float R = abs(Vector3::Dot(T, L));
 
-		float P1a = abs(Vector3::Dot(axes[0] * o1.parent->transform.scale.x, L));
-		float P1b = abs(Vector3::Dot(axes[1] * o1.parent->transform.scale.y, L));
-		float P1c = abs(Vector3::Dot(axes[2] * o1.parent->transform.scale.z, L));
+		float P1x = abs(Vector3::Dot(axes[0] * o1.parent->transform.scale.x, L));
+		float P1y = abs(Vector3::Dot(axes[1] * o1.parent->transform.scale.y, L));
+		float P1z = abs(Vector3::Dot(axes[2] * o1.parent->transform.scale.z, L));
 
-		float P2a = abs(Vector3::Dot(axes[3] * o2.parent->transform.scale.x, L));
-		float P2b = abs(Vector3::Dot(axes[4] * o2.parent->transform.scale.y, L));
-		float P2c = abs(Vector3::Dot(axes[5] * o2.parent->transform.scale.z, L));
+		float P2x = abs(Vector3::Dot(axes[3] * o2.parent->transform.scale.x, L));
+		float P2y = abs(Vector3::Dot(axes[5] * o2.parent->transform.scale.z, L));
+		float P2z = abs(Vector3::Dot(axes[4] * o2.parent->transform.scale.y, L));
 
-		float sum = P1a + P1b + P1c + P2a + P2b + P2c;
+		float sum = P1x + P1y + P1z + P2x + P2z + P2y;
 
 		if (R > sum)
 		{
@@ -91,16 +217,20 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2)
 		{
 			if (sum < smallest)
 			{
-				smallest = sum;
+				smallest = sum - R;
+				*mtv = Vector3(0, P1y, P2y);
+				Debug::Print("SUM: %f %f %f\n", P1y, P2y, P1y - P2y);
 				smallestIndex = i;
+
 			}
 		}
 	}*/
 
-	//get the manifold
-	CollisionPoint(o1, o2);
+	//if(smallestIndex != -1)
+	//*mtv = axes[smallestIndex] * smallest;
 
-	return true;
+	//get the manifold
+	//CollisionPoint(o1, o2);
 }
 
 //make projection of desired axis
@@ -108,7 +238,7 @@ void Collision::GetInterval(Rigidbody& o, Vector3 axis, float &min, float &max)
 {
 	min = max = Vector3::Dot(axis, o.parent->GetWorldRotation() * o.collider->GetVertex(0) + o.parent->GetWorldPosition());
 
-	for (int i = 0; i < 8; i++) 
+	for (int i = 1; i < 8; i++)
 	{
 		float value = Vector3::Dot(axis, o.parent->GetWorldRotation() * o.collider->GetVertex(i) + o.parent->GetWorldPosition());
 		min = ::min(min, value);
@@ -116,14 +246,14 @@ void Collision::GetInterval(Rigidbody& o, Vector3 axis, float &min, float &max)
 	}
 }
 
-std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2) 
+std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 {
 	Vector3 colisionPoint1;
 	Vector3 colisionPoint2;
 	Vector3 collisionNormal;
 
 	//vertices of object 2 in object1
-	for (int i = 0; i < 8; i++) 
+	for (int i = 0; i < 8; i++)
 	{
 		Vector3 CP = obj2.parent->GetWorldRotation() * obj2.collider->GetVertex(i) + obj2.parent->GetWorldPosition();
 		if (isInside(CP, obj1)) {
@@ -145,14 +275,14 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 		}
 
 		CP = obj1.parent->GetWorldRotation() * obj1.collider->GetVertex(i) + obj1.parent->GetWorldPosition();
-		if (isInside(CP, obj2)) 
+		if (isInside(CP, obj2))
 		{
 			Manifold* colision = new Manifold(CP);
 			colision->Bod1 = &obj2;
 			colision->Bod2 = &obj1;
 			collisionNormal = getNormalFace(obj2, CP);
 
-			if (collisionNormal == Vector3(0, 0, 0)) 
+			if (collisionNormal == Vector3(0, 0, 0))
 			{
 				collisionNormal = (obj1.parent->GetWorldPosition() - obj2.parent->GetWorldPosition()).Normalized();
 			}
@@ -183,13 +313,13 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 
 	//edges obj1  against edges obj2
 	//checks for the edges 
-	for (int i = 0; i < 12; i++) 
+	for (int i = 0; i < 12; i++)
 	{
 		Vector3* pointsEd1 = obj1.collider->GetEdge(i);
 		pointsEd1[0] = obj1.parent->GetWorldRotation() * pointsEd1[0] + obj1.parent->GetWorldPosition();
 		pointsEd1[1] = obj1.parent->GetWorldRotation() * pointsEd1[1] + obj1.parent->GetWorldPosition();
 
-		for (int j = 0; j < 12; j++) 
+		for (int j = 0; j < 12; j++)
 		{
 			Vector3* pointsEd2 = obj2.collider->GetEdge(j);
 			pointsEd2[0] = obj2.parent->GetWorldRotation() * pointsEd2[0] + obj2.parent->GetWorldPosition();
@@ -197,7 +327,7 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 
 			closest_Point(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1], colisionPoint1, colisionPoint2);
 
-			if ((colisionPoint1, colisionPoint2).Magnitude() < 0.1f) 
+			if ((colisionPoint1, colisionPoint2).Magnitude() < 0.1f)
 			{
 				Vector3 CP = (colisionPoint1 + colisionPoint2) / 2.0f;
 				Manifold * colision = new Manifold(CP);
@@ -268,7 +398,7 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 }
 
 //finds the normal for collision between 2 edges
-Vector3 Collision::getNormalEdge(Vector3& p1, Vector3& q1, Vector3& p2, Vector3& q2) 
+Vector3 Collision::getNormalEdge(Vector3& p1, Vector3& q1, Vector3& p2, Vector3& q2)
 {
 	Vector3 normal = Vector3::Cross(p1 - q1, p2 - q2);
 	if (normal.Magnitude() != 0)

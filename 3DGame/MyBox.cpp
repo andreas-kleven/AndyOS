@@ -8,7 +8,7 @@
 
 MyBox::MyBox()
 {
-	Model3D* mod = ModelLoader::LoadModel("plane.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 
 	char* img_buf;
 	if (!ISO_FS::ReadFile("img.bmp", img_buf))

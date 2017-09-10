@@ -7,7 +7,7 @@ public:
 	//
 	Vector3 size;
 
-	Transform transform;
+	//Transform transform;
 
 	Collider();
 
@@ -18,48 +18,57 @@ public:
 
 	virtual Vector3 GetFaceDir(int i) 
 	{
-		Vector3 direction;
-		switch (i) {
-			//right face
-		case 0:
-			direction = Vector3(size.x / 2, 0, 0);
-			direction = direction.Normalized();
-			return direction; break;
-			//top face
-		case 1:
-			direction = Vector3(0, size.y / 2, 0);
-			direction = direction.Normalized();
-			return direction; break;
-			//back face
-		case 2:
-			direction = Vector3(0, 0, size.z / 2);
-			direction = direction.Normalized();
-			return direction; break;
+		switch (i) 
+		{
+		case 0: //right
+			return Vector3(1, 0, 0);
+
+		case 1: // top
+			return Vector3(0, 1, 1);
+
+		case 2: //back
+			return Vector3(0, 0, 1);
+
+		case 3:
+			return Vector3(-1, 0, 0);
+
+		case 4:
+			return Vector3(0, -1, 0);
+
+		case 5:
+			return Vector3(0, 0, -1);
+
+		default:
+			return Vector3();
 		}
-		return direction;
 	}
 
 	virtual Vector3 GetEdgeDir(int i) 
 	{ 
-		Vector3 direction;
-		switch (i) {
-			//front top corner
-		case 0:
-			direction = Vector3(0, size.y / 2, size.z / 2);
-			direction = direction.Normalized();
-			return direction; break;
-			// right top corner
-		case 1:
-			direction = Vector3(size.x / 2, size.y / 2, 0);
-			direction = direction.Normalized();
-			return direction; break;
-			//front right corner
-		case 2:
-			direction = Vector3(size.x / 2, 0, size.z / 2);
-			direction = direction.Normalized();
-			return direction; break;
+		/*if (i < 4)
+		{
+			return Vector3(1, 0, 0);
 		}
-		return direction;
+		else if (i < 8)
+		{
+			return Vector3(0, 1, 0);
+		}
+		else
+		{
+			return Vector3(0, 0, 1);
+		}*/
+
+		switch (i) 
+		{
+		case 0:
+			return Vector3(1, 0, 0);
+
+		case 1:
+			return Vector3(0, 1, 0);
+
+		case 2:
+			return Vector3(0, 0, 1);
+		}
 	}
 
 	virtual Vector3* GetEdge(int vertex) 
@@ -86,19 +95,17 @@ public:
 
 	virtual Vector3 GetVertex(int i)
 	{
-		Vector3 vertex;
-
-		switch (i) {
-		case 0: vertex = Vector3(size.x*0.5f, size.y*0.5f, size.z*0.5f); break;//righttopfront
-		case 1: vertex = Vector3(size.x*0.5f, size.y*0.5f, -size.z*0.5f); break;//righttopback
-		case 2: vertex = Vector3(-size.x*0.5f, size.y*0.5f, -size.z*0.5f); break;//lefttopback
-		case 3: vertex = Vector3(-size.x*0.5f, size.y*0.5f, size.z*0.5f); break;//lefttopfront
-		case 4: vertex = Vector3(size.x*0.5f, -size.y*0.5f, size.z*0.5f); break;//rightbottomfront
-		case 5: vertex = Vector3(size.x*0.5f, -size.y*0.5f, -size.z*0.5f); break;//rightbottomback
-		case 6: vertex = Vector3(-size.x*0.5f, -size.y*0.5f, -size.z*0.5f); break;//leftbottomback
-		case 7: vertex = Vector3(-size.x*0.5f, -size.y*0.5f, size.z*0.5f); break;//leftbottomfront
+		switch (i) 
+		{
+		case 0: return Vector3(size.x, size.y, size.z);
+		case 1: return Vector3(size.x, size.y, -size.z);
+		case 2: return Vector3(size.x, -size.y, size.z);
+		case 3: return Vector3(size.x, -size.y, -size.z);
+		case 4: return Vector3(-size.x, size.y, size.z);
+		case 5: return Vector3(-size.x, size.y, -size.z);
+		case 6: return Vector3(-size.x, -size.y, size.z);
+		case 7: return Vector3(-size.x, -size.y, -size.z);
 		}
-		return vertex;
 	}
 
 protected:

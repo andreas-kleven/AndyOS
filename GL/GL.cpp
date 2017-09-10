@@ -130,9 +130,9 @@ namespace gl
 			b.MulMatrix(M);
 			c.MulMatrix(M);
 
-			float la = -a.normal.Dot(light);
-			float lb = -b.normal.Dot(light);
-			float lc = -c.normal.Dot(light);
+			float la = -a.worldNormal.Dot(light);
+			float lc = -c.worldNormal.Dot(light);
+			float lb = -b.worldNormal.Dot(light);
 
 			//la = 100 * pow(clamp(Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(a.normal) * 2)), 0.f, a.normal.Dot(Vector4(0, 0, 1, 0))), 10);
 			//lb = 100 * pow(clamp(Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(b.normal) * 2)), 0.f, b.normal.Dot(Vector4(0, 0, 1, 0))), 10);
@@ -146,19 +146,19 @@ namespace gl
 			//lb = light.Dot(light - b.normal * (((light * 2).Dot(b.normal)) / (b.normal.Magnitude() * b.normal.Magnitude())));
 			//lc = light.Dot(light - c.normal * (((light * 2).Dot(c.normal)) / (c.normal.Magnitude() * c.normal.Magnitude())));
 
-			//a.built_color = (a.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(a.normal) * 2)))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
-			//b.built_color = (b.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(b.normal) * 2)))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
-			//c.built_color = (c.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(c.normal) * 2)))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
+			//a.builtColor = (a.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(a.normal) * 2)))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
+			//b.builtColor = (b.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(b.normal) * 2)))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
+			//c.builtColor = (c.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(c.normal) * 2)))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
 
-			//a.built_color = (a.color * -a.normal.Dot(light))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
-			//b.built_color = (b.color * -b.normal.Dot(light))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
-			//c.built_color = (c.color * -c.normal.Dot(light))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
+			//a.builtColor = (a.color * -a.normal.Dot(light))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
+			//b.builtColor = (b.color * -b.normal.Dot(light))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
+			//c.builtColor = (c.color * -c.normal.Dot(light))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
 
-			a.built_color = (a.color * la);
-			b.built_color = (b.color * lb);
-			c.built_color = (c.color * lc);
+			a.builtColor = (a.color * la);
+			b.builtColor = (b.color * lb);
+			c.builtColor = (c.color * lc);
 
-			if (a.mul_pos.w > 0 && b.mul_pos.w > 0 && c.mul_pos.w > 0)
+			if (a.tmpPos.w > 0 && b.tmpPos.w > 0 && c.tmpPos.w > 0)
 			{
 				Rasterizer::DrawTriangle(a, b, c, m_textures[bound_tex]);
 			}
