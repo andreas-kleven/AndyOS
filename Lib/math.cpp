@@ -15,6 +15,18 @@ float pow(float x, int n)
 	for (int i = 0; i > n; i--)
 		y /= x;
 	return y;
+
+	/*if (n == 0)
+		return 1;
+	
+	if (n > 0)
+	{
+		return pow(x, n - 1);
+	}
+	else
+	{
+		return 1 / pow(x, -n);
+	}*/
 }
 
 float sqrt(float square)

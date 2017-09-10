@@ -1,5 +1,6 @@
 #pragma once
 #include "../GL/Matrix4.h"
+#include "Matrix3.h"
 #include "Vector3.h"
 
 using namespace gl;
@@ -93,6 +94,38 @@ public:
 		return mat;
 	}
 
+	Matrix3 ToMatrix3()
+	{
+		//Normalize();
+		Matrix3 mat;
+
+		double sqw = w*w;
+		double sqx = x*x;
+		double sqy = y*y;
+		double sqz = z*z;
+
+		// invs (inverse square length) is only required if quaternion is not already normalised
+		double invs = 1 / (sqx + sqy + sqz + sqw);
+		mat[0] = (sqx - sqy - sqz + sqw) * invs;
+		mat[4] = (-sqx + sqy - sqz + sqw) * invs;
+		mat[8] = (-sqx - sqy + sqz + sqw) * invs;
+
+		double tmp1 = x*y;
+		double tmp2 = z*w;
+		mat[3] = 2.0 * (tmp1 + tmp2) * invs;
+		mat[1] = 2.0 * (tmp1 - tmp2) * invs;
+
+		tmp1 = x*z;
+		tmp2 = y*w;
+		mat[6] = 2.0 * (tmp1 - tmp2) * invs;
+		mat[2] = 2.0 * (tmp1 + tmp2) * invs;
+		tmp1 = y*z;
+		tmp2 = x*w;
+		mat[7] = 2.0 * (tmp1 + tmp2) * invs;
+		mat[5] = 2.0 * (tmp1 - tmp2) * invs;
+		return mat;
+	}
+
 	Vector3 ToEuler()
 	{
 		Vector3 euler;
@@ -134,6 +167,11 @@ public:
 		{
 			axis = Vector3(1, 0, 0);
 		}
+	}
+
+	bool operator==(const Quaternion& quat)
+	{
+		return x == quat.x && y == quat.y && z == quat.z && w == quat.w;
 	}
 
 	Quaternion& operator-()

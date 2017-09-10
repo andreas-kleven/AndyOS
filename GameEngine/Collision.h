@@ -1,7 +1,7 @@
 #pragma once
 #include "Rigidbody.h"
 
-class Manifold
+struct Manifold
 {
 public:
 	Manifold()
@@ -28,13 +28,12 @@ static class Collision
 {
 public:
 	float point_depth = 0;
-	std::List<Manifold*> points;
 
-	bool TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv);
+	bool TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Manifold*& col, int& count);
 
 	void GetInterval(Rigidbody& o, Vector3 axis, float& min, float& max);
 
-	std::List<Manifold*> CollisionPoint(Rigidbody& obj1, Rigidbody& obj2);
+	Manifold* CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count);
 	void closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Vector3&c1, Vector3&c2);
 	Vector3 getNormalEdge(Vector3& p1, Vector3& q1, Vector3& p2, Vector3& q2);
 

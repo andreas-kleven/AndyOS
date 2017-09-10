@@ -18,8 +18,13 @@
 	}
 }*/
 
+float distance(float minA, float maxA, float minB, float maxB)
+{
+	if (minA < minB) return minB - maxA;
+	else return minA - maxB;
+}
 
-bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv)
+bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Manifold*& col, int& count)
 {
 	float min1, max1, min2, max2;
 
@@ -93,14 +98,16 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv)
 		GetInterval(o1, axis, min1, max1);
 		GetInterval(o2, axis, min2, max2);
 
-		if (max1 < min2 || max2 < min1)
+		float dist = distance(min1, max1, min2, max2);
+
+		if (dist > 0)
 			return 0;
 
-		float m = max(max1 - min2, -max2 + min1);
+		dist = abs(dist);
 
-		if (m < lowest)
+		if (dist < lowest)
 		{
-			lowest = m;
+			lowest = dist;
 			la = axis;
 		}
 	}
@@ -109,28 +116,36 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv)
 	{
 		for (int j = 0; j < 3; j++)
 		{
+			if (axes[i] == axes[j + 3])
+				continue;
+
 			Vector3 axis = Vector3::Cross(axes[i], axes[j + 3]);
 
 			GetInterval(o1, axis, min1, max1);
 			GetInterval(o2, axis, min2, max2);
 
-			if (max1 < min2 || max2 < min1)
+			float dist = distance(min1, max1, min2, max2);
+
+			if (dist > 0)
 				return 0;
 
-			float m = max(max1 - min2, -max2 + min1);
+			dist = abs(dist);
 
-			if (m < lowest)
+			if (dist < lowest)
 			{
-				lowest = m;
+				lowest = dist;
 				la = axis;
 			}
 		}
 	}
 
-	Debug::Print("%f\n", lowest);
-	*mtv = la * -lowest;
+	if (Vector3::Dot(la, o1.parent->GetWorldPosition() - o2.parent->GetWorldPosition()) < 0)
+		lowest *= -1;
 
-	//CollisionPoint(o1, o2);
+	Debug::Print("%f\n", lowest);
+	*mtv = la * lowest;
+
+	col = CollisionPoint(o1, o2, count);
 
 	return 1;
 
@@ -246,21 +261,29 @@ void Collision::GetInterval(Rigidbody& o, Vector3 axis, float &min, float &max)
 	}
 }
 
-std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
+Manifold cols[100];
+
+Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count)
 {
 	Vector3 colisionPoint1;
 	Vector3 colisionPoint2;
 	Vector3 collisionNormal;
 
+	int colIndex = 0;
+
+	//points.Clear();
+	//points = std::List<Manifold*>();
+
 	//vertices of object 2 in object1
 	for (int i = 0; i < 8; i++)
 	{
 		Vector3 CP = obj2.parent->GetWorldRotation() * obj2.collider->GetVertex(i) + obj2.parent->GetWorldPosition();
-		if (isInside(CP, obj1)) {
+		if (isInside(CP, obj1)) 
+		{
 			//collision manifold contains position, bodies, normal and penetration depth
-			Manifold* colision = new Manifold(CP);
-			colision->Bod1 = &obj1;
-			colision->Bod2 = &obj2;
+			Manifold colision = Manifold(CP);
+			colision.Bod1 = &obj1;
+			colision.Bod2 = &obj2;
 			collisionNormal = getNormalFace(obj1, CP);
 
 			//to catch cases where sides are same size and perfectly Alligned
@@ -269,17 +292,17 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 				collisionNormal = (obj2.parent->GetWorldPosition() - obj1.parent->GetWorldPosition()).Normalized();
 			}
 
-			colision->Normal = collisionNormal;
-			colision->penetration = point_depth;
-			points.Add(colision);
+			colision.Normal = collisionNormal;
+			colision.penetration = point_depth;
+			cols[colIndex++] = colision;
 		}
 
 		CP = obj1.parent->GetWorldRotation() * obj1.collider->GetVertex(i) + obj1.parent->GetWorldPosition();
 		if (isInside(CP, obj2))
 		{
-			Manifold* colision = new Manifold(CP);
-			colision->Bod1 = &obj2;
-			colision->Bod2 = &obj1;
+			Manifold colision = Manifold(CP);
+			colision.Bod1 = &obj2;
+			colision.Bod2 = &obj1;
 			collisionNormal = getNormalFace(obj2, CP);
 
 			if (collisionNormal == Vector3(0, 0, 0))
@@ -287,9 +310,9 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 				collisionNormal = (obj1.parent->GetWorldPosition() - obj2.parent->GetWorldPosition()).Normalized();
 			}
 
-			colision->Normal = collisionNormal;
-			colision->penetration = point_depth;
-			points.Add(colision);
+			colision.Normal = collisionNormal;
+			colision.penetration = point_depth;
+			cols[colIndex++] = colision;
 		}
 	}
 
@@ -315,6 +338,7 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 	//checks for the edges 
 	for (int i = 0; i < 12; i++)
 	{
+		//continue;
 		Vector3* pointsEd1 = obj1.collider->GetEdge(i);
 		pointsEd1[0] = obj1.parent->GetWorldRotation() * pointsEd1[0] + obj1.parent->GetWorldPosition();
 		pointsEd1[1] = obj1.parent->GetWorldRotation() * pointsEd1[1] + obj1.parent->GetWorldPosition();
@@ -327,37 +351,44 @@ std::List<Manifold*> Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2)
 
 			closest_Point(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1], colisionPoint1, colisionPoint2);
 
-			if ((colisionPoint1, colisionPoint2).Magnitude() < 0.1f)
+			if ((colisionPoint2 - colisionPoint1).Magnitude() < 0.1f)
 			{
 				Vector3 CP = (colisionPoint1 + colisionPoint2) / 2.0f;
-				Manifold * colision = new Manifold(CP);
-				colision->Bod1 = &obj1;
-				colision->Bod2 = &obj2;
-				colision->penetration = point_depth;
+				Manifold colision = Manifold(CP);
+				colision.Bod1 = &obj1;
+				colision.Bod2 = &obj2;
+				colision.penetration = point_depth;
 
-				colision->Normal = getNormalEdge(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1]);
+				colision.Normal = getNormalEdge(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1]);
 
-				if (colision->penetration > DEPSILON)
-					points.Add(colision);
+				if (colision.penetration > DEPSILON)
+					cols[colIndex++] = colision;
 			}
 		}
 	}
 
-	return points;
+	//for (int i = 0; i < points.Count(); i++)
+	//{
+	//	for(int j = i + 1; j )
+	//}
+
+	count = colIndex;
+	return cols;
 }
 
 //Checks if point is inside the Box
 bool Collision::isInside(Vector3 ip, Rigidbody obj1)
 {
 	Vector3 localP = -obj1.parent->GetWorldRotation() * (ip - obj1.parent->GetWorldPosition());
-	if (localP.x <  -obj1.collider->size.x / 2 || localP.x >  obj1.collider->size.x / 2) return false;
-	if (localP.y <  -obj1.collider->size.y / 2 || localP.y >  obj1.collider->size.y / 2) return false;
-	if (localP.z <  -obj1.collider->size.z / 2 || localP.z >  obj1.collider->size.z / 2) return false;
-	return true;
+	if (localP.x < -obj1.collider->size.x || localP.x > obj1.collider->size.x) return 0;
+	if (localP.y < -obj1.collider->size.y || localP.y > obj1.collider->size.y) return 0;
+	if (localP.z < -obj1.collider->size.z || localP.z > obj1.collider->size.z) return 0;
+	return 1;
 }
 
 //Method finds the closest point between 2 lines, used for edge to edge collisions
-void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Vector3&c1, Vector3&c2) {
+void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Vector3&c1, Vector3&c2) 
+{
 	Vector3 d1 = q1 - p1;  //direction of segment S1
 	Vector3 d2 = q2 - p2;  //direction of segment S2
 
@@ -394,7 +425,7 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 	c1 = p1 + d1 * s;
 	c2 = p2 + d2 * t;
 
-	point_depth = (c1 - c2).Magnitude();
+	point_depth = (c2 - c1).Magnitude();
 }
 
 //finds the normal for collision between 2 edges
@@ -414,18 +445,18 @@ Vector3 Collision::getNormalFace(Rigidbody& obj1, Vector3 ip)
 	Vector3 normal;
 	// Check each axis, looking for the axis on which the
 	// penetration is least deep.
-	float min_depth = (obj1.collider->size.x / 2) - abs(relPt.x);
+	float min_depth = (obj1.collider->size.x) - abs(relPt.x);
 	if (min_depth > EPSILON)
 		normal = obj1.collider->GetFaceDir(0) * ((relPt.x < 0) ? -1.0f : 1.0f);
 
-	float depth = (obj1.collider->size.y / 2) - abs(relPt.y);
+	float depth = (obj1.collider->size.y) - abs(relPt.y);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;
 		normal = obj1.collider->GetFaceDir(1) * ((relPt.y < 0) ? -1.0f : 1.0f);
 	}
 
-	depth = (obj1.collider->size.z / 2) - abs(relPt.z);
+	depth = (obj1.collider->size.z) - abs(relPt.z);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;

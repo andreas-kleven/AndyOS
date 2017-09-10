@@ -307,7 +307,7 @@ char* ftoa(float f, unsigned base, char* buf)
 		int m = (int)l10;
 		int digit;
 
-		while (f > 0 + PRECISION)
+		while (f > 0 + PRECISION || m >= 1)
 		{
 			float weight = pow(10.0f, m);
 			digit = floor(f / weight);

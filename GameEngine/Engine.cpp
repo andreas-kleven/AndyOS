@@ -300,37 +300,40 @@ void GEngine::Collision()
 				Rigidbody* a = (Rigidbody*)all[i];
 				Rigidbody* b = (Rigidbody*)all[j];
 
-				//a->parent->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
+				//if (a->parent->GetWorldPosition().y > 9)
+				//	a->parent->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
+
 
 				Vector3 mtv(0, 0, 0);
+				int count;
+				Manifold* man;
 
 				//if (a->IsColliding(b, mtv))
 					//if(a->parent->transform.position.y < 0)
 
 				::Collision test;
 
-				if (test.TestIntersection(*a, *b, &mtv))
+				if (test.TestIntersection(*a, *b, &mtv, man, count))
 				{
 					Debug::color = 0xFFFFFF;
-					//Render();
-					//Debug::Print("%f %f %f\n", mtv.x, mtv.y, mtv.z);
-					//PIT::Sleep(2000);
-					//a->parent->transform.position += mtv;
-					a->velocity = Vector3();
+
+					//a->velocity = Vector3(0, 0, 0);
 					a->parent->transform.position += mtv;
 
 					//Debug::Print("COLLISION");
 
 					Debug::color = 0xFF0000;
-					for (int p = 0; p < test.points.Count(); p++)
+					for (int p = 0; p < count; p++)
 					{
-						Manifold* m = test.points[i];
-						Debug::Print("%f %f %f\n", m->Point.x, m->Point.y, m->Point.z);
+						Manifold& m = man[p];
+
+						int h = m.Bod1 == a;
+						Debug::Print("%i %i\t%f %f %f\n", p, h, m.Point.x, m.Point.y, m.Point.z);
 					}
 					Debug::color = 0xFF00;
 
-					//if (test.points.Count() == 0)
-					//	continue;
+					if (count == 0)
+						continue;
 
 					//PIT::Sleep(100);
 
@@ -360,9 +363,9 @@ void GEngine::Collision()
 						//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
 
 						a->mass = 1;
-						b->mass = 1e10;
+						//b->mass = 1e10;
 
-						float e = 0.5;
+						float e = 1;
 						float ma = a->mass;
 						float mb = b->mass;
 
@@ -378,14 +381,10 @@ void GEngine::Collision()
 						Ib[8] = mb / 6;
 
 
-						//Matrix3 MatR = Matrix3::CreateRotation(pha->parent->transform.rotation.ToEuler());
+						//Matrix3 MatR = a->parent->GetWorldRotation().ToMatrix3();
+						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
 						//Ia = (MatR * Ia * MatR.Transpose());
-
-						//for (int i = 0; i < 9; i++)
-						//{
-						//	Ia[i] = 0;
-						//	Ib[i] = 0;
-						//}
+						//Debug::Print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 
 						/*Vector3 ra = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
 						Vector3 rb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
@@ -448,50 +447,77 @@ void GEngine::Collision()
 						Vector3 Xb = posb;
 						float Vrel = (b->velocity - a->velocity).Magnitude();
 
-						Vector3 n = Vector3(0, -1, 0);
+						Vector3 n = -mtv.Normalized();
 						//Vector3 n = test.points[0]->Normal;
-						//Vector3 Pa = Vector3(0, -1, 0);
-						//Vector3 Pb = Vector3(0, 1, 0);
-						//Vector3 Pa = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
-						//Vector3 Pb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
-						//
-						//Vector3 ra = Pa - Xa;
-						//Vector3 rb = Pb - Xb;
 
-						Vector3 ra = Vector3((posb.x - posa.x) / -2, -1, (posb.z - posa.z) / -2);
-						//Vector3 ra = test.points[0]->Point;
-						Vector3 rb = Vector3((posb.x - posa.x) / 2, 1, (posb.z - posa.z) / 2);
-						//Vector3 rb = -ra;
+						Vector3 totalra;
+						Vector3 totalrb;
 
-						Matrix3 inva = Ia.Inverse();
-						Matrix3 invb = Ib.Inverse();
+						for (int p = 0; p < count; p++)
+						{
+							if (man[p].Bod1 == a)
+							{
+								man[p].Point = -man[p].Point;
+								//n = -n;
+							}
+							//n = man[p].Normal;
 
-						float N = -(1 + e) * Vrel;
-						float t1 = 1 / ma;
-						float t2 = 1 / mb;
-						float t3 = n.Dot(inva * ra.Cross(n).Cross(ra));
-						float t4 = n.Dot(inva * ra.Cross(n).Cross(ra));
+							Vector3 Pa = man[p].Point;
+							Vector3 Pb = -man[p].Point;
+							//Vector3 Pa = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
+							//Vector3 Pb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
 
-						float J = N / (t1 + t2 + t3 + t4);
-						Vector3 force = n * J;
+							Vector3 ra = Pa - Xa;
+							Vector3 rb = Pb - Xb;
+							//ra = a->parent->GetWorldRotation() * Vector3(0, -1, 0);
+							//rb = b->parent->GetWorldRotation() * Vector3(0, 1, 0);
 
-						a->AddImpulse(force);
-						b->AddImpulse(-force);
+							ra = Vector3(-1, -1, -1);
+							rb = Vector3(1, 1, 1);
 
-						Vector3 waf = inva * Vector3::Cross(ra, force);
-						Vector3 wbf = invb * Vector3::Cross(rb, -force);
+							ra = a->parent->GetWorldRotation() * (Xa - man[p].Point);
+							rb = b->parent->GetWorldRotation() * (man[p].Point - Xb);
 
-						a->angularVelocity = -waf;
-						b->angularVelocity = -wbf;
+							//ra = a->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / 2, -1, (posb.z - posa.z) / 2);
+							//rb = b->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / -2, 1, (posb.z - posa.z) / -2);
+							//ra = man[0].Point - a->parent->GetWorldPosition();
+							//rb = man[0].Point - a->parent->GetWorldPosition();
 
-						Debug::color = 0xFF;
-						Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
-						Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
-						Debug::color = 0xFF00;
+							Matrix3 inva = Ia.Inverse();
+							Matrix3 invb = Ib.Inverse();
 
-						Debug::Print("J: %f\n", j);
+							float N = -(1 + e) * Vrel;
+							float t1 = 1 / ma;
+							float t2 = 1 / mb;
+							float t3 = n.Dot(inva * ra.Cross(n).Cross(ra));
+							float t4 = n.Dot(inva * ra.Cross(n).Cross(ra));
 
-						Debug::Print("_ %f\t%f\t%f\n", mtv.x, mtv.y, mtv.z);
+							float J = N / (t1 + t2 + t3 + t4);
+							Vector3 force = n * J;
+
+							a->AddImpulse(force);
+							b->AddImpulse(-force);
+
+							Vector3 waf = inva * Vector3::Cross(ra, force);
+							Vector3 wbf = invb * Vector3::Cross(rb, -force);
+
+							//a->angularVelocity = waf;
+							//b->angularVelocity = wbf;
+							totalra -= waf;
+							totalrb -= wbf;
+
+							//Debug::color = 0xFF;
+							//Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
+							//Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
+							//Debug::color = 0xFF00;
+
+							//Debug::Print("J: %f\n", j);
+						}
+
+						a->angularVelocity = totalra;
+						b->angularVelocity = totalrb;
+
+						//Debug::Print("_ %f\t%f\t%f\n", mtv.x, mtv.y, mtv.z);
 						//PIT::Sleep(100);
 					}
 				}
