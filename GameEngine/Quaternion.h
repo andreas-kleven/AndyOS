@@ -44,21 +44,21 @@ public:
 
 	void Normalize()
 	{
-		float mag = Magnitude();
-		x /= mag;
-		y /= mag;
-		z /= mag;
-		w /= mag;
+		float inv = 1 / Magnitude();
+		x * inv;
+		y * inv;
+		z * inv;
+		w * inv;
 	}
 
 	Quaternion Normalized()
 	{
 		Quaternion q = *this;
-		float mag = q.Magnitude();
-		q.x /= mag;
-		q.y /= mag;
-		q.z /= mag;
-		q.w /= mag;
+		float inv = 1 / Magnitude();
+		q.x * inv;
+		q.y * inv;
+		q.z * inv;
+		q.w * inv;
 		return q;
 	}
 
@@ -72,7 +72,6 @@ public:
 		double sqy = y*y;
 		double sqz = z*z;
 
-		// invs (inverse square length) is only required if quaternion is not already normalised
 		double invs = 1 / (sqx + sqy + sqz + sqw);
 		mat[0] = (sqx - sqy - sqz + sqw) * invs;
 		mat[5] = (-sqx + sqy - sqz + sqw) * invs;
@@ -104,7 +103,6 @@ public:
 		double sqy = y*y;
 		double sqz = z*z;
 
-		// invs (inverse square length) is only required if quaternion is not already normalised
 		double invs = 1 / (sqx + sqy + sqz + sqw);
 		mat[0] = (sqx - sqy - sqz + sqw) * invs;
 		mat[4] = (-sqx + sqy - sqz + sqw) * invs;

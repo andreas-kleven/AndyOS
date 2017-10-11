@@ -289,6 +289,9 @@ void GEngine::Collision()
 
 	Debug::color = 0xFF00;*/
 
+	float hjk = (PIT::ticks % 2000) / 2000.0f;
+	Debug::Print("%f %f\n", (asin(sin(hjk)) - hjk) * 1000, 0);
+
 	for (int i = 0; i < all.Count(); i++)
 	{
 		int start = i + 1;
@@ -299,6 +302,8 @@ void GEngine::Collision()
 			{
 				Rigidbody* a = (Rigidbody*)all[i];
 				Rigidbody* b = (Rigidbody*)all[j];
+				a->collider->size = a->parent->GetWorldScale();
+				b->collider->size = b->parent->GetWorldScale();
 
 				//if (a->parent->GetWorldPosition().y > 9)
 				//	a->parent->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
@@ -363,6 +368,7 @@ void GEngine::Collision()
 						//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
 
 						a->mass = 1;
+						b->mass = 1;
 						//b->mass = 1e10;
 
 						float e = 1;
@@ -372,19 +378,24 @@ void GEngine::Collision()
 						Matrix3 Ia = Matrix3();
 						Matrix3 Ib = Matrix3();
 
-						Ia[0] = ma / 6;
-						Ia[4] = ma / 6;
-						Ia[8] = ma / 6;
+						Vector3& sizea = a->collider->size;
+						Ia[0] = ma * (sizea.y * sizea.y + sizea.z * sizea.z) / 12;
+						Ia[4] = ma * (sizea.x * sizea.x + sizea.z * sizea.z) / 12;
+						Ia[8] = ma * (sizea.x * sizea.x + sizea.y * sizea.y) / 12;
 
-						Ib[0] = mb / 6;
-						Ib[4] = mb / 6;
-						Ib[8] = mb / 6;
+						Vector3& sizeb = b->collider->size;
+						Ib[0] = mb * (sizeb.y * sizeb.y + sizeb.z * sizeb.z) / 12;
+						Ib[4] = mb * (sizeb.x * sizeb.x + sizeb.z * sizeb.z) / 12;
+						Ib[8] = mb * (sizeb.x * sizeb.x + sizeb.y * sizeb.y) / 12;
 
 
 						//Matrix3 MatR = a->parent->GetWorldRotation().ToMatrix3();
 						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
 						//Ia = (MatR * Ia * MatR.Transpose());
 						//Debug::Print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
+						//Matrix3 MatR2 = b->parent->GetWorldRotation().ToMatrix3();
+						//Matrix3 MatR2 = Matrix3::CreateRotation(b->parent->transform.rotation.ToEuler());
+						//Ib = (MatR2 * Ib * MatR2.Transpose());
 
 						/*Vector3 ra = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
 						Vector3 rb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
@@ -478,6 +489,9 @@ void GEngine::Collision()
 							ra = a->parent->GetWorldRotation() * (Xa - man[p].Point);
 							rb = b->parent->GetWorldRotation() * (man[p].Point - Xb);
 
+							//ra = Vector3(0, -1, 0);
+							//rb = Vector3(0, 1, 0);
+
 							//ra = a->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / 2, -1, (posb.z - posa.z) / 2);
 							//rb = b->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / -2, 1, (posb.z - posa.z) / -2);
 							//ra = man[0].Point - a->parent->GetWorldPosition();
@@ -490,7 +504,7 @@ void GEngine::Collision()
 							float t1 = 1 / ma;
 							float t2 = 1 / mb;
 							float t3 = n.Dot(inva * ra.Cross(n).Cross(ra));
-							float t4 = n.Dot(inva * ra.Cross(n).Cross(ra));
+							float t4 = n.Dot(invb * rb.Cross(n).Cross(rb));
 
 							float J = N / (t1 + t2 + t3 + t4);
 							Vector3 force = n * J;
@@ -504,7 +518,7 @@ void GEngine::Collision()
 							//a->angularVelocity = waf;
 							//b->angularVelocity = wbf;
 							totalra -= waf;
-							totalrb -= wbf;
+							totalrb += wbf;
 
 							//Debug::color = 0xFF;
 							//Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);

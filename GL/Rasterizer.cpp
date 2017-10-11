@@ -50,12 +50,11 @@ namespace gl
 		if (normal.z < 0)
 			return;
 
-		//VBE::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF);
-		//VBE::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00);
-		//VBE::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000);
-		//return;
-
 		DrawTriangle2(v0, v1, v2, texture);
+
+		VBE::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF);
+		VBE::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00);
+		VBE::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000);
 	}
 
 	void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)

@@ -86,12 +86,12 @@ void Thing::Update(float delta)
 		phys->AddImpulse(Vector3(0, 0, -speed) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_U))
+	if (Keyboard::GetKeyDown(KEY_O))
 	{
 		phys->AddImpulse(Vector3(0, speed, 0) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_O))
+	if (Keyboard::GetKeyDown(KEY_U))
 	{
 		phys->AddImpulse(Vector3(0, -speed, 0) * delta);
 	}
