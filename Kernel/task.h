@@ -1,6 +1,8 @@
 #pragma once
 #include "definitions.h"
 
+#define TASK_SCHEDULE_IRQ 32
+
 struct TASK_REGS
 {
 	uint32 gs;

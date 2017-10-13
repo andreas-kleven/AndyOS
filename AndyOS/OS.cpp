@@ -21,10 +21,10 @@ void OS::Main()
 
 	//Mandelbrot::Create(100, 100);
 	
-	//gui::WindowManager::Start();
+	gui::WindowManager::Start();
+	apps::RunTextEdit();
 
 	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
-	//apps::RunTextEdit();
 
 	///
 	while (1)

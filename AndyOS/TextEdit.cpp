@@ -32,8 +32,6 @@ void apps::RunTextEdit()
 		//lbl->x = Mouse::x;
 		//lbl->y = Mouse::y;
 
-		//WindowManager::Draw();
-
 		_asm pause
 	}
 }

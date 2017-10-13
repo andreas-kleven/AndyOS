@@ -9,6 +9,8 @@ Thread* current_thread;
 Thread* first_thread;
 Thread* last_thread;
 
+void* pit_isr;
+
 STATUS Task::Init()
 {
 	first_thread = 0;
@@ -18,6 +20,7 @@ STATUS Task::Init()
 	idle_thread = CreateThread(Idle);
 	InsertThread(idle_thread);
 
+	pit_isr = IDT::GetVect(TASK_SCHEDULE_IRQ);
 	return STATUS_SUCCESS;
 }
 
@@ -79,7 +82,7 @@ void Task::InsertThread(Thread* thread)
 void Task::StartThreading()
 {
 	_asm cli
-	IDT::SetISR(32, Task_ISR);
+	IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR);
 
 	//Start idle thread
 	uint32 stack = idle_thread->esp;
@@ -144,8 +147,9 @@ void INTERRUPT Task::Task_ISR()
 		popad
 
 		//Return
-		sti
-		iretd
+		//sti
+		//iretd
+		jmp pit_isr
 	}
 }
 

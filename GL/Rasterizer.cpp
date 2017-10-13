@@ -75,7 +75,7 @@ namespace gl
 
 		int line_delta = GL::m_width - (maxx - minx) - 1;
 
-		uint32* color_ptr = (uint32*)(Drawing::buffer.framebuffer + miny * GL::m_width + minx);
+		uint32* color_ptr = (uint32*)(Drawing::screen.framebuffer + miny * GL::m_width + minx);
 		float* depth_ptr = (float*)(depth_buffer + miny * GL::m_width + minx);
 
 		float co[3][3] = {

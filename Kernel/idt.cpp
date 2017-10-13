@@ -50,3 +50,14 @@ void INTERRUPT IDT::EmptyISR()
 	PIC::InterruptDone(0);
 	_asm iretd
 }
+
+void(*IDT::GetVect(int i))()
+{
+	IDT_DESCRIPTOR* desc = GetIR(i);
+	if (!desc)
+		return 0;
+
+	uint32 addr = desc->low | (desc->high << 16);
+	IRQ_HANDLER irq = (IRQ_HANDLER)addr;
+	return irq;
+}

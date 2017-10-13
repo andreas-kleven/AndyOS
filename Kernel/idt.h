@@ -37,6 +37,7 @@ public:
 	static STATUS SetISR(uint32 i, IRQ_HANDLER irq);
 	static IDT_DESCRIPTOR* GetIR(uint32 i);
 	static void _cdecl EmptyISR();
+	static void(_cdecl* _cdecl GetVect(int i)) ();
 
 private:
 	static IDT_DESCRIPTOR idt[MAX_INTERRUPTS];

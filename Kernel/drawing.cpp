@@ -2,40 +2,42 @@
 #include "string.h"
 #include "math.h"
 
-int Drawing::width;
-int Drawing::height;
-int Drawing::memsize;
+//int Drawing::width;
+//int Drawing::height;
+//int Drawing::memsize;
 
+uint32* screenBuffer;
 GC Drawing::screen;
-GC Drawing::buffer;
 
 STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 {
-	Drawing::width = width;
-	Drawing::height = height;
-	Drawing::memsize = width * height * 4;
+	//Drawing::width = width;
+	//Drawing::height = height;
+	//Drawing::memsize = width * height * 4;
+
+	screenBuffer = framebuffer;
 
 	screen.bounds = Rect(0, 0, width, height);
-	screen.framebuffer = framebuffer;
-
-	buffer.bounds = screen.bounds;
-	buffer.framebuffer = new uint32[width * height];
+	screen.framebuffer = new uint32[screen.memsize()];
 	return STATUS_SUCCESS;
 }
 
 void Drawing::Draw(GC context)
 {
-	memcpy_fast_128(screen.framebuffer, context.framebuffer, memsize);
-	//memcpy((uint32*)screen.framebuffer, context.framebuffer, size);
+	memcpy_fast_128(screenBuffer, context.framebuffer, context.memsize());
+	//memcpy((uint32*)screen.framebuffer, context.framebuffer, context.memsize());
 }
 
 void Drawing::Clear(uint32 c, GC context)
 {
+	int pixels = context.pixels();
+	uint32* buffer = context.framebuffer;
+
 	_asm
 	{
 		mov edi, buffer
 		mov eax, c
-		mov ecx, memsize
+		mov ecx, pixels
 
 		loop_set :
 		mov[edi], eax
@@ -48,18 +50,25 @@ void Drawing::Clear(uint32 c, GC context)
 
 void Drawing::SetPixel(int x, int y, uint32 c, GC context)
 {
+	int width = context.bounds.width;
+	int height = context.bounds.height;
+	uint32* buffer = context.framebuffer;
+
 	if (x >= width || x < 0)
 		return;
 
 	if (y >= height || y < 0)
 		return;
 
-	uint32* a = buffer.framebuffer + y * width + x;
+	uint32* a = buffer + y * width + x;
 	*a = c;
 }
 
 void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 {
+	const int width = context.bounds.width;
+	const int height = context.bounds.height;
+
 	int deltax = x1 - x0;
 	int deltay = y1 - y0;
 
@@ -81,7 +90,7 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 		{
 			if (px < width && px > 0)
 				if (py < height && py > 0)
-					SetPixel(px, py, c);
+					SetPixel(px, py, c, context);
 
 			y += deltay;
 
@@ -100,7 +109,7 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 		{
 			if (px < width && px > 0)
 				if (py < height && py > 0)
-					SetPixel(px, py, c);
+					SetPixel(px, py, c, context);
 
 			x += deltax;
 
@@ -143,7 +152,7 @@ void Drawing::DrawBezierQuad(Point* points, int count, GC context)
 			float px10 = px00 + (px01 - px00) * alpha;
 			float py10 = py00 + (py01 - py00) * alpha;
 
-			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFF0000);
+			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFF0000, context);
 			lastx = (int)px10;
 			lasty = (int)py10;
 		}
@@ -187,7 +196,7 @@ void Drawing::DrawBezierCube(Point* points, int count, GC context)
 			float px20 = px10 + (px11 - px10) * alpha;
 			float py20 = py10 + (py11 - py10) * alpha;
 
-			Drawing::DrawLine(lastx, lasty, (int)px20, (int)py20, 0xFF0000);
+			Drawing::DrawLine(lastx, lasty, (int)px20, (int)py20, 0xFF0000, context);
 			lastx = (int)px20;
 			lasty = (int)py20;
 		}
@@ -196,22 +205,25 @@ void Drawing::DrawBezierCube(Point* points, int count, GC context)
 
 void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC context)
 {
+	int width = context.bounds.width;
+	int height = context.bounds.height;
+
 	x = clamp(x, 0, width);
 	y = clamp(y, 0, height);
 
 	w = clamp(w, 0, width - x);
 	h = clamp(h, 0, height - y);
 
-	uint32* ptr = buffer.framebuffer + y * width + x;
 	int delta = width - w;
+	uint32* buf = context.framebuffer + y * width + x;
 
 	for (int _y = 0; _y < h; _y++)
 	{
 		for (int _x = 0; _x < w; _x++)
 		{
-			*ptr++ = c;
+			*buf++ = c;
 		}
-		ptr += delta;
+		buf += delta;
 	}
 }
 
@@ -224,7 +236,7 @@ void Drawing::DrawText(int x, int y, char* c, uint32 col, GC context)
 			for (int j = 0; j < 8; j++)
 			{
 				if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-					SetPixel(x + index * 8 + (8 - j), y + i, col);
+					SetPixel(x + index * 8 + (8 - j), y + i, col, context);
 			}
 		}
 	}
@@ -239,9 +251,9 @@ void Drawing::DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC context)
 			for (int j = 0; j < 8; j++)
 			{
 				if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-					SetPixel(x + index * 8 + (8 - j), y + i, col);
+					SetPixel(x + index * 8 + (8 - j), y + i, col, context);
 				else
-					SetPixel(x + index * 8 + (8 - j), y + i, bg);
+					SetPixel(x + index * 8 + (8 - j), y + i, bg, context);
 			}
 		}
 	}
