@@ -44,9 +44,15 @@ namespace gui
 			first_window->bounds.y = Mouse::y;
 
 			Drawing::Clear(0);
+			DrawDesktop();
 			Draw();
 			Drawing::Draw();
 		}
+	}
+
+	void WindowManager::DrawDesktop()
+	{
+
 	}
 
 	void WindowManager::Draw()
@@ -57,7 +63,12 @@ namespace gui
 		Window* win = first_window;
 		while (win)
 		{
-			win->Draw();
+			win->Paint();
+
+			Rect& bounds = win->bounds;
+			GC& src = win->gc;
+			Drawing::BitBlt(src, 0, 0, src.width, src.height, Drawing::gc, bounds.x, bounds.y);
+
 			win = win->next;
 		}
 	}

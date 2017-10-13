@@ -40,17 +40,27 @@ struct Rect
 
 struct GC
 {
-	Rect bounds;
+	int width;
+	int height;
 	uint32* framebuffer;
 
 	inline int memsize()
 	{
-		return bounds.width * bounds.height * 4;
+		return width * height * 4;
 	}
 
 	inline int pixels()
 	{
-		return bounds.width * bounds.height;
+		return width * height;
+	}
+
+	static GC CreateGraphics(int width, int height)
+	{
+		GC gc;
+		gc.width = width;
+		gc.height = height;
+		gc.framebuffer = new uint32[width * height];
+		return gc;
 	}
 };
 
@@ -61,20 +71,24 @@ public:
 	//static int height;
 	//static int memsize;
 
-	static GC screen;
+	static GC gc;
+	static GC gc_direct;
 
 	static STATUS Init(int width, int height, uint32* framebuffer);
 
-	static void Draw(GC context = screen);
-	static void Clear(uint32 c, GC context = screen);
-	static void SetPixel(int x, int y, uint32 c, GC context = screen);
+	static void Draw(GC gc = gc);
+	static void Clear(uint32 c, GC gc = gc);
 
-	static void DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context = screen);
-	static void DrawBezierQuad(Point* points, int count, GC context = screen);
-	static void DrawBezierCube(Point* points, int count, GC context = screen);
+	static void BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1);
 
-	static void DrawRect(int x, int y, int w, int h, uint32 c, GC context = screen);
+	static void SetPixel(int x, int y, uint32 c, GC gc = gc);
 
-	static void DrawText(int x, int y, char* c, uint32 col, GC context = screen);
-	static void DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC context = screen);
+	static void DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc = gc);
+	static void DrawBezierQuad(Point* points, int count, GC gc = gc);
+	static void DrawBezierCube(Point* points, int count, GC gc = gc);
+
+	static void DrawRect(int x, int y, int w, int h, uint32 c, GC gc = gc);
+
+	static void DrawText(int x, int y, char* c, uint32 col, GC gc = gc);
+	static void DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc = gc);
 };

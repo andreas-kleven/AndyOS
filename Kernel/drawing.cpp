@@ -7,7 +7,8 @@
 //int Drawing::memsize;
 
 uint32* screenBuffer;
-GC Drawing::screen;
+GC Drawing::gc;
+GC Drawing::gc_direct;
 
 STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 {
@@ -17,21 +18,26 @@ STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 
 	screenBuffer = framebuffer;
 
-	screen.bounds = Rect(0, 0, width, height);
-	screen.framebuffer = new uint32[screen.memsize()];
+	gc.width = width;
+	gc.height = height;
+	gc.framebuffer = new uint32[gc.memsize()];
+
+	gc_direct.width = width;
+	gc_direct.height = height;
+	gc_direct.framebuffer = framebuffer;
 	return STATUS_SUCCESS;
 }
 
-void Drawing::Draw(GC context)
+void Drawing::Draw(GC gc)
 {
-	memcpy_fast_128(screenBuffer, context.framebuffer, context.memsize());
-	//memcpy((uint32*)screen.framebuffer, context.framebuffer, context.memsize());
+	memcpy_fast_128(screenBuffer, gc.framebuffer, gc.memsize());
+	//memcpy((uint32*)gc.framebuffer, gc.framebuffer, gc.memsize());
 }
 
-void Drawing::Clear(uint32 c, GC context)
+void Drawing::Clear(uint32 c, GC gc)
 {
-	int pixels = context.pixels();
-	uint32* buffer = context.framebuffer;
+	int pixels = gc.pixels();
+	uint32* buffer = gc.framebuffer;
 
 	_asm
 	{
@@ -48,11 +54,40 @@ void Drawing::Clear(uint32 c, GC context)
 	}
 }
 
-void Drawing::SetPixel(int x, int y, uint32 c, GC context)
+void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1)
 {
-	int width = context.bounds.width;
-	int height = context.bounds.height;
-	uint32* buffer = context.framebuffer;
+	//x0 = clamp(x0, 0, src.width);
+	//y0 = clamp(y0, 0, src.height);
+	//
+	//x1 = clamp(x1, 0, dst.width);
+	//y1 = clamp(y1, 0, dst.height);
+
+	w0 = clamp(w0, 0, min(src.width - x0, dst.width - x1));
+	h0 = clamp(h0, 0, min(src.height - y0, dst.height - y1));
+
+	int d0 = src.width - w0;
+	int d1 = dst.width - w0;
+
+	uint32* srcPtr = src.framebuffer + src.width * y0 + x0;
+	uint32* dstPtr = dst.framebuffer + dst.width * y1 + x1;
+
+	for (int _y = 0; _y < h0; _y++)
+	{
+		for (int _x = 0; _x < w0; _x++)
+		{
+			*dstPtr++ = *srcPtr++;
+		}
+
+		srcPtr += d0;
+		dstPtr += d1;
+	}
+}
+
+void Drawing::SetPixel(int x, int y, uint32 c, GC gc)
+{
+	int width = gc.width;
+	int height = gc.height;
+	uint32* buffer = gc.framebuffer;
 
 	if (x >= width || x < 0)
 		return;
@@ -64,10 +99,10 @@ void Drawing::SetPixel(int x, int y, uint32 c, GC context)
 	*a = c;
 }
 
-void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
+void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc)
 {
-	const int width = context.bounds.width;
-	const int height = context.bounds.height;
+	const int width = gc.width;
+	const int height = gc.height;
 
 	int deltax = x1 - x0;
 	int deltay = y1 - y0;
@@ -90,7 +125,7 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 		{
 			if (px < width && px > 0)
 				if (py < height && py > 0)
-					SetPixel(px, py, c, context);
+					SetPixel(px, py, c, gc);
 
 			y += deltay;
 
@@ -109,7 +144,7 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 		{
 			if (px < width && px > 0)
 				if (py < height && py > 0)
-					SetPixel(px, py, c, context);
+					SetPixel(px, py, c, gc);
 
 			x += deltax;
 
@@ -124,7 +159,7 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC context)
 	}
 }
 
-void Drawing::DrawBezierQuad(Point* points, int count, GC context)
+void Drawing::DrawBezierQuad(Point* points, int count, GC gc)
 {
 	const int steps = 128;
 
@@ -152,14 +187,14 @@ void Drawing::DrawBezierQuad(Point* points, int count, GC context)
 			float px10 = px00 + (px01 - px00) * alpha;
 			float py10 = py00 + (py01 - py00) * alpha;
 
-			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFF0000, context);
+			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFF0000, gc);
 			lastx = (int)px10;
 			lasty = (int)py10;
 		}
 	}
 }
 
-void Drawing::DrawBezierCube(Point* points, int count, GC context)
+void Drawing::DrawBezierCube(Point* points, int count, GC gc)
 {
 	const int steps = 128;
 
@@ -196,17 +231,17 @@ void Drawing::DrawBezierCube(Point* points, int count, GC context)
 			float px20 = px10 + (px11 - px10) * alpha;
 			float py20 = py10 + (py11 - py10) * alpha;
 
-			Drawing::DrawLine(lastx, lasty, (int)px20, (int)py20, 0xFF0000, context);
+			Drawing::DrawLine(lastx, lasty, (int)px20, (int)py20, 0xFF0000, gc);
 			lastx = (int)px20;
 			lasty = (int)py20;
 		}
 	}
 }
 
-void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC context)
+void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC gc)
 {
-	int width = context.bounds.width;
-	int height = context.bounds.height;
+	int width = gc.width;
+	int height = gc.height;
 
 	x = clamp(x, 0, width);
 	y = clamp(y, 0, height);
@@ -215,7 +250,7 @@ void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC context)
 	h = clamp(h, 0, height - y);
 
 	int delta = width - w;
-	uint32* buf = context.framebuffer + y * width + x;
+	uint32* buf = gc.framebuffer + y * width + x;
 
 	for (int _y = 0; _y < h; _y++)
 	{
@@ -227,7 +262,7 @@ void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC context)
 	}
 }
 
-void Drawing::DrawText(int x, int y, char* c, uint32 col, GC context)
+void Drawing::DrawText(int x, int y, char* c, uint32 col, GC gc)
 {
 	for (int index = 0; index < strlen(c) - 1; index++)
 	{
@@ -236,13 +271,13 @@ void Drawing::DrawText(int x, int y, char* c, uint32 col, GC context)
 			for (int j = 0; j < 8; j++)
 			{
 				if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-					SetPixel(x + index * 8 + (8 - j), y + i, col, context);
+					SetPixel(x + index * 8 + (8 - j), y + i, col, gc);
 			}
 		}
 	}
 }
 
-void Drawing::DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC context)
+void Drawing::DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc)
 {
 	for (int index = 0; index < strlen(c) - 1; index++)
 	{
@@ -251,9 +286,9 @@ void Drawing::DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC context)
 			for (int j = 0; j < 8; j++)
 			{
 				if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-					SetPixel(x + index * 8 + (8 - j), y + i, col, context);
+					SetPixel(x + index * 8 + (8 - j), y + i, col, gc);
 				else
-					SetPixel(x + index * 8 + (8 - j), y + i, bg, context);
+					SetPixel(x + index * 8 + (8 - j), y + i, bg, gc);
 			}
 		}
 	}

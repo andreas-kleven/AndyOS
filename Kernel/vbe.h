@@ -34,9 +34,9 @@ struct VBE_MODE_INFO
 	uint8 reserved_position;
 	uint8 direct_color_attributes;
 
-	uint32* framebuffer;      // physical address of the linear frame buffer; write here to draw to the screen
+	uint32* framebuffer;      // physical address of the linear frame buffer; write here to draw to the gc
 	uint32 off_screen_mem_off;
-	uint16 off_screen_mem_size;   // size of memory in the framebuffer but not being displayed on the screen
+	uint16 off_screen_mem_size;   // size of memory in the framebuffer but not being displayed on the gc
 	uint8 reserved1[206];
 };
 

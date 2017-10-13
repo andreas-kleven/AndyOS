@@ -149,7 +149,7 @@ void Mandelbrot::Create(int width, int height)
 		Debug::y = 0;
 
 		int index = 0;
-		uint32* buf = Drawing::screen.framebuffer;
+		uint32* buf = Drawing::gc.framebuffer;
 
 		double Cx;
 		double Cy;

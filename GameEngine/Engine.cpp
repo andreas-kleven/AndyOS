@@ -79,7 +79,7 @@ void GEngine::StartGame(Game* game)
 
 		Drawing::Clear(0);
 		Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
-		Drawing::Draw();
+		Drawing::Paint();
 	}*/
 
 	while (1)

@@ -162,7 +162,7 @@ void OS::Main()
 	//}
 	}
 	}
-	Drawing::Draw();
+	Drawing::Paint();
 
 	Debug::Print("Done\n");
 	Debug::Print("%i\n", bmp->pixels[bmp->pixel_count - 1]);

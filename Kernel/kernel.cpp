@@ -53,7 +53,7 @@ void Kernel::Init(MULTIBOOT_INFO* bootinfo)
 	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 	ATA::Init();
 
-	Mouse::Init(Drawing::screen.bounds.width, Drawing::screen.bounds.height, 1);
+	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 1);
 	Keyboard::Init();
 	
 	Task::Init();

@@ -157,7 +157,7 @@ void _declspec (naked) Task::Idle()
 {
 	while (1)
 	{
-		Debug::Print("Idle");
+		//Debug::Print("Idle");
 		_asm pause
 	}
 }

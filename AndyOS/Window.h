@@ -26,7 +26,7 @@ namespace gui
 		Control* first_child;
 		Control* last_child;
 
-		uint32* framebuffer;
+		GC gc;
 
 		char* title;
 
@@ -34,7 +34,7 @@ namespace gui
 
 		void AddControl(Control* ctrl);
 
-		void Draw();
+		void Paint();
 
 	private:
 		void DrawWindow();

@@ -1,4 +1,5 @@
 #include "Control.h"
+#include "Window.h"
 #include "drawing.h"
 
 namespace gui
@@ -8,8 +9,8 @@ namespace gui
 		type = CONTROL_TYPE_LABEL;
 	}
 
-	void Label::Draw()
+	void Label::Paint()
 	{
-		Drawing::DrawText(bounds.x, bounds.y, text, 0xFF0000);
+		Drawing::DrawText(0, 0, text, 0xFF0000, parent->gc);
 	}
 }

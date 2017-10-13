@@ -12,6 +12,7 @@ namespace gui
 
 	private:
 		static void UpdateLoop();
+		static void DrawDesktop();
 		static void Draw();
 	};
 }

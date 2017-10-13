@@ -27,7 +27,7 @@ namespace gui
 		Control* next;
 		Control* previous;
 
-		virtual void Draw() {};
+		virtual void Paint() {};
 	};
 
 	class Label : public Control
@@ -37,6 +37,6 @@ namespace gui
 
 		Label();
 
-		virtual void Draw();
+		virtual void Paint();
 	};
 }
