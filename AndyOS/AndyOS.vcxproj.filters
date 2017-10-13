@@ -4,14 +4,8 @@
     <Filter Include="File System">
       <UniqueIdentifier>{28f8fd55-cdfc-4adc-a2c4-37623dd8cffd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File Formats">
-      <UniqueIdentifier>{e182c1f6-b754-449f-81ed-b0270f401cc4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OS">
       <UniqueIdentifier>{8926f176-0fd7-4540-9a01-3af4dfc247be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File Formats\BMP">
-      <UniqueIdentifier>{07b8bf87-b174-4cbf-9db7-e20a2176313e}</UniqueIdentifier>
     </Filter>
     <Filter Include="File System\ISO">
       <UniqueIdentifier>{8e1b4438-277a-49cc-a348-e2c57a1a7326}</UniqueIdentifier>
@@ -47,9 +41,6 @@
     </ClInclude>
     <ClInclude Include="iso.h">
       <Filter>File System\ISO</Filter>
-    </ClInclude>
-    <ClInclude Include="bmp.h">
-      <Filter>File Formats\BMP</Filter>
     </ClInclude>
     <ClInclude Include="mouse.h">
       <Filter>Input</Filter>
@@ -142,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="iso.cpp">
       <Filter>File System\ISO</Filter>
-    </ClCompile>
-    <ClCompile Include="bmp.cpp">
-      <Filter>File Formats\BMP</Filter>
     </ClCompile>
     <ClCompile Include="mouse.cpp">
       <Filter>Input</Filter>

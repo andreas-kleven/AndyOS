@@ -3,6 +3,23 @@
 
 namespace gui
 {
+	struct MOUSE_CLICK_INFO
+	{
+		int click_time;
+		int click_x;
+		int click_y;
+
+		int rel_time;
+		int rel_x;
+		int rel_y;
+	};
+
+	struct WINDOW_DRAG_INFO
+	{
+		int start_x;
+		int start_y;
+	};
+
 	static class WindowManager
 	{
 	public:
@@ -14,7 +31,7 @@ namespace gui
 	private:
 		static void UpdateLoop();
 
-		static void PaintDesktop();
+		static void PaintBackground();
 		static void PaintWindows();
 		static void PaintTaskbar();
 		static void PaintCursor();
@@ -22,6 +39,6 @@ namespace gui
 		static void HandleMouseInput();
 
 		static Window* GetWindowAtCursor();
-		static void SetActiveWindow(int id);
+		static void SetActiveWindow(Window* new_active);
 	};
 }

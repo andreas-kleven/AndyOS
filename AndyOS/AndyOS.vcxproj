@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="boot.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="FileSystem.cpp" />
@@ -176,7 +175,6 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bmp.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="FileSystem.h" />

@@ -9,7 +9,25 @@
 
 namespace gui
 {
-	uint32 col_taskbar = 0x7F7F7F;
+	uint32 cursor_bitmap[8 * 14] =
+	{
+		0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFF000000, 0x00,
+		0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00,
+		0xFF000000, 0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0xFF000000, 0xFF000000, 0xFF000000, 0x00, 0x00
+	};
+
+	uint32 col_taskbar = 0xD0D0D0;
+	uint32 col_desktop_bg = 0x3399;
 
 	GC gc_background;
 	GC gc_taskbar;
@@ -19,16 +37,26 @@ namespace gui
 	Window* first_window;
 	Window* last_window;
 
-	int active_window = 0;
+	Window* active_window;
 
 	int cursor_x = 0;
 	int cursor_y = 0;
+
+	bool mouse_click_L = 0;
+	bool mouse_click_R = 0;
+	bool mouse_click_M = 0;
+	bool window_drag;
+
+	MOUSE_CLICK_INFO mouse_click_L_info;
+	MOUSE_CLICK_INFO mouse_click_R_info;
+	MOUSE_CLICK_INFO mouse_click_M_info;
+	WINDOW_DRAG_INFO window_drag_info;
 
 	STATUS WindowManager::Init()
 	{
 		gc_background = GC::CreateGraphics(Drawing::gc.width, Drawing::gc.height);
 		gc_taskbar = GC::CreateGraphics(Drawing::gc.width, TASKBAR_HEIGHT);
-		gc_cursor = GC::CreateGraphics(10, 10);
+		gc_cursor = GC::CreateGraphics(8, 14);
 		return STATUS_SUCCESS;
 	}
 
@@ -77,7 +105,7 @@ namespace gui
 
 			HandleMouseInput();
 
-			PaintDesktop();
+			PaintBackground();
 			PaintWindows();
 			PaintTaskbar();
 			PaintCursor();
@@ -91,9 +119,10 @@ namespace gui
 		}
 	}
 
-	void WindowManager::PaintDesktop()
+
+	void WindowManager::PaintBackground()
 	{
-		Drawing::FillRect(0, 0, Drawing::gc.width, Drawing::gc.height, 0x7F, gc_background);
+		Drawing::FillRect(0, 0, Drawing::gc.width, Drawing::gc.height, col_desktop_bg, gc_background);
 		Drawing::BitBlt(gc_background, 0, 0, gc_background.width, gc_background.height, Drawing::gc, 0, 0);
 	}
 
@@ -127,26 +156,89 @@ namespace gui
 
 	void WindowManager::PaintCursor()
 	{
-		Drawing::FillRect(0, 0, gc_cursor.width, gc_cursor.height, 0xFFFFFF, gc_cursor);
-		Drawing::DrawRect(0, 0, gc_cursor.width, gc_cursor.height, 1, 0, gc_cursor);
-		Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, Drawing::gc, cursor_x, cursor_y);
+		for (int y = 0; y < 14; y++)
+		{
+			for (int x = 0; x < 8; x++)
+			{
+				uint32 c = cursor_bitmap[x + y * 8];
+				if (c != 0)
+					Drawing::SetPixel(x, y, c, gc_cursor);
+			}
+		}
+
+		//Drawing::FillRect(0, 0, gc_cursor.width, gc_cursor.height, 0xFFFFFF, gc_cursor);
+		//Drawing::DrawRect(0, 0, gc_cursor.width, gc_cursor.height, 1, 0, gc_cursor);
+		Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, Drawing::gc, cursor_x, cursor_y, 1);
 	}
+
 
 	void WindowManager::HandleMouseInput()
 	{
 		cursor_x = Mouse::x;
 		cursor_y = Mouse::y;
 
+		int time = PIT::ticks;
+
 		if (Mouse::mouse_L)
 		{
-			Window* win = GetWindowAtCursor();
-
-			if (win)
+			if (!mouse_click_L)
 			{
-				SetActiveWindow(win->id);
+				//Mouse down
+
+				mouse_click_L = 1;
+				mouse_click_L_info.click_time = time;
+				mouse_click_L_info.click_x = cursor_x;
+				mouse_click_L_info.click_y = cursor_y;
+
+				Window* win = GetWindowAtCursor();
+
+				if (win)
+				{
+					if (win->id != active_window->id)
+						SetActiveWindow(win);
+
+
+				}
+			}
+			else
+			{
+				//Drag
+
+				int dx = cursor_x - mouse_click_L_info.click_x;
+				int dy = cursor_y - mouse_click_L_info.click_y;
+
+				if (!window_drag)
+				{
+					window_drag = 1;
+					window_drag_info.start_x = active_window->bounds.x;
+					window_drag_info.start_y = active_window->bounds.y;
+				}
+				else
+				{
+					active_window->bounds.x = window_drag_info.start_x + dx;
+					active_window->bounds.y = window_drag_info.start_y + dy;
+				}
+			}
+		}
+		else
+		{
+			if (mouse_click_L)
+			{
+				//Mouse up
+
+				mouse_click_L = 0;
+				mouse_click_L_info.rel_time = time;
+				mouse_click_L_info.rel_x = cursor_x;
+				mouse_click_L_info.rel_y = cursor_y;
+
+				if (window_drag)
+				{
+					window_drag = 0;
+				}
 			}
 		}
 	}
+
 
 	Window* WindowManager::GetWindowAtCursor()
 	{
@@ -165,17 +257,35 @@ namespace gui
 		return 0;
 	}
 
-	void WindowManager::SetActiveWindow(int id)
+	void WindowManager::SetActiveWindow(Window* new_active)
 	{
-		active_window = id;
+		active_window = new_active;
+
+		if (!active_window->active)
+		{
+			if (active_window != first_window)
+			{
+				if (active_window == last_window)
+					last_window = active_window->previous;
+
+				active_window->previous->next = active_window->next;
+				active_window->next = first_window;
+				active_window->previous = 0;
+
+				first_window->previous = active_window;
+				first_window = active_window;
+			}
+
+			active_window->SetActive(1);
+		}
 
 		Window* win = first_window;
 		while (win)
 		{
-			if (win->id == id)
-				win->SetActive(1);
-			else if (win->active)
+			if (win != active_window && win->active)
+			{
 				win->SetActive(0);
+			}
 
 			win = win->next;
 		}

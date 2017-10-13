@@ -54,32 +54,80 @@ void Drawing::Clear(uint32 c, GC gc)
 	}
 }
 
-void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1)
+void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1, bool alpha)
 {
-	//x0 = clamp(x0, 0, src.width);
-	//y0 = clamp(y0, 0, src.height);
-	//
-	//x1 = clamp(x1, 0, dst.width);
-	//y1 = clamp(y1, 0, dst.height);
+	if (x1 < 0)
+	{
+		x0 -= x1;
+		w0 += x1;
+		x1 = 0;
+	}
+
+	if (y1 < 0)
+	{
+		y0 -= y1;
+		h0 += y1;
+		y1 = 0;
+	}
+
+	x0 = clamp(x0, 0, src.width);
+	y0 = clamp(y0, 0, src.height);
+
+	x1 = clamp(x1, 0, dst.width);
+	y1 = clamp(y1, 0, dst.height);
 
 	w0 = clamp(w0, 0, min(src.width - x0, dst.width - x1));
 	h0 = clamp(h0, 0, min(src.height - y0, dst.height - y1));
 
-	int d0 = src.width - w0;
-	int d1 = dst.width - w0;
-
 	uint32* srcPtr = src.framebuffer + src.width * y0 + x0;
 	uint32* dstPtr = dst.framebuffer + dst.width * y1 + x1;
 
-	for (int _y = 0; _y < h0; _y++)
-	{
-		for (int _x = 0; _x < w0; _x++)
-		{
-			*dstPtr++ = *srcPtr++;
-		}
+	int d0 = src.width - w0;
+	int d1 = dst.width - w0;
 
-		srcPtr += d0;
-		dstPtr += d1;
+	if (alpha)
+	{
+		for (int _y = 0; _y < h0; _y++)
+		{
+			for (int _x = 0; _x < w0; _x++)
+			{
+				uint32 s = *srcPtr;
+				uint32 d = *dstPtr;
+
+				uint32 a = 0xFF & (s >> 24);
+
+				uint32 rs = 0xFF & (s >> 16);
+				uint32 gs = 0xFF & (s >> 8);
+				uint32 bs = 0xFF & s;
+
+				uint32 rd = 0xFF & (d >> 16);
+				uint32 gd = 0xFF & (d >> 8);
+				uint32 bd = 0xFF & d;
+
+				uint8 r = (rs * a + rd * (255 - a)) / 255;
+				uint8 g = (gs * a + gd * (255 - a)) / 255;
+				uint8 b = (bs * a + bd * (255 - a)) / 255;
+
+				*dstPtr++ = (r << 16) | (g << 8) | b;
+				srcPtr++;
+			}
+
+			srcPtr += d0;
+			dstPtr += d1;
+		}
+	}
+	else
+	{
+		for (int _y = 0; _y < h0; _y++)
+		{
+			for (int _x = 0; _x < w0; _x++)
+			{
+				*dstPtr++ = *srcPtr++;
+			}
+
+			srcPtr += d0;
+			dstPtr += d1;
+		}
 	}
 }
 
@@ -269,6 +317,35 @@ void Drawing::FillRect(int x, int y, int w, int h, uint32 c, GC gc)
 		buf += delta;
 	}
 }
+
+void Drawing::DrawImage(int x, int y, int w, int h, BMP bmp, GC gc)
+{
+	int ox = 0;
+	int oy = 0;
+
+	if (x < 0)
+	{
+		w += x;
+		ox = -x;
+		x = 0;
+	}
+
+	if (y < 0)
+	{
+		h += y;
+		oy = -y;
+		y = 0;
+	}
+
+	x = clamp(x, 0, gc.width);
+	y = clamp(y, 0, gc.height);
+
+	w = clamp(w, 0, gc.width - x);
+	h = clamp(h, 0, gc.height - y);
+
+	
+}
+
 
 void Drawing::DrawText(int x, int y, char* c, uint32 col, GC gc)
 {

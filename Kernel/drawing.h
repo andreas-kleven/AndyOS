@@ -1,6 +1,7 @@
 #pragma once
 #include "definitions.h"
 #include "font.h"
+#include "bmp.h"
 
 struct Point
 {
@@ -87,7 +88,7 @@ public:
 	static void Draw(GC gc = gc);
 	static void Clear(uint32 c, GC gc = gc);
 
-	static void BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1);
+	static void BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1, bool alpha = 0);
 
 	static void SetPixel(int x, int y, uint32 c, GC gc = gc);
 
@@ -97,6 +98,8 @@ public:
 
 	static void DrawRect(int x, int y, int w, int h, int width, uint32 c, GC gc = gc);
 	static void FillRect(int x, int y, int w, int h, uint32 c, GC gc = gc);
+
+	static void DrawImage(int x, int y, int w, int h, BMP bmp, GC gc = gc);
 
 	static void DrawText(int x, int y, char* c, uint32 col, GC gc = gc);
 	static void DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc = gc);

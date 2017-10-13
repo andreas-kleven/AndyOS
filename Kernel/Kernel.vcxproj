@@ -168,6 +168,7 @@
     <ClInclude Include="ac97.h" />
     <ClInclude Include="address.h" />
     <ClInclude Include="ata.h" />
+    <ClInclude Include="bmp.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="drawing.h" />
@@ -200,6 +201,7 @@
   <ItemGroup>
     <ClCompile Include="ac97.cpp" />
     <ClCompile Include="ata.cpp" />
+    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="disk.cpp" />

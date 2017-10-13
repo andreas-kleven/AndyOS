@@ -46,6 +46,9 @@
     <Filter Include="Drawing">
       <UniqueIdentifier>{5f46cc3c-4386-472b-b6f5-04806d960536}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawing\File Formats">
+      <UniqueIdentifier>{24ef2580-cd77-46b1-be48-06c79ac44f1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vbe.cpp">
@@ -125,6 +128,9 @@
     </ClCompile>
     <ClCompile Include="drawing.cpp">
       <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp.cpp">
+      <Filter>Drawing\File Formats</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="drawing.h">
       <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="bmp.h">
+      <Filter>Drawing\File Formats</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

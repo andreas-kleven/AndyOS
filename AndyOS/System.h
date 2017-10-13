@@ -5,8 +5,9 @@
 #include "../Kernel/memory.h"
 #include "../Kernel/pit.h"
 
+#include "../Kernel/bmp.h"
+
 #include "iso.h"
-#include "bmp.h"
 
 #include "mouse.h"
 #include "keyboard.h"
