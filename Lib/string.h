@@ -4,10 +4,11 @@ unsigned int strcmp(const char* str1, const char* str2);
 char* strcpy(char *dest, const char *src);
 unsigned int strlen(const char* str);
 char* strcat(char* dest, const char* src);
+char* strncat(char* dest, const char* src, int n);
 
 //extern "C" void* __cdecl memcpy(void* dest, void* src, unsigned int n);
 void* memcpy(void* dest, void* src, unsigned int n);
-void memcpy_fast_128(void* src, void* dest, unsigned int count);
+void memcpy_fast_128(void* dest, void* src, unsigned int count);
 
 extern "C" void* __cdecl memset(void*, int, int);
 #pragma intrinsic(memset)

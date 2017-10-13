@@ -29,7 +29,7 @@ Thing::Thing()
 	//		VBE::SetPixel(x / 2, y / 2, pixel);
 	//	}
 	//}
-	//VBE::Draw();
+	//Drawing::Draw();
 	//while (1);
 
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");

@@ -1,6 +1,6 @@
 #include "Mandelbrot.h"
 #include "debug.h"
-#include "vbe.h"
+#include "drawing.h"
 #include "math.h"
 #include "hal.h"
 #include "keyboard.h"
@@ -96,23 +96,6 @@ void stuff()
 }
 #pragma optimize("", on)
 
-int GiveLastIteration(double Zx, double Zy, double Cx, double Cy, int IterationMax, int ER2)
-{
-	double Zx2, Zy2; /* Zx2=Zx*Zx;  Zy2=Zy*Zy  */
-	int i = 0;
-	Zx2 = Zx*Zx;
-	Zy2 = Zy*Zy;
-	while (i < IterationMax && (Zx2 + Zy2 < ER2)) /* ER2=ER*ER */
-	{
-		Zy = 2 * Zx*Zy + Cy;
-		Zx = Zx2 - Zy2 + Cx;
-		Zx2 = Zx*Zx;
-		Zy2 = Zy*Zy;
-		i += 1;
-	}
-	return i;
-}
-
 void Mandelbrot::Create(int width, int height)
 {
 	//stuff();
@@ -161,17 +144,17 @@ void Mandelbrot::Create(int width, int height)
 
 		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
 
-		VBE::Clear(0);
+		Drawing::Clear(0);
 		Debug::x = 0;
 		Debug::y = 0;
 
 		int index = 0;
-		uint32* buf = VBE::buffer;
+		uint32* buf = Drawing::buffer.framebuffer;
 
-		double cx;
-		double cy;
-		double zx = 0;
-		double zy = 0;
+		double Cx;
+		double Cy;
+		double Zx = 0;
+		double Zy = 0;
 		double Zx2 = 0;
 		double Zy2 = 0;
 
@@ -179,40 +162,40 @@ void Mandelbrot::Create(int width, int height)
 		{
 			for (int _x = 0; _x < width; _x++)
 			{
-				cx = (_x - width / 2) * asd1 + ofx;
-				cy = (_y - height / 2) * asd1 + ofy;
-				zx = 0;
-				zy = 0;
+				Cx = (_x - width / 2) * asd1 + ofx;
+				Cy = (_y - height / 2) * asd1 + ofy;
+				Zx = 0;
+				Zy = 0;
 				Zx2 = 0;
 				Zy2 = 0;
 
 				int iter = 0;
 				/*for (iter = 0; iter < iter_max && ((Zx2 + Zy2) < (1 << 16)); iter++)
 				{
-					zy = zx * zy;
-					zy += zy;
-					zy += cy;
+					Zy = Zx * Zy;
+					Zy += Zy;
+					Zy += cy;
 
-					zx = Zx2 - Zy2 + cx;
+					Zx = Zx2 - Zy2 + cx;
 
-					Zx2 = zx * zx;
-					Zy2 = zy * zy;
+					Zx2 = Zx * Zx;
+					Zy2 = Zy * Zy;
 
-					//zy = zx * zy * 2.0 + cy;
-					//zx = Zx2 - Zy2 + cx;
+					//Zy = Zx * Zy * 2.0 + cy;
+					//Zx = Zx2 - Zy2 + cx;
 					//
-					//Zx2 = zx * zx;
-					//Zy2 = zy * zy;
+					//Zx2 = Zx * Zx;
+					//Zy2 = Zy * Zy;
 				}*/
 
-				double Zx = cx;
+				/*double Zx = cx;
 				double Zy = cy;
 
 				double Cx = 0.7885 * cos(rot);
 				double Cy = 0.7885 * sin(rot);
 
 				Zx2 = Zx*Zx;
-				Zy2 = Zy*Zy;
+				Zy2 = Zy*Zy;*/
 
 				while (iter < iter_max && ((Zx2 + Zy2) < (1 << 16)))
 				{
@@ -315,7 +298,7 @@ void Mandelbrot::Create(int width, int height)
 			buf += 1024 - width;
 		}
 
-		VBE::Draw();
+		Drawing::Draw();
 
 		int delta_ticks = (PIT::ticks - ticks);
 		delta = delta_ticks / 1000.0f;

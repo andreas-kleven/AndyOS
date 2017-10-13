@@ -1,5 +1,6 @@
 #include "definitions.h"
 #include "kernel.h"
+#include "task.h"
 #include "OS.h"
 
 __declspec(align(16)) char _kernel_stack[8096];
@@ -20,7 +21,10 @@ void OSBoot(MULTIBOOT_HEADER* header)
 		_asm lea esp, WORD ptr[_kernel_stack + 8096];
 
 		Kernel::Init(bootinfo);
-		OS::Main();
+
+		Thread* mainThread = Task::CreateThread(OS::Main);
+		Task::InsertThread(mainThread);
+		Task::StartThreading();
 	}
 
 	_asm cli

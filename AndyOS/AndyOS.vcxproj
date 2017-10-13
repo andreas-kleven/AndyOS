@@ -149,7 +149,9 @@
   <ItemGroup>
     <ClCompile Include="bmp.cpp" />
     <ClCompile Include="boot.cpp" />
+    <ClCompile Include="Control.cpp" />
     <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="iso.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
@@ -165,16 +167,20 @@
     <ClCompile Include="tcp.cpp" />
     <ClCompile Include="tcpsession.cpp" />
     <ClCompile Include="tcpsocket.cpp" />
+    <ClCompile Include="TextEdit.cpp" />
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="udpsocket.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="System.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bmp.h" />
+    <ClInclude Include="Control.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="iso.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="List.h" />
@@ -193,12 +199,14 @@
     <ClInclude Include="tcpsession.h" />
     <ClInclude Include="tcpsocket.h" />
     <ClInclude Include="tcptypes.h" />
+    <ClInclude Include="TextEdit.h" />
     <ClInclude Include="udp.h" />
     <ClInclude Include="udpsocket.h" />
     <ClInclude Include="OS.h" />
     <ClInclude Include="stdio.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\3DGame\3DGame.vcxproj">

@@ -32,11 +32,23 @@ unsigned int strlen(const char* str)
 
 char* strcat(char* dest, const char* src)
 {
+	char* rdest = dest;
+
+	while (*dest) 
+		dest++;
+
+	while (*dest++ = *src++);
+	return rdest;
+}
+
+char* strncat(char * dest, const char* src, int n)
+{
 	char *rdest = dest;
 
 	while (*++dest);
 
-	while (*dest++ = *src++);
+	while (n-- && (*dest++ = *src++));
+	*rdest = 0;
 	return rdest;
 }
 
@@ -51,7 +63,7 @@ void* memcpy(void* dest, void* src, unsigned int n)
 	return dest;
 }
 
-void memcpy_fast_128(void* src, void* dest, unsigned int n)
+void memcpy_fast_128(void* dest, void* src, unsigned int n)
 {
 	if (n % 128 != 0)
 		return;

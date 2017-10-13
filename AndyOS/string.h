@@ -27,12 +27,14 @@ namespace std
 			delete[] buffer;
 		}
 
-		inline int Count() { return strlen(buffer); }
+		inline int Length() { return strlen(buffer) - 1; }
 
 		inline char* ToChar()
 		{
-			char* c = new char[Count() + 1];
+			int len = Length();
+			char* c = new char[len + 1];
 			strcpy(c, buffer);
+			c[len] = 0;
 			return c;
 		}
 
@@ -63,9 +65,29 @@ namespace std
 			return *this;
 		}
 
-		String& operator+=(const char*& str)
+		/*String& operator+=(const char*& str)
 		{
 			strcat(buffer, str);
+			return *this;
+		}
+
+		String& operator+=(char*& str)
+		{
+			strcat(buffer, str);
+			return *this;
+		}*/
+
+		String& operator+=(const char str[])
+		{
+			strcat(buffer, str);
+			return *this;
+		}
+
+		String& operator+=(const char c)
+		{
+			int len = Length();
+			buffer[len++] = c;
+			buffer[len] = 0;
 			return *this;
 		}
 
@@ -77,6 +99,13 @@ namespace std
 		}
 
 		String& operator+(const char*& str)
+		{
+			String* ns = new String(buffer);
+			*ns += str;
+			return *ns;
+		}
+
+		String& operator+(char*& str)
 		{
 			String* ns = new String(buffer);
 			*ns += str;

@@ -140,23 +140,37 @@ bool Keyboard::GetKeyDown(KEYCODE key)
 void Keyboard::DecodeAscii(KEY_PACKET& packet)
 {
 	uint8 key = packet.key;
+	packet.character = 0;
 
 	if (packet.ctrl)
-	{
-		packet.character = 0;
 		return;
-	}
 
 	if (packet.alt)
-	{
-		packet.character = 0;
 		return;
-	}
 
 	if (!isprint(key))
 	{
-		packet.character = 0;
-		return;
+		switch (key)
+		{
+		case KEY_SPACE:
+			key = ' ';
+			break;
+
+		case KEY_TAB:
+			key = '\t';
+			break;
+
+		case KEY_BACK:
+			key = '\b';
+			break;
+
+		case KEY_RETURN:
+			key = '\n';
+			break;
+
+		default:
+			return;
+		}
 	}
 
 	if (isupper(key))
@@ -240,10 +254,6 @@ void Keyboard::DecodeAscii(KEY_PACKET& packet)
 			case KEY_MINUS:
 				key = '_';
 				break;
-
-			default:
-				key = 0;
-				break;
 			}
 		}
 		else
@@ -289,10 +299,6 @@ void Keyboard::DecodeAscii(KEY_PACKET& packet)
 				break;
 			case KEY_BACK:
 				key = '\b';
-				break;
-
-			default:
-				key = 0;
 				break;
 			}
 		}

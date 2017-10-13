@@ -59,6 +59,29 @@ void GEngine::StartGame(Game* game)
 	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1024, 768, 90, 1, 10));
 	GL::MatrixMode(GL_MODELVIEW);
 
+	/*while (1)
+	{
+		Point points[] = {
+			Point(100, 100),
+			Point(200, 200),
+
+			Point(250, 300),
+			Point(300, 400),
+
+			Point(550, 300),
+			Point(800, 200),
+
+			Point(600, 500),
+			Point(400, 800),
+
+			Point(200, 500)
+		};
+
+		Drawing::Clear(0);
+		Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
+		Drawing::Draw();
+	}*/
+
 	while (1)
 	{
 		Debug::x = 0;
@@ -368,8 +391,8 @@ void GEngine::Collision()
 						//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
 
 						a->mass = 1;
-						b->mass = 1;
-						//b->mass = 1e10;
+						//b->mass = 1;
+						b->mass = 1e10;
 
 						float e = 1;
 						float ma = a->mass;
@@ -456,7 +479,6 @@ void GEngine::Collision()
 
 						Vector3 Xa = posa;
 						Vector3 Xb = posb;
-						float Vrel = (b->velocity - a->velocity).Magnitude();
 
 						Vector3 n = -mtv.Normalized();
 						//Vector3 n = test.points[0]->Normal;
@@ -473,21 +495,19 @@ void GEngine::Collision()
 							}
 							//n = man[p].Normal;
 
-							Vector3 Pa = man[p].Point;
-							Vector3 Pb = -man[p].Point;
-							//Vector3 Pa = Vector3((posb.x - posa.x) / 2, -1, 0) + posa;
-							//Vector3 Pb = Vector3((posb.x - posa.x) / -2, 1, 0) + posb;
+							n = -Vector3(0, 1, 0);
 
-							Vector3 ra = Pa - Xa;
-							Vector3 rb = Pb - Xb;
 							//ra = a->parent->GetWorldRotation() * Vector3(0, -1, 0);
 							//rb = b->parent->GetWorldRotation() * Vector3(0, 1, 0);
 
-							ra = Vector3(-1, -1, -1);
-							rb = Vector3(1, 1, 1);
+							//ra = Vector3(-1, -1, -1);
+							//rb = Vector3(1, 1, 1);
 
-							ra = a->parent->GetWorldRotation() * (Xa - man[p].Point);
-							rb = b->parent->GetWorldRotation() * (man[p].Point - Xb);
+							Vector3 ra = a->parent->GetWorldRotation() * -(Xa - man[p].Point);
+							Vector3 rb = b->parent->GetWorldRotation() * -(man[p].Point - Xb);
+							Debug::Print("%f %f %f\n", ra.x, ra.y, ra.z);
+							Debug::Print("%f %f %f\n", n.x, n.y, n.z);
+							//PIT::Sleep(10000);
 
 							//ra = Vector3(0, -1, 0);
 							//rb = Vector3(0, 1, 0);
@@ -499,6 +519,9 @@ void GEngine::Collision()
 
 							Matrix3 inva = Ia.Inverse();
 							Matrix3 invb = Ib.Inverse();
+
+							float Vrel = -(b->velocity - a->velocity).Dot(n);
+
 
 							float N = -(1 + e) * Vrel;
 							float t1 = 1 / ma;
@@ -513,7 +536,7 @@ void GEngine::Collision()
 							b->AddImpulse(-force);
 
 							Vector3 waf = inva * Vector3::Cross(ra, force);
-							Vector3 wbf = invb * Vector3::Cross(rb, -force);
+							Vector3 wbf = invb * Vector3::Cross(rb, force);
 
 							//a->angularVelocity = waf;
 							//b->angularVelocity = wbf;
@@ -528,6 +551,7 @@ void GEngine::Collision()
 							//Debug::Print("J: %f\n", j);
 						}
 
+						//a->parent->transform.rotation = Quaternion::FromAxisAngle(Vector3(0, 0, 1), 0.1);
 						a->angularVelocity = totalra;
 						b->angularVelocity = totalrb;
 

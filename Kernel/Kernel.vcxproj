@@ -170,6 +170,7 @@
     <ClInclude Include="ata.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="drawing.h" />
     <ClInclude Include="e1000.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="font.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="disk.cpp" />
+    <ClCompile Include="drawing.cpp" />
     <ClCompile Include="e1000.cpp" />
     <ClCompile Include="exceptions.cpp" />
     <ClCompile Include="hal.cpp" />

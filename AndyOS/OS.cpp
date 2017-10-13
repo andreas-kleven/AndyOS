@@ -8,8 +8,11 @@
 #include "dns.h"
 #include "dhcp.h"
 #include "http.h"
+#include "task.h"
+#include "GUI.h"
 
 #include "Mandelbrot.h"
+#include "TextEdit.h"
 
 void OS::Main()
 {
@@ -17,6 +20,11 @@ void OS::Main()
 	//Net::Init();
 
 	//Mandelbrot::Create(100, 100);
+	
+	//gui::WindowManager::Start();
+
+	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+	//apps::RunTextEdit();
 
 	///
 	while (1)
@@ -154,7 +162,7 @@ void OS::Main()
 	//}
 	}
 	}
-	VBE::Draw();
+	Drawing::Draw();
 
 	Debug::Print("Done\n");
 	Debug::Print("%i\n", bmp->pixels[bmp->pixel_count - 1]);

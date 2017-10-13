@@ -1,7 +1,7 @@
 #include "debug.h"
 #include "string.h"
 #include "stdio.h"
-#include "vbe.h"
+#include "drawing.h"
 #include "math.h"
 
 int Debug::x;
@@ -23,7 +23,7 @@ void Debug::Print(char* str, ...)
 	while (*str)
 		Putc(*str++);
 
-	VBE::Draw();
+	Drawing::Draw();
 }
 
 void Debug::Putc(char c, bool escape)
@@ -46,13 +46,13 @@ void Debug::Putc(char c, bool escape)
 			break;
 
 		case '\b':
-			x = clamp(x - 1, 0, (int)(VBE::mode.width / 8));
-			VBE::DrawText(x * 8, y * 16, " ", color, bcolor);
+			x = clamp(x - 1, 0, (int)(Drawing::screen.bounds.width / 8));
+			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor);
 			break;
 
 		default:
 			char str[] = { c, '\0' };
-			VBE::DrawText(x * 8, y * 16, str, color, bcolor);
+			Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
 			x++;
 			break;
 		}
@@ -60,17 +60,17 @@ void Debug::Putc(char c, bool escape)
 	else
 	{
 		char str[] = { c, '\0' };
-		VBE::DrawText(x * 8, y * 16, str, color, bcolor);
+		Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
 		x++;
 	}
 
-	if (x > VBE::mode.width / 8)
+	if (x > Drawing::screen.bounds.width / 8)
 	{
 		x = 0;
 		y++;
 	}
 
-	if (y > VBE::mode.height / 16)
+	if (y > Drawing::screen.bounds.height / 16)
 	{
 		x = 0;
 		y = 0;
@@ -82,7 +82,7 @@ void Debug::Clear(uint32 c)
 	x = 0;
 	y = 0;
 
-	VBE::Clear(c);
+	Drawing::Clear(c);
 }
 
 void Debug::Dump(void* addr, int length, bool str)
@@ -125,5 +125,5 @@ void Debug::Dump(void* addr, int length, bool str)
 	}
 
 	Debug::Putc('\n');;
-	VBE::Draw();
+	Drawing::Draw();
 }

@@ -25,8 +25,17 @@
     <Filter Include="Net">
       <UniqueIdentifier>{524d63c2-9e6d-4276-9a63-ce12ef55ff9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Stuff">
-      <UniqueIdentifier>{515565d0-0a0e-43a6-a2b9-dabf2ab036ae}</UniqueIdentifier>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{c834d478-80bc-4178-ad4d-1c3a47e8aae1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Apps">
+      <UniqueIdentifier>{1d249549-899d-4320-9ac2-8a36bed2ee89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Apps\TextEdit">
+      <UniqueIdentifier>{f0960cbb-1ec0-425d-ad0b-f9bcaa432562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Apps\Mandelbrot">
+      <UniqueIdentifier>{b3eedd11-3f41-4b3f-a100-0f7e5fb12624}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,8 +117,20 @@
     <ClInclude Include="udpsocket.h">
       <Filter>Net</Filter>
     </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Control.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextEdit.h">
+      <Filter>Apps\TextEdit</Filter>
+    </ClInclude>
     <ClInclude Include="Mandelbrot.h">
-      <Filter>Stuff</Filter>
+      <Filter>Apps\Mandelbrot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -179,8 +200,20 @@
     <ClCompile Include="net.cpp">
       <Filter>Net</Filter>
     </ClCompile>
+    <ClCompile Include="TextEdit.cpp">
+      <Filter>Apps\TextEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Control.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
     <ClCompile Include="Mandelbrot.cpp">
-      <Filter>Stuff</Filter>
+      <Filter>Apps\Mandelbrot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

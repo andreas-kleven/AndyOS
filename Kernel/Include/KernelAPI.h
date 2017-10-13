@@ -1,6 +1,7 @@
 #pragma once
 #include "../memory.h"
 #include "../vbe.h"
+#include "../drawing.h"
 #include "../pit.h"
 #include "../keyboard.h"
 #include "../mouse.h"

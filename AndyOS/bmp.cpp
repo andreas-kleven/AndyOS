@@ -1,7 +1,7 @@
 #include "bmp.h"
 #include "string.h"
 #include "debug.h"
-#include "vbe.h"
+#include "drawing.h"
 
 BMP::BMP(void* buffer)
 {
@@ -49,7 +49,7 @@ BMP::BMP(void* buffer)
 		p = _p + pitch;
 	}
 
-	VBE::Draw();
+	Drawing::Draw();
 }
 
 BMP::BMP(void* buffer, int width, int height)

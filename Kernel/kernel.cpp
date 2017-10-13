@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "cpu.h"
 #include "vbe.h"
+#include "drawing.h"
 #include "math.h"
 #include "hal.h"
 #include "idt.h"
@@ -49,12 +50,13 @@ void Kernel::Init(MULTIBOOT_INFO* bootinfo)
 	Memory::InitRegion((uint32*)(mem_map + MEMORY_MAP_SIZE), MEMORY_SIZE - (mem_map + MEMORY_MAP_SIZE));
 
 	VBE::Init(vbeMode);
+	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 	ATA::Init();
 
-	Mouse::Init(VBE::mode.width, VBE::mode.height, 1);
+	Mouse::Init(Drawing::screen.bounds.width, Drawing::screen.bounds.height, 1);
 	Keyboard::Init();
-
-	//Task::Init();
+	
+	Task::Init();
 
 	Debug::color = 0xFF00;
 	PCI::Init();

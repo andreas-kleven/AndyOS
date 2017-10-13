@@ -3,10 +3,10 @@
 
 struct TASK_REGS
 {
-	//uint32 gs;
-	//uint32 fs;
-	//uint32 es;
-	//uint32 ds;
+	uint32 gs;
+	uint32 fs;
+	uint32 es;
+	uint32 ds;
 
 	uint32 eax;
 	uint32 ebx;
@@ -25,11 +25,12 @@ struct TASK_REGS
 	uint32 user_ss;
 };
 
-struct THREAD 
+class Thread
 {
+public:
 	//TASK_REGS regs;
 	uint32 esp;
-	THREAD* next;
+	Thread* next;
 };
 
 static class Task
@@ -37,11 +38,12 @@ static class Task
 public:
 	static STATUS Init();
 
-	static THREAD* CreateThread(void* main);
+	static Thread* CreateThread(void* main);
+	static void InsertThread(Thread* thread);
+
+	static void StartThreading();
 
 private:
-	static THREAD* current_thread;
-
 	static void Schedule();
 	static void Task_ISR();
 

@@ -1,14 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kernel", "Kernel\Kernel.vcxproj", "{670D753F-8824-43AC-95EC-130845F75F0A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211} = {DEDBD97F-3192-4598-87B4-DBC0512F3211}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rebase", "Rebase\Rebase.csproj", "{DEDBD97F-3192-4598-87B4-DBC0512F3211}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GL", "GL\GL.vcxproj", "{4E773009-CB83-4B52-AFC6-DF744C94C9AF}"
 EndProject
@@ -44,18 +39,6 @@ Global
 		{670D753F-8824-43AC-95EC-130845F75F0A}.Release|x64.Build.0 = Release|x64
 		{670D753F-8824-43AC-95EC-130845F75F0A}.Release|x86.ActiveCfg = Release|Win32
 		{670D753F-8824-43AC-95EC-130845F75F0A}.Release|x86.Build.0 = Release|Win32
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|x64.Build.0 = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Debug|x86.Build.0 = Debug|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|x64.ActiveCfg = Release|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|x64.Build.0 = Release|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|x86.ActiveCfg = Release|Any CPU
-		{DEDBD97F-3192-4598-87B4-DBC0512F3211}.Release|x86.Build.0 = Release|Any CPU
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Debug|Any CPU.Build.0 = Debug|Win32
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Debug|x64.ActiveCfg = Debug|x64

@@ -26,5 +26,6 @@ MyGame::MyGame()
 	box->transform.position = Vector3(0, 0, 0);
 	box->transform.rotation = Quaternion();
 	box->transform.scale = Vector3(1, 1, 1);
+	box->transform.scale = Vector3(10, 1, 10);
 	//box->SetScale(Vector3(10, 1, 10));
 }

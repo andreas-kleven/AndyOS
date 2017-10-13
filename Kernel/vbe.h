@@ -1,6 +1,5 @@
 #pragma once
 #include "definitions.h"
-#include "font.h"
 
 struct VBE_MODE_INFO
 {
@@ -45,24 +44,5 @@ static class VBE
 {
 public:
 	static VBE_MODE_INFO mode;
-	static uint32* buffer;
-
 	static STATUS Init(VBE_MODE_INFO* info);
-
-	static void Draw();
-	static void Clear(uint32 c);
-	static void SetPixel(uint32 x, uint32 y, uint32 c);
-
-	static void DrawLine(uint32 x0, uint32 y0, uint32 x1, uint32 y1, uint32 c);
-
-	static void VBE::DrawText(uint32 x, uint32 y, char* c, uint32 col);
-	static void VBE::DrawText(uint32 x, uint32 y, char* c, uint32 col, uint32 bg);
-
-
-private:
-	static uint32* mem_base;
-	static uint32* mem_max;
-	static uint32 mem_size;
-	static uint32 bytes_per_pixel;
-	static uint32 pixel_count;
 };

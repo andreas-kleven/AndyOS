@@ -106,7 +106,7 @@ namespace gl
 
 	void GL::Clear(uint32 color)
 	{
-		VBE::Clear(color);
+		Drawing::Clear(color);
 
 		float val = 1e100;
 		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
@@ -167,7 +167,7 @@ namespace gl
 
 	void GL::SwapBuffers()
 	{
-		VBE::Draw();
+		Drawing::Draw();
 	}
 
 
