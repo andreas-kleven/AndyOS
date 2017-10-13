@@ -20,9 +20,12 @@ void OS::Main()
 	//Net::Init();
 
 	//Mandelbrot::Create(100, 100);
-	
-	gui::WindowManager::Start();
+
+	gui::WindowManager::Init();
 	apps::RunTextEdit();
+	apps::RunTextEdit();
+	gui::WindowManager::Start();
+	while (1);
 
 	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
 

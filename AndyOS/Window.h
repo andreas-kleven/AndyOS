@@ -18,6 +18,7 @@ namespace gui
 		Rect bounds;
 
 		WINDOW_STATE state;
+		bool active;
 
 		Window* next;
 		Window* previous;
@@ -36,8 +37,10 @@ namespace gui
 
 		void Paint();
 
+		void SetActive(bool active);
+
 	private:
-		void DrawWindow();
-		void DrawControls();
+		void PaintWindow();
+		void PaintControls();
 	};
 }

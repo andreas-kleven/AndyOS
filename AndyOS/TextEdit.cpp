@@ -14,7 +14,7 @@ void apps::RunTextEdit()
 
 	win->AddControl(lbl);
 
-	std::String text = lbl->text;
+	/*std::String text = lbl->text;
 
 	while (1)
 	{
@@ -33,5 +33,5 @@ void apps::RunTextEdit()
 		//lbl->y = Mouse::y;
 
 		_asm pause
-	}
+	}*/
 }

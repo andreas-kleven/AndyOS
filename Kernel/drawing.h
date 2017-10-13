@@ -36,6 +36,14 @@ struct Rect
 		this->width = w;
 		this->height = h;
 	}
+
+	bool Contains(int x, int y)
+	{
+		return ((x >= this->x) 
+			&& x <= (this->x + this->width)
+			&& (y >= this->y) 
+			&& (y <= this->y + this->height));
+	}
 };
 
 struct GC
@@ -87,7 +95,8 @@ public:
 	static void DrawBezierQuad(Point* points, int count, GC gc = gc);
 	static void DrawBezierCube(Point* points, int count, GC gc = gc);
 
-	static void DrawRect(int x, int y, int w, int h, uint32 c, GC gc = gc);
+	static void DrawRect(int x, int y, int w, int h, int width, uint32 c, GC gc = gc);
+	static void FillRect(int x, int y, int w, int h, uint32 c, GC gc = gc);
 
 	static void DrawText(int x, int y, char* c, uint32 col, GC gc = gc);
 	static void DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc = gc);

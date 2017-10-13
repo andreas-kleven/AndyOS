@@ -238,7 +238,15 @@ void Drawing::DrawBezierCube(Point* points, int count, GC gc)
 	}
 }
 
-void Drawing::DrawRect(int x, int y, int w, int h, uint32 c, GC gc)
+void Drawing::DrawRect(int x, int y, int w, int h, int bw, uint32 c, GC gc)
+{
+	FillRect(x, y, x + w, y + bw, c, gc);			//Top
+	FillRect(x, y + h - bw, x + w, y + h, c, gc);	//Botom
+	FillRect(x, y, x + bw, y + h, c, gc);			//Left
+	FillRect(x + w - bw, y, x + w, y + h, c, gc);	//Right
+}
+
+void Drawing::FillRect(int x, int y, int w, int h, uint32 c, GC gc)
 {
 	int width = gc.width;
 	int height = gc.height;
