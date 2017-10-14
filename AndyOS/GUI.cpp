@@ -100,6 +100,25 @@ namespace gui
 		return window;
 	}
 
+	void WindowManager::CloseWindow(Window* wnd)
+	{
+		wnd->Close();
+
+		if (wnd->next)
+			wnd->next->previous = wnd->previous;
+
+		if (wnd->previous)
+			wnd->previous->next = wnd->next;
+
+		if (wnd == first_window)
+			first_window = wnd->next;
+
+		if (wnd == last_window)
+			last_window = wnd->previous;
+
+		delete wnd;
+	}
+
 	void WindowManager::UpdateLoop()
 	{
 		int lastTicks = PIT::ticks;
@@ -207,7 +226,7 @@ namespace gui
 		{
 			if (hover_window)
 			{
-				wnd->ReceiveSendMessage(WND_MSG(wnd->id, WM_MOUSELEAVE, 0, 0));
+				hover_window->ReceiveSendMessage(WND_MSG(hover_window->id, WM_MOUSELEAVE, 0, 0));
 			}
 
 			if (wnd)
@@ -222,7 +241,7 @@ namespace gui
 		{
 			if (hover_control)
 			{
-				wnd->ReceiveSendMessage(WND_MSG(hover_control->id, WM_MOUSELEAVE, 0, 0));
+				hover_window->ReceiveSendMessage(WND_MSG(hover_control->id, WM_MOUSELEAVE, 0, 0));
 			}
 
 			if (ctrl)
@@ -253,7 +272,11 @@ namespace gui
 					if (wnd->id != focused_window->id)
 						SetFocusedWindow(wnd);
 
-					wnd->ReceiveSendMessage(WND_MSG(ctrl->id, WM_MOUSEDOWN, 0, 0));
+					if (ctrl)
+						wnd->ReceiveSendMessage(WND_MSG(ctrl->id, WM_MOUSEDOWN, 0, 0));
+					else
+						wnd->ReceiveSendMessage(WND_MSG(wnd->id, WM_MOUSEDOWN, 0, 0));
+
 				}
 			}
 			else
@@ -317,9 +340,6 @@ namespace gui
 
 	Window* WindowManager::GetWindowAtCursor()
 	{
-		if (window_count == 0)
-			return 0;
-
 		Window* wnd = first_window;
 		while (wnd)
 		{

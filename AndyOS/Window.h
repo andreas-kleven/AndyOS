@@ -26,7 +26,7 @@ namespace gui
 		Window* next;
 		Window* previous;
 
-		int children_count;
+		int child_count;
 		Control* first_child;
 		Control* last_child;
 		//Control* focused_child;
@@ -42,6 +42,7 @@ namespace gui
 		Window();
 
 		void Paint();
+		void Close();
 
 		void SetFocus(bool focus);
 		void SetState(WINDOW_STATE state);

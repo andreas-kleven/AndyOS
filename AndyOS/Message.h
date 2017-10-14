@@ -35,8 +35,65 @@ namespace gui
 		}
 	};
 
+	struct WND_MSG_NODE
+	{
+		WND_MSG msg;
+		WND_MSG_NODE* next = 0;
+		WND_MSG_NODE* previous = 0;
+	};
+
 	struct WND_MSG_QUEUE
 	{
+		WND_MSG_NODE* first = 0;
+		WND_MSG_NODE* last = 0;
 
+		~WND_MSG_QUEUE()
+		{
+			WND_MSG_NODE* node = first;
+			while (node)
+			{
+				delete node;
+				node = node->next;
+			}
+		}
+
+		bool Push(WND_MSG msg)
+		{
+			WND_MSG_NODE* node = new WND_MSG_NODE;
+			node->msg = msg;
+			
+			if (first)
+			{
+				last->next = node;
+				node->previous = last;
+				last = node;
+			}
+			else
+			{
+				first = node;
+				last = node;
+			}
+
+			return 1;
+		}
+
+		bool Pop(WND_MSG& msg)
+		{
+			if (first)
+			{
+				WND_MSG_NODE* node = first;
+				msg = node->msg;
+
+				if (node->next)
+					node->next->previous = 0;
+
+				first = node->next;
+				delete node;
+
+				return 1;
+			}
+
+			return 0;
+		}
 	};
 }

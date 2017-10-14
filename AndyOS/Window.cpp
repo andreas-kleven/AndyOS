@@ -39,6 +39,28 @@ namespace gui
 		PaintControls();
 	}
 
+	void Window::Close()
+	{
+		if (child_count == 0)
+			return;
+
+		Control* ctrl = first_child;
+		while (ctrl)
+		{
+			ctrl->Close();
+			Control* next = ctrl->next;
+
+			delete ctrl;
+			ctrl = next;
+		}
+
+		child_count = 0;
+		first_child = 0;
+		last_child = 0;
+
+		delete &msg_queue;
+	}
+
 	void Window::PaintWindow()
 	{
 		uint32 _titlebar = focused ? col_background : COLOR_WHITE;
@@ -54,7 +76,7 @@ namespace gui
 
 	void Window::PaintControls()
 	{
-		if (children_count == 0)
+		if (child_count == 0)
 			return;
 
 		Control* ctrl = first_child;
@@ -137,7 +159,7 @@ namespace gui
 
 		ctrl->gc = GC(gc_content, ctrl->bounds);
 
-		if (children_count)
+		if (child_count)
 		{
 			last_child->next = ctrl;
 			ctrl->previous = last_child;
@@ -149,13 +171,13 @@ namespace gui
 			last_child = ctrl;
 		}
 
-		children_count++;
+		child_count++;
 		return ctrl;
 	}
 
 	Control* Window::GetControlAt(int x, int y)
 	{
-		if (children_count == 0)
+		if (child_count == 0)
 			return 0;
 
 		x -= bounds.x + gc_content.x;
@@ -176,17 +198,16 @@ namespace gui
 
 	WND_MSG Window::GetMessage()
 	{
-		while (!b_message)
+		WND_MSG msg;
+		while (!msg_queue.Pop(msg))
 			_asm pause
 
-		b_message = 0;
-		return message;
+		return msg;
 	}
 
 	void Window::ReceiveSendMessage(WND_MSG msg)
 	{
-		message = msg;
-		b_message = 1;
+		msg_queue.Push(msg);
 	}
 
 	void Window::DispatchMessage(WND_MSG msg)

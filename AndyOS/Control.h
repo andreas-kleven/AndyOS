@@ -31,11 +31,17 @@ namespace gui
 		Control* next;
 		Control* previous;
 
+		int child_count = 0;
+		Control* first_child = 0;
+		Control* last_child = 0;
+
 		uint32 background = 0;
 		uint32 foreground = 0;
 
 		virtual void Paint() {};
 		virtual void ReceiveSendMessage(WND_MSG msg) {}
+
+		void Close();
 
 	private:
 		void SendMessage();
