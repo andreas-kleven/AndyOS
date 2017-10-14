@@ -1,6 +1,8 @@
 #pragma once
 #include "Window.h"
 
+#define GUI_TASKBAR_HEIGHT		40
+
 namespace gui
 {
 	struct MOUSE_CLICK_INFO
@@ -16,6 +18,8 @@ namespace gui
 
 	struct WINDOW_DRAG_INFO
 	{
+		Window* window;
+
 		int start_x;
 		int start_y;
 	};
@@ -39,6 +43,6 @@ namespace gui
 		static void HandleMouseInput();
 
 		static Window* GetWindowAtCursor();
-		static void SetActiveWindow(Window* new_active);
+		static void SetFocusedWindow(Window* new_active);
 	};
 }

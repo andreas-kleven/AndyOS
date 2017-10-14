@@ -5,17 +5,17 @@
 
 BMP::BMP(void* buffer)
 {
-	BMP_HEADER* bmp = (BMP_HEADER*)buffer;
+	header = *(BMP_HEADER*)buffer;
 
-	this->width = bmp->width;
-	this->height = bmp->height;
+	this->width = header.width;
+	this->height = header.height;
 	this->pixel_count = width * height;
 	this->size = pixel_count * 4;
 
-	int bytes = bmp->bpp / 8;
-	int pitch = bmp->width * bytes;
+	int bytes = header.bpp / 8;
+	int pitch = header.width * bytes;
 
-	uint8* p = (uint8*)bmp + bmp->dataOffset;
+	uint8* p = (uint8*)buffer + header.dataOffset;
 
 	//Debug::Print("%i\n", bytes);
 	//Debug::Print("%i\n", pitch);

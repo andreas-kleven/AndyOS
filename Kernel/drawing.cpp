@@ -318,7 +318,7 @@ void Drawing::FillRect(int x, int y, int w, int h, uint32 c, GC gc)
 	}
 }
 
-void Drawing::DrawImage(int x, int y, int w, int h, BMP bmp, GC gc)
+void Drawing::DrawImage(int x, int y, int w, int h, BMP* bmp, GC gc)
 {
 	int ox = 0;
 	int oy = 0;
@@ -340,10 +340,24 @@ void Drawing::DrawImage(int x, int y, int w, int h, BMP bmp, GC gc)
 	x = clamp(x, 0, gc.width);
 	y = clamp(y, 0, gc.height);
 
-	w = clamp(w, 0, gc.width - x);
-	h = clamp(h, 0, gc.height - y);
+	w = clamp(w, 0, min(gc.width - x, bmp->width));
+	h = clamp(h, 0, min(gc.height - y, bmp->height));
 
-	
+	int delta = gc.width - w;
+	uint32* dst = gc.framebuffer + (y + oy) * gc.width + (x + ox);
+	uint32* src = bmp->pixels;
+
+	for (int _y = 0; _y < h; _y++)
+	{
+		for (int _x = 0; _x < w; _x++)
+		{
+			*dst++ = *src++;
+		}
+
+		dst += delta;
+	}
+
+	//memcpy(gc.framebuffer, bmp->pixels, bmp->pixel_count);
 }
 
 

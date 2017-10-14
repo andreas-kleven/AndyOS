@@ -16,9 +16,10 @@ struct BMP_HEADER
 	uint32 compression;
 };
 
-class BMP
+struct BMP
 {
-public:
+	BMP_HEADER header;
+
 	uint32* pixels;
 	uint32 pixel_count;
 	uint32 size;

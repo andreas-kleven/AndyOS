@@ -1,11 +1,11 @@
  AndyOS
 
- Timestamp is 59e138ea (Sat Oct 14 00:06:34 2017)
+ Timestamp is 59e14bce (Sat Oct 14 01:27:10 2017)
 
  Preferred load address is 00100000
 
  Start         Length     Name                   Class
- 0001:00000000 00008115H .text$mn                CODE
+ 0001:00000000 00008245H .text$mn                CODE
  0002:00000000 00000010H .idata$5                DATA
  0002:00000008 00000000H .gfids$y                DATA
  0002:00000010 00000664H .rdata                  DATA
@@ -18,498 +18,507 @@
  0002:000008e4 0000002aH .idata$6                DATA
  0003:00000000 000011ecH .data                   DATA
  0003:000011ec 00000054H .data$r                 DATA
- 0003:00001240 00002f00H .bss                    DATA
+ 0003:00001240 00002f40H .bss                    DATA
 
   Address         Publics by Value              Rva+Base       Lib:Object
 
- 0000:00000000       ___guard_iat_count         00000000     <absolute>
- 0000:00000000       ___guard_fids_table        00000000     <absolute>
+ 0000:00000000       ___guard_fids_count        00000000     <absolute>
+ 0000:00000000       ___guard_flags             00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
+ 0000:00000000       ___guard_iat_table         00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
  0000:00000000       ___enclave_config          00000000     <absolute>
+ 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map         00000000     <absolute>
+ 0000:00000000       ___guard_iat_count         00000000     <absolute>
  0000:00000000       ___safe_se_handler_table   00000000     <absolute>
  0000:00000000       ___hybrid_auxiliary_iat    00000000     <absolute>
- 0000:00000000       ___hybrid_code_map         00000000     <absolute>
- 0000:00000000       ___guard_flags             00000000     <absolute>
  0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
- 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
- 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
- 0000:00000000       ___guard_iat_table         00000000     <absolute>
- 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
- 0000:00000000       ___guard_fids_count        00000000     <absolute>
- 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
+ 0000:00000000       ___guard_fids_table        00000000     <absolute>
  0001:00000000       ?OSBoot@@YAXPAUMULTIBOOT_HEADER@@@Z 00100400 f   boot.obj
  0001:00000050       ??0Label@gui@@QAE@XZ       00100450 f   Control.obj
  0001:00000080       ?Paint@Control@gui@@UAEXXZ 00100480 f i Control.obj
  0001:00000090       ?Paint@Label@gui@@UAEXXZ   00100490 f   Control.obj
  0001:000000c0       ?ReadFile@FileSystem@@SAIPADAAPAD@Z 001004c0 f   FileSystem.obj
- 0001:000000d0       ?CreateWindow@WindowManager@gui@@SAPAVWindow@2@PAD@Z 001004d0 f   GUI.obj
- 0001:00000150       ?GetWindowAtCursor@WindowManager@gui@@CAPAVWindow@2@XZ 00100550 f   GUI.obj
- 0001:000001a0       ?HandleMouseInput@WindowManager@gui@@CAXXZ 001005a0 f   GUI.obj
- 0001:00000370       ?Init@WindowManager@gui@@SAIXZ 00100770 f   GUI.obj
- 0001:00000420       ?PaintBackground@WindowManager@gui@@CAXXZ 00100820 f   GUI.obj
- 0001:000004b0       ?PaintCursor@WindowManager@gui@@CAXXZ 001008b0 f   GUI.obj
- 0001:00000560       ?PaintTaskbar@WindowManager@gui@@CAXXZ 00100960 f   GUI.obj
- 0001:00000600       ?PaintWindows@WindowManager@gui@@CAXXZ 00100a00 f   GUI.obj
- 0001:00000670       ?SetActiveWindow@WindowManager@gui@@CAXPAVWindow@2@@Z 00100a70 f   GUI.obj
- 0001:00000720       ?Start@WindowManager@gui@@SAXXZ 00100b20 f   GUI.obj
- 0001:00000740       ?UpdateLoop@WindowManager@gui@@CAXXZ 00100b40 f   GUI.obj
- 0001:00000bc0       ?FindFile@ISO_FS@@SAPAUISO_DIRECTORY@@PAD@Z 00100fc0 f   iso.obj
- 0001:00000c90       ?Init@ISO_FS@@SAIXZ        00101090 f   iso.obj
- 0001:00000d00       ?ListFiles@ISO_FS@@SAHPAD@Z 00101100 f   iso.obj
- 0001:00000da0       ?ReadFile@ISO_FS@@SAIPADAAPAD@Z 001011a0 f   iso.obj
- 0001:00000e90       ?ReadFile@ISO_FS@@SAIPAUISO_DIRECTORY@@AAPAD@Z 00101290 f   iso.obj
- 0001:00000ec0       ?Create@Mandelbrot@@SAXHH@Z 001012c0 f   Mandelbrot.obj
- 0001:000012e0       ?stuff@@YAXXZ              001016e0 f   Mandelbrot.obj
- 0001:00001360       ?AddEntry@ARP@@SAXUMacAddress@@UIPv4Address@@@Z 00101760 f   arp.obj
- 0001:000013f0       ?Decode@ARP@@SA_NPAUARP_Header@@PAUNetPacket@@@Z 001017f0 f   arp.obj
- 0001:00001460       ?Init@ARP@@SAIXZ           00101860 f   arp.obj
- 0001:000014c0       ?LookupMac@ARP@@SA?AUMacAddress@@UIPv4Address@@@Z 001018c0 f   arp.obj
- 0001:00001540       ?Receive@ARP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00101940 f   arp.obj
- 0001:00001680       ?Send@ARP@@SAXPAVNetInterface@@UMacAddress@@UIPv4Address@@G@Z 00101a80 f   arp.obj
- 0001:00001740       ?SendReply@ARP@@CAXPAVNetInterface@@PAUARP_Header@@@Z 00101b40 f   arp.obj
- 0001:00001780       ?SendRequest@ARP@@SAXPAVNetInterface@@UIPv4Address@@@Z 00101b80 f   arp.obj
- 0001:000017c0       ?DoStuff@DHCP@@SAXPAVNetInterface@@UIPv4Address@@@Z 00101bc0 f   dhcp.obj
- 0001:000018a0       ?Receive@DHCP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUUDP_Packet@@PAUNetPacket@@@Z 00101ca0 f   dhcp.obj
- 0001:000018b0       ?AddEntry@DNS@@SAXPADUIPv4Address@@@Z 00101cb0 f   dns.obj
- 0001:00001930       ?AppendDomain@DNS@@CAPAEPAEPAD@Z 00101d30 f   dns.obj
- 0001:00001990       ?Decode@DNS@@SA_NPAUDNS_Packet@@PAUUDP_Packet@@@Z 00101d90 f   dns.obj
- 0001:00001a10       ?Init@DNS@@SAIXZ           00101e10 f   dns.obj
- 0001:00001a50       ?LookupAddress@DNS@@SA?AUIPv4Address@@PAD@Z 00101e50 f   dns.obj
- 0001:00001a90       ?ParseAnswer@DNS@@CAPAEPAUDNS_Answer@@PAE@Z 00101e90 f   dns.obj
- 0001:00001af0       ?ParseDomain@DNS@@CAPAEPADPAE@Z 00101ef0 f   dns.obj
- 0001:00001b30       ?Query@DNS@@SAXPAVNetInterface@@PAD@Z 00101f30 f   dns.obj
- 0001:00001c10       ?Receive@DNS@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUUDP_Packet@@PAUNetPacket@@@Z 00102010 f   dns.obj
- 0001:00001d70       ?CreatePacket@Eth@@SAPAUNetPacket@@PAVNetInterface@@UMacAddress@@GI@Z 00102170 f   eth.obj
- 0001:00001de0       ?Decode@Eth@@SA_NPAUEthPacket@@PAUNetPacket@@@Z 001021e0 f   eth.obj
- 0001:00001e60       ?Receive@Eth@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00102260 f   eth.obj
- 0001:00001f00       ?Send@Eth@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00102300 f   eth.obj
- 0001:00001f10       ??0WebClient@@QAE@XZ       00102310 f   http.obj
- 0001:00001f20       ?Download@WebClient@@QAEHVString@std@@AAPAE@Z 00102320 f   http.obj
- 0001:00001f40       ?Send@WebClient@@QAEXVString@std@@PAEI@Z 00102340 f   http.obj
- 0001:00001fd0       ?Decode@ICMP@@SA_NPAUICMP_Packet@@PAUNetPacket@@@Z 001023d0 f   icmp.obj
- 0001:00002040       ?Receive@ICMP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 00102440 f   icmp.obj
- 0001:00002090       ?Send@ICMP@@SAXPAVNetInterface@@PAUICMP_Packet@@UIPv4Address@@E@Z 00102490 f   icmp.obj
- 0001:00002130       ?SendReply@ICMP@@SAXPAVNetInterface@@PAUICMP_Packet@@UIPv4Address@@@Z 00102530 f   icmp.obj
- 0001:000021c0       ?CreatePacket@IPv4@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@EI@Z 001025c0 f   ipv4.obj
- 0001:00002340       ?Decode@IPv4@@SA_NPAUIPv4_Header@@PAUNetPacket@@@Z 00102740 f   ipv4.obj
- 0001:000023b0       ?Receive@IPv4@@SAXPAVNetInterface@@PAUEthPacket@@PAUNetPacket@@@Z 001027b0 f   ipv4.obj
- 0001:000024b0       ?Send@IPv4@@SAXPAVNetInterface@@PAUNetPacket@@@Z 001028b0 f   ipv4.obj
- 0001:000024c0       ?Init@Net@@SAIXZ           001028c0 f   net.obj
- 0001:000024d0       ?NetEthReceive@@YAXPAVNetInterface@@PAUNetPacket@@@Z 001028d0 f   net.obj
- 0001:000024e0       ?CreatePacket@TCP@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@GGEIIPAEI@Z 001028e0 f   tcp.obj
- 0001:000025d0       ?CreateSession@TCP@@SAPAVTcpSession@@XZ 001029d0 f   tcp.obj
- 0001:00002610       ?Decode@TCP@@SA_NPAUTCP_Packet@@PAUNetPacket@@@Z 00102a10 f   tcp.obj
- 0001:000026c0       ?Receive@TCP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 00102ac0 f   tcp.obj
- 0001:000027c0       ?Send@TCP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00102bc0 f   tcp.obj
- 0001:000027d0       ??0TcpSession@@QAE@XZ      00102bd0 f   tcpsession.obj
- 0001:000027f0       ?Close@TcpSession@@QAEXXZ  00102bf0 f   tcpsession.obj
- 0001:000028f0       ?Connect@TcpSession@@QAEXUIPv4Address@@G@Z 00102cf0 f   tcpsession.obj
- 0001:00002a70       ?Listen@TcpSession@@QAEXG@Z 00102e70 f   tcpsession.obj
- 0001:00002aa0       ?Receive@TcpSession@@QAEXPAUIPv4_Header@@PAUTCP_Packet@@@Z 00102ea0 f   tcpsession.obj
- 0001:00002c30       ?ReceivedData@TcpSession@@QAEXPAUIPv4_Header@@PAUTCP_Packet@@@Z 00103030 f   tcpsession.obj
- 0001:00002c90       ?Reset@TcpSession@@AAEXXZ  00103090 f   tcpsession.obj
- 0001:00002cb0       ?Send@TcpSession@@AAE_NEPAEI@Z 001030b0 f   tcpsession.obj
- 0001:00002d00       ?SendData@TcpSession@@QAE_NPAEI@Z 00103100 f   tcpsession.obj
- 0001:00002d50       ??0TcpSocket@@QAE@XZ       00103150 f   tcpsocket.obj
- 0001:00002d60       ?Close@TcpSocket@@QAE_NXZ  00103160 f   tcpsocket.obj
- 0001:00002d80       ?Connect@TcpSocket@@QAE_NUIPv4Address@@G@Z 00103180 f   tcpsocket.obj
- 0001:00002db0       ?Listen@TcpSocket@@QAE_NG@Z 001031b0 f   tcpsocket.obj
- 0001:00002de0       ?Send@TcpSocket@@QAE_NPAEI@Z 001031e0 f   tcpsocket.obj
- 0001:00002e10       ?RunTextEdit@apps@@YAXXZ   00103210 f   TextEdit.obj
- 0001:00002e60       ?CreatePacket@UDP@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@GGPAEI@Z 00103260 f   udp.obj
- 0001:00002f20       ?Decode@UDP@@SA_NPAUUDP_Packet@@PAUNetPacket@@@Z 00103320 f   udp.obj
- 0001:00002f90       ?Receive@UDP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 00103390 f   udp.obj
- 0001:00003040       ?Send@UDP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00103440 f   udp.obj
- 0001:00003050       ??0UdpSocket@@QAE@G@Z      00103450 f   udpsocket.obj
- 0001:00003070       ??1UdpSocket@@QAE@XZ       00103470 f   udpsocket.obj
- 0001:00003080       ?Receive@UdpSocket@@QAEHAAPAE@Z 00103480 f   udpsocket.obj
- 0001:00003090       ?Send@UdpSocket@@QAEXUIPv4Address@@PAEG@Z 00103490 f   udpsocket.obj
- 0001:000030d0       ??_H@YGXPAXIIP6EPAX0@Z@Z   001034d0 f i OS.obj
- 0001:00003100       ?Main@OS@@SAXXZ            00103500 f   OS.obj
- 0001:00003130       ?ThrowException@OS@@SAXPAD0@Z 00103530 f   OS.obj
- 0001:00003140       ?Add@?$List@VString@std@@@std@@QAEXVString@2@@Z 00103540 f i string.obj
- 0001:00003240       ?Split@String@std@@QAEXAAV?$List@VString@std@@@2@D@Z 00103640 f   string.obj
- 0001:00003380       ??0Window@gui@@QAE@XZ      00103780 f   Window.obj
- 0001:00003420       ?AddControl@Window@gui@@QAEXPAVControl@2@@Z 00103820 f   Window.obj
- 0001:00003460       ?Paint@Window@gui@@QAEXXZ  00103860 f   Window.obj
- 0001:00003520       ?PaintControls@Window@gui@@AAEXXZ 00103920 f   Window.obj
- 0001:00003540       ?PaintWindow@Window@gui@@AAEXXZ 00103940 f   Window.obj
- 0001:00003600       ?SetActive@Window@gui@@QAEX_N@Z 00103a00 f   Window.obj
- 0001:000036d0       ?memcmp@@YAHPBX0I@Z        00103ad0 f   Lib:string.obj
- 0001:00003710       ?memcpy@@YAPAXPAX0I@Z      00103b10 f   Lib:string.obj
- 0001:00003740       ?memcpy_fast_128@@YAXPAX0I@Z 00103b40 f   Lib:string.obj
- 0001:000037c0       ?memset16@@YAPAXPAXGI@Z    00103bc0 f   Lib:string.obj
- 0001:000037e0       ?memset32@@YAPAXPAXII@Z    00103be0 f   Lib:string.obj
- 0001:00003800       ?memset_fast_128@@YAPAXPAXII@Z 00103c00 f   Lib:string.obj
- 0001:00003880       ?strcat@@YAPADPADPBD@Z     00103c80 f   Lib:string.obj
- 0001:000038b0       ?strcmp@@YAIPBD0@Z         00103cb0 f   Lib:string.obj
- 0001:00003900       ?strcpy@@YAPADPADPBD@Z     00103d00 f   Lib:string.obj
- 0001:00003920       ?strlen@@YAIPBD@Z          00103d20 f   Lib:string.obj
- 0001:00003940       ?strncat@@YAPADPADPBDH@Z   00103d40 f   Lib:string.obj
- 0001:00003980       _memset                    00103d80 f   Lib:string.obj
- 0001:000039a0       ?acos@@YAMM@Z              00103da0 f   Lib:math.obj
- 0001:00003a00       ?asin@@YAMM@Z              00103e00 f   Lib:math.obj
- 0001:00003a60       ?atan2@@YAMMM@Z            00103e60 f   Lib:math.obj
- 0001:00003b60       ?atan@@YAMM@Z              00103f60 f   Lib:math.obj
- 0001:00003b90       ?ceil@@YAHM@Z              00103f90 f   Lib:math.obj
- 0001:00003bb0       ?cos@@YAMM@Z               00103fb0 f   Lib:math.obj
- 0001:00003bd0       ?fact@@YAMM@Z              00103fd0 f   Lib:math.obj
- 0001:00003c10       ?floor@@YAHM@Z             00104010 f   Lib:math.obj
- 0001:00003c30       ?log10@@YAMM@Z             00104030 f   Lib:math.obj
- 0001:00003c50       ?log2@@YAMM@Z              00104050 f   Lib:math.obj
- 0001:00003c70       ?log@@YAMM@Z               00104070 f   Lib:math.obj
- 0001:00003c90       ?logn@@YAMMM@Z             00104090 f   Lib:math.obj
- 0001:00003cc0       ?pow@@YAMMH@Z              001040c0 f   Lib:math.obj
- 0001:00003da0       ?rand@@YAIXZ               001041a0 f   Lib:math.obj
- 0001:00003dc0       ?round@@YAHM@Z             001041c0 f   Lib:math.obj
- 0001:00003de0       ?sin@@YAMM@Z               001041e0 f   Lib:math.obj
- 0001:00003e00       ?sqrt@@YAMM@Z              00104200 f   Lib:math.obj
- 0001:00003e20       ?srand@@YAXI@Z             00104220 f   Lib:math.obj
- 0001:00003e30       ?tan@@YAMM@Z               00104230 f   Lib:math.obj
- 0001:00003e60       ??2@YAPAXI@Z               00104260 f   KERNEL:kernel.obj
- 0001:00003eb0       ??3@YAXPAX@Z               001042b0 f   KERNEL:kernel.obj
- 0001:00003ed0       ??_U@YAPAXI@Z              001042d0 f   KERNEL:kernel.obj
- 0001:00003f60       ??_V@YAXPAX@Z              00104360 f   KERNEL:kernel.obj
- 0001:00003f70       ?Init@Kernel@@SAXPAUMULTIBOOT_INFO@@@Z 00104370 f   KERNEL:kernel.obj
- 0001:00004010       ?CreateThread@Task@@SAPAVThread@@PAX@Z 00104410 f   KERNEL:task.obj
- 0001:000040b0       ?Idle@Task@@CAXXZ          001044b0 f   KERNEL:task.obj
- 0001:000040c0       ?Init@Task@@SAIXZ          001044c0 f   KERNEL:task.obj
- 0001:000041c0       ?InsertThread@Task@@SAXPAVThread@@@Z 001045c0 f   KERNEL:task.obj
- 0001:00004200       ?Schedule@Task@@CAXXZ      00104600 f   KERNEL:task.obj
- 0001:00004220       ?StartThreading@Task@@SAXXZ 00104620 f   KERNEL:task.obj
- 0001:00004260       ?Task_ISR@Task@@CAXXZ      00104660 f   KERNEL:task.obj
- 0001:000042a0       ?BitBlt@Drawing@@SAXUGC@@HHHH0HH_N@Z 001046a0 f   KERNEL:drawing.obj
- 0001:00004850       ?Clear@Drawing@@SAXIUGC@@@Z 00104c50 f   KERNEL:drawing.obj
- 0001:00004880       ?Draw@Drawing@@SAXUGC@@@Z  00104c80 f   KERNEL:drawing.obj
- 0001:000048b0       ?DrawBezierCube@Drawing@@SAXPAUPoint@@HUGC@@@Z 00104cb0 f   KERNEL:drawing.obj
- 0001:00004b00       ?DrawBezierQuad@Drawing@@SAXPAUPoint@@HUGC@@@Z 00104f00 f   KERNEL:drawing.obj
- 0001:00004ca0       ?DrawImage@Drawing@@SAXHHHHVBMP@@UGC@@@Z 001050a0 f   KERNEL:drawing.obj
- 0001:00004cb0       ?DrawLine@Drawing@@SAXHHHHIUGC@@@Z 001050b0 f   KERNEL:drawing.obj
- 0001:00004dd0       ?DrawRect@Drawing@@SAXHHHHHIUGC@@@Z 001051d0 f   KERNEL:drawing.obj
- 0001:00004ea0       ?DrawText@Drawing@@SAXHHPADIIUGC@@@Z 001052a0 f   KERNEL:drawing.obj
- 0001:00004fa0       ?DrawText@Drawing@@SAXHHPADIUGC@@@Z 001053a0 f   KERNEL:drawing.obj
- 0001:00005070       ?FillRect@Drawing@@SAXHHHHIUGC@@@Z 00105470 f   KERNEL:drawing.obj
- 0001:00005110       ?Init@Drawing@@SAIHHPAI@Z  00105510 f   KERNEL:drawing.obj
- 0001:00005180       ?SetPixel@Drawing@@SAXHHIUGC@@@Z 00105580 f   KERNEL:drawing.obj
- 0001:000051b0       ?Clear@Debug@@SAXI@Z       001055b0 f   KERNEL:debug.obj
- 0001:000051d0       ?Dump@Debug@@SAXPAXH_N@Z   001055d0 f   KERNEL:debug.obj
- 0001:00005330       ?Print@Debug@@SAXPADZZ     00105730 f   KERNEL:debug.obj
- 0001:00005500       ?Putc@Debug@@SAXD_N@Z      00105900 f   KERNEL:debug.obj
- 0001:00005690       ?Init@Mouse@@SAIIIM@Z      00105a90 f   KERNEL:mouse.obj
- 0001:00005980       ?MouseRead@Mouse@@CAEXZ    00105d80 f   KERNEL:mouse.obj
- 0001:000059b0       ?MouseWait@Mouse@@CAXE@Z   00105db0 f   KERNEL:mouse.obj
- 0001:000059f0       ?MouseWrite@Mouse@@CAXE@Z  00105df0 f   KERNEL:mouse.obj
- 0001:00005a50       ?Mouse_ISR@Mouse@@CAXXZ    00105e50 f   KERNEL:mouse.obj
- 0001:00005b90       ?Init@PIT@@SAIXZ           00105f90 f   KERNEL:pit.obj
- 0001:00005bd0       ?PIT_ISR@PIT@@CAXXZ        00105fd0 f   KERNEL:pit.obj
- 0001:00005be0       ?ReadData@PIT@@CAEE@Z      00105fe0 f   KERNEL:pit.obj
- 0001:00005c10       ?SendData@PIT@@CAXGE@Z     00106010 f   KERNEL:pit.obj
- 0001:00005c50       ?Sleep@PIT@@SAXI@Z         00106050 f   KERNEL:pit.obj
- 0001:00005c70       ?Start@PIT@@CAIXZ          00106070 f   KERNEL:pit.obj
- 0001:00005cb0       ?ATA_Interrupt@ATA@@CAXXZ  001060b0 f   KERNEL:ata.obj
- 0001:00005cc0       ?Init@ATA@@SAIXZ           001060c0 f   KERNEL:ata.obj
- 0001:00005cf0       ?Read@ATA@@SAIHHHAAPADH@Z  001060f0 f   KERNEL:ata.obj
- 0001:00005f00       ?ReadSector@ATA@@CAIHHHPAD@Z 00106300 f   KERNEL:ata.obj
- 0001:000060b0       ?DecodeAscii@Keyboard@@CAXAAUKEY_PACKET@@@Z 001064b0 f   KERNEL:keyboard.obj
- 0001:00006380       ?DiscardLastKey@Keyboard@@SAXXZ 00106780 f   KERNEL:keyboard.obj
- 0001:00006390       ?GetKeyDown@Keyboard@@SA_NW4KEYCODE@@@Z 00106790 f   KERNEL:keyboard.obj
- 0001:000063a0       ?GetLastKey@Keyboard@@SA?AUKEY_PACKET@@XZ 001067a0 f   KERNEL:keyboard.obj
- 0001:000063c0       ?Init@Keyboard@@SAIXZ      001067c0 f   KERNEL:keyboard.obj
- 0001:000063e0       ?Keyboard_ISR@Keyboard@@CAXXZ 001067e0 f   KERNEL:keyboard.obj
- 0001:000065d0       ?Checksum@KNet@@SAGPAXH@Z  001069d0 f   KERNEL:net.obj
- 0001:00006650       ?ChecksumDouble@KNet@@SAGPAXH0H@Z 00106a50 f   KERNEL:net.obj
- 0001:00006730       ?Init@KNet@@SAIXZ          00106b30 f   KERNEL:net.obj
- 0001:00006790       ?PrintIP@KNet@@SAXPADUIPv4Address@@@Z 00106b90 f   KERNEL:net.obj
- 0001:000067d0       ?PrintMac@KNet@@SAXPADUMacAddress@@@Z 00106bd0 f   KERNEL:net.obj
- 0001:00006820       ?htonl@@YAII@Z             00106c20 f   KERNEL:net.obj
- 0001:00006830       ?htons@@YAGG@Z             00106c30 f   KERNEL:net.obj
- 0001:00006850       ?ntohl@@YAII@Z             00106c50 f   KERNEL:net.obj
- 0001:00006860       ?ntohs@@YAGG@Z             00106c60 f   KERNEL:net.obj
- 0001:00006880       ?KernelPanic@Panic@@SAXPAD0@Z 00106c80 f   KERNEL:panic.obj
- 0001:00006910       ?AllocBlocks@Memory@@SAPAXI@Z 00106d10 f   KERNEL:memory.obj
- 0001:00006a40       ?DeInitRegion@Memory@@SAXPAXI@Z 00106e40 f   KERNEL:memory.obj
- 0001:00006a90       ?FirstFree@Memory@@CAIXZ   00106e90 f   KERNEL:memory.obj
- 0001:00006ad0       ?FirstFreeNum@Memory@@CAII@Z 00106ed0 f   KERNEL:memory.obj
- 0001:00006bc0       ?FreeBlocks@Memory@@SAXPAXI@Z 00106fc0 f   KERNEL:memory.obj
- 0001:00006c20       ?Init@Memory@@SAIIPAI@Z    00107020 f   KERNEL:memory.obj
- 0001:00006ca0       ?InitRegion@Memory@@SAXPAXI@Z 001070a0 f   KERNEL:memory.obj
- 0001:00006cf0       ?EnableFPU@CPU@@CAIXZ      001070f0 f   KERNEL:cpu.obj
- 0001:00006d10       ?EnableSSE@CPU@@CAIXZ      00107110 f   KERNEL:cpu.obj
- 0001:00006d40       ?Init@CPU@@SAIXZ           00107140 f   KERNEL:cpu.obj
- 0001:00006d70       ?Init@VBE@@SAIPAUVBE_MODE_INFO@@@Z 00107170 f   KERNEL:vbe.obj
- 0001:00006de0       ?Init@HAL@@SAIXZ           001071e0 f   KERNEL:hal.obj
- 0001:00006e10       ?inb@@YAEG@Z               00107210 f   KERNEL:hal.obj
- 0001:00006e30       ?inl@@YAIG@Z               00107230 f   KERNEL:hal.obj
- 0001:00006e50       ?inw@@YAGG@Z               00107250 f   KERNEL:hal.obj
- 0001:00006e70       ?outb@@YAXGE@Z             00107270 f   KERNEL:hal.obj
- 0001:00006e80       ?outl@@YAXGI@Z             00107280 f   KERNEL:hal.obj
- 0001:00006e90       ?outw@@YAXGG@Z             00107290 f   KERNEL:hal.obj
- 0001:00006ea0       ?DefaultISR@Exceptions@@SAXXZ 001072a0 f   KERNEL:exceptions.obj
- 0001:00006ec0       ?ISR0@Exceptions@@CAXXZ    001072c0 f   KERNEL:exceptions.obj
- 0001:00006ee0       ?ISR10@Exceptions@@CAXXZ   001072e0 f   KERNEL:exceptions.obj
- 0001:00006f00       ?ISR11@Exceptions@@CAXXZ   00107300 f   KERNEL:exceptions.obj
- 0001:00006f20       ?ISR12@Exceptions@@CAXXZ   00107320 f   KERNEL:exceptions.obj
- 0001:00006f40       ?ISR13@Exceptions@@CAXXZ   00107340 f   KERNEL:exceptions.obj
- 0001:00006f60       ?ISR14@Exceptions@@CAXXZ   00107360 f   KERNEL:exceptions.obj
- 0001:00006f80       ?ISR15@Exceptions@@CAXXZ   00107380 f   KERNEL:exceptions.obj
- 0001:00006fa0       ?ISR16@Exceptions@@CAXXZ   001073a0 f   KERNEL:exceptions.obj
- 0001:00006fc0       ?ISR17@Exceptions@@CAXXZ   001073c0 f   KERNEL:exceptions.obj
- 0001:00006fe0       ?ISR18@Exceptions@@CAXXZ   001073e0 f   KERNEL:exceptions.obj
- 0001:00007000       ?ISR19@Exceptions@@CAXXZ   00107400 f   KERNEL:exceptions.obj
- 0001:00007020       ?ISR1@Exceptions@@CAXXZ    00107420 f   KERNEL:exceptions.obj
- 0001:00007040       ?ISR2@Exceptions@@CAXXZ    00107440 f   KERNEL:exceptions.obj
- 0001:00007060       ?ISR3@Exceptions@@CAXXZ    00107460 f   KERNEL:exceptions.obj
- 0001:00007080       ?ISR4@Exceptions@@CAXXZ    00107480 f   KERNEL:exceptions.obj
- 0001:000070a0       ?ISR5@Exceptions@@CAXXZ    001074a0 f   KERNEL:exceptions.obj
- 0001:000070c0       ?ISR6@Exceptions@@CAXIII@Z 001074c0 f   KERNEL:exceptions.obj
- 0001:00007140       ?ISR7@Exceptions@@CAXXZ    00107540 f   KERNEL:exceptions.obj
- 0001:00007160       ?ISR8@Exceptions@@CAXXZ    00107560 f   KERNEL:exceptions.obj
- 0001:00007180       ?ISR9@Exceptions@@CAXXZ    00107580 f   KERNEL:exceptions.obj
- 0001:000071a0       ?Init@Exceptions@@SAIXZ    001075a0 f   KERNEL:exceptions.obj
- 0001:000072a0       ?Create@PCI@@CAPAUPCI_DEVICE@@EEE@Z 001076a0 f   KERNEL:pci.obj
- 0001:00007360       ?GetDevice@PCI@@SAPAUPCI_DEVICE@@HHH@Z 00107760 f   KERNEL:pci.obj
- 0001:00007510       ?Init@PCI@@SAIXZ           00107910 f   KERNEL:pci.obj
- 0001:00007520       ?Read@PCI@@CAIEEEEE@Z      00107920 f   KERNEL:pci.obj
- 0001:00007590       ?printdev@@YAXPAUPCI_DEVICE@@@Z 00107990 f   KERNEL:pci.obj
- 0001:000075d0       ?EmptyISR@IDT@@SAXXZ       001079d0 f   KERNEL:idt.obj
- 0001:000075e0       ?GetIR@IDT@@SAPAUIDT_DESCRIPTOR@@I@Z 001079e0 f   KERNEL:idt.obj
- 0001:000075f0       ?GetVect@IDT@@SAP6AXXZH@Z  001079f0 f   KERNEL:idt.obj
- 0001:00007620       ?Init@IDT@@SAIXZ           00107a20 f   KERNEL:idt.obj
- 0001:00007690       ?SetISR@IDT@@SAIIP6AXXZ@Z  00107a90 f   KERNEL:idt.obj
- 0001:000076d0       ?Init@PIC@@SAIXZ           00107ad0 f   KERNEL:pic.obj
- 0001:00007730       ?InterruptDone@PIC@@SAXG@Z 00107b30 f   KERNEL:pic.obj
- 0001:00007760       ?ReadData@PIC@@CAEE@Z      00107b60 f   KERNEL:pic.obj
- 0001:00007790       ?SendCommand@PIC@@CAXEE@Z  00107b90 f   KERNEL:pic.obj
- 0001:000077c0       ?SendData@PIC@@CAXGE@Z     00107bc0 f   KERNEL:pic.obj
- 0001:000077e9       ??1type_info@@UAE@XZ       00107be9 f   LIBCMT:std_type_info_static.obj
- 0001:000077f0       ??_Etype_info@@UAEPAXI@Z   00107bf0 f i LIBCMT:std_type_info_static.obj
- 0001:000077f0       ??_Gtype_info@@UAEPAXI@Z   00107bf0 f i LIBCMT:std_type_info_static.obj
- 0001:00007813       ___isa_available_init      00107c13 f   LIBCMT:_cpu_disp_.obj
- 0001:000079b2       ??3@YAXPAXI@Z              00107db2 f   LIBCMT:delete_scalar_size.obj
- 0001:000079c0       _IsProcessorFeaturePresent@4 00107dc0 f   kernel32:KERNEL32.dll
- 0001:000079d0       ?atof@@YAMPBD@Z            00107dd0 f   Lib:stdio.obj
- 0001:00007a70       ?atoi@@YAHPBD@Z            00107e70 f   Lib:stdio.obj
- 0001:00007a90       ?ftoa@@YAPADMIPAD@Z        00107e90 f   Lib:stdio.obj
- 0001:00007bb0       ?itoa@@YAPADHIPAD_N@Z      00107fb0 f   Lib:stdio.obj
- 0001:00007c40       ?strtol@@YAJPBDPAPADH@Z    00108040 f   Lib:stdio.obj
- 0001:00007d90       ?vprintf@@YAPADPADPBDZZ    00108190 f   Lib:stdio.obj
- 0001:00007db0       ?vsprintf@@YAPADPADPBDPAE@Z 001081b0 f   Lib:stdio.obj
- 0002:00000000       __imp__IsProcessorFeaturePresent@4 00108600     kernel32:KERNEL32.dll
- 0002:00000004       \177KERNEL32_NULL_THUNK_DATA 00108604     kernel32:KERNEL32.dll
- 0002:00000014       ??_7Control@gui@@6B@       00108614     Control.obj
- 0002:0000001c       ??_7Label@gui@@6B@         0010861c     Control.obj
- 0002:00000020       ??_C@_0BC@HJLBEKHE@Delta?3?5?$CFi?7FPS?3?5?$CFi?$AA@ 00108620     GUI.obj
- 0002:00000034       ??_C@_06JJGECBPI@?$CFs?5?$CFi?6?$AA@ 00108634     iso.obj
- 0002:0000003c       ??_C@_03OFAPEBGM@?$CFs?6?$AA@ 0010863c     iso.obj
- 0002:00000040       ??_C@_03PELOGHMK@?$CFi?6?$AA@ 00108640     Mandelbrot.obj
- 0002:00000044       ??_C@_06CMGOICJA@Start?6?$AA@ 00108644     Mandelbrot.obj
- 0002:0000004c       ??_C@_0BD@OAOOOKEK@Ticks?3?5?$CFi?7FPS?3?5?$CFi?6?$AA@ 0010864c     Mandelbrot.obj
- 0002:00000060       ??_C@_09JHEKFLJE@Zoom?3?5?$CFf?6?$AA@ 00108660     Mandelbrot.obj
- 0002:0000006c       __real@1adaca00            0010866c     Mandelbrot.obj
- 0002:00000070       __real@3ff0000000000000    00108670     Mandelbrot.obj
- 0002:00000078       __real@4010000000000000    00108678     Mandelbrot.obj
- 0002:00000080       __real@4088000000000000    00108680     Mandelbrot.obj
- 0002:00000088       __real@40f0000000000000    00108688     Mandelbrot.obj
- 0002:00000090       __real@437f0000            00108690     Mandelbrot.obj
- 0002:00000094       __real@447a0000            00108694     Mandelbrot.obj
- 0002:00000098       ??_C@_0BJ@FHJFEPME@arp?3?5sending?5request?5to?5?$AA@ 00108698     arp.obj
- 0002:000000b4       ??_C@_0BH@NFEPIOCG@arp?3?5sending?5reply?5to?5?$AA@ 001086b4     arp.obj
- 0002:000000cc       ??_C@_0BB@NPEPEJMJ@ARP?5added?5entry?5?$AA@ 001086cc     arp.obj
- 0002:000000e0       ??_C@_0O@MBFFJLEF@DHCP?5RECEIVE?6?$AA@ 001086e0     dhcp.obj
- 0002:000000f0       ??_C@_0O@IJAKJLNJ@Received?5DNS?6?$AA@ 001086f0     dns.obj
- 0002:00000100       ??_C@_0BF@DPFFLPFA@DNS?5added?5entry?3?5?$CFs?5?$AA@ 00108700     dns.obj
- 0002:00000115       ??_C@_00CNPNBAHC@?$AA@     00108715     dns.obj
- 0002:00000118       ??_C@_0M@KNKKGHNO@PARSED?5IP?3?5?$AA@ 00108718     http.obj
- 0002:00000124       ??_C@_0BO@OHMKJDEI@Flags?3?5?$CFux?7ACK?3?5?$CFui?7SEQ?3?5?$CFui?6?$AA@ 00108724     tcpsession.obj
- 0002:00000144       ??_C@_0L@EIILFCEB@Connected?6?$AA@ 00108744     tcpsession.obj
- 0002:00000150       ??_C@_07IPMAGINO@Closed?6?$AA@ 00108750     tcpsession.obj
- 0002:00000158       ??_C@_0BA@FHBAHEGN@Timeout?5closed?6?$AA@ 00108758     tcpsession.obj
- 0002:00000168       ??_C@_08MJHFHPFP@TextEdit?$AA@ 00108768     TextEdit.obj
- 0002:00000174       ??_C@_05COLMCDPH@Hello?$AA@ 00108774     TextEdit.obj
- 0002:0000017c       __real@00000000            0010877c     Lib:math.obj
- 0002:00000180       __real@3e8f5c29            00108780     Lib:math.obj
- 0002:00000184       __real@3f800000            00108784     Lib:math.obj
- 0002:00000188       __real@3fe0000000000000    00108788     Lib:math.obj
- 0002:00000190       __real@3ff921fb54442eea    00108790     Lib:math.obj
- 0002:00000198       __real@400921fb54442eea    00108798     Lib:math.obj
- 0002:000001a0       __real@40490fdb            001087a0     Lib:math.obj
- 0002:000001a4       __real@bfc90fdb            001087a4     Lib:math.obj
- 0002:000001b0       __xmm@7fffffff7fffffff7fffffff7fffffff 001087b0     Lib:math.obj
- 0002:000001c0       __real@39800000            001087c0     KERNEL:kernel.obj
- 0002:000001d0       __xmm@41f00000000000000000000000000000 001087d0     KERNEL:kernel.obj
- 0002:000001e0       __real@3c000000            001087e0     KERNEL:drawing.obj
- 0002:000001f0       __xmm@000000ff000000ff000000ff000000ff 001087f0     KERNEL:drawing.obj
- 0002:00000200       __xmm@00ff00ff00ff00ff00ff00ff00ff00ff 00108800     KERNEL:drawing.obj
- 0002:00000210       __xmm@80808081808080818080808180808081 00108810     KERNEL:drawing.obj
- 0002:00000220       ??_C@_04PFOHOKJK@?5?5?5?5?$AA@ 00108820     KERNEL:debug.obj
- 0002:00000228       ??_C@_01CLKCMJKC@?5?$AA@   00108828     KERNEL:debug.obj
- 0002:0000022c       ??_C@_03IKGEINEE@?$CFs?5?$AA@ 0010882c     KERNEL:debug.obj
- 0002:000003a0       ??_C@_0P@JJOCPBNH@?$CFs?$CFi?4?$CFi?4?$CFi?4?$CFi?6?$AA@ 001089a0     KERNEL:net.obj
- 0002:000003b0       ??_C@_0BF@MCJEFIGG@?$CFs?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?6?$AA@ 001089b0     KERNEL:net.obj
- 0002:000003c8       ??_C@_0BK@KHJFGGEJ@Default?5interrupt?5handler?$AA@ 001089c8     KERNEL:exceptions.obj
- 0002:000003e4       ??_C@_0BB@CAGHCAFL@Division?5by?5zero?$AA@ 001089e4     KERNEL:exceptions.obj
- 0002:000003f8       ??_C@_05GCIPIGEI@Debug?$AA@ 001089f8     KERNEL:exceptions.obj
- 0002:00000400       ??_C@_0BH@DLMGGJOP@Non?9Maskable?5interrupt?$AA@ 00108a00     KERNEL:exceptions.obj
- 0002:00000418       ??_C@_0L@DEJAMIEF@Breakpoint?$AA@ 00108a18     KERNEL:exceptions.obj
- 0002:00000424       ??_C@_08KJPBNJGC@Overflow?$AA@ 00108a24     KERNEL:exceptions.obj
- 0002:00000430       ??_C@_0BF@KABNNNC@Bound?5range?5exceeded?$AA@ 00108a30     KERNEL:exceptions.obj
- 0002:00000448       ??_C@_0BJ@JILCCCBH@0x?$CFux?70x?$CFux?70x?$CFux?70x?$CFux?6?$AA@ 00108a48     KERNEL:exceptions.obj
- 0002:00000464       ??_C@_06NIEMCLMH@0x?$CFux?6?$AA@ 00108a64     KERNEL:exceptions.obj
- 0002:0000046c       ??_C@_0P@GJJPHHDN@Invalid?5opcode?$AA@ 00108a6c     KERNEL:exceptions.obj
- 0002:0000047c       ??_C@_0BF@COPPNEEP@Device?5not?5available?$AA@ 00108a7c     KERNEL:exceptions.obj
- 0002:00000494       ??_C@_0N@EMHPBCJE@Double?5fault?$AA@ 00108a94     KERNEL:exceptions.obj
- 0002:000004a4       ??_C@_0BM@FLNHCLJG@Coprocessor?5segment?5overrun?$AA@ 00108aa4     KERNEL:exceptions.obj
- 0002:000004c0       ??_C@_0M@OLMALBPG@Invalid?5TSS?$AA@ 00108ac0     KERNEL:exceptions.obj
- 0002:000004cc       ??_C@_0BE@FPPPAKKN@Segment?5not?5present?$AA@ 00108acc     KERNEL:exceptions.obj
- 0002:000004e0       ??_C@_0BE@OLMOIPB@Stack?9segment?5fault?$AA@ 00108ae0     KERNEL:exceptions.obj
- 0002:000004f4       ??_C@_0BJ@LDJBBLLL@General?5protection?5fault?$AA@ 00108af4     KERNEL:exceptions.obj
- 0002:00000510       ??_C@_0L@JBNHOLPF@Page?5fault?$AA@ 00108b10     KERNEL:exceptions.obj
- 0002:0000051c       ??_C@_0O@EBPJONIA@15?5?$CIReserved?$CJ?$AA@ 00108b1c     KERNEL:exceptions.obj
- 0002:0000052c       ??_C@_0BN@OAPCMCOK@x87?5Floating?9point?5exception?$AA@ 00108b2c     KERNEL:exceptions.obj
- 0002:0000054c       ??_C@_0BA@DMDLEFCI@Alignment?5check?$AA@ 00108b4c     KERNEL:exceptions.obj
- 0002:0000055c       ??_C@_0O@LHBOKIFP@Machine?5check?$AA@ 00108b5c     KERNEL:exceptions.obj
- 0002:0000056c       ??_C@_0BO@PAHIJHOM@SIMD?5floating?9point?5exception?$AA@ 00108b6c     KERNEL:exceptions.obj
- 0002:00000590       ??_C@_0EO@NIHBEAOP@Bus?3?5?$CFx?5Device?3?5?$CFx?5Function?3?5?$CFx?5@ 00108b90     KERNEL:pci.obj
- 0002:000005e4       ??_7type_info@@6B@         00108be4     LIBCMT:std_type_info_static.obj
- 0002:000005e8       ??_C@_03LHCJEHON@nan?$AA@  00108be8     Lib:stdio.obj
- 0002:000005ec       ??_C@_03OJHLLCGB@inf?$AA@  00108bec     Lib:stdio.obj
- 0002:000005f0       ??_C@_01GBGANLPD@0?$AA@    00108bf0     Lib:stdio.obj
- 0002:000005f8       __real@3f1a36e2eb1c432d    00108bf8     Lib:stdio.obj
- 0002:00000600       __real@41200000            00108c00     Lib:stdio.obj
- 0002:00000604       __real@bf800000            00108c04     Lib:stdio.obj
- 0002:00000610       __xmm@46454443424139383736353433323130 00108c10     Lib:stdio.obj
- 0002:00000674       ??_R4Control@gui@@6B@      00108c74     Control.obj
- 0002:00000688       ??_R3Control@gui@@8        00108c88     Control.obj
- 0002:00000698       ??_R2Control@gui@@8        00108c98     Control.obj
- 0002:000006a0       ??_R1A@?0A@EA@Control@gui@@8 00108ca0     Control.obj
- 0002:000006bc       ??_R4Label@gui@@6B@        00108cbc     Control.obj
- 0002:000006d0       ??_R3Label@gui@@8          00108cd0     Control.obj
- 0002:000006e0       ??_R2Label@gui@@8          00108ce0     Control.obj
- 0002:000006ec       ??_R1A@?0A@EA@Label@gui@@8 00108cec     Control.obj
- 0002:00000708       ??_R4type_info@@6B@        00108d08     LIBCMT:std_type_info_static.obj
- 0002:0000071c       ??_R3type_info@@8          00108d1c     LIBCMT:std_type_info_static.obj
- 0002:0000072c       ??_R2type_info@@8          00108d2c     LIBCMT:std_type_info_static.obj
- 0002:00000734       ??_R1A@?0A@EA@type_info@@8 00108d34     LIBCMT:std_type_info_static.obj
- 0002:000008b4       __IMPORT_DESCRIPTOR_KERNEL32 00108eb4     kernel32:KERNEL32.dll
- 0002:000008c8       __NULL_IMPORT_DESCRIPTOR   00108ec8     kernel32:KERNEL32.dll
- 0003:00000000       ?cursor_bitmap@gui@@3PAIA  00109000     GUI.obj
- 0003:000001c0       ?col_taskbar@gui@@3IA      001091c0     GUI.obj
- 0003:000001c4       ?col_desktop_bg@gui@@3IA   001091c4     GUI.obj
- 0003:000001c8       ?count@@3HA                001091c8     Mandelbrot.obj
- 0003:000001cc       ?col_background@gui@@3IA   001091cc     Window.obj
- 0003:000001d0       ?col_foreground@gui@@3IA   001091d0     Window.obj
- 0003:000011e0       ?color@Debug@@2IA          0010a1e0     KERNEL:debug.obj
- 0003:000011e4       __fltused                  0010a1e4     LIBCMT:fltused.obj
- 0003:000011e8       ___isa_enabled             0010a1e8     LIBCMT:_cpu_disp_.obj
- 0003:000011ec       ??_R0?AVControl@gui@@@8    0010a1ec     Control.obj
- 0003:00001208       ??_R0?AVLabel@gui@@@8      0010a208     Control.obj
- 0003:00001220       ??_R0?AVtype_info@@@8      0010a220     LIBCMT:std_type_info_static.obj
- 0003:00001240       ?_kernel_stack@@3PADA      0010a240     boot.obj
- 0003:000031e0       ?gc_background@gui@@3UGC@@A 0010c1e0     GUI.obj
- 0003:000031ec       ?gc_taskbar@gui@@3UGC@@A   0010c1ec     GUI.obj
- 0003:000031f8       ?gc_cursor@gui@@3UGC@@A    0010c1f8     GUI.obj
- 0003:00003204       ?window_count@gui@@3HA     0010c204     GUI.obj
- 0003:00003208       ?first_window@gui@@3PAVWindow@1@A 0010c208     GUI.obj
- 0003:0000320c       ?last_window@gui@@3PAVWindow@1@A 0010c20c     GUI.obj
- 0003:00003210       ?active_window@gui@@3PAVWindow@1@A 0010c210     GUI.obj
- 0003:00003214       ?cursor_x@gui@@3HA         0010c214     GUI.obj
- 0003:00003218       ?cursor_y@gui@@3HA         0010c218     GUI.obj
- 0003:0000321c       ?mouse_click_L@gui@@3_NA   0010c21c     GUI.obj
- 0003:0000321d       ?mouse_click_R@gui@@3_NA   0010c21d     GUI.obj
- 0003:0000321e       ?mouse_click_M@gui@@3_NA   0010c21e     GUI.obj
- 0003:0000321f       ?window_drag@gui@@3_NA     0010c21f     GUI.obj
- 0003:00003220       ?mouse_click_L_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c220     GUI.obj
- 0003:00003238       ?mouse_click_R_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c238     GUI.obj
- 0003:00003250       ?mouse_click_M_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c250     GUI.obj
- 0003:00003268       ?window_drag_info@gui@@3UWINDOW_DRAG_INFO@1@A 0010c268     GUI.obj
- 0003:00003270       ?desc@@3PAUISO_PRIMARYDESC@@A 0010c270     iso.obj
- 0003:00003274       ?root@@3PAUISO_DIRECTORY@@A 0010c274     iso.obj
- 0003:00003278       ?tz@@3UComplex@@A          0010c278     Mandelbrot.obj
- 0003:00003280       ?arp_cache@ARP@@0PAUARP_TABLE_ENTRY@@A 0010c280     arp.obj
- 0003:000033c0       ?dns_server@DNS@@2UIPv4Address@@A 0010c3c0     dns.obj
- 0003:000033c8       ?dns_cache@DNS@@0PAUDNS_TABLE_ENTRY@@A 0010c3c8     dns.obj
- 0003:000035c8       ?sessions@TCP@@2PAPAVTcpSession@@A 0010c5c8     tcp.obj
- 0003:00003648       ?mem_left@@3HA             0010c648     KERNEL:kernel.obj
- 0003:0000364c       ?mem_ptr@@3PAEA            0010c64c     KERNEL:kernel.obj
- 0003:00003650       ?idle_thread@@3PAVThread@@A 0010c650     KERNEL:task.obj
- 0003:00003654       ?current_thread@@3PAVThread@@A 0010c654     KERNEL:task.obj
- 0003:00003658       ?first_thread@@3PAVThread@@A 0010c658     KERNEL:task.obj
- 0003:0000365c       ?last_thread@@3PAVThread@@A 0010c65c     KERNEL:task.obj
- 0003:00003660       ?pit_isr@@3PAXA            0010c660     KERNEL:task.obj
- 0003:00003664       ?gc@Drawing@@2UGC@@A       0010c664     KERNEL:drawing.obj
- 0003:00003670       ?gc_direct@Drawing@@2UGC@@A 0010c670     KERNEL:drawing.obj
- 0003:0000367c       ?screenBuffer@@3PAIA       0010c67c     KERNEL:drawing.obj
- 0003:00003680       ___isa_available_default   0010c680     KERNEL:drawing.obj
- 0003:00003684       ?x@Debug@@2HA              0010c684     KERNEL:debug.obj
- 0003:00003688       ?y@Debug@@2HA              0010c688     KERNEL:debug.obj
- 0003:0000368c       ?bcolor@Debug@@2IA         0010c68c     KERNEL:debug.obj
- 0003:00003690       ?x@Mouse@@2HA              0010c690     KERNEL:mouse.obj
- 0003:00003694       ?y@Mouse@@2HA              0010c694     KERNEL:mouse.obj
- 0003:00003698       ?sensitivity@Mouse@@2MA    0010c698     KERNEL:mouse.obj
- 0003:0000369c       ?mouse_L@Mouse@@2_NA       0010c69c     KERNEL:mouse.obj
- 0003:0000369d       ?mouse_R@Mouse@@2_NA       0010c69d     KERNEL:mouse.obj
- 0003:0000369e       ?mouse_M@Mouse@@2_NA       0010c69e     KERNEL:mouse.obj
- 0003:0000369f       ?mouse_cycle@Mouse@@0EA    0010c69f     KERNEL:mouse.obj
- 0003:000036a0       ?scroll_x@Mouse@@2HA       0010c6a0     KERNEL:mouse.obj
- 0003:000036a4       ?scroll_y@Mouse@@2HA       0010c6a4     KERNEL:mouse.obj
- 0003:000036a8       ?w@Mouse@@0IA              0010c6a8     KERNEL:mouse.obj
- 0003:000036ac       ?h@Mouse@@0IA              0010c6ac     KERNEL:mouse.obj
- 0003:000036b0       ?mouse_byte@Mouse@@0PACA   0010c6b0     KERNEL:mouse.obj
- 0003:000036b4       ?initialized@Mouse@@0_NA   0010c6b4     KERNEL:mouse.obj
- 0003:000036b8       ?ticks@PIT@@2IA            0010c6b8     KERNEL:pit.obj
- 0003:000036c0       ?ctrl@Keyboard@@2_NA       0010c6c0     KERNEL:keyboard.obj
- 0003:000036c1       ?shift@Keyboard@@2_NA      0010c6c1     KERNEL:keyboard.obj
- 0003:000036c2       ?alt@Keyboard@@2_NA        0010c6c2     KERNEL:keyboard.obj
- 0003:000036c3       ?caps@Keyboard@@2_NA       0010c6c3     KERNEL:keyboard.obj
- 0003:000036c4       ?num@Keyboard@@2_NA        0010c6c4     KERNEL:keyboard.obj
- 0003:000036c5       ?scroll@Keyboard@@2_NA     0010c6c5     KERNEL:keyboard.obj
- 0003:000036c6       ?extended@@3_NA            0010c6c6     KERNEL:keyboard.obj
- 0003:000036c7       ?scancode@@3EA             0010c6c7     KERNEL:keyboard.obj
- 0003:000036c8       ?keystates@@3PA_NA         0010c6c8     KERNEL:keyboard.obj
- 0003:000037c7       ?scan@@3EA                 0010c7c7     KERNEL:keyboard.obj
- 0003:000037c8       ?last_key@@3UKEY_PACKET@@A 0010c7c8     KERNEL:keyboard.obj
- 0003:000037d4       ?pressed@@3_NA             0010c7d4     KERNEL:keyboard.obj
- 0003:000037d8       ?key@@3W4KEYCODE@@A        0010c7d8     KERNEL:keyboard.obj
- 0003:000037dc       ?intf@KNet@@2PAVNetInterface@@A 0010c7dc     KERNEL:net.obj
- 0003:000037e0       ?GatewayIPv4@KNet@@2UIPv4Address@@A 0010c7e0     KERNEL:net.obj
- 0003:000037e4       ?GatewayMAC@KNet@@2UMacAddress@@A 0010c7e4     KERNEL:net.obj
- 0003:000037ec       ?BroadcastMAC@KNet@@2UMacAddress@@A 0010c7ec     KERNEL:net.obj
- 0003:000037f4       ?BroadcastIPv4@KNet@@2UIPv4Address@@A 0010c7f4     KERNEL:net.obj
- 0003:000037f8       ?NullMAC@KNet@@2UMacAddress@@A 0010c7f8     KERNEL:net.obj
- 0003:00003800       ?NullIPv4@KNet@@2UIPv4Address@@A 0010c800     KERNEL:net.obj
- 0003:00003804       ?num_blocks@Memory@@2IA    0010c804     KERNEL:memory.obj
- 0003:00003808       ?num_free@Memory@@2IA      0010c808     KERNEL:memory.obj
- 0003:0000380c       ?mem_size@Memory@@2IA      0010c80c     KERNEL:memory.obj
- 0003:00003810       ?mem_map@Memory@@0PAIA     0010c810     KERNEL:memory.obj
- 0003:00003818       ?mode@VBE@@2UVBE_MODE_INFO@@A 0010c818     KERNEL:vbe.obj
- 0003:00003918       ?mem_base@@3PAIA           0010c918     KERNEL:vbe.obj
- 0003:0000391c       ?mem_max@@3PAIA            0010c91c     KERNEL:vbe.obj
- 0003:00003920       ?mem_size@@3IA             0010c920     KERNEL:vbe.obj
- 0003:00003924       ?bytes_per_pixel@@3IA      0010c924     KERNEL:vbe.obj
- 0003:00003928       ?pixel_count@@3IA          0010c928     KERNEL:vbe.obj
- 0003:00003930       ?idt@IDT@@0PAUIDT_DESCRIPTOR@@A 0010c930     KERNEL:idt.obj
- 0003:00004130       ?idt_reg@IDT@@0UIDT_REG@@A 0010d130     KERNEL:idt.obj
- 0003:00004138       ___isa_available           0010d138     LIBCMT:_cpu_disp_.obj
- 0003:0000413c       ___favor                   0010d13c     LIBCMT:_cpu_disp_.obj
+ 0001:000000d0       ?Contains@Rect@@QAE_NHH@Z  001004d0 f i GUI.obj
+ 0001:00000110       ?CreateWindow@WindowManager@gui@@SAPAVWindow@2@PAD@Z 00100510 f   GUI.obj
+ 0001:00000190       ?GetWindowAtCursor@WindowManager@gui@@CAPAVWindow@2@XZ 00100590 f   GUI.obj
+ 0001:000001e0       ?HandleMouseInput@WindowManager@gui@@CAXXZ 001005e0 f   GUI.obj
+ 0001:000003d0       ?Init@WindowManager@gui@@SAIXZ 001007d0 f   GUI.obj
+ 0001:00000490       ?PaintBackground@WindowManager@gui@@CAXXZ 00100890 f   GUI.obj
+ 0001:00000520       ?PaintCursor@WindowManager@gui@@CAXXZ 00100920 f   GUI.obj
+ 0001:000005d0       ?PaintTaskbar@WindowManager@gui@@CAXXZ 001009d0 f   GUI.obj
+ 0001:00000660       ?PaintWindows@WindowManager@gui@@CAXXZ 00100a60 f   GUI.obj
+ 0001:000006d0       ?SetFocusedWindow@WindowManager@gui@@CAXPAVWindow@2@@Z 00100ad0 f   GUI.obj
+ 0001:00000780       ?Start@WindowManager@gui@@SAXXZ 00100b80 f   GUI.obj
+ 0001:000007a0       ?UpdateLoop@WindowManager@gui@@CAXXZ 00100ba0 f   GUI.obj
+ 0001:00000c00       ?FindFile@ISO_FS@@SAPAUISO_DIRECTORY@@PAD@Z 00101000 f   iso.obj
+ 0001:00000cd0       ?Init@ISO_FS@@SAIXZ        001010d0 f   iso.obj
+ 0001:00000d40       ?ListFiles@ISO_FS@@SAHPAD@Z 00101140 f   iso.obj
+ 0001:00000de0       ?ReadFile@ISO_FS@@SAIPADAAPAD@Z 001011e0 f   iso.obj
+ 0001:00000ed0       ?ReadFile@ISO_FS@@SAIPAUISO_DIRECTORY@@AAPAD@Z 001012d0 f   iso.obj
+ 0001:00000f00       ?Create@Mandelbrot@@SAXHH@Z 00101300 f   Mandelbrot.obj
+ 0001:00001320       ?stuff@@YAXXZ              00101720 f   Mandelbrot.obj
+ 0001:000013a0       ?AddEntry@ARP@@SAXUMacAddress@@UIPv4Address@@@Z 001017a0 f   arp.obj
+ 0001:00001430       ?Decode@ARP@@SA_NPAUARP_Header@@PAUNetPacket@@@Z 00101830 f   arp.obj
+ 0001:000014a0       ?Init@ARP@@SAIXZ           001018a0 f   arp.obj
+ 0001:00001500       ?LookupMac@ARP@@SA?AUMacAddress@@UIPv4Address@@@Z 00101900 f   arp.obj
+ 0001:00001580       ?Receive@ARP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00101980 f   arp.obj
+ 0001:000016c0       ?Send@ARP@@SAXPAVNetInterface@@UMacAddress@@UIPv4Address@@G@Z 00101ac0 f   arp.obj
+ 0001:00001780       ?SendReply@ARP@@CAXPAVNetInterface@@PAUARP_Header@@@Z 00101b80 f   arp.obj
+ 0001:000017c0       ?SendRequest@ARP@@SAXPAVNetInterface@@UIPv4Address@@@Z 00101bc0 f   arp.obj
+ 0001:00001800       ?DoStuff@DHCP@@SAXPAVNetInterface@@UIPv4Address@@@Z 00101c00 f   dhcp.obj
+ 0001:000018e0       ?Receive@DHCP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUUDP_Packet@@PAUNetPacket@@@Z 00101ce0 f   dhcp.obj
+ 0001:000018f0       ?AddEntry@DNS@@SAXPADUIPv4Address@@@Z 00101cf0 f   dns.obj
+ 0001:00001970       ?AppendDomain@DNS@@CAPAEPAEPAD@Z 00101d70 f   dns.obj
+ 0001:000019d0       ?Decode@DNS@@SA_NPAUDNS_Packet@@PAUUDP_Packet@@@Z 00101dd0 f   dns.obj
+ 0001:00001a50       ?Init@DNS@@SAIXZ           00101e50 f   dns.obj
+ 0001:00001a90       ?LookupAddress@DNS@@SA?AUIPv4Address@@PAD@Z 00101e90 f   dns.obj
+ 0001:00001ad0       ?ParseAnswer@DNS@@CAPAEPAUDNS_Answer@@PAE@Z 00101ed0 f   dns.obj
+ 0001:00001b30       ?ParseDomain@DNS@@CAPAEPADPAE@Z 00101f30 f   dns.obj
+ 0001:00001b70       ?Query@DNS@@SAXPAVNetInterface@@PAD@Z 00101f70 f   dns.obj
+ 0001:00001c50       ?Receive@DNS@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUUDP_Packet@@PAUNetPacket@@@Z 00102050 f   dns.obj
+ 0001:00001db0       ?CreatePacket@Eth@@SAPAUNetPacket@@PAVNetInterface@@UMacAddress@@GI@Z 001021b0 f   eth.obj
+ 0001:00001e20       ?Decode@Eth@@SA_NPAUEthPacket@@PAUNetPacket@@@Z 00102220 f   eth.obj
+ 0001:00001ea0       ?Receive@Eth@@SAXPAVNetInterface@@PAUNetPacket@@@Z 001022a0 f   eth.obj
+ 0001:00001f40       ?Send@Eth@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00102340 f   eth.obj
+ 0001:00001f50       ??0WebClient@@QAE@XZ       00102350 f   http.obj
+ 0001:00001f60       ?Download@WebClient@@QAEHVString@std@@AAPAE@Z 00102360 f   http.obj
+ 0001:00001f80       ?Send@WebClient@@QAEXVString@std@@PAEI@Z 00102380 f   http.obj
+ 0001:00002010       ?Decode@ICMP@@SA_NPAUICMP_Packet@@PAUNetPacket@@@Z 00102410 f   icmp.obj
+ 0001:00002080       ?Receive@ICMP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 00102480 f   icmp.obj
+ 0001:000020d0       ?Send@ICMP@@SAXPAVNetInterface@@PAUICMP_Packet@@UIPv4Address@@E@Z 001024d0 f   icmp.obj
+ 0001:00002170       ?SendReply@ICMP@@SAXPAVNetInterface@@PAUICMP_Packet@@UIPv4Address@@@Z 00102570 f   icmp.obj
+ 0001:00002200       ?CreatePacket@IPv4@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@EI@Z 00102600 f   ipv4.obj
+ 0001:00002380       ?Decode@IPv4@@SA_NPAUIPv4_Header@@PAUNetPacket@@@Z 00102780 f   ipv4.obj
+ 0001:000023f0       ?Receive@IPv4@@SAXPAVNetInterface@@PAUEthPacket@@PAUNetPacket@@@Z 001027f0 f   ipv4.obj
+ 0001:000024f0       ?Send@IPv4@@SAXPAVNetInterface@@PAUNetPacket@@@Z 001028f0 f   ipv4.obj
+ 0001:00002500       ?Init@Net@@SAIXZ           00102900 f   net.obj
+ 0001:00002510       ?NetEthReceive@@YAXPAVNetInterface@@PAUNetPacket@@@Z 00102910 f   net.obj
+ 0001:00002520       ?CreatePacket@TCP@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@GGEIIPAEI@Z 00102920 f   tcp.obj
+ 0001:00002610       ?CreateSession@TCP@@SAPAVTcpSession@@XZ 00102a10 f   tcp.obj
+ 0001:00002650       ?Decode@TCP@@SA_NPAUTCP_Packet@@PAUNetPacket@@@Z 00102a50 f   tcp.obj
+ 0001:00002700       ?Receive@TCP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 00102b00 f   tcp.obj
+ 0001:00002800       ?Send@TCP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00102c00 f   tcp.obj
+ 0001:00002810       ??0TcpSession@@QAE@XZ      00102c10 f   tcpsession.obj
+ 0001:00002830       ?Close@TcpSession@@QAEXXZ  00102c30 f   tcpsession.obj
+ 0001:00002930       ?Connect@TcpSession@@QAEXUIPv4Address@@G@Z 00102d30 f   tcpsession.obj
+ 0001:00002ab0       ?Listen@TcpSession@@QAEXG@Z 00102eb0 f   tcpsession.obj
+ 0001:00002ae0       ?Receive@TcpSession@@QAEXPAUIPv4_Header@@PAUTCP_Packet@@@Z 00102ee0 f   tcpsession.obj
+ 0001:00002c70       ?ReceivedData@TcpSession@@QAEXPAUIPv4_Header@@PAUTCP_Packet@@@Z 00103070 f   tcpsession.obj
+ 0001:00002cd0       ?Reset@TcpSession@@AAEXXZ  001030d0 f   tcpsession.obj
+ 0001:00002cf0       ?Send@TcpSession@@AAE_NEPAEI@Z 001030f0 f   tcpsession.obj
+ 0001:00002d40       ?SendData@TcpSession@@QAE_NPAEI@Z 00103140 f   tcpsession.obj
+ 0001:00002d90       ??0TcpSocket@@QAE@XZ       00103190 f   tcpsocket.obj
+ 0001:00002da0       ?Close@TcpSocket@@QAE_NXZ  001031a0 f   tcpsocket.obj
+ 0001:00002dc0       ?Connect@TcpSocket@@QAE_NUIPv4Address@@G@Z 001031c0 f   tcpsocket.obj
+ 0001:00002df0       ?Listen@TcpSocket@@QAE_NG@Z 001031f0 f   tcpsocket.obj
+ 0001:00002e20       ?Send@TcpSocket@@QAE_NPAEI@Z 00103220 f   tcpsocket.obj
+ 0001:00002e50       ?RunTextEdit@apps@@YAXXZ   00103250 f   TextEdit.obj
+ 0001:00002ea0       ?CreatePacket@UDP@@SAPAUNetPacket@@PAVNetInterface@@UIPv4Address@@GGPAEI@Z 001032a0 f   udp.obj
+ 0001:00002f60       ?Decode@UDP@@SA_NPAUUDP_Packet@@PAUNetPacket@@@Z 00103360 f   udp.obj
+ 0001:00002fd0       ?Receive@UDP@@SAXPAVNetInterface@@PAUIPv4_Header@@PAUNetPacket@@@Z 001033d0 f   udp.obj
+ 0001:00003080       ?Send@UDP@@SAXPAVNetInterface@@PAUNetPacket@@@Z 00103480 f   udp.obj
+ 0001:00003090       ??0UdpSocket@@QAE@G@Z      00103490 f   udpsocket.obj
+ 0001:000030b0       ??1UdpSocket@@QAE@XZ       001034b0 f   udpsocket.obj
+ 0001:000030c0       ?Receive@UdpSocket@@QAEHAAPAE@Z 001034c0 f   udpsocket.obj
+ 0001:000030d0       ?Send@UdpSocket@@QAEXUIPv4Address@@PAEG@Z 001034d0 f   udpsocket.obj
+ 0001:00003110       ??_H@YGXPAXIIP6EPAX0@Z@Z   00103510 f i OS.obj
+ 0001:00003140       ?Main@OS@@SAXXZ            00103540 f   OS.obj
+ 0001:00003170       ?ThrowException@OS@@SAXPAD0@Z 00103570 f   OS.obj
+ 0001:00003180       ?Add@?$List@VString@std@@@std@@QAEXVString@2@@Z 00103580 f i string.obj
+ 0001:00003280       ?Split@String@std@@QAEXAAV?$List@VString@std@@@2@D@Z 00103680 f   string.obj
+ 0001:000033c0       ??0Window@gui@@QAE@XZ      001037c0 f   Window.obj
+ 0001:00003480       ?AddControl@Window@gui@@QAEXPAVControl@2@@Z 00103880 f   Window.obj
+ 0001:000034c0       ?GetControlAt@Window@gui@@QAEPAVControl@2@HH@Z 001038c0 f   Window.obj
+ 0001:00003520       ?Paint@Window@gui@@QAEXXZ  00103920 f   Window.obj
+ 0001:00003600       ?PaintControls@Window@gui@@AAEXXZ 00103a00 f   Window.obj
+ 0001:00003620       ?PaintWindow@Window@gui@@AAEXXZ 00103a20 f   Window.obj
+ 0001:000036e0       ?SetFocus@Window@gui@@QAEX_N@Z 00103ae0 f   Window.obj
+ 0001:00003700       ?SetState@Window@gui@@QAEXW4WINDOW_STATE@2@@Z 00103b00 f   Window.obj
+ 0001:00003750       ?memcmp@@YAHPBX0I@Z        00103b50 f   Lib:string.obj
+ 0001:00003790       ?memcpy@@YAPAXPAX0I@Z      00103b90 f   Lib:string.obj
+ 0001:000037c0       ?memcpy_fast_128@@YAXPAX0I@Z 00103bc0 f   Lib:string.obj
+ 0001:00003840       ?memset16@@YAPAXPAXGI@Z    00103c40 f   Lib:string.obj
+ 0001:00003860       ?memset32@@YAPAXPAXII@Z    00103c60 f   Lib:string.obj
+ 0001:00003880       ?memset_fast_128@@YAPAXPAXII@Z 00103c80 f   Lib:string.obj
+ 0001:00003900       ?strcat@@YAPADPADPBD@Z     00103d00 f   Lib:string.obj
+ 0001:00003930       ?strcmp@@YAIPBD0@Z         00103d30 f   Lib:string.obj
+ 0001:00003980       ?strcpy@@YAPADPADPBD@Z     00103d80 f   Lib:string.obj
+ 0001:000039a0       ?strlen@@YAIPBD@Z          00103da0 f   Lib:string.obj
+ 0001:000039c0       ?strncat@@YAPADPADPBDH@Z   00103dc0 f   Lib:string.obj
+ 0001:00003a00       _memset                    00103e00 f   Lib:string.obj
+ 0001:00003a20       ?acos@@YAMM@Z              00103e20 f   Lib:math.obj
+ 0001:00003a80       ?asin@@YAMM@Z              00103e80 f   Lib:math.obj
+ 0001:00003ae0       ?atan2@@YAMMM@Z            00103ee0 f   Lib:math.obj
+ 0001:00003be0       ?atan@@YAMM@Z              00103fe0 f   Lib:math.obj
+ 0001:00003c10       ?ceil@@YAHM@Z              00104010 f   Lib:math.obj
+ 0001:00003c30       ?cos@@YAMM@Z               00104030 f   Lib:math.obj
+ 0001:00003c50       ?fact@@YAMM@Z              00104050 f   Lib:math.obj
+ 0001:00003c90       ?floor@@YAHM@Z             00104090 f   Lib:math.obj
+ 0001:00003cb0       ?log10@@YAMM@Z             001040b0 f   Lib:math.obj
+ 0001:00003cd0       ?log2@@YAMM@Z              001040d0 f   Lib:math.obj
+ 0001:00003cf0       ?log@@YAMM@Z               001040f0 f   Lib:math.obj
+ 0001:00003d10       ?logn@@YAMMM@Z             00104110 f   Lib:math.obj
+ 0001:00003d40       ?pow@@YAMMH@Z              00104140 f   Lib:math.obj
+ 0001:00003e20       ?rand@@YAIXZ               00104220 f   Lib:math.obj
+ 0001:00003e40       ?round@@YAHM@Z             00104240 f   Lib:math.obj
+ 0001:00003e60       ?sin@@YAMM@Z               00104260 f   Lib:math.obj
+ 0001:00003e80       ?sqrt@@YAMM@Z              00104280 f   Lib:math.obj
+ 0001:00003ea0       ?srand@@YAXI@Z             001042a0 f   Lib:math.obj
+ 0001:00003eb0       ?tan@@YAMM@Z               001042b0 f   Lib:math.obj
+ 0001:00003ee0       ??2@YAPAXI@Z               001042e0 f   KERNEL:kernel.obj
+ 0001:00003f30       ??3@YAXPAX@Z               00104330 f   KERNEL:kernel.obj
+ 0001:00003f50       ??_U@YAPAXI@Z              00104350 f   KERNEL:kernel.obj
+ 0001:00003fe0       ??_V@YAXPAX@Z              001043e0 f   KERNEL:kernel.obj
+ 0001:00003ff0       ?Init@Kernel@@SAXPAUMULTIBOOT_INFO@@@Z 001043f0 f   KERNEL:kernel.obj
+ 0001:00004090       ?CreateThread@Task@@SAPAVThread@@PAX@Z 00104490 f   KERNEL:task.obj
+ 0001:00004130       ?Idle@Task@@CAXXZ          00104530 f   KERNEL:task.obj
+ 0001:00004140       ?Init@Task@@SAIXZ          00104540 f   KERNEL:task.obj
+ 0001:00004240       ?InsertThread@Task@@SAXPAVThread@@@Z 00104640 f   KERNEL:task.obj
+ 0001:00004280       ?Schedule@Task@@CAXXZ      00104680 f   KERNEL:task.obj
+ 0001:000042a0       ?StartThreading@Task@@SAXXZ 001046a0 f   KERNEL:task.obj
+ 0001:000042e0       ?Task_ISR@Task@@CAXXZ      001046e0 f   KERNEL:task.obj
+ 0001:00004320       ?BitBlt@Drawing@@SAXUGC@@HHHH0HH_N@Z 00104720 f   KERNEL:drawing.obj
+ 0001:000048d0       ?Clear@Drawing@@SAXIUGC@@@Z 00104cd0 f   KERNEL:drawing.obj
+ 0001:00004900       ?Draw@Drawing@@SAXUGC@@@Z  00104d00 f   KERNEL:drawing.obj
+ 0001:00004930       ?DrawBezierCube@Drawing@@SAXPAUPoint@@HUGC@@@Z 00104d30 f   KERNEL:drawing.obj
+ 0001:00004b70       ?DrawBezierQuad@Drawing@@SAXPAUPoint@@HUGC@@@Z 00104f70 f   KERNEL:drawing.obj
+ 0001:00004d10       ?DrawImage@Drawing@@SAXHHHHPAUBMP@@UGC@@@Z 00105110 f   KERNEL:drawing.obj
+ 0001:00004e10       ?DrawLine@Drawing@@SAXHHHHIUGC@@@Z 00105210 f   KERNEL:drawing.obj
+ 0001:00004f30       ?DrawRect@Drawing@@SAXHHHHHIUGC@@@Z 00105330 f   KERNEL:drawing.obj
+ 0001:00004ff0       ?DrawText@Drawing@@SAXHHPADIIUGC@@@Z 001053f0 f   KERNEL:drawing.obj
+ 0001:000050d0       ?DrawText@Drawing@@SAXHHPADIUGC@@@Z 001054d0 f   KERNEL:drawing.obj
+ 0001:000051a0       ?FillRect@Drawing@@SAXHHHHIUGC@@@Z 001055a0 f   KERNEL:drawing.obj
+ 0001:00005240       ?Init@Drawing@@SAIHHPAI@Z  00105640 f   KERNEL:drawing.obj
+ 0001:000052b0       ?SetPixel@Drawing@@SAXHHIUGC@@@Z 001056b0 f   KERNEL:drawing.obj
+ 0001:000052e0       ?Clear@Debug@@SAXI@Z       001056e0 f   KERNEL:debug.obj
+ 0001:00005300       ?Dump@Debug@@SAXPAXH_N@Z   00105700 f   KERNEL:debug.obj
+ 0001:00005460       ?Print@Debug@@SAXPADZZ     00105860 f   KERNEL:debug.obj
+ 0001:00005630       ?Putc@Debug@@SAXD_N@Z      00105a30 f   KERNEL:debug.obj
+ 0001:000057c0       ?Init@Mouse@@SAIIIM@Z      00105bc0 f   KERNEL:mouse.obj
+ 0001:00005ab0       ?MouseRead@Mouse@@CAEXZ    00105eb0 f   KERNEL:mouse.obj
+ 0001:00005ae0       ?MouseWait@Mouse@@CAXE@Z   00105ee0 f   KERNEL:mouse.obj
+ 0001:00005b20       ?MouseWrite@Mouse@@CAXE@Z  00105f20 f   KERNEL:mouse.obj
+ 0001:00005b80       ?Mouse_ISR@Mouse@@CAXXZ    00105f80 f   KERNEL:mouse.obj
+ 0001:00005cc0       ?Init@PIT@@SAIXZ           001060c0 f   KERNEL:pit.obj
+ 0001:00005d00       ?PIT_ISR@PIT@@CAXXZ        00106100 f   KERNEL:pit.obj
+ 0001:00005d10       ?ReadData@PIT@@CAEE@Z      00106110 f   KERNEL:pit.obj
+ 0001:00005d40       ?SendData@PIT@@CAXGE@Z     00106140 f   KERNEL:pit.obj
+ 0001:00005d80       ?Sleep@PIT@@SAXI@Z         00106180 f   KERNEL:pit.obj
+ 0001:00005da0       ?Start@PIT@@CAIXZ          001061a0 f   KERNEL:pit.obj
+ 0001:00005de0       ?ATA_Interrupt@ATA@@CAXXZ  001061e0 f   KERNEL:ata.obj
+ 0001:00005df0       ?Init@ATA@@SAIXZ           001061f0 f   KERNEL:ata.obj
+ 0001:00005e20       ?Read@ATA@@SAIHHHAAPADH@Z  00106220 f   KERNEL:ata.obj
+ 0001:00006030       ?ReadSector@ATA@@CAIHHHPAD@Z 00106430 f   KERNEL:ata.obj
+ 0001:000061e0       ?DecodeAscii@Keyboard@@CAXAAUKEY_PACKET@@@Z 001065e0 f   KERNEL:keyboard.obj
+ 0001:000064b0       ?DiscardLastKey@Keyboard@@SAXXZ 001068b0 f   KERNEL:keyboard.obj
+ 0001:000064c0       ?GetKeyDown@Keyboard@@SA_NW4KEYCODE@@@Z 001068c0 f   KERNEL:keyboard.obj
+ 0001:000064d0       ?GetLastKey@Keyboard@@SA?AUKEY_PACKET@@XZ 001068d0 f   KERNEL:keyboard.obj
+ 0001:000064f0       ?Init@Keyboard@@SAIXZ      001068f0 f   KERNEL:keyboard.obj
+ 0001:00006510       ?Keyboard_ISR@Keyboard@@CAXXZ 00106910 f   KERNEL:keyboard.obj
+ 0001:00006700       ?Checksum@KNet@@SAGPAXH@Z  00106b00 f   KERNEL:net.obj
+ 0001:00006780       ?ChecksumDouble@KNet@@SAGPAXH0H@Z 00106b80 f   KERNEL:net.obj
+ 0001:00006860       ?Init@KNet@@SAIXZ          00106c60 f   KERNEL:net.obj
+ 0001:000068c0       ?PrintIP@KNet@@SAXPADUIPv4Address@@@Z 00106cc0 f   KERNEL:net.obj
+ 0001:00006900       ?PrintMac@KNet@@SAXPADUMacAddress@@@Z 00106d00 f   KERNEL:net.obj
+ 0001:00006950       ?htonl@@YAII@Z             00106d50 f   KERNEL:net.obj
+ 0001:00006960       ?htons@@YAGG@Z             00106d60 f   KERNEL:net.obj
+ 0001:00006980       ?ntohl@@YAII@Z             00106d80 f   KERNEL:net.obj
+ 0001:00006990       ?ntohs@@YAGG@Z             00106d90 f   KERNEL:net.obj
+ 0001:000069b0       ?KernelPanic@Panic@@SAXPAD0@Z 00106db0 f   KERNEL:panic.obj
+ 0001:00006a40       ?AllocBlocks@Memory@@SAPAXI@Z 00106e40 f   KERNEL:memory.obj
+ 0001:00006b70       ?DeInitRegion@Memory@@SAXPAXI@Z 00106f70 f   KERNEL:memory.obj
+ 0001:00006bc0       ?FirstFree@Memory@@CAIXZ   00106fc0 f   KERNEL:memory.obj
+ 0001:00006c00       ?FirstFreeNum@Memory@@CAII@Z 00107000 f   KERNEL:memory.obj
+ 0001:00006cf0       ?FreeBlocks@Memory@@SAXPAXI@Z 001070f0 f   KERNEL:memory.obj
+ 0001:00006d50       ?Init@Memory@@SAIIPAI@Z    00107150 f   KERNEL:memory.obj
+ 0001:00006dd0       ?InitRegion@Memory@@SAXPAXI@Z 001071d0 f   KERNEL:memory.obj
+ 0001:00006e20       ?EnableFPU@CPU@@CAIXZ      00107220 f   KERNEL:cpu.obj
+ 0001:00006e40       ?EnableSSE@CPU@@CAIXZ      00107240 f   KERNEL:cpu.obj
+ 0001:00006e70       ?Init@CPU@@SAIXZ           00107270 f   KERNEL:cpu.obj
+ 0001:00006ea0       ?Init@VBE@@SAIPAUVBE_MODE_INFO@@@Z 001072a0 f   KERNEL:vbe.obj
+ 0001:00006f10       ?Init@HAL@@SAIXZ           00107310 f   KERNEL:hal.obj
+ 0001:00006f40       ?inb@@YAEG@Z               00107340 f   KERNEL:hal.obj
+ 0001:00006f60       ?inl@@YAIG@Z               00107360 f   KERNEL:hal.obj
+ 0001:00006f80       ?inw@@YAGG@Z               00107380 f   KERNEL:hal.obj
+ 0001:00006fa0       ?outb@@YAXGE@Z             001073a0 f   KERNEL:hal.obj
+ 0001:00006fb0       ?outl@@YAXGI@Z             001073b0 f   KERNEL:hal.obj
+ 0001:00006fc0       ?outw@@YAXGG@Z             001073c0 f   KERNEL:hal.obj
+ 0001:00006fd0       ?DefaultISR@Exceptions@@SAXXZ 001073d0 f   KERNEL:exceptions.obj
+ 0001:00006ff0       ?ISR0@Exceptions@@CAXXZ    001073f0 f   KERNEL:exceptions.obj
+ 0001:00007010       ?ISR10@Exceptions@@CAXXZ   00107410 f   KERNEL:exceptions.obj
+ 0001:00007030       ?ISR11@Exceptions@@CAXXZ   00107430 f   KERNEL:exceptions.obj
+ 0001:00007050       ?ISR12@Exceptions@@CAXXZ   00107450 f   KERNEL:exceptions.obj
+ 0001:00007070       ?ISR13@Exceptions@@CAXXZ   00107470 f   KERNEL:exceptions.obj
+ 0001:00007090       ?ISR14@Exceptions@@CAXXZ   00107490 f   KERNEL:exceptions.obj
+ 0001:000070b0       ?ISR15@Exceptions@@CAXXZ   001074b0 f   KERNEL:exceptions.obj
+ 0001:000070d0       ?ISR16@Exceptions@@CAXXZ   001074d0 f   KERNEL:exceptions.obj
+ 0001:000070f0       ?ISR17@Exceptions@@CAXXZ   001074f0 f   KERNEL:exceptions.obj
+ 0001:00007110       ?ISR18@Exceptions@@CAXXZ   00107510 f   KERNEL:exceptions.obj
+ 0001:00007130       ?ISR19@Exceptions@@CAXXZ   00107530 f   KERNEL:exceptions.obj
+ 0001:00007150       ?ISR1@Exceptions@@CAXXZ    00107550 f   KERNEL:exceptions.obj
+ 0001:00007170       ?ISR2@Exceptions@@CAXXZ    00107570 f   KERNEL:exceptions.obj
+ 0001:00007190       ?ISR3@Exceptions@@CAXXZ    00107590 f   KERNEL:exceptions.obj
+ 0001:000071b0       ?ISR4@Exceptions@@CAXXZ    001075b0 f   KERNEL:exceptions.obj
+ 0001:000071d0       ?ISR5@Exceptions@@CAXXZ    001075d0 f   KERNEL:exceptions.obj
+ 0001:000071f0       ?ISR6@Exceptions@@CAXIII@Z 001075f0 f   KERNEL:exceptions.obj
+ 0001:00007270       ?ISR7@Exceptions@@CAXXZ    00107670 f   KERNEL:exceptions.obj
+ 0001:00007290       ?ISR8@Exceptions@@CAXXZ    00107690 f   KERNEL:exceptions.obj
+ 0001:000072b0       ?ISR9@Exceptions@@CAXXZ    001076b0 f   KERNEL:exceptions.obj
+ 0001:000072d0       ?Init@Exceptions@@SAIXZ    001076d0 f   KERNEL:exceptions.obj
+ 0001:000073d0       ?Create@PCI@@CAPAUPCI_DEVICE@@EEE@Z 001077d0 f   KERNEL:pci.obj
+ 0001:00007490       ?GetDevice@PCI@@SAPAUPCI_DEVICE@@HHH@Z 00107890 f   KERNEL:pci.obj
+ 0001:00007640       ?Init@PCI@@SAIXZ           00107a40 f   KERNEL:pci.obj
+ 0001:00007650       ?Read@PCI@@CAIEEEEE@Z      00107a50 f   KERNEL:pci.obj
+ 0001:000076c0       ?printdev@@YAXPAUPCI_DEVICE@@@Z 00107ac0 f   KERNEL:pci.obj
+ 0001:00007700       ?EmptyISR@IDT@@SAXXZ       00107b00 f   KERNEL:idt.obj
+ 0001:00007710       ?GetIR@IDT@@SAPAUIDT_DESCRIPTOR@@I@Z 00107b10 f   KERNEL:idt.obj
+ 0001:00007720       ?GetVect@IDT@@SAP6AXXZH@Z  00107b20 f   KERNEL:idt.obj
+ 0001:00007750       ?Init@IDT@@SAIXZ           00107b50 f   KERNEL:idt.obj
+ 0001:000077c0       ?SetISR@IDT@@SAIIP6AXXZ@Z  00107bc0 f   KERNEL:idt.obj
+ 0001:00007800       ?Init@PIC@@SAIXZ           00107c00 f   KERNEL:pic.obj
+ 0001:00007860       ?InterruptDone@PIC@@SAXG@Z 00107c60 f   KERNEL:pic.obj
+ 0001:00007890       ?ReadData@PIC@@CAEE@Z      00107c90 f   KERNEL:pic.obj
+ 0001:000078c0       ?SendCommand@PIC@@CAXEE@Z  00107cc0 f   KERNEL:pic.obj
+ 0001:000078f0       ?SendData@PIC@@CAXGE@Z     00107cf0 f   KERNEL:pic.obj
+ 0001:00007919       ??1type_info@@UAE@XZ       00107d19 f   LIBCMT:std_type_info_static.obj
+ 0001:00007920       ??_Etype_info@@UAEPAXI@Z   00107d20 f i LIBCMT:std_type_info_static.obj
+ 0001:00007920       ??_Gtype_info@@UAEPAXI@Z   00107d20 f i LIBCMT:std_type_info_static.obj
+ 0001:00007943       ___isa_available_init      00107d43 f   LIBCMT:_cpu_disp_.obj
+ 0001:00007ae2       ??3@YAXPAXI@Z              00107ee2 f   LIBCMT:delete_scalar_size.obj
+ 0001:00007af0       _IsProcessorFeaturePresent@4 00107ef0 f   kernel32:KERNEL32.dll
+ 0001:00007b00       ?atof@@YAMPBD@Z            00107f00 f   Lib:stdio.obj
+ 0001:00007ba0       ?atoi@@YAHPBD@Z            00107fa0 f   Lib:stdio.obj
+ 0001:00007bc0       ?ftoa@@YAPADMIPAD@Z        00107fc0 f   Lib:stdio.obj
+ 0001:00007ce0       ?itoa@@YAPADHIPAD_N@Z      001080e0 f   Lib:stdio.obj
+ 0001:00007d70       ?strtol@@YAJPBDPAPADH@Z    00108170 f   Lib:stdio.obj
+ 0001:00007ec0       ?vprintf@@YAPADPADPBDZZ    001082c0 f   Lib:stdio.obj
+ 0001:00007ee0       ?vsprintf@@YAPADPADPBDPAE@Z 001082e0 f   Lib:stdio.obj
+ 0002:00000000       __imp__IsProcessorFeaturePresent@4 00108800     kernel32:KERNEL32.dll
+ 0002:00000004       \177KERNEL32_NULL_THUNK_DATA 00108804     kernel32:KERNEL32.dll
+ 0002:00000014       ??_7Control@gui@@6B@       00108814     Control.obj
+ 0002:0000001c       ??_7Label@gui@@6B@         0010881c     Control.obj
+ 0002:00000020       ??_C@_0BC@HJLBEKHE@Delta?3?5?$CFi?7FPS?3?5?$CFi?$AA@ 00108820     GUI.obj
+ 0002:00000034       ??_C@_06JJGECBPI@?$CFs?5?$CFi?6?$AA@ 00108834     iso.obj
+ 0002:0000003c       ??_C@_03OFAPEBGM@?$CFs?6?$AA@ 0010883c     iso.obj
+ 0002:00000040       ??_C@_03PELOGHMK@?$CFi?6?$AA@ 00108840     Mandelbrot.obj
+ 0002:00000044       ??_C@_06CMGOICJA@Start?6?$AA@ 00108844     Mandelbrot.obj
+ 0002:0000004c       ??_C@_0BD@OAOOOKEK@Ticks?3?5?$CFi?7FPS?3?5?$CFi?6?$AA@ 0010884c     Mandelbrot.obj
+ 0002:00000060       ??_C@_09JHEKFLJE@Zoom?3?5?$CFf?6?$AA@ 00108860     Mandelbrot.obj
+ 0002:0000006c       __real@1adaca00            0010886c     Mandelbrot.obj
+ 0002:00000070       __real@3ff0000000000000    00108870     Mandelbrot.obj
+ 0002:00000078       __real@4010000000000000    00108878     Mandelbrot.obj
+ 0002:00000080       __real@4088000000000000    00108880     Mandelbrot.obj
+ 0002:00000088       __real@40f0000000000000    00108888     Mandelbrot.obj
+ 0002:00000090       __real@437f0000            00108890     Mandelbrot.obj
+ 0002:00000094       __real@447a0000            00108894     Mandelbrot.obj
+ 0002:00000098       ??_C@_0BJ@FHJFEPME@arp?3?5sending?5request?5to?5?$AA@ 00108898     arp.obj
+ 0002:000000b4       ??_C@_0BH@NFEPIOCG@arp?3?5sending?5reply?5to?5?$AA@ 001088b4     arp.obj
+ 0002:000000cc       ??_C@_0BB@NPEPEJMJ@ARP?5added?5entry?5?$AA@ 001088cc     arp.obj
+ 0002:000000e0       ??_C@_0O@MBFFJLEF@DHCP?5RECEIVE?6?$AA@ 001088e0     dhcp.obj
+ 0002:000000f0       ??_C@_0O@IJAKJLNJ@Received?5DNS?6?$AA@ 001088f0     dns.obj
+ 0002:00000100       ??_C@_0BF@DPFFLPFA@DNS?5added?5entry?3?5?$CFs?5?$AA@ 00108900     dns.obj
+ 0002:00000115       ??_C@_00CNPNBAHC@?$AA@     00108915     dns.obj
+ 0002:00000118       ??_C@_0M@KNKKGHNO@PARSED?5IP?3?5?$AA@ 00108918     http.obj
+ 0002:00000124       ??_C@_0BO@OHMKJDEI@Flags?3?5?$CFux?7ACK?3?5?$CFui?7SEQ?3?5?$CFui?6?$AA@ 00108924     tcpsession.obj
+ 0002:00000144       ??_C@_0L@EIILFCEB@Connected?6?$AA@ 00108944     tcpsession.obj
+ 0002:00000150       ??_C@_07IPMAGINO@Closed?6?$AA@ 00108950     tcpsession.obj
+ 0002:00000158       ??_C@_0BA@FHBAHEGN@Timeout?5closed?6?$AA@ 00108958     tcpsession.obj
+ 0002:00000168       ??_C@_08MJHFHPFP@TextEdit?$AA@ 00108968     TextEdit.obj
+ 0002:00000174       ??_C@_05COLMCDPH@Hello?$AA@ 00108974     TextEdit.obj
+ 0002:0000017c       __real@00000000            0010897c     Lib:math.obj
+ 0002:00000180       __real@3e8f5c29            00108980     Lib:math.obj
+ 0002:00000184       __real@3f800000            00108984     Lib:math.obj
+ 0002:00000188       __real@3fe0000000000000    00108988     Lib:math.obj
+ 0002:00000190       __real@3ff921fb54442eea    00108990     Lib:math.obj
+ 0002:00000198       __real@400921fb54442eea    00108998     Lib:math.obj
+ 0002:000001a0       __real@40490fdb            001089a0     Lib:math.obj
+ 0002:000001a4       __real@bfc90fdb            001089a4     Lib:math.obj
+ 0002:000001b0       __xmm@7fffffff7fffffff7fffffff7fffffff 001089b0     Lib:math.obj
+ 0002:000001c0       __real@39800000            001089c0     KERNEL:kernel.obj
+ 0002:000001d0       __xmm@41f00000000000000000000000000000 001089d0     KERNEL:kernel.obj
+ 0002:000001e0       __real@3c000000            001089e0     KERNEL:drawing.obj
+ 0002:000001f0       __xmm@000000ff000000ff000000ff000000ff 001089f0     KERNEL:drawing.obj
+ 0002:00000200       __xmm@00ff00ff00ff00ff00ff00ff00ff00ff 00108a00     KERNEL:drawing.obj
+ 0002:00000210       __xmm@80808081808080818080808180808081 00108a10     KERNEL:drawing.obj
+ 0002:00000220       ??_C@_04PFOHOKJK@?5?5?5?5?$AA@ 00108a20     KERNEL:debug.obj
+ 0002:00000228       ??_C@_01CLKCMJKC@?5?$AA@   00108a28     KERNEL:debug.obj
+ 0002:0000022c       ??_C@_03IKGEINEE@?$CFs?5?$AA@ 00108a2c     KERNEL:debug.obj
+ 0002:000003a0       ??_C@_0P@JJOCPBNH@?$CFs?$CFi?4?$CFi?4?$CFi?4?$CFi?6?$AA@ 00108ba0     KERNEL:net.obj
+ 0002:000003b0       ??_C@_0BF@MCJEFIGG@?$CFs?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?3?$CFx?6?$AA@ 00108bb0     KERNEL:net.obj
+ 0002:000003c8       ??_C@_0BK@KHJFGGEJ@Default?5interrupt?5handler?$AA@ 00108bc8     KERNEL:exceptions.obj
+ 0002:000003e4       ??_C@_0BB@CAGHCAFL@Division?5by?5zero?$AA@ 00108be4     KERNEL:exceptions.obj
+ 0002:000003f8       ??_C@_05GCIPIGEI@Debug?$AA@ 00108bf8     KERNEL:exceptions.obj
+ 0002:00000400       ??_C@_0BH@DLMGGJOP@Non?9Maskable?5interrupt?$AA@ 00108c00     KERNEL:exceptions.obj
+ 0002:00000418       ??_C@_0L@DEJAMIEF@Breakpoint?$AA@ 00108c18     KERNEL:exceptions.obj
+ 0002:00000424       ??_C@_08KJPBNJGC@Overflow?$AA@ 00108c24     KERNEL:exceptions.obj
+ 0002:00000430       ??_C@_0BF@KABNNNC@Bound?5range?5exceeded?$AA@ 00108c30     KERNEL:exceptions.obj
+ 0002:00000448       ??_C@_0BJ@JILCCCBH@0x?$CFux?70x?$CFux?70x?$CFux?70x?$CFux?6?$AA@ 00108c48     KERNEL:exceptions.obj
+ 0002:00000464       ??_C@_06NIEMCLMH@0x?$CFux?6?$AA@ 00108c64     KERNEL:exceptions.obj
+ 0002:0000046c       ??_C@_0P@GJJPHHDN@Invalid?5opcode?$AA@ 00108c6c     KERNEL:exceptions.obj
+ 0002:0000047c       ??_C@_0BF@COPPNEEP@Device?5not?5available?$AA@ 00108c7c     KERNEL:exceptions.obj
+ 0002:00000494       ??_C@_0N@EMHPBCJE@Double?5fault?$AA@ 00108c94     KERNEL:exceptions.obj
+ 0002:000004a4       ??_C@_0BM@FLNHCLJG@Coprocessor?5segment?5overrun?$AA@ 00108ca4     KERNEL:exceptions.obj
+ 0002:000004c0       ??_C@_0M@OLMALBPG@Invalid?5TSS?$AA@ 00108cc0     KERNEL:exceptions.obj
+ 0002:000004cc       ??_C@_0BE@FPPPAKKN@Segment?5not?5present?$AA@ 00108ccc     KERNEL:exceptions.obj
+ 0002:000004e0       ??_C@_0BE@OLMOIPB@Stack?9segment?5fault?$AA@ 00108ce0     KERNEL:exceptions.obj
+ 0002:000004f4       ??_C@_0BJ@LDJBBLLL@General?5protection?5fault?$AA@ 00108cf4     KERNEL:exceptions.obj
+ 0002:00000510       ??_C@_0L@JBNHOLPF@Page?5fault?$AA@ 00108d10     KERNEL:exceptions.obj
+ 0002:0000051c       ??_C@_0O@EBPJONIA@15?5?$CIReserved?$CJ?$AA@ 00108d1c     KERNEL:exceptions.obj
+ 0002:0000052c       ??_C@_0BN@OAPCMCOK@x87?5Floating?9point?5exception?$AA@ 00108d2c     KERNEL:exceptions.obj
+ 0002:0000054c       ??_C@_0BA@DMDLEFCI@Alignment?5check?$AA@ 00108d4c     KERNEL:exceptions.obj
+ 0002:0000055c       ??_C@_0O@LHBOKIFP@Machine?5check?$AA@ 00108d5c     KERNEL:exceptions.obj
+ 0002:0000056c       ??_C@_0BO@PAHIJHOM@SIMD?5floating?9point?5exception?$AA@ 00108d6c     KERNEL:exceptions.obj
+ 0002:00000590       ??_C@_0EO@NIHBEAOP@Bus?3?5?$CFx?5Device?3?5?$CFx?5Function?3?5?$CFx?5@ 00108d90     KERNEL:pci.obj
+ 0002:000005e4       ??_7type_info@@6B@         00108de4     LIBCMT:std_type_info_static.obj
+ 0002:000005e8       ??_C@_03LHCJEHON@nan?$AA@  00108de8     Lib:stdio.obj
+ 0002:000005ec       ??_C@_03OJHLLCGB@inf?$AA@  00108dec     Lib:stdio.obj
+ 0002:000005f0       ??_C@_01GBGANLPD@0?$AA@    00108df0     Lib:stdio.obj
+ 0002:000005f8       __real@3f1a36e2eb1c432d    00108df8     Lib:stdio.obj
+ 0002:00000600       __real@41200000            00108e00     Lib:stdio.obj
+ 0002:00000604       __real@bf800000            00108e04     Lib:stdio.obj
+ 0002:00000610       __xmm@46454443424139383736353433323130 00108e10     Lib:stdio.obj
+ 0002:00000674       ??_R4Control@gui@@6B@      00108e74     Control.obj
+ 0002:00000688       ??_R3Control@gui@@8        00108e88     Control.obj
+ 0002:00000698       ??_R2Control@gui@@8        00108e98     Control.obj
+ 0002:000006a0       ??_R1A@?0A@EA@Control@gui@@8 00108ea0     Control.obj
+ 0002:000006bc       ??_R4Label@gui@@6B@        00108ebc     Control.obj
+ 0002:000006d0       ??_R3Label@gui@@8          00108ed0     Control.obj
+ 0002:000006e0       ??_R2Label@gui@@8          00108ee0     Control.obj
+ 0002:000006ec       ??_R1A@?0A@EA@Label@gui@@8 00108eec     Control.obj
+ 0002:00000708       ??_R4type_info@@6B@        00108f08     LIBCMT:std_type_info_static.obj
+ 0002:0000071c       ??_R3type_info@@8          00108f1c     LIBCMT:std_type_info_static.obj
+ 0002:0000072c       ??_R2type_info@@8          00108f2c     LIBCMT:std_type_info_static.obj
+ 0002:00000734       ??_R1A@?0A@EA@type_info@@8 00108f34     LIBCMT:std_type_info_static.obj
+ 0002:000008b4       __IMPORT_DESCRIPTOR_KERNEL32 001090b4     kernel32:KERNEL32.dll
+ 0002:000008c8       __NULL_IMPORT_DESCRIPTOR   001090c8     kernel32:KERNEL32.dll
+ 0003:00000000       ?cursor_bitmap@gui@@3PAIA  00109200     GUI.obj
+ 0003:000001c0       ?col_taskbar@gui@@3IA      001093c0     GUI.obj
+ 0003:000001c4       ?col_desktop_bg@gui@@3IA   001093c4     GUI.obj
+ 0003:000001c8       ?count@@3HA                001093c8     Mandelbrot.obj
+ 0003:000001cc       ?col_background@gui@@3IA   001093cc     Window.obj
+ 0003:000001d0       ?col_foreground@gui@@3IA   001093d0     Window.obj
+ 0003:000001dc       ?__LINE__Var@?0???0GC@@QAE@XZ@4JA 001093dc     KERNEL:drawing.obj
+ 0003:000011e0       ?color@Debug@@2IA          0010a3e0     KERNEL:debug.obj
+ 0003:000011e4       __fltused                  0010a3e4     LIBCMT:fltused.obj
+ 0003:000011e8       ___isa_enabled             0010a3e8     LIBCMT:_cpu_disp_.obj
+ 0003:000011ec       ??_R0?AVControl@gui@@@8    0010a3ec     Control.obj
+ 0003:00001208       ??_R0?AVLabel@gui@@@8      0010a408     Control.obj
+ 0003:00001220       ??_R0?AVtype_info@@@8      0010a420     LIBCMT:std_type_info_static.obj
+ 0003:00001240       ?_kernel_stack@@3PADA      0010a440     boot.obj
+ 0003:000031e0       ?bmp_background@gui@@3PAUBMP@@A 0010c3e0     GUI.obj
+ 0003:000031e4       ?window_count@gui@@3HA     0010c3e4     GUI.obj
+ 0003:000031e8       ?first_window@gui@@3PAVWindow@1@A 0010c3e8     GUI.obj
+ 0003:000031ec       ?last_window@gui@@3PAVWindow@1@A 0010c3ec     GUI.obj
+ 0003:000031f0       ?focused_window@gui@@3PAVWindow@1@A 0010c3f0     GUI.obj
+ 0003:000031f4       ?cursor_x@gui@@3HA         0010c3f4     GUI.obj
+ 0003:000031f8       ?cursor_y@gui@@3HA         0010c3f8     GUI.obj
+ 0003:000031fc       ?mouse_click_L@gui@@3_NA   0010c3fc     GUI.obj
+ 0003:000031fd       ?mouse_click_R@gui@@3_NA   0010c3fd     GUI.obj
+ 0003:000031fe       ?mouse_click_M@gui@@3_NA   0010c3fe     GUI.obj
+ 0003:000031ff       ?window_drag@gui@@3_NA     0010c3ff     GUI.obj
+ 0003:00003200       ?mouse_click_L_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c400     GUI.obj
+ 0003:00003218       ?mouse_click_R_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c418     GUI.obj
+ 0003:00003230       ?mouse_click_M_info@gui@@3UMOUSE_CLICK_INFO@1@A 0010c430     GUI.obj
+ 0003:00003248       ?window_drag_info@gui@@3UWINDOW_DRAG_INFO@1@A 0010c448     GUI.obj
+ 0003:00003254       ?gc_taskbar@gui@@3UGC@@A   0010c454     GUI.obj
+ 0003:00003268       ?gc_background@gui@@3UGC@@A 0010c468     GUI.obj
+ 0003:0000327c       ?gc_cursor@gui@@3UGC@@A    0010c47c     GUI.obj
+ 0003:00003290       ?desc@@3PAUISO_PRIMARYDESC@@A 0010c490     iso.obj
+ 0003:00003294       ?root@@3PAUISO_DIRECTORY@@A 0010c494     iso.obj
+ 0003:00003298       ?tz@@3UComplex@@A          0010c498     Mandelbrot.obj
+ 0003:000032a0       ?arp_cache@ARP@@0PAUARP_TABLE_ENTRY@@A 0010c4a0     arp.obj
+ 0003:000033e0       ?dns_server@DNS@@2UIPv4Address@@A 0010c5e0     dns.obj
+ 0003:000033e8       ?dns_cache@DNS@@0PAUDNS_TABLE_ENTRY@@A 0010c5e8     dns.obj
+ 0003:000035e8       ?sessions@TCP@@2PAPAVTcpSession@@A 0010c7e8     tcp.obj
+ 0003:00003668       ?control_count@gui@@3HA    0010c868     Window.obj
+ 0003:0000366c       ?first_control@gui@@3PAVControl@1@A 0010c86c     Window.obj
+ 0003:00003670       ?last_control@gui@@3PAVControl@1@A 0010c870     Window.obj
+ 0003:00003674       ?focused_control@gui@@3PAVWindow@1@A 0010c874     Window.obj
+ 0003:00003678       ?mem_left@@3HA             0010c878     KERNEL:kernel.obj
+ 0003:0000367c       ?mem_ptr@@3PAEA            0010c87c     KERNEL:kernel.obj
+ 0003:00003680       ?idle_thread@@3PAVThread@@A 0010c880     KERNEL:task.obj
+ 0003:00003684       ?current_thread@@3PAVThread@@A 0010c884     KERNEL:task.obj
+ 0003:00003688       ?first_thread@@3PAVThread@@A 0010c888     KERNEL:task.obj
+ 0003:0000368c       ?last_thread@@3PAVThread@@A 0010c88c     KERNEL:task.obj
+ 0003:00003690       ?pit_isr@@3PAXA            0010c890     KERNEL:task.obj
+ 0003:00003694       ?screenBuffer@@3PAIA       0010c894     KERNEL:drawing.obj
+ 0003:00003698       ?gc@Drawing@@2UGC@@A       0010c898     KERNEL:drawing.obj
+ 0003:000036ac       ?gc_direct@Drawing@@2UGC@@A 0010c8ac     KERNEL:drawing.obj
+ 0003:000036c0       ___isa_available_default   0010c8c0     KERNEL:drawing.obj
+ 0003:000036c4       ?x@Debug@@2HA              0010c8c4     KERNEL:debug.obj
+ 0003:000036c8       ?y@Debug@@2HA              0010c8c8     KERNEL:debug.obj
+ 0003:000036cc       ?bcolor@Debug@@2IA         0010c8cc     KERNEL:debug.obj
+ 0003:000036d0       ?x@Mouse@@2HA              0010c8d0     KERNEL:mouse.obj
+ 0003:000036d4       ?y@Mouse@@2HA              0010c8d4     KERNEL:mouse.obj
+ 0003:000036d8       ?sensitivity@Mouse@@2MA    0010c8d8     KERNEL:mouse.obj
+ 0003:000036dc       ?mouse_L@Mouse@@2_NA       0010c8dc     KERNEL:mouse.obj
+ 0003:000036dd       ?mouse_R@Mouse@@2_NA       0010c8dd     KERNEL:mouse.obj
+ 0003:000036de       ?mouse_M@Mouse@@2_NA       0010c8de     KERNEL:mouse.obj
+ 0003:000036df       ?mouse_cycle@Mouse@@0EA    0010c8df     KERNEL:mouse.obj
+ 0003:000036e0       ?scroll_x@Mouse@@2HA       0010c8e0     KERNEL:mouse.obj
+ 0003:000036e4       ?scroll_y@Mouse@@2HA       0010c8e4     KERNEL:mouse.obj
+ 0003:000036e8       ?w@Mouse@@0IA              0010c8e8     KERNEL:mouse.obj
+ 0003:000036ec       ?h@Mouse@@0IA              0010c8ec     KERNEL:mouse.obj
+ 0003:000036f0       ?mouse_byte@Mouse@@0PACA   0010c8f0     KERNEL:mouse.obj
+ 0003:000036f4       ?initialized@Mouse@@0_NA   0010c8f4     KERNEL:mouse.obj
+ 0003:000036f8       ?ticks@PIT@@2IA            0010c8f8     KERNEL:pit.obj
+ 0003:00003700       ?ctrl@Keyboard@@2_NA       0010c900     KERNEL:keyboard.obj
+ 0003:00003701       ?shift@Keyboard@@2_NA      0010c901     KERNEL:keyboard.obj
+ 0003:00003702       ?alt@Keyboard@@2_NA        0010c902     KERNEL:keyboard.obj
+ 0003:00003703       ?caps@Keyboard@@2_NA       0010c903     KERNEL:keyboard.obj
+ 0003:00003704       ?num@Keyboard@@2_NA        0010c904     KERNEL:keyboard.obj
+ 0003:00003705       ?scroll@Keyboard@@2_NA     0010c905     KERNEL:keyboard.obj
+ 0003:00003706       ?extended@@3_NA            0010c906     KERNEL:keyboard.obj
+ 0003:00003707       ?scancode@@3EA             0010c907     KERNEL:keyboard.obj
+ 0003:00003708       ?keystates@@3PA_NA         0010c908     KERNEL:keyboard.obj
+ 0003:00003807       ?scan@@3EA                 0010ca07     KERNEL:keyboard.obj
+ 0003:00003808       ?last_key@@3UKEY_PACKET@@A 0010ca08     KERNEL:keyboard.obj
+ 0003:00003814       ?pressed@@3_NA             0010ca14     KERNEL:keyboard.obj
+ 0003:00003818       ?key@@3W4KEYCODE@@A        0010ca18     KERNEL:keyboard.obj
+ 0003:0000381c       ?intf@KNet@@2PAVNetInterface@@A 0010ca1c     KERNEL:net.obj
+ 0003:00003820       ?GatewayIPv4@KNet@@2UIPv4Address@@A 0010ca20     KERNEL:net.obj
+ 0003:00003824       ?GatewayMAC@KNet@@2UMacAddress@@A 0010ca24     KERNEL:net.obj
+ 0003:0000382c       ?BroadcastMAC@KNet@@2UMacAddress@@A 0010ca2c     KERNEL:net.obj
+ 0003:00003834       ?BroadcastIPv4@KNet@@2UIPv4Address@@A 0010ca34     KERNEL:net.obj
+ 0003:00003838       ?NullMAC@KNet@@2UMacAddress@@A 0010ca38     KERNEL:net.obj
+ 0003:00003840       ?NullIPv4@KNet@@2UIPv4Address@@A 0010ca40     KERNEL:net.obj
+ 0003:00003844       ?num_blocks@Memory@@2IA    0010ca44     KERNEL:memory.obj
+ 0003:00003848       ?num_free@Memory@@2IA      0010ca48     KERNEL:memory.obj
+ 0003:0000384c       ?mem_size@Memory@@2IA      0010ca4c     KERNEL:memory.obj
+ 0003:00003850       ?mem_map@Memory@@0PAIA     0010ca50     KERNEL:memory.obj
+ 0003:00003858       ?mode@VBE@@2UVBE_MODE_INFO@@A 0010ca58     KERNEL:vbe.obj
+ 0003:00003958       ?mem_base@@3PAIA           0010cb58     KERNEL:vbe.obj
+ 0003:0000395c       ?mem_max@@3PAIA            0010cb5c     KERNEL:vbe.obj
+ 0003:00003960       ?mem_size@@3IA             0010cb60     KERNEL:vbe.obj
+ 0003:00003964       ?bytes_per_pixel@@3IA      0010cb64     KERNEL:vbe.obj
+ 0003:00003968       ?pixel_count@@3IA          0010cb68     KERNEL:vbe.obj
+ 0003:00003970       ?idt@IDT@@0PAUIDT_DESCRIPTOR@@A 0010cb70     KERNEL:idt.obj
+ 0003:00004170       ?idt_reg@IDT@@0UIDT_REG@@A 0010d370     KERNEL:idt.obj
+ 0003:00004178       ___isa_available           0010d378     LIBCMT:_cpu_disp_.obj
+ 0003:0000417c       ___favor                   0010d37c     LIBCMT:_cpu_disp_.obj
 
  entry point at        0000:00000000
 
  Static symbols
 
- 0000:ffff2600       .debug$S                   00100000     kernel32:KERNEL32.dll
- 0002:ffff7a00       __guard_fids__             00100000     LIBCMT:std_type_info_static.obj
- 0001:00002c08       $LN28                      00103008     tcpsession.obj
- 0001:000054e8       $LN28                      001058e8     KERNEL:debug.obj
- 0001:00005674       $LN21                      00105a74     KERNEL:debug.obj
- 0001:000062a0       $LN64                      001066a0     KERNEL:keyboard.obj
- 0001:000062b4       $LN61                      001066b4     KERNEL:keyboard.obj
- 0001:000062c0       $LN65                      001066c0     KERNEL:keyboard.obj
- 0001:000062f0       $LN66                      001066f0     KERNEL:keyboard.obj
- 0001:00006318       $LN67                      00106718     KERNEL:keyboard.obj
- 0001:00006350       $LN62                      00106750     KERNEL:keyboard.obj
- 0001:000080d8       $LN49                      001084d8     Lib:stdio.obj
- 0001:000080f4       $LN44                      001084f4     Lib:stdio.obj
- 0002:00000230       ?scancodes@@3QBW4KEYCODE@@B 00108830     KERNEL:keyboard.obj
- 0002:00000900       .idata$6                   00108f00     kernel32:KERNEL32.dll
- 0003:000001d4       ?new_id@gui@@3HA           001091d4     Window.obj
- 0003:000001d8       ?next@@3KA                 001091d8     Lib:math.obj
- 0003:000001e0       ?DEFAULT_FONT@@3PAEA       001091e0     KERNEL:drawing.obj
+ 0000:ffff2400       .debug$S                   00100000     kernel32:KERNEL32.dll
+ 0002:ffff7800       __guard_fids__             00100000     LIBCMT:std_type_info_static.obj
+ 0001:00002c48       $LN28                      00103048     tcpsession.obj
+ 0001:00005614       $LN28                      00105a14     KERNEL:debug.obj
+ 0001:000057a0       $LN21                      00105ba0     KERNEL:debug.obj
+ 0001:000063d0       $LN64                      001067d0     KERNEL:keyboard.obj
+ 0001:000063e4       $LN61                      001067e4     KERNEL:keyboard.obj
+ 0001:000063f0       $LN65                      001067f0     KERNEL:keyboard.obj
+ 0001:00006420       $LN66                      00106820     KERNEL:keyboard.obj
+ 0001:00006448       $LN67                      00106848     KERNEL:keyboard.obj
+ 0001:00006480       $LN62                      00106880     KERNEL:keyboard.obj
+ 0001:00008208       $LN49                      00108608     Lib:stdio.obj
+ 0001:00008224       $LN44                      00108624     Lib:stdio.obj
+ 0002:00000230       ?scancodes@@3QBW4KEYCODE@@B 00108a30     KERNEL:keyboard.obj
+ 0002:00000900       .idata$6                   00109100     kernel32:KERNEL32.dll
+ 0003:000001d4       ?new_id@gui@@3HA           001093d4     Window.obj
+ 0003:000001d8       ?next@@3KA                 001093d8     Lib:math.obj
+ 0003:000001e0       ?DEFAULT_FONT@@3PAEA       001093e0     KERNEL:drawing.obj

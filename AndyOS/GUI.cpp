@@ -4,8 +4,7 @@
 #include "mouse.h"
 #include "hal.h"
 #include "Debug.h"
-
-#define TASKBAR_HEIGHT		40
+#include "iso.h"
 
 namespace gui
 {
@@ -33,11 +32,13 @@ namespace gui
 	GC gc_taskbar;
 	GC gc_cursor;
 
+	BMP* bmp_background;
+
 	int window_count;
 	Window* first_window;
 	Window* last_window;
 
-	Window* active_window;
+	Window* focused_window;
 
 	int cursor_x = 0;
 	int cursor_y = 0;
@@ -55,8 +56,14 @@ namespace gui
 	STATUS WindowManager::Init()
 	{
 		gc_background = GC::CreateGraphics(Drawing::gc.width, Drawing::gc.height);
-		gc_taskbar = GC::CreateGraphics(Drawing::gc.width, TASKBAR_HEIGHT);
+		gc_taskbar = GC::CreateGraphics(Drawing::gc.width, GUI_TASKBAR_HEIGHT);
 		gc_cursor = GC::CreateGraphics(8, 14);
+
+		//char* img_buf;
+		//if (!ISO_FS::ReadFile("img_hd.bmp", img_buf))
+		//	return STATUS_FAILED;
+		//bmp_background = new BMP(img_buf);
+
 		return STATUS_SUCCESS;
 	}
 
@@ -99,10 +106,6 @@ namespace gui
 			Debug::Clear(0);
 			Drawing::Clear(0);
 
-			//last_window->bounds.x = Mouse::x;
-			//last_window->bounds.y = Mouse::y;
-			//last_window->active = 1;
-
 			HandleMouseInput();
 
 			PaintBackground();
@@ -123,6 +126,7 @@ namespace gui
 	void WindowManager::PaintBackground()
 	{
 		Drawing::FillRect(0, 0, Drawing::gc.width, Drawing::gc.height, col_desktop_bg, gc_background);
+		//Drawing::DrawImage(0, 0, gc_background.width, gc_background.height, bmp_background, gc_background);
 		Drawing::BitBlt(gc_background, 0, 0, gc_background.width, gc_background.height, Drawing::gc, 0, 0);
 	}
 
@@ -166,8 +170,6 @@ namespace gui
 			}
 		}
 
-		//Drawing::FillRect(0, 0, gc_cursor.width, gc_cursor.height, 0xFFFFFF, gc_cursor);
-		//Drawing::DrawRect(0, 0, gc_cursor.width, gc_cursor.height, 1, 0, gc_cursor);
 		Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, Drawing::gc, cursor_x, cursor_y, 1);
 	}
 
@@ -194,10 +196,8 @@ namespace gui
 
 				if (win)
 				{
-					if (win->id != active_window->id)
-						SetActiveWindow(win);
-
-
+					if (win->id != focused_window->id)
+						SetFocusedWindow(win);
 				}
 			}
 			else
@@ -207,16 +207,26 @@ namespace gui
 				int dx = cursor_x - mouse_click_L_info.click_x;
 				int dy = cursor_y - mouse_click_L_info.click_y;
 
-				if (!window_drag)
+				Window* win = GetWindowAtCursor();
+				if (win)
 				{
-					window_drag = 1;
-					window_drag_info.start_x = active_window->bounds.x;
-					window_drag_info.start_y = active_window->bounds.y;
+					if (!window_drag)
+					{
+						if (Rect(win->bounds.x, win->bounds.y, win->bounds.width, GUI_TITLEBAR_HEIGHT)
+							.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
+						{
+							window_drag = 1;
+							window_drag_info.window = win;
+							window_drag_info.start_x = win->bounds.x;
+							window_drag_info.start_y = win->bounds.y;
+						}
+					}
 				}
-				else
+
+				if (window_drag)
 				{
-					active_window->bounds.x = window_drag_info.start_x + dx;
-					active_window->bounds.y = window_drag_info.start_y + dy;
+					window_drag_info.window->bounds.x = window_drag_info.start_x + dx;
+					window_drag_info.window->bounds.y = window_drag_info.start_y + dy;
 				}
 			}
 		}
@@ -257,34 +267,34 @@ namespace gui
 		return 0;
 	}
 
-	void WindowManager::SetActiveWindow(Window* new_active)
+	void WindowManager::SetFocusedWindow(Window* new_focused)
 	{
-		active_window = new_active;
+		focused_window = new_focused;
 
-		if (!active_window->active)
+		if (!focused_window->focused)
 		{
-			if (active_window != first_window)
+			if (focused_window != first_window)
 			{
-				if (active_window == last_window)
-					last_window = active_window->previous;
+				if (focused_window == last_window)
+					last_window = focused_window->previous;
 
-				active_window->previous->next = active_window->next;
-				active_window->next = first_window;
-				active_window->previous = 0;
+				focused_window->previous->next = focused_window->next;
+				focused_window->next = first_window;
+				focused_window->previous = 0;
 
-				first_window->previous = active_window;
-				first_window = active_window;
+				first_window->previous = focused_window;
+				first_window = focused_window;
 			}
 
-			active_window->SetActive(1);
+			focused_window->SetFocus(1);
 		}
 
 		Window* win = first_window;
 		while (win)
 		{
-			if (win != active_window && win->active)
+			if (win != focused_window && win->focused)
 			{
-				win->SetActive(0);
+				win->SetFocus(0);
 			}
 
 			win = win->next;

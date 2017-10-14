@@ -1,13 +1,16 @@
 #pragma once
 #include "Control.h"
 
+#define GUI_WINDOW_BORDER_WIDTH		1
+#define GUI_TITLEBAR_HEIGHT			28
+
 namespace gui
 {
 	enum WINDOW_STATE
 	{
-		WINDOW_STATE_DEFAULT,
+		WINDOW_STATE_NORMAL,
 		WINDOW_STATE_MAXIMIZED,
-		WINDOW_STATE_HIDDEN
+		WINDOW_STATE_MINIMIZED
 	};
 
 	class Window
@@ -18,7 +21,7 @@ namespace gui
 		Rect bounds;
 
 		WINDOW_STATE state;
-		bool active;
+		bool focused;
 
 		Window* next;
 		Window* previous;
@@ -28,6 +31,7 @@ namespace gui
 		Control* last_child;
 
 		GC gc;
+		GC gc_content;
 
 		char* title;
 
@@ -37,10 +41,14 @@ namespace gui
 
 		void Paint();
 
-		void SetActive(bool active);
-
 	private:
 		void PaintWindow();
 		void PaintControls();
+
+	public:
+		void SetFocus(bool focus);
+		void SetState(WINDOW_STATE state);
+
+		Control* GetControlAt(int x, int y);
 	};
 }

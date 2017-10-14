@@ -51,7 +51,22 @@ struct GC
 {
 	int width;
 	int height;
+	int _width;
+	int _height;
 	uint32* framebuffer;
+
+	GC()
+	{ }
+
+	GC(int width, int height, uint32* framebuffer)
+	{
+		this->width = width;
+		this->height = height;
+		this->framebuffer = framebuffer;
+	}
+
+	GC(int width, int height, int x, int y, uint32* framebuffer) : GC(width, height, framebuffer + y * width + x)
+	{ }
 
 	inline int memsize()
 	{
@@ -99,7 +114,7 @@ public:
 	static void DrawRect(int x, int y, int w, int h, int width, uint32 c, GC gc = gc);
 	static void FillRect(int x, int y, int w, int h, uint32 c, GC gc = gc);
 
-	static void DrawImage(int x, int y, int w, int h, BMP bmp, GC gc = gc);
+	static void DrawImage(int x, int y, int w, int h, BMP* bmp, GC gc = gc);
 
 	static void DrawText(int x, int y, char* c, uint32 col, GC gc = gc);
 	static void DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc = gc);
