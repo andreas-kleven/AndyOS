@@ -32,9 +32,9 @@ GEngine::GEngine()
 	deltaTime = 1 / 100.0f;
 }
 
-void GEngine::StartGame(Game* game)
+void GEngine::StartGame(Game* game, GC gc)
 {
-	GL::Init();
+	GL::Init(gc);
 	active_game = game;
 
 	startTicks = PIT::ticks;
@@ -56,7 +56,7 @@ void GEngine::StartGame(Game* game)
 	ticks = PIT::ticks;
 
 	GL::MatrixMode(GL_PROJECTION);
-	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1024, 768, 90, 1, 10));
+	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10));
 	GL::MatrixMode(GL_MODELVIEW);
 
 	/*while (1)
@@ -77,9 +77,9 @@ void GEngine::StartGame(Game* game)
 			Point(200, 500)
 		};
 
-		Drawing::Clear(0);
+		//Drawing::Clear(0, gc);
 		Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
-		Drawing::Paint();
+		Drawing::Draw(gc);
 	}*/
 
 	while (1)
@@ -109,7 +109,7 @@ void GEngine::StartGame(Game* game)
 		if (Keyboard::GetKeyDown(KEY_TAB))
 		{
 			GL::MatrixMode(GL_PROJECTION);
-			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920, 1080, 90, 1, 10));
+			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * GL::gc_out.width, 1080 * GL::gc_out.height, 90, 1, 10));
 			GL::MatrixMode(GL_MODELVIEW);
 		}
 

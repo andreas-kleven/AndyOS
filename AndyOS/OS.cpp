@@ -14,6 +14,42 @@
 #include "Mandelbrot.h"
 #include "TextEdit.h"
 
+void GUI()
+{
+	gui::WindowManager::Init();
+
+	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+
+	//Task::InsertThread(Task::CreateThread(gui::WindowManager::Start));
+	gui::WindowManager::Start();
+	while (1);
+}
+
+GC gameGC;
+
+void render()
+{
+	while (1)
+	{
+		Drawing::BitBlt(gameGC, 0, 0, gameGC.width, gameGC.height, Drawing::gc_direct, 0, 0);
+	}
+}
+
+void Game()
+{
+	gameGC = Drawing::gc_direct;
+	//gameGC = GC::CreateGraphics(500, 500);
+	//Task::InsertThread(Task::CreateThread(render));
+
+	while (1)
+	{
+		MyGame* game = new MyGame();
+		GEngine* engine = new GEngine();
+		engine->StartGame(game, gameGC);
+	}
+}
+
 void OS::Main()
 {
 	ISO_FS::Init();
@@ -21,26 +57,8 @@ void OS::Main()
 
 	//Mandelbrot::Create(100, 100);
 
-	gui::WindowManager::Init();
-
-	//apps::RunTextEdit();
-	//apps::RunTextEdit();
-	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
-	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
-
-	gui::WindowManager::Start();
-	while (1);
-
-
-	///
-	while (1)
-	{
-		MyGame* game = new MyGame();
-		GEngine* engine = new GEngine();
-		engine->StartGame(game);
-	}
-	return;
-	///
+	GUI();
+	//Game();
 
 	PIT::Sleep(2000);
 	IPv4Address addr = Net::GatewayIPv4;

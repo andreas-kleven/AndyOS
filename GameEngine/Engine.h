@@ -15,7 +15,7 @@ public:
 
 	GEngine();
 
-	void StartGame(Game* game);
+	void StartGame(Game* game, GC gc);
 
 private:
 	std::List<Component*> all_components;

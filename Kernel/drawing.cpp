@@ -58,7 +58,7 @@ void Drawing::Draw(GC gc)
 
 void Drawing::Clear(uint32 c, GC gc)
 {
-	int pixels = gc.pixels();
+	/*int pixels = gc.pixels();
 	uint32* buffer = gc.framebuffer;
 
 	_asm
@@ -73,7 +73,9 @@ void Drawing::Clear(uint32 c, GC gc)
 			add edi, 4
 			dec ecx
 			jnz loop_set
-	}
+	}*/
+
+	FillRect(0, 0, gc.width, gc.height, c, gc);
 }
 
 void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1, bool alpha)

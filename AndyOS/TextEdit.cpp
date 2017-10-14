@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "keyboard.h"
 #include "task.h"
+#include "../3DGame/3DGame.h"
 
 using namespace gui;
 
@@ -21,11 +22,11 @@ namespace apps
 	void UpdateCanvas()
 	{
 		Canvas* canvas = tmp;
+		//Drawing::FillRect(0, 0, 300, 300, COLOR_MAGENTA, canvas->gc);
 
-		while (1)
-		{
-
-		}
+		MyGame* game = new MyGame();
+		GEngine* engine = new GEngine();
+		engine->StartGame(game, canvas->gc);
 	}
 
 	void RunTextEdit()
@@ -40,11 +41,9 @@ namespace apps
 
 		char buf[256];
 
-		Drawing::FillRect(0, 0, 300, 300, COLOR_MAGENTA, canvas->gc);
-		Drawing::DrawText(0, 0, "TEXT", COLOR_GREEN, canvas->gc);
-
 		tmp = canvas;
 		Task::InsertThread(Task::CreateThread(UpdateCanvas));
+		//UpdateCanvas();
 
 		while (1)
 		{

@@ -52,9 +52,9 @@ namespace gl
 
 		DrawTriangle2(v0, v1, v2, texture);
 
-		Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF);
-		Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00);
-		Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000);
+		Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, GL::gc_buf);
+		Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, GL::gc_buf);
+		Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, GL::gc_buf);
 	}
 
 	void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
@@ -65,17 +65,17 @@ namespace gl
 		int miny = min(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
 		int maxy = max(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
 
-		minx = clamp(minx, 0, (int)GL::m_width - 1);
-		maxx = clamp(maxx, 0, (int)GL::m_width - 1);
-		miny = clamp(miny, 0, (int)GL::m_height - 1);
-		maxy = clamp(maxy, 0, (int)GL::m_height - 1);
+		minx = clamp(minx, GL::gc_buf.x, (int)GL::m_width - 1);
+		maxx = clamp(maxx, GL::gc_buf.x, (int)GL::m_width - 1);
+		miny = clamp(miny, GL::gc_buf.y, (int)GL::m_height - 1);
+		maxy = clamp(maxy, GL::gc_buf.y, (int)GL::m_height - 1);
 
 		float area = EdgeFunction(v0.tmpPos, v1.tmpPos, v2.tmpPos);
 		float inv_area = 1 / area;
 
 		int line_delta = GL::m_width - (maxx - minx) - 1;
 
-		uint32* color_ptr = (uint32*)(Drawing::gc.framebuffer + miny * GL::m_width + minx);
+		uint32* color_ptr = (uint32*)(GL::gc_buf.framebuffer + miny * GL::m_stride + minx);
 		float* depth_ptr = (float*)(depth_buffer + miny * GL::m_width + minx);
 
 		float co[3][3] = {

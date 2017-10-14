@@ -5,9 +5,12 @@
 
 namespace gl
 {
-	uint32 GL::m_width = 1024;
-	uint32 GL::m_height = 768;
-	uint32 GL::m_stride = m_width * 4;
+	GC GL::gc_buf;
+	GC GL::gc_out;
+
+	uint32 GL::m_width;
+	uint32 GL::m_height;
+	uint32 GL::m_stride;
 
 	BMP* GL::m_textures[GL_MAX_TEXTURES];
 	int tex_index = 0;
@@ -26,8 +29,15 @@ namespace gl
 	Vertex* vert_ptr;
 
 
-	STATUS GL::Init()
+	STATUS GL::Init(GC gc)
 	{
+		gc_buf = GC::CreateGraphics(gc.width, gc.height);
+		gc_out = gc;
+
+		m_width = gc_buf.width;
+		m_height = gc_buf.height;
+		m_stride = gc_buf.stride;
+
 		tex_index = 0;
 		bound_tex = -1;
 		light_index = 0;
@@ -106,7 +116,7 @@ namespace gl
 
 	void GL::Clear(uint32 color)
 	{
-		Drawing::Clear(color);
+		Drawing::Clear(color, gc_buf);
 
 		float val = 1e100;
 		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
@@ -167,7 +177,8 @@ namespace gl
 
 	void GL::SwapBuffers()
 	{
-		Drawing::Draw();
+		//Drawing::Draw(gc);
+		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 	}
 
 

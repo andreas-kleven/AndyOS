@@ -22,13 +22,16 @@ namespace gl
 	static class GL
 	{
 	public:
+		static GC gc_buf;
+		static GC gc_out;
+
 		static uint32 m_width;
 		static uint32 m_height;
 		static uint32 m_stride;
 
 		static BMP* m_textures[];
 
-		static STATUS Init();
+		static STATUS Init(GC gc);
 
 		static int AddTexture(BMP* bmp);
 		static void BindTexture(int id);

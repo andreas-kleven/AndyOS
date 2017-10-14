@@ -72,8 +72,7 @@ namespace gui
 
 	void WindowManager::Start()
 	{
-		Thread* thread = Task::CreateThread(UpdateLoop);
-		Task::InsertThread(thread);
+		UpdateLoop();
 	}
 
 	Window* WindowManager::CreateWindow(char* title)
