@@ -101,8 +101,8 @@ void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int
 	w0 = clamp(w0, 0, min(src.width - x0, dst.width - x1));
 	h0 = clamp(h0, 0, min(src.height - y0, dst.height - y1));
 
-	uint32* srcPtr = src.framebuffer + src.stride * y0 + x0;
-	uint32* dstPtr = dst.framebuffer + dst.stride * y1 + x1;
+	uint32* srcPtr = src.framebuffer + src.stride * (y0 + gc.y) + (x0 + gc.x);
+	uint32* dstPtr = dst.framebuffer + dst.stride * (y1 + dst.y) + (x1 + dst.x);
 
 	int d0 = src.stride - w0;
 	int d1 = dst.stride - w0;

@@ -138,6 +138,9 @@
     <ClInclude Include="Message.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Canvas.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OS.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="Message.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Canvas.cpp">
+      <Filter>GUI\Controls</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

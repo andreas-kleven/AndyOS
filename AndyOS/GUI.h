@@ -3,6 +3,7 @@
 
 #include "Label.h"
 #include "Button.h"
+#include "Canvas.h"
 
 #define GUI_TASKBAR_HEIGHT		40
 

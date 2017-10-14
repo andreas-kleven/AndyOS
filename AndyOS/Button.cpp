@@ -36,6 +36,7 @@ namespace gui
 
 		case WM_MOUSELEAVE:
 			hover = 0;
+			pressed = 0;
 			break;
 
 		case WM_MOUSEDOWN:

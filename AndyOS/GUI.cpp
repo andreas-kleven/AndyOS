@@ -331,8 +331,10 @@ namespace gui
 				{
 					if (info.ctrl)
 					{
-						info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_CLICK, 0, 0));
 						info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_MOUSEUP, 0, 0));
+
+						if (info.ctrl == ctrl)
+							info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_CLICK, 0, 0));
 					}
 				}
 			}

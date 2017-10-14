@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="boot.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GUI.cpp" />
@@ -179,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="FileSystem.h" />

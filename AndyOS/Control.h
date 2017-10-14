@@ -27,6 +27,7 @@ namespace gui
 
 		Rect bounds;
 		GC gc;
+		bool separate_gc = 0;
 
 		Window* parent;
 		Control* next;

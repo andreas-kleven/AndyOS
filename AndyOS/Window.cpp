@@ -4,6 +4,7 @@
 
 #include "Label.h"
 #include "Button.h"
+#include "Canvas.h"
 
 namespace gui
 {
@@ -79,11 +80,18 @@ namespace gui
 		if (child_count == 0)
 			return;
 
-		Control* ctrl = first_child;
+		Control* ctrl = last_child;
 		while (ctrl)
 		{
 			ctrl->Paint();
-			ctrl = ctrl->next;
+
+			if (ctrl->separate_gc)
+			{
+				Rect bounds = ctrl->bounds;
+				Drawing::BitBlt(ctrl->gc, 0, 0, bounds.width, bounds.height, gc_content, bounds.x, bounds.y);
+			}
+
+			ctrl = ctrl->previous;
 		}
 	}
 
@@ -143,6 +151,10 @@ namespace gui
 			case CONTROL_TYPE_CHECKBOX:
 			break;*/
 
+		case CONTROL_TYPE_CANVAS:
+			ctrl = new Canvas();
+			break;
+
 		default:
 			return 0;
 		}
@@ -157,13 +169,22 @@ namespace gui
 		ctrl->next = 0;
 		ctrl->previous = 0;
 
-		ctrl->gc = GC(gc_content, ctrl->bounds);
+		if (ctrl->separate_gc)
+		{
+			ctrl->gc = GC::CreateGraphics(
+				clamp(ctrl->bounds.width, 0, gc_content.width),
+				clamp(ctrl->bounds.height, 0, gc_content.height));
+		}
+		else
+		{
+			ctrl->gc = GC(gc_content, ctrl->bounds);
+		}
 
 		if (child_count)
 		{
-			last_child->next = ctrl;
-			ctrl->previous = last_child;
-			last_child = ctrl;
+			first_child->previous = ctrl;
+			ctrl->next = first_child;
+			first_child = ctrl;
 		}
 		else
 		{
