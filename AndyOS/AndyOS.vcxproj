@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="boot.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="iso.cpp" />
     <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="arp.cpp" />
@@ -175,12 +177,14 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="iso.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Mandelbrot.h" />
     <ClInclude Include="math.h" />

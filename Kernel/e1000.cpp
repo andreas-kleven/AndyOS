@@ -361,7 +361,7 @@ void e1000_received(struct e1000 *e)
 
 					//Debug::Print("ARP RESPONSE\n");
 					uint32 c = Debug::color;
-					Debug::color = 0xFF0000;
+					Debug::color = 0xFFFF0000;
 					Debug::Dump(a->arp_spa, 6);
 					Debug::color = c;
 				}

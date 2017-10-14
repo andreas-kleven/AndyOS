@@ -18,14 +18,36 @@ STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 
 	screenBuffer = framebuffer;
 
-	gc.width = width;
-	gc.height = height;
-	gc.framebuffer = new uint32[gc.memsize()];
+	gc = GC::CreateGraphics(width, height);
 
-	gc_direct.width = width;
-	gc_direct.height = height;
+	gc_direct = gc;
 	gc_direct.framebuffer = framebuffer;
 	return STATUS_SUCCESS;
+}
+
+inline uint32 Drawing::BlendAlpha(uint32 src, uint32 dst)
+{
+	uint32 a = 0xFF & (src >> 24);
+
+	if (a == 0)
+		return dst;
+	
+	if (a == 0xFF)
+		return src;
+
+	uint32 rs = 0xFF & (src >> 16);
+	uint32 gs = 0xFF & (src >> 8);
+	uint32 bs = 0xFF & src;
+
+	uint32 rd = 0xFF & (dst >> 16);
+	uint32 gd = 0xFF & (dst >> 8);
+	uint32 bd = 0xFF & dst;
+
+	uint8 r = (rs * a + rd * (255 - a)) / 255;
+	uint8 g = (gs * a + gd * (255 - a)) / 255;
+	uint8 b = (bs * a + bd * (255 - a)) / 255;
+
+	return (0xFF << 24) | (r << 16) | (g << 8) | b;
 }
 
 void Drawing::Draw(GC gc)
@@ -79,11 +101,11 @@ void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int
 	w0 = clamp(w0, 0, min(src.width - x0, dst.width - x1));
 	h0 = clamp(h0, 0, min(src.height - y0, dst.height - y1));
 
-	uint32* srcPtr = src.framebuffer + src.width * y0 + x0;
-	uint32* dstPtr = dst.framebuffer + dst.width * y1 + x1;
+	uint32* srcPtr = src.framebuffer + src.stride * y0 + x0;
+	uint32* dstPtr = dst.framebuffer + dst.stride * y1 + x1;
 
-	int d0 = src.width - w0;
-	int d1 = dst.width - w0;
+	int d0 = src.stride - w0;
+	int d1 = dst.stride - w0;
 
 	if (alpha)
 	{
@@ -91,25 +113,7 @@ void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int
 		{
 			for (int _x = 0; _x < w0; _x++)
 			{
-				uint32 s = *srcPtr;
-				uint32 d = *dstPtr;
-
-				uint32 a = 0xFF & (s >> 24);
-
-				uint32 rs = 0xFF & (s >> 16);
-				uint32 gs = 0xFF & (s >> 8);
-				uint32 bs = 0xFF & s;
-
-				uint32 rd = 0xFF & (d >> 16);
-				uint32 gd = 0xFF & (d >> 8);
-				uint32 bd = 0xFF & d;
-
-				uint8 r = (rs * a + rd * (255 - a)) / 255;
-				uint8 g = (gs * a + gd * (255 - a)) / 255;
-				uint8 b = (bs * a + bd * (255 - a)) / 255;
-
-				*dstPtr++ = (r << 16) | (g << 8) | b;
-				srcPtr++;
+				*dstPtr++ = BlendAlpha(*srcPtr++, *dstPtr);
 			}
 
 			srcPtr += d0;
@@ -133,18 +137,16 @@ void Drawing::BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int
 
 void Drawing::SetPixel(int x, int y, uint32 c, GC gc)
 {
-	int width = gc.width;
-	int height = gc.height;
 	uint32* buffer = gc.framebuffer;
 
-	if (x >= width || x < 0)
+	if (x >= gc.width || x < 0)
 		return;
 
-	if (y >= height || y < 0)
+	if (y >= gc.height || y < 0)
 		return;
 
-	uint32* a = buffer + y * width + x;
-	*a = c;
+	uint32* a = buffer + (y + gc.y) * gc.stride + (x + gc.x);
+	*a = BlendAlpha(c, *a);
 }
 
 void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc)
@@ -296,22 +298,20 @@ void Drawing::DrawRect(int x, int y, int w, int h, int bw, uint32 c, GC gc)
 
 void Drawing::FillRect(int x, int y, int w, int h, uint32 c, GC gc)
 {
-	int width = gc.width;
-	int height = gc.height;
+	x = clamp(x, 0, gc.width);
+	y = clamp(y, 0, gc.height);
 
-	x = clamp(x, 0, width);
-	y = clamp(y, 0, height);
+	w = clamp(w, 0, gc.width - x);
+	h = clamp(h, 0, gc.height - y);
 
-	w = clamp(w, 0, width - x);
-	h = clamp(h, 0, height - y);
-
-	int delta = width - w;
-	uint32* buf = gc.framebuffer + y * width + x;
+	int delta = gc.stride - w;
+	uint32* buf = gc.framebuffer + (y + gc.y) * gc.stride + (x + gc.x);
 
 	for (int _y = 0; _y < h; _y++)
 	{
 		for (int _x = 0; _x < w; _x++)
 		{
+			//*buf++ = BlendAlpha(c, *buf);
 			*buf++ = c;
 		}
 		buf += delta;
@@ -343,8 +343,8 @@ void Drawing::DrawImage(int x, int y, int w, int h, BMP* bmp, GC gc)
 	w = clamp(w, 0, min(gc.width - x, bmp->width));
 	h = clamp(h, 0, min(gc.height - y, bmp->height));
 
-	int delta = gc.width - w;
-	uint32* dst = gc.framebuffer + (y + oy) * gc.width + (x + ox);
+	int delta = gc.stride - w;
+	uint32* dst = gc.framebuffer + (y + oy) * gc.stride + (x + ox);
 	uint32* src = bmp->pixels;
 
 	for (int _y = 0; _y < h; _y++)

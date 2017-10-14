@@ -7,8 +7,8 @@
 int Debug::x;
 int Debug::y;
 
-uint32 Debug::color = 0xFFFFFF;
-uint32 Debug::bcolor = 0;
+uint32 Debug::color = 0xFFFFFFFF;
+uint32 Debug::bcolor = 0xFF000000;
 
 void Debug::Print(char* str, ...)
 {

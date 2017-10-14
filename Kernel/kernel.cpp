@@ -58,7 +58,7 @@ void Kernel::Init(MULTIBOOT_INFO* bootinfo)
 	
 	Task::Init();
 
-	Debug::color = 0xFF00;
+	Debug::color = 0xFF00FF00;
 	PCI::Init();
 	/*PCI_DEVICE* dev = PCI::GetDevice(2, 0, 0);
 

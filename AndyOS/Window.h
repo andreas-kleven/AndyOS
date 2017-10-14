@@ -1,7 +1,7 @@
 #pragma once
 #include "Control.h"
 
-#define GUI_WINDOW_BORDER_WIDTH		1
+#define GUI_WINDOW_BORDER_WIDTH		2
 #define GUI_TITLEBAR_HEIGHT			28
 
 namespace gui

@@ -1,7 +1,17 @@
 #pragma once
 #include "definitions.h"
+#include "math.h"
 #include "font.h"
 #include "bmp.h"
+
+#define COLOR_WHITE		0xFFFFFFFF
+#define COLOR_BLACK		0xFF000000
+#define COLOR_RED		0xFFFF0000
+#define COLOR_GREEN		0xFF00FF00
+#define COLOR_BLUE		0xFF0000FF
+#define COLOR_CYAN		0xFF00FFFF
+#define COLOR_MAGENTA	0xFFFF00FF
+#define COLOR_YELLOW	0xFFFFFF00
 
 struct Point
 {
@@ -40,33 +50,36 @@ struct Rect
 
 	bool Contains(int x, int y)
 	{
-		return ((x >= this->x) 
+		return ((x >= this->x)
 			&& x <= (this->x + this->width)
-			&& (y >= this->y) 
+			&& (y >= this->y)
 			&& (y <= this->y + this->height));
 	}
 };
 
 struct GC
 {
+	int x;
+	int y;
 	int width;
 	int height;
-	int _width;
-	int _height;
+
+	int stride;
 	uint32* framebuffer;
 
 	GC()
 	{ }
 
-	GC(int width, int height, uint32* framebuffer)
+	GC(int x, int y, int width, int height, GC gc)
 	{
-		this->width = width;
-		this->height = height;
-		this->framebuffer = framebuffer;
-	}
+		this->x = x + gc.x;
+		this->y = y + gc.y;
+		this->width = clamp(width, 0, gc.width - x);
+		this->height = clamp(height, 0, gc.height - y);
 
-	GC(int width, int height, int x, int y, uint32* framebuffer) : GC(width, height, framebuffer + y * width + x)
-	{ }
+		this->stride = gc.stride;
+		this->framebuffer = gc.framebuffer;
+	}
 
 	inline int memsize()
 	{
@@ -81,8 +94,11 @@ struct GC
 	static GC CreateGraphics(int width, int height)
 	{
 		GC gc;
+		gc.x = 0;
+		gc.y = 0;
 		gc.width = width;
 		gc.height = height;
+		gc.stride = width;
 		gc.framebuffer = new uint32[width * height];
 		return gc;
 	}
@@ -100,6 +116,10 @@ public:
 
 	static STATUS Init(int width, int height, uint32* framebuffer);
 
+private:
+	static inline uint32 BlendAlpha(uint32 src, uint32 dst);
+
+public:
 	static void Draw(GC gc = gc);
 	static void Clear(uint32 c, GC gc = gc);
 

@@ -74,7 +74,7 @@ void INTERRUPT Exceptions::ISR6(uint32 cs, uint32 eip, uint32 eflags)
 
 	Debug::x = 0;
 	Debug::y = 1;
-	Debug::color = 0xFF0000;
+	Debug::color = 0xFFFF0000;
 
 	Debug::Print("0x%ux\t0x%ux\t0x%ux\t0x%ux\n", stack, cs, eip, eflags);
 	//Debug::Dump(stack, 256);

@@ -7,6 +7,7 @@ namespace gui
 
 	enum CONTROL_TYPE
 	{
+		CONTROL_TYPE_NONE,
 		CONTROL_TYPE_LABEL,
 		CONTROL_TYPE_BUTTON,
 		CONTROL_TYPE_TEXTBOX,
@@ -18,25 +19,18 @@ namespace gui
 	{
 	public:
 		int id;
+		CONTROL_TYPE type;
 
 		Rect bounds;
-
-		CONTROL_TYPE type;
+		GC gc;
 
 		Window* parent;
 		Control* next;
 		Control* previous;
 
+		uint32 background = 0;
+		uint32 foreground = 0;
+
 		virtual void Paint() {};
-	};
-
-	class Label : public Control
-	{
-	public:
-		char* text;
-
-		Label();
-
-		virtual void Paint();
 	};
 }

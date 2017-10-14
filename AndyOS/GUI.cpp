@@ -25,8 +25,8 @@ namespace gui
 		0x00, 0x00, 0x00, 0xFF000000, 0xFF000000, 0xFF000000, 0x00, 0x00
 	};
 
-	uint32 col_taskbar = 0xD0D0D0;
-	uint32 col_desktop_bg = 0x3399;
+	uint32 col_taskbar = 0xFFD0D0D0;
+	uint32 col_desktop_bg = 0xFF003399;
 
 	GC gc_background;
 	GC gc_taskbar;
@@ -275,13 +275,21 @@ namespace gui
 		{
 			if (focused_window != first_window)
 			{
-				if (focused_window == last_window)
+				if (focused_window == last_window && focused_window->previous)
 					last_window = focused_window->previous;
 
-				focused_window->previous->next = focused_window->next;
+				//Disconnect
+				if (focused_window->previous)
+					focused_window->previous->next = focused_window->next;
+				if (focused_window->next)
+					focused_window->next->previous = focused_window->previous;
+
+				//Insert first
 				focused_window->next = first_window;
 				focused_window->previous = 0;
 
+				if (first_window->next)
+					first_window->next->previous = first_window;
 				first_window->previous = focused_window;
 				first_window = focused_window;
 			}

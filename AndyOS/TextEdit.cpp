@@ -11,6 +11,7 @@ void apps::RunTextEdit()
 
 	Label* lbl = new Label();
 	lbl->text = "Hello";
+	lbl->bounds = Rect(100, 50, 100, 16);
 
 	win->AddControl(lbl);
 

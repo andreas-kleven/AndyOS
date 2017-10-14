@@ -1,6 +1,9 @@
 #pragma once
 #include "Window.h"
 
+#include "Label.h"
+#include "Button.h"
+
 #define GUI_TASKBAR_HEIGHT		40
 
 namespace gui

@@ -31,6 +31,9 @@
     <Filter Include="Apps\Mandelbrot">
       <UniqueIdentifier>{b3eedd11-3f41-4b3f-a100-0f7e5fb12624}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\Controls">
+      <UniqueIdentifier>{a7c3d4ce-4a9b-45c1-82b1-03a637574712}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -123,6 +126,12 @@
     <ClInclude Include="Mandelbrot.h">
       <Filter>Apps\Mandelbrot</Filter>
     </ClInclude>
+    <ClInclude Include="Label.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OS.cpp">
@@ -202,6 +211,12 @@
     </ClCompile>
     <ClCompile Include="Mandelbrot.cpp">
       <Filter>Apps\Mandelbrot</Filter>
+    </ClCompile>
+    <ClCompile Include="Label.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>GUI\Controls</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -296,7 +296,7 @@ void GEngine::Collision()
 	}
 	while (1);*/
 
-	/*Debug::color = 0xFFFF00;
+	/*Debug::color = 0xFFFFFF00;
 	Debug::Print("%f\n", atan2(1, 1));
 	Debug::Print("%f\n", tan(atan(4)));
 	Debug::Print("%f\n", atan(PIT::ticks / 1000.0f) - PIT::ticks / 1000.0f);
@@ -310,7 +310,7 @@ void GEngine::Collision()
 	Debug::Print("%f\t%f\t%f\n", ve.x, ve.y, ve.z);
 	Debug::Print("%f\t%f\t%f\n", start.x, start.y, start.z);
 
-	Debug::color = 0xFF00;*/
+	Debug::color = 0xFF00FF00;*/
 
 	float hjk = (PIT::ticks % 2000) / 2000.0f;
 	Debug::Print("%f %f\n", (asin(sin(hjk)) - hjk) * 1000, 0);
@@ -343,14 +343,14 @@ void GEngine::Collision()
 
 				if (test.TestIntersection(*a, *b, &mtv, man, count))
 				{
-					Debug::color = 0xFFFFFF;
+					Debug::color = 0xFFFFFFFF;
 
 					//a->velocity = Vector3(0, 0, 0);
 					a->parent->transform.position += mtv;
 
 					//Debug::Print("COLLISION");
 
-					Debug::color = 0xFF0000;
+					Debug::color = 0xFFFF0000;
 					for (int p = 0; p < count; p++)
 					{
 						Manifold& m = man[p];
@@ -358,7 +358,7 @@ void GEngine::Collision()
 						int h = m.Bod1 == a;
 						Debug::Print("%i %i\t%f %f %f\n", p, h, m.Point.x, m.Point.y, m.Point.z);
 					}
-					Debug::color = 0xFF00;
+					Debug::color = 0xFF00FF00;
 
 					if (count == 0)
 						continue;
@@ -467,12 +467,12 @@ void GEngine::Collision()
 						pha->velocity = vaf;
 						phb->velocity = -vbf;
 
-						Debug::color = 0xFF;
+						Debug::color = 0xFF0000FF;
 						Debug::Print("%f\t%f\t%f\n", vaf.x, vaf.y, vaf.z);
 						Debug::Print("%f\t%f\t%f\n\n", vbf.x, vbf.y, vbf.z);
 						Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
 						Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
-						Debug::color = 0xFF00;
+						Debug::color = 0xFF00FF00;
 
 						pha->angularVelocity = waf;
 						phb->angularVelocity = wbf;*/
@@ -543,10 +543,10 @@ void GEngine::Collision()
 							totalra -= waf;
 							totalrb += wbf;
 
-							//Debug::color = 0xFF;
+							//Debug::color = 0xFF0000FF;
 							//Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
 							//Debug::Print("%f\t%f\t%f\n", wbf.x, wbf.y, wbf.z);
-							//Debug::color = 0xFF00;
+							//Debug::color = 0xFF00FF00;
 
 							//Debug::Print("J: %f\n", j);
 						}
