@@ -96,14 +96,18 @@ void stuff()
 }
 #pragma optimize("", on)
 
-void Mandelbrot::Create(int width, int height)
+Mandelbrot::Mandelbrot(GC gc)
+{
+	this->gc_out = gc;
+	this->gc_buf = GC::CreateGraphics(gc.width, gc.height);
+}
+
+void Mandelbrot::Run()
 {
 	//stuff();
 
 	Debug::Print("Start\n");
 
-	width = 768;
-	height = width;
 	//Complex z(1, 1);
 	//z.Square();
 
@@ -130,7 +134,7 @@ void Mandelbrot::Create(int width, int height)
 	while (1)
 	{
 		double asd0 = zoom;
-		double asd1 = asd0 / width;
+		double asd1 = asd0 / gc_buf.width;
 		//double ofx = (Mouse::x - width / 2) / (double)width;
 		//double ofy = (Mouse::y - height / 2) / (double)width;
 
@@ -144,12 +148,12 @@ void Mandelbrot::Create(int width, int height)
 
 		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
 
-		Drawing::Clear(0);
+		Drawing::Clear(0, gc_buf);
 		Debug::x = 0;
 		Debug::y = 0;
 
 		int index = 0;
-		uint32* buf = Drawing::gc.framebuffer;
+		uint32* buf = gc_buf.framebuffer + gc_buf.y * gc_buf.stride + gc_buf.x;
 
 		double Cx;
 		double Cy;
@@ -158,12 +162,12 @@ void Mandelbrot::Create(int width, int height)
 		double Zx2 = 0;
 		double Zy2 = 0;
 
-		for (int _y = 0; _y < height; _y++)
+		for (int _y = 0; _y < gc_buf.height; _y++)
 		{
-			for (int _x = 0; _x < width; _x++)
+			for (int _x = 0; _x < gc_buf.width; _x++)
 			{
-				Cx = (_x - width / 2) * asd1 + ofx;
-				Cy = (_y - height / 2) * asd1 + ofy;
+				Cx = (_x - gc_buf.width / 2) * asd1 + ofx;
+				Cy = (_y - gc_buf.height / 2) * asd1 + ofy;
 				Zx = 0;
 				Zy = 0;
 				Zx2 = 0;
@@ -294,11 +298,11 @@ void Mandelbrot::Create(int width, int height)
 				VBE::SetPixel(_x, _y, color);*/
 			}
 
-			index += 1024 - width;
-			buf += 1024 - width;
+			index += gc_buf.stride - gc_buf.width;
+			buf += gc_buf.stride - gc_buf.width;
 		}
 
-		Drawing::Draw();
+		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 
 		int delta_ticks = (PIT::ticks - ticks);
 		delta = delta_ticks / 1000.0f;

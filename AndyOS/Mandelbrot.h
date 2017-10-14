@@ -1,7 +1,13 @@
 #pragma once
+#include "drawing.h"
 
-static class Mandelbrot
+class Mandelbrot
 {
 public:
-	static void Create(int width, int height);
+	Mandelbrot(GC gc_out);
+	void Run();
+
+private:
+	GC gc_buf;
+	GC gc_out;
 };

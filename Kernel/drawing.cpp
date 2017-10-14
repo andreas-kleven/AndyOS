@@ -52,8 +52,8 @@ inline uint32 Drawing::BlendAlpha(uint32 src, uint32 dst)
 
 void Drawing::Draw(GC gc)
 {
-	memcpy_fast_128(screenBuffer, gc.framebuffer, gc.memsize());
-	//memcpy((uint32*)gc.framebuffer, gc.framebuffer, gc.memsize());
+	//memcpy_fast_128(screenBuffer, gc.framebuffer, gc.memsize());
+	memcpy(screenBuffer, gc.framebuffer, gc.memsize());
 }
 
 void Drawing::Clear(uint32 c, GC gc)

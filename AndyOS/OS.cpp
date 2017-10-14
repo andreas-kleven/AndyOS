@@ -19,11 +19,10 @@ void GUI()
 	gui::WindowManager::Init();
 
 	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
-	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
 
 	//Task::InsertThread(Task::CreateThread(gui::WindowManager::Start));
 	gui::WindowManager::Start();
-	while (1);
 }
 
 GC gameGC;
@@ -55,10 +54,13 @@ void OS::Main()
 	ISO_FS::Init();
 	//Net::Init();
 
-	//Mandelbrot::Create(100, 100);
+	//Mandelbrot mandelbrot(Drawing::gc_direct);
+	//mandelbrot.Run();
 
 	GUI();
 	//Game();
+
+	while (1);
 
 	PIT::Sleep(2000);
 	IPv4Address addr = Net::GatewayIPv4;

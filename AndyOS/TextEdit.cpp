@@ -4,7 +4,9 @@
 #include "stdio.h"
 #include "keyboard.h"
 #include "task.h"
+
 #include "../3DGame/3DGame.h"
+#include "Mandelbrot.h"
 
 using namespace gui;
 
@@ -18,22 +20,35 @@ using namespace gui;
 
 namespace apps
 {
-	Canvas* tmp;
+	Canvas* tmp1 = 0;
+	Canvas* tmp2 = 0;
 	void UpdateCanvas()
 	{
-		Canvas* canvas = tmp;
+		Canvas* canvas;
+		canvas = tmp2 ? tmp2 : tmp1;
+
 		//Drawing::FillRect(0, 0, 300, 300, COLOR_MAGENTA, canvas->gc);
 
-		MyGame* game = new MyGame();
-		GEngine* engine = new GEngine();
-		engine->StartGame(game, canvas->gc);
+		if (canvas == tmp1)
+		{
+			Mandelbrot mandelbrot(canvas->gc);
+			mandelbrot.Run();
+		}
+		else
+		{
+			MyGame* game = new MyGame();
+			GEngine* engine = new GEngine();
+			engine->StartGame(game, canvas->gc);
+		}
+
+		while (1);
 	}
 
 	void RunTextEdit()
 	{
 		Window* wnd = WindowManager::CreateWindow("Title");
 
-		Canvas* canvas = (Canvas*)wnd->CreateControl(CONTROL_TYPE_CANVAS, "", 10, 10, 300, 300, ID_CANVAS);
+		//Canvas* canvas = (Canvas*)wnd->CreateControl(CONTROL_TYPE_CANVAS, "", 10, 10, 300, 300, ID_CANVAS);
 		Label* lbl1 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Label", 100, 50, 100, 16, ID_LBL_1);
 		Label* lbl2 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "", 100, 100, 100, 16, ID_LBL_2);
 		Button* btn1 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Button", 10, 10, 80, 20, ID_BTN_1);
@@ -41,9 +56,13 @@ namespace apps
 
 		char buf[256];
 
-		tmp = canvas;
+		/*if (!tmp1)
+			tmp1 = canvas;
+		else
+			tmp2 = canvas;
+
 		Task::InsertThread(Task::CreateThread(UpdateCanvas));
-		//UpdateCanvas();
+		//UpdateCanvas();*/
 
 		while (1)
 		{
