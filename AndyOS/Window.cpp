@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Debug.h"
+#include "hal.h"
 
 #include "Label.h"
 #include "Button.h"
@@ -173,18 +174,30 @@ namespace gui
 	}
 
 
-	WINDOW_MESSAGE Window::GetMessage()
+	WND_MSG Window::GetMessage()
 	{
-		while (!b_message) 
+		while (!b_message)
 			_asm pause
 
 		b_message = 0;
 		return message;
 	}
 
-	void Window::ReceiveSendMessage(WINDOW_MESSAGE msg)
+	void Window::ReceiveSendMessage(WND_MSG msg)
 	{
 		message = msg;
 		b_message = 1;
+	}
+
+	void Window::DispatchMessage(WND_MSG msg)
+	{
+		Control* ctrl = first_child;
+		while (ctrl)
+		{
+			if (ctrl->id == msg.id)
+				ctrl->ReceiveSendMessage(msg);
+
+			ctrl = ctrl->next;
+		}
 	}
 }

@@ -25,7 +25,7 @@ void OS::Main()
 
 	//apps::RunTextEdit();
 	//apps::RunTextEdit();
-	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+	//Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
 	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
 
 	gui::WindowManager::Start();

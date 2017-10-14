@@ -135,6 +135,9 @@
     <ClInclude Include="GUIApi.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OS.cpp">
@@ -220,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

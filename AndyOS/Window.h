@@ -37,7 +37,7 @@ namespace gui
 		char* title;
 
 		bool b_message = 0;
-		WINDOW_MESSAGE message;
+		WND_MSG message;
 
 		Window();
 
@@ -49,10 +49,14 @@ namespace gui
 		Control* CreateControl(CONTROL_TYPE type, char* name, int x, int y, int width, int height, int id);
 		Control* GetControlAt(int x, int y);
 
-		WINDOW_MESSAGE GetMessage();
-		void ReceiveSendMessage(WINDOW_MESSAGE msg);
+		WND_MSG GetMessage();
+		void ReceiveSendMessage(WND_MSG msg);
+
+		void DispatchMessage(WND_MSG msg);
 
 	private:
+		WND_MSG_QUEUE msg_queue;
+
 		void PaintWindow();
 		void PaintControls();
 	};

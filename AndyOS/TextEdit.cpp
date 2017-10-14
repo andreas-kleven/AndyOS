@@ -5,6 +5,7 @@
 
 using namespace gui;
 
+#define ID_LBL_1 100
 #define ID_BTN_1 101
 
 namespace apps
@@ -13,12 +14,13 @@ namespace apps
 	{
 		Window* wnd = WindowManager::CreateWindow("TextEdit");
 
-		Label* lbl = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Hello", 100, 50, 100, 16, 0);
+		Label* lbl = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Hello", 100, 50, 100, 16, ID_LBL_1);
 		Button* btn = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Button", 10, 10, 80, 20, ID_BTN_1);
 
 		while (1)
 		{
-			WINDOW_MESSAGE msg = wnd->GetMessage();
+			WND_MSG msg = wnd->GetMessage();
+			wnd->DispatchMessage(msg);
 
 			switch (msg.type)
 			{

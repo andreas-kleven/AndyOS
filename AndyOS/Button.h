@@ -9,5 +9,6 @@ namespace gui
 		Button();
 
 		virtual void Paint();
+		virtual void ReceiveSendMessage(WND_MSG msg);
 	};
 }

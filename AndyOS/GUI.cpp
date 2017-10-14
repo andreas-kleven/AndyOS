@@ -46,12 +46,15 @@ namespace gui
 	bool mouse_click_L = 0;
 	bool mouse_click_R = 0;
 	bool mouse_click_M = 0;
-	bool window_drag;
+	bool window_drag = 0;
 
 	MOUSE_CLICK_INFO mouse_click_L_info;
 	MOUSE_CLICK_INFO mouse_click_R_info;
 	MOUSE_CLICK_INFO mouse_click_M_info;
 	WINDOW_DRAG_INFO window_drag_info;
+
+	Window* hover_window = 0;
+	Control* hover_control = 0;
 
 	STATUS WindowManager::Init()
 	{
@@ -194,6 +197,42 @@ namespace gui
 
 		int time = PIT::ticks;
 
+		Window* wnd = GetWindowAtCursor();
+		Control* ctrl = 0;
+		if (wnd)
+			ctrl = wnd->GetControlAt(cursor_x, cursor_y);
+
+
+		if (wnd != hover_window)
+		{
+			if (hover_window)
+			{
+				wnd->ReceiveSendMessage(WND_MSG(wnd->id, WM_MOUSELEAVE, 0, 0));
+			}
+
+			if (wnd)
+			{
+				wnd->ReceiveSendMessage(WND_MSG(wnd->id, WM_MOUSEENTER, 0, 0));
+			}
+
+			hover_window = wnd;
+		}
+
+		if (ctrl != hover_control)
+		{
+			if (hover_control)
+			{
+				wnd->ReceiveSendMessage(WND_MSG(hover_control->id, WM_MOUSELEAVE, 0, 0));
+			}
+
+			if (ctrl)
+			{
+				wnd->ReceiveSendMessage(WND_MSG(ctrl->id, WM_MOUSEENTER, 0, 0));
+			}
+
+			hover_control = ctrl;
+		}
+
 		if (Mouse::mouse_L)
 		{
 			if (!mouse_click_L)
@@ -205,16 +244,16 @@ namespace gui
 				mouse_click_L_info.click_x = cursor_x;
 				mouse_click_L_info.click_y = cursor_y;
 
-				Window* wnd = GetWindowAtCursor();
 				mouse_click_L_info.window = wnd;
 
 				if (wnd)
 				{
-					Control* ctrl = wnd->GetControlAt(cursor_x, cursor_y);
 					mouse_click_L_info.ctrl = ctrl;
 
 					if (wnd->id != focused_window->id)
 						SetFocusedWindow(wnd);
+
+					wnd->ReceiveSendMessage(WND_MSG(ctrl->id, WM_MOUSEDOWN, 0, 0));
 				}
 			}
 			else
@@ -224,7 +263,6 @@ namespace gui
 				int dx = cursor_x - mouse_click_L_info.click_x;
 				int dy = cursor_y - mouse_click_L_info.click_y;
 
-				Window* wnd = GetWindowAtCursor();
 				if (wnd)
 				{
 					if (!window_drag && (dx != 0 || dy != 0))
@@ -268,8 +306,8 @@ namespace gui
 				{
 					if (info.ctrl)
 					{
-						WINDOW_MESSAGE msg(info.ctrl->id, WM_CLICK, 0, 0);
-						info.window->ReceiveSendMessage(msg);
+						info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_CLICK, 0, 0));
+						info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_MOUSEUP, 0, 0));
 					}
 				}
 			}
