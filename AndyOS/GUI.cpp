@@ -130,6 +130,7 @@ namespace gui
 			Drawing::Clear(0);
 
 			HandleMouseInput();
+			HandleKeyInput();
 
 			PaintBackground();
 			PaintWindows();
@@ -336,6 +337,21 @@ namespace gui
 							info.window->ReceiveSendMessage(WND_MSG(info.ctrl->id, WM_CLICK, 0, 0));
 					}
 				}
+			}
+		}
+	}
+
+	void WindowManager::HandleKeyInput()
+	{
+		KEY_PACKET pkt = Keyboard::GetLastKey();
+		if (pkt.key)
+		{
+			Keyboard::DiscardLastKey();
+
+			if (focused_window)
+			{
+				if (pkt.pressed)
+					focused_window->ReceiveSendMessage(WND_MSG(0, WM_KEY, pkt.key, pkt.character));
 			}
 		}
 	}

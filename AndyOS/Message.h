@@ -12,8 +12,9 @@ namespace gui
 		WM_MOUSEENTER,
 		WM_MOUSELEAVE,
 		WM_MOUSEDOWN,
-		WM_MOUSEUP
+		WM_MOUSEUP,
 
+		WM_KEY
 	};
 
 	struct WND_MSG

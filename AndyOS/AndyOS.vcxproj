@@ -170,6 +170,7 @@
     <ClCompile Include="tcp.cpp" />
     <ClCompile Include="tcpsession.cpp" />
     <ClCompile Include="tcpsocket.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="TextEdit.cpp" />
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="udpsocket.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="tcpsession.h" />
     <ClInclude Include="tcpsocket.h" />
     <ClInclude Include="tcptypes.h" />
+    <ClInclude Include="TextBox.h" />
     <ClInclude Include="TextEdit.h" />
     <ClInclude Include="udp.h" />
     <ClInclude Include="udpsocket.h" />

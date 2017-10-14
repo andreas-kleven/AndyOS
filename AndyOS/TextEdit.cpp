@@ -16,7 +16,9 @@ using namespace gui;
 #define ID_BTN_1	200
 #define ID_BTN_2	201
 
-#define ID_CANVAS	301
+#define ID_TXT_1	300
+
+#define ID_CANVAS	900
 
 namespace apps
 {
@@ -53,6 +55,7 @@ namespace apps
 		Label* lbl2 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "", 100, 100, 100, 16, ID_LBL_2);
 		Button* btn1 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Button", 10, 10, 80, 20, ID_BTN_1);
 		Button* btn2 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Exit", 100, 10, 80, 20, ID_BTN_2);
+		TextBox* txt1 = (TextBox*)wnd->CreateControl(CONTROL_TYPE_TEXTBOX, "", 300, 10, 200, 20, ID_TXT_1);
 
 		char buf[256];
 
@@ -63,6 +66,11 @@ namespace apps
 
 		Task::InsertThread(Task::CreateThread(UpdateCanvas));
 		//UpdateCanvas();*/
+
+		//void* p;
+		//__asm { mov[p], offset update }
+		//
+		//Task::InsertThread(Task::CreateThread(p));
 
 		while (1)
 		{
@@ -103,25 +111,33 @@ namespace apps
 			lbl2->name = buf;
 		}
 
-		/*std::String text = lbl1->text;
+	//update:
+		//Mandelbrot mandelbrot(canvas->gc);
+		//mandelbrot.Run();
 
-		while (1)
+		//MyGame* game = new MyGame();
+		//GEngine* engine = new GEngine();
+		//engine->StartGame(game, canvas->gc);
+
+	/*std::String text = lbl1->text;
+
+	while (1)
+	{
+		Debug::x = 0;
+		Debug::y = 0;
+
+		KEY_PACKET pkt = Keyboard::GetLastKey();
+		if (pkt.key && pkt.pressed)
 		{
-			Debug::x = 0;
-			Debug::y = 0;
+			Keyboard::DiscardLastKey();
+			text += pkt.character;
+			lbl1->text = text.ToChar();
+		}
 
-			KEY_PACKET pkt = Keyboard::GetLastKey();
-			if (pkt.key && pkt.pressed)
-			{
-				Keyboard::DiscardLastKey();
-				text += pkt.character;
-				lbl1->text = text.ToChar();
-			}
+		//lbl1->x = Mouse::x;
+		//lbl1->y = Mouse::y;
 
-			//lbl1->x = Mouse::x;
-			//lbl1->y = Mouse::y;
-
-			_asm pause
-		}*/
+		_asm pause
+	}*/
 	}
 }

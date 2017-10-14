@@ -141,6 +141,9 @@
     <ClInclude Include="Canvas.h">
       <Filter>GUI\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="TextBox.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OS.cpp">
@@ -231,6 +234,9 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
       <Filter>GUI\Controls</Filter>
     </ClCompile>
   </ItemGroup>

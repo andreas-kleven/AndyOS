@@ -3,6 +3,7 @@
 
 #include "Label.h"
 #include "Button.h"
+#include "TextBox.h"
 #include "Canvas.h"
 
 #define GUI_TASKBAR_HEIGHT		40
@@ -49,6 +50,7 @@ namespace gui
 		static void PaintCursor();
 
 		static void HandleMouseInput();
+		static void HandleKeyInput();
 
 		static Window* GetWindowAtCursor();
 		static void SetFocusedWindow(Window* new_active);

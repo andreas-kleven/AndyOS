@@ -4,6 +4,7 @@
 
 #include "Label.h"
 #include "Button.h"
+#include "TextBox.h"
 #include "Canvas.h"
 
 namespace gui
@@ -144,9 +145,12 @@ namespace gui
 			ctrl = new Button();
 			break;
 
-			/*case CONTROL_TYPE_TEXTBOX:
+		case CONTROL_TYPE_TEXTBOX:
+			ctrl = new TextBox();
+			((TextBox*)ctrl)->text = name;
 			break;
-			case CONTROL_TYPE_RICHTEXT:
+
+			/*case CONTROL_TYPE_RICHTEXT:
 			break;
 			case CONTROL_TYPE_CHECKBOX:
 			break;*/
@@ -236,7 +240,7 @@ namespace gui
 		Control* ctrl = first_child;
 		while (ctrl)
 		{
-			if (ctrl->id == msg.id)
+			if (ctrl->id == msg.id || msg.id == 0)
 				ctrl->ReceiveSendMessage(msg);
 
 			ctrl = ctrl->next;
