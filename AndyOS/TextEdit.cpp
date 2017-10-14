@@ -5,34 +5,55 @@
 
 using namespace gui;
 
-void apps::RunTextEdit()
+#define ID_BTN_1 101
+
+namespace apps
 {
-	Window* win = WindowManager::CreateWindow("TextEdit");
-
-	Label* lbl = new Label();
-	lbl->text = "Hello";
-	lbl->bounds = Rect(100, 50, 100, 16);
-
-	win->AddControl(lbl);
-
-	/*std::String text = lbl->text;
-
-	while (1)
+	void RunTextEdit()
 	{
-		Debug::x = 0;
-		Debug::y = 0;
+		Window* wnd = WindowManager::CreateWindow("TextEdit");
 
-		KEY_PACKET pkt = Keyboard::GetLastKey();
-		if (pkt.key && pkt.pressed)
+		Label* lbl = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Hello", 100, 50, 100, 16, 0);
+		Button* btn = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Button", 10, 10, 80, 20, ID_BTN_1);
+
+		while (1)
 		{
-			Keyboard::DiscardLastKey();
-			text += pkt.character;
-			lbl->text = text.ToChar();
+			WINDOW_MESSAGE msg = wnd->GetMessage();
+
+			switch (msg.type)
+			{
+			case WM_CLICK:
+				switch (msg.id)
+				{
+				case ID_BTN_1:
+					if (!strcmp(btn->name, "Button"))
+						btn->name = "Clicked";
+					else
+						btn->name = "Button";
+					break;
+				}
+			}
 		}
 
-		//lbl->x = Mouse::x;
-		//lbl->y = Mouse::y;
+		/*std::String text = lbl->text;
 
-		_asm pause
-	}*/
+		while (1)
+		{
+			Debug::x = 0;
+			Debug::y = 0;
+
+			KEY_PACKET pkt = Keyboard::GetLastKey();
+			if (pkt.key && pkt.pressed)
+			{
+				Keyboard::DiscardLastKey();
+				text += pkt.character;
+				lbl->text = text.ToChar();
+			}
+
+			//lbl->x = Mouse::x;
+			//lbl->y = Mouse::y;
+
+			_asm pause
+		}*/
+	}
 }

@@ -29,26 +29,31 @@ namespace gui
 		int children_count;
 		Control* first_child;
 		Control* last_child;
+		//Control* focused_child;
 
 		GC gc;
 		GC gc_content;
 
 		char* title;
 
+		bool b_message = 0;
+		WINDOW_MESSAGE message;
+
 		Window();
 
-		void AddControl(Control* ctrl);
-
 		void Paint();
+
+		void SetFocus(bool focus);
+		void SetState(WINDOW_STATE state);
+
+		Control* CreateControl(CONTROL_TYPE type, char* name, int x, int y, int width, int height, int id);
+		Control* GetControlAt(int x, int y);
+
+		WINDOW_MESSAGE GetMessage();
+		void ReceiveSendMessage(WINDOW_MESSAGE msg);
 
 	private:
 		void PaintWindow();
 		void PaintControls();
-
-	public:
-		void SetFocus(bool focus);
-		void SetState(WINDOW_STATE state);
-
-		Control* GetControlAt(int x, int y);
 	};
 }

@@ -5,6 +5,34 @@ namespace gui
 {
 	class Window;
 
+	enum WINDOW_MESSAGE_TYPE
+	{
+		WM_NONE,
+		WM_CLOSE,
+		WM_PAINT,
+		WM_CLICK
+
+	};
+
+	struct WINDOW_MESSAGE
+	{
+		int id;
+		WINDOW_MESSAGE_TYPE type;
+		int wParam;
+		int lParam;
+
+		WINDOW_MESSAGE()
+		{ }
+
+		WINDOW_MESSAGE(int id, WINDOW_MESSAGE_TYPE type, int wParam, int lParam)
+		{
+			this->id = id;
+			this->type = type;
+			this->wParam = wParam;
+			this->lParam = lParam;
+		}
+	};
+
 	enum CONTROL_TYPE
 	{
 		CONTROL_TYPE_NONE,
@@ -21,6 +49,8 @@ namespace gui
 		int id;
 		CONTROL_TYPE type;
 
+		char* name;
+
 		Rect bounds;
 		GC gc;
 
@@ -32,5 +62,10 @@ namespace gui
 		uint32 foreground = 0;
 
 		virtual void Paint() {};
+
+		void ReceiveSentMessage();
+
+	private:
+		void SendMessage();
 	};
 }

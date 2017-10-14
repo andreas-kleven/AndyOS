@@ -70,7 +70,7 @@ struct GC
 	GC()
 	{ }
 
-	GC(int x, int y, int width, int height, GC gc)
+	GC(GC gc, int x, int y, int width, int height)
 	{
 		this->x = x + gc.x;
 		this->y = y + gc.y;
@@ -80,6 +80,9 @@ struct GC
 		this->stride = gc.stride;
 		this->framebuffer = gc.framebuffer;
 	}
+
+	GC(GC gc, Rect bounds) : GC(gc, bounds.x, bounds.y, bounds.width, bounds.height)
+	{ }
 
 	inline int memsize()
 	{

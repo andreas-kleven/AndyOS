@@ -6,8 +6,6 @@ namespace gui
 	class Button : public Control
 	{
 	public:
-		char* text;
-
 		Button();
 
 		virtual void Paint();

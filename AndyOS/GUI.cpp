@@ -100,6 +100,8 @@ namespace gui
 	void WindowManager::UpdateLoop()
 	{
 		int lastTicks = PIT::ticks;
+		int sticks = PIT::ticks;
+		int tickcount = 0;
 
 		while (1)
 		{
@@ -116,8 +118,19 @@ namespace gui
 
 			int ticks = PIT::ticks;
 			int delta = ticks - lastTicks;
-			if (delta > 0)
-				Debug::Print("Delta: %i\tFPS: %i", delta, 1000 / delta);
+			int delta2 = ticks - sticks;
+
+			tickcount++;
+
+			if (delta2 != 0)
+				Debug::Print("Delta: %i\tFPS: %i", delta, tickcount * 1000 / delta2);
+
+			if (delta2 > 1000)
+			{
+				sticks = ticks;
+				tickcount = 0;
+			}
+
 			lastTicks = ticks;
 		}
 	}
@@ -135,16 +148,16 @@ namespace gui
 		if (window_count == 0)
 			return;
 
-		Window* win = last_window;
-		while (win)
+		Window* wnd = last_window;
+		while (wnd)
 		{
-			win->Paint();
+			wnd->Paint();
 
-			Rect& bounds = win->bounds;
-			GC& src = win->gc;
+			Rect& bounds = wnd->bounds;
+			GC& src = wnd->gc;
 			Drawing::BitBlt(src, 0, 0, src.width, src.height, Drawing::gc, bounds.x, bounds.y);
 
-			win = win->previous;
+			wnd = wnd->previous;
 		}
 	}
 
@@ -192,12 +205,16 @@ namespace gui
 				mouse_click_L_info.click_x = cursor_x;
 				mouse_click_L_info.click_y = cursor_y;
 
-				Window* win = GetWindowAtCursor();
+				Window* wnd = GetWindowAtCursor();
+				mouse_click_L_info.window = wnd;
 
-				if (win)
+				if (wnd)
 				{
-					if (win->id != focused_window->id)
-						SetFocusedWindow(win);
+					Control* ctrl = wnd->GetControlAt(cursor_x, cursor_y);
+					mouse_click_L_info.ctrl = ctrl;
+
+					if (wnd->id != focused_window->id)
+						SetFocusedWindow(wnd);
 				}
 			}
 			else
@@ -207,18 +224,18 @@ namespace gui
 				int dx = cursor_x - mouse_click_L_info.click_x;
 				int dy = cursor_y - mouse_click_L_info.click_y;
 
-				Window* win = GetWindowAtCursor();
-				if (win)
+				Window* wnd = GetWindowAtCursor();
+				if (wnd)
 				{
-					if (!window_drag)
+					if (!window_drag && (dx != 0 || dy != 0))
 					{
-						if (Rect(win->bounds.x, win->bounds.y, win->bounds.width, GUI_TITLEBAR_HEIGHT)
+						if (Rect(wnd->bounds.x, wnd->bounds.y, wnd->bounds.width, GUI_TITLEBAR_HEIGHT)
 							.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
 						{
 							window_drag = 1;
-							window_drag_info.window = win;
-							window_drag_info.start_x = win->bounds.x;
-							window_drag_info.start_y = win->bounds.y;
+							window_drag_info.window = wnd;
+							window_drag_info.start_x = wnd->bounds.x;
+							window_drag_info.start_y = wnd->bounds.y;
 						}
 					}
 				}
@@ -236,14 +253,24 @@ namespace gui
 			{
 				//Mouse up
 
+				MOUSE_CLICK_INFO& info = mouse_click_L_info;
+
 				mouse_click_L = 0;
-				mouse_click_L_info.rel_time = time;
-				mouse_click_L_info.rel_x = cursor_x;
-				mouse_click_L_info.rel_y = cursor_y;
+				info.rel_time = time;
+				info.rel_x = cursor_x;
+				info.rel_y = cursor_y;
 
 				if (window_drag)
 				{
 					window_drag = 0;
+				}
+				else
+				{
+					if (info.ctrl)
+					{
+						WINDOW_MESSAGE msg(info.ctrl->id, WM_CLICK, 0, 0);
+						info.window->ReceiveSendMessage(msg);
+					}
 				}
 			}
 		}
@@ -255,13 +282,13 @@ namespace gui
 		if (window_count == 0)
 			return 0;
 
-		Window* win = first_window;
-		while (win)
+		Window* wnd = first_window;
+		while (wnd)
 		{
-			if (win->bounds.Contains(cursor_x, cursor_y))
-				return win;
+			if (wnd->bounds.Contains(cursor_x, cursor_y))
+				return wnd;
 
-			win = win->next;
+			wnd = wnd->next;
 		}
 
 		return 0;
@@ -297,15 +324,15 @@ namespace gui
 			focused_window->SetFocus(1);
 		}
 
-		Window* win = first_window;
-		while (win)
+		Window* wnd = first_window;
+		while (wnd)
 		{
-			if (win != focused_window && win->focused)
+			if (wnd != focused_window && wnd->focused)
 			{
-				win->SetFocus(0);
+				wnd->SetFocus(0);
 			}
 
-			win = win->next;
+			wnd = wnd->next;
 		}
 	}
 }

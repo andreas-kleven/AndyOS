@@ -17,6 +17,6 @@ namespace gui
 		//GC gc = parent->gc_content;
 
 		//Drawing::FillRect(0, 0, gc.width, gc.height, 0xFFFF, gc);
-		Drawing::DrawText(0, 0, text, foreground, background, gc);
+		Drawing::DrawText(0, 0, name, foreground, background, gc);
 	}
 }

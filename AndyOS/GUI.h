@@ -10,6 +10,9 @@ namespace gui
 {
 	struct MOUSE_CLICK_INFO
 	{
+		Window* window;
+		Control* ctrl;
+
 		int click_time;
 		int click_x;
 		int click_y;

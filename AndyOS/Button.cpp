@@ -1,22 +1,21 @@
 #include "Button.h"
 #include "Window.h"
 #include "drawing.h"
+#include "debug.h"
 
 namespace gui
 {
 	Button::Button()
 	{
-		type = CONTROL_TYPE_LABEL;
+		type = CONTROL_TYPE_BUTTON;
 
-		foreground = 0xFF000000;
-		background = 0;
+		foreground = COLOR_BLACK;
+		background = COLOR_CYAN;
 	}
 
 	void Button::Paint()
 	{
-		//GC gc = parent->gc_content;
-
-		//Drawing::FillRect(0, 0, gc.width, gc.height, 0xFFFF, gc);
-		Drawing::DrawText(0, 0, text, foreground, background, gc);
+		Drawing::FillRect(0, 0, gc.width, gc.height, background, gc);
+		Drawing::DrawText(0, 0, name, foreground, gc);
 	}
 }

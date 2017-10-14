@@ -46,11 +46,13 @@ void Debug::Putc(char c, bool escape)
 		case '\b':
 			x = clamp(x - 1, 0, (int)(Drawing::gc.width / 8));
 			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor, Drawing::gc_direct);
+			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor, Drawing::gc);
 			break;
 
 		default:
 			char str[] = { c, '\0' };
 			Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc_direct);
+			Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc);
 			x++;
 			break;
 		}
@@ -59,6 +61,7 @@ void Debug::Putc(char c, bool escape)
 	{
 		char str[] = { c, '\0' };
 		Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc_direct);
+		Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc);
 		x++;
 	}
 

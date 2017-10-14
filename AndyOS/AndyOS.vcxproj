@@ -182,6 +182,7 @@
     <ClInclude Include="definitions.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="GUIApi.h" />
     <ClInclude Include="iso.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="Label.h" />
