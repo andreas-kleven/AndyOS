@@ -10,5 +10,9 @@ namespace gui
 
 		virtual void Paint();
 		virtual void ReceiveSendMessage(WND_MSG msg);
+
+	private:
+		bool hover = 0;
+		bool pressed = 0;
 	};
 }

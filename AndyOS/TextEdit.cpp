@@ -7,18 +7,20 @@
 using namespace gui;
 
 #define ID_LBL_1	100
-#define ID_BTN_1	101
-#define ID_BTN_2	102
+#define ID_LBL_2	101
+#define ID_BTN_1	200
+#define ID_BTN_2	201
 
 namespace apps
 {
 	void RunTextEdit()
 	{
-		Window* wnd = WindowManager::CreateWindow("TextEdit");
+		Window* wnd = WindowManager::CreateWindow("Title");
 
-		Label* lbl = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Hello", 100, 50, 100, 16, ID_LBL_1);
+		Label* lbl1 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Label", 100, 50, 100, 16, ID_LBL_1);
+		Label* lbl2 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "", 100, 100, 100, 16, ID_LBL_2);
 		Button* btn1 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Button", 10, 10, 80, 20, ID_BTN_1);
-		//Button* btn2 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Exit", 100, 10, 80, 20, ID_BTN_2);
+		Button* btn2 = (Button*)wnd->CreateControl(CONTROL_TYPE_BUTTON, "Exit", 100, 10, 80, 20, ID_BTN_2);
 
 		char buf[256];
 
@@ -33,27 +35,35 @@ namespace apps
 				switch (msg.id)
 				{
 				case ID_BTN_1:
-					if (!strcmp(lbl->name, "Hello"))
-						lbl->name = "Clicked";
+					if (!strcmp(lbl1->name, "Label"))
+					{
+						wnd->title = "Another title";
+						lbl1->name = "Clicked";
+						lbl1->foreground = 0xFFFF0000;
+					}
 					else
-						lbl->name = "Hello";
+					{
+						lbl1->name = "Label";
+						lbl1->foreground = 0xFF000000;
+					}
 					break;
 
 				case ID_BTN_2:
 					WindowManager::CloseWindow(wnd);
 					break;
 				}
+				break;
 
-			case WM_PAINT:
+			case WM_CLOSE:
 				wnd->Close();
 				break;
 			}
 
 			vprintf(buf, "%i %i", msg.type, msg.id);
-			lbl->name = buf;
+			lbl2->name = buf;
 		}
 
-		/*std::String text = lbl->text;
+		/*std::String text = lbl1->text;
 
 		while (1)
 		{
@@ -65,11 +75,11 @@ namespace apps
 			{
 				Keyboard::DiscardLastKey();
 				text += pkt.character;
-				lbl->text = text.ToChar();
+				lbl1->text = text.ToChar();
 			}
 
-			//lbl->x = Mouse::x;
-			//lbl->y = Mouse::y;
+			//lbl1->x = Mouse::x;
+			//lbl1->y = Mouse::y;
 
 			_asm pause
 		}*/

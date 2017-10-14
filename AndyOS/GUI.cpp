@@ -217,6 +217,8 @@ namespace gui
 		int time = PIT::ticks;
 
 		Window* wnd = GetWindowAtCursor();
+		Debug::Print("%i\n%i\n", hover_window, wnd->id);
+
 		Control* ctrl = 0;
 		if (wnd)
 			ctrl = wnd->GetControlAt(cursor_x, cursor_y);

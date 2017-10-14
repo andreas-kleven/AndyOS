@@ -13,6 +13,8 @@
 #define COLOR_MAGENTA	0xFFFF00FF
 #define COLOR_YELLOW	0xFFFFFF00
 
+#define COLOR_GRAY		0xFF7F7F7F
+
 struct Point
 {
 	int x;

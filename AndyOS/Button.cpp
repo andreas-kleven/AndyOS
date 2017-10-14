@@ -5,15 +5,12 @@
 
 namespace gui
 {
-	bool hover = 0;
-	bool pressed = 0;
-
 	Button::Button()
 	{
 		type = CONTROL_TYPE_BUTTON;
 
 		foreground = COLOR_BLACK;
-		background = COLOR_CYAN;
+		background = COLOR_GRAY;
 	}
 
 	void Button::Paint()
@@ -21,11 +18,12 @@ namespace gui
 		Drawing::FillRect(0, 0, gc.width, gc.height, background, gc);
 		Drawing::DrawText(0, 0, name, foreground, gc);
 
-		if (hover)
-			Drawing::DrawRect(0, 0, gc.width, gc.height, 1, COLOR_BLACK, gc);
-
 		if (pressed)
 			Drawing::DrawRect(0, 0, gc.width, gc.height, 1, COLOR_RED, gc);
+		else if (hover)
+			Drawing::DrawRect(0, 0, gc.width, gc.height, 1, COLOR_GREEN, gc);
+		else
+			Drawing::DrawRect(0, 0, gc.width, gc.height, 1, COLOR_BLACK, gc);
 	}
 
 	void Button::ReceiveSendMessage(WND_MSG msg)
