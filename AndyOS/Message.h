@@ -7,7 +7,7 @@ namespace gui
 		WM_NONE,
 		WM_CLOSE,
 		WM_PAINT,
-		WM_CLICK,
+		WM_COMMAND,
 
 		WM_MOUSEENTER,
 		WM_MOUSELEAVE,

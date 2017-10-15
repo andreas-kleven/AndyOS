@@ -29,7 +29,7 @@ void WebClient::Send(String addr, uint8* data, uint32 length)
 	Net::PrintIP("PARSED IP: ", ip);
 }
 
-int WebClient::Download(String addr, uint8 *& data)
+int WebClient::Download(String addr, uint8*& data)
 {
 	return 0;
 }

@@ -7,6 +7,7 @@ STATUS Net::Init()
 {
 	ARP::Init();
 	DNS::Init();
+	UDP::Init();
 	return STATUS_SUCCESS;
 }
 

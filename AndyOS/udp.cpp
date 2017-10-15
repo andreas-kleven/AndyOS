@@ -2,7 +2,29 @@
 #include "udp.h"
 #include "dhcp.h"
 #include "dns.h"
+#include "udpsocket.h"
 #include "debug.h"
+
+UdpSocket** sockets;
+
+STATUS UDP::Init()
+{
+	sockets = new UdpSocket*[UDP_MAX_PORTS];
+	memset(sockets, 0, sizeof(UdpSocket*) * UDP_MAX_PORTS);
+	return STATUS_SUCCESS;
+}
+
+UdpSocket* UDP::CreateSocket(int port)
+{
+	int src_port = 123;
+	UdpSocket* socket = new UdpSocket(src_port, port);
+
+	if (sockets[port])
+		return 0;
+
+	sockets[port] = socket;
+	return socket;
+}
 
 void UDP::Send(NetInterface* intf, NetPacket* pkt)
 {
@@ -48,17 +70,31 @@ void UDP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
 	//Debug::Dump(udp.data, udp.data_length, 1);
 	pkt->start += udp.header->length;
 
+	uint16 src_port = udp.header->src_port;
+	uint16 dst_port = udp.header->dst_port;
+
 	switch (udp.header->src_port)
 	{
 	case PORT_DNS:
 		DNS::Receive(intf, ip_hdr, &udp, pkt);
-		break;
+		return;
 
 	case PORT_DHCP_SRC:
 		DHCP::Receive(intf, ip_hdr, &udp, pkt);
-		break;
+		return;
 
 	default:
+		break;
+	}
+
+	switch (dst_port)
+	{
+	default:
+		UdpSocket* socket = sockets[dst_port];
+		if (socket)
+		{
+			socket->SetReceivedData(ip_hdr->src, udp.data, udp.data_length);
+		}
 		break;
 	}
 }

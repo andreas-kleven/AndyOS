@@ -60,13 +60,16 @@ void Kernel::Init(MULTIBOOT_INFO* bootinfo)
 
 	Debug::color = 0xFF00FF00;
 	PCI::Init();
-	/*PCI_DEVICE* dev = PCI::GetDevice(2, 0, 0);
+	
+	PCI_DEVICE* net_dev = PCI::GetDevice(2, 0, 0);
 
 	Debug::Print("Found network card\n");
 
 	KNet::Init();
-	E1000* e1000 = new E1000(dev);
-	KNet::intf = e1000;*/
+	E1000* e1000 = new E1000(net_dev);
+	KNet::intf = e1000;
+
+	return;
 
 	//ARP::Init();
 

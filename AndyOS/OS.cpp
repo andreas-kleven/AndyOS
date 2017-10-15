@@ -52,17 +52,17 @@ void Game()
 void OS::Main()
 {
 	ISO_FS::Init();
-	//Net::Init();
+	Net::Init();
 
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
 	//mandelbrot.Run();
 
-	GUI();
+	//GUI();
 	//Game();
 
-	while (1);
-
 	PIT::Sleep(2000);
+	GUI();
+
 	IPv4Address addr = Net::GatewayIPv4;
 	addr.n[3] = 1;
 
@@ -92,19 +92,29 @@ void OS::Main()
 	//addr.n[2] = 0xD1;
 	//addr.n[3] = 0x8E;
 
-	//UdpSocket us(addr, 1337);
-	//
-	//while (1)
-	//{
-	//	while (Keyboard::GetLastKey().key == KEY_INVALID || !Keyboard::GetLastKey().pressed);
-	//	KEY_PACKET key = Keyboard::GetLastKey();
-	//	Keyboard::DiscardLastKey();
-	//
-	//	char* data = "hello ..";
-	//	us.Send((uint8*)data, strlen(data));
-	//
-	//	Debug::Print("Sent\n");
-	//}
+	UdpSocket* us = UDP::CreateSocket(1881);
+	
+	Debug::Print("Ready\n");
+
+
+	while (1)
+	{
+		IPv4Address recA;
+		uint8* recB;
+		int length = us->Receive(recB, recA);
+		recB[length] = 0;
+
+		Debug::Print("%s\n", recB);
+
+		/*while (Keyboard::GetLastKey().key == KEY_INVALID || !Keyboard::GetLastKey().pressed);
+		KEY_PACKET key = Keyboard::GetLastKey();
+		Keyboard::DiscardLastKey();
+	
+		char* data = "hello ..";
+		us->Send(addr, (uint8*)data, strlen(data));
+	
+		Debug::Print("Sent\n");*/
+	}
 
 
 	int port = 80;
@@ -122,6 +132,8 @@ void OS::Main()
 		while (Keyboard::GetLastKey().key == KEY_INVALID || !Keyboard::GetLastKey().pressed);
 		KEY_PACKET key = Keyboard::GetLastKey();
 		Keyboard::DiscardLastKey();
+
+		Net::PrintIP("andyhk.ga: ", DNS::LookupAddress("andyhk.ga"));
 
 		//Debug::Print("Mem: %ui\n", Memory::num_free);
 		//while (1);
@@ -159,72 +171,6 @@ void OS::Main()
 			bool b = ts->Close();
 		}
 	}
-
-	/*char* buffer;
-	ISO_DIRECTORY* file = ISO_FS::FindFile("fox.bmp");
-	//ISO_FS::ReadFile("mountain.bmp", buffer);
-	//ATA::Read(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER, 0xAC0, buffer, 1);
-
-	ATA::Read(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER, file->locationLBA_LSB, buffer, file->filesize_LSB);
-	//Debug::Dump(buffer, 100);
-	//Debug::Dump(buffer, 100);
-	//Debug::Print("%i\n", *buffer);
-
-	BMP* bmp = new BMP(buffer);
-	Debug::Print("\n%i\n", bmp->width);
-	Debug::Print("%i\n", file->locationLBA_LSB);
-
-	for(int y = 0; y < bmp->height; y++)
-	{
-	for (int x = 0; x < bmp->width; x++)
-	{
-	uint32 pixel = bmp->pixels[y * bmp->width + x];
-	VBE::SetPixel(x, y, pixel);
-
-	//if (pixel == 0xFFFFFFFF)
-	//{
-	//	Debug::Print("%i\t%i\t%i", x, y, y * bmp->width + x);
-	//	while (1);
-	//}
-	}
-	}
-	Drawing::Paint();
-
-	Debug::Print("Done\n");
-	Debug::Print("%i\n", bmp->pixels[bmp->pixel_count - 1]);
-	while (1);*/
-
-	/*std::List<std::String> list;
-	std::String str = "a";
-	str.Split(list, '#');
-
-	Debug::Print("%i\n\n", list.Count());
-
-	for (int i = 0; i < list.Count(); i++)
-	{
-		Debug::Print("%i\t%s\n", i, list[i].ToChar());
-
-
-		//std::List<std::String> nl;
-		//list[i].Split(nl, ' ');
-		//for (int x = 0; x < nl.Count(); x++)
-		//{
-		//	Debug::Print("---%i\t%s\n", i, nl[x].ToChar());
-		//}
-	}
-
-	while (1);*/
-
-	//for (int i = 0; i < 100; i++)
-	//{
-	//	std::List<std::String> strings;
-	//
-	//	for (int j = 0; j < 10; j++)
-	//	{
-	//		strings.Add("hesdf");
-	//	}
-	//}
-	//while (1);
 }
 
 void OS::ThrowException(char* error, char* msg)
