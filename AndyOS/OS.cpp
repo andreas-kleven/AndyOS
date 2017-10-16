@@ -2,6 +2,7 @@
 #include "../3DGame/3DGame.h"
 #include "panic.h"
 #include "stdio.h"
+#include "ac97.h"
 #include "net.h"
 #include "tcpsocket.h"
 #include "udpsocket.h"
@@ -38,6 +39,8 @@ void render()
 void Game()
 {
 	gameGC = Drawing::gc_direct;
+	//gameGC = GC(Drawing::gc_direct, 100, 100, 800, 600);
+
 	//gameGC = GC::CreateGraphics(500, 500);
 	//Task::InsertThread(Task::CreateThread(render));
 
@@ -49,6 +52,23 @@ void Game()
 	}
 }
 
+void Audio()
+{
+	PCI_DEVICE* dev = PCI::GetDevice(4, 1, 0);
+
+	if (dev)
+	{
+		Debug::Print("Found audio device\n");
+		AC97::Init(dev);
+	}
+	else
+	{
+		Debug::Print("Audio device not found!\n");
+	}
+
+	while (1);
+}
+
 void OS::Main()
 {
 	ISO_FS::Init();
@@ -58,7 +78,8 @@ void OS::Main()
 	//mandelbrot.Run();
 
 	//GUI();
-	//Game();
+	Game();
+	//Audio();
 
 	PIT::Sleep(2000);
 	GUI();
@@ -93,7 +114,7 @@ void OS::Main()
 	//addr.n[3] = 0x8E;
 
 	UdpSocket* us = UDP::CreateSocket(1881);
-	
+
 	Debug::Print("Ready\n");
 
 
@@ -109,10 +130,10 @@ void OS::Main()
 		/*while (Keyboard::GetLastKey().key == KEY_INVALID || !Keyboard::GetLastKey().pressed);
 		KEY_PACKET key = Keyboard::GetLastKey();
 		Keyboard::DiscardLastKey();
-	
+
 		char* data = "hello ..";
 		us->Send(addr, (uint8*)data, strlen(data));
-	
+
 		Debug::Print("Sent\n");*/
 	}
 

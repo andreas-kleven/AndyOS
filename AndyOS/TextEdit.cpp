@@ -72,7 +72,7 @@ namespace apps
 	void RunTextEdit()
 	{
 		Window* wnd = WindowManager::CreateWindow("Title");
-
+		
 		//Canvas* canvas = (Canvas*)wnd->CreateControl(CONTROL_TYPE_CANVAS, "", 10, 10, 300, 300, ID_CANVAS);
 		Label* lbl1 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "Label", 100, 50, 300, 16, ID_LBL_1);
 		Label* lbl2 = (Label*)wnd->CreateControl(CONTROL_TYPE_LABEL, "", 100, 100, 300, 16, ID_LBL_2);

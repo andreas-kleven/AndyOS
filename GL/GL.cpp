@@ -31,7 +31,7 @@ namespace gl
 
 	STATUS GL::Init(GC gc)
 	{
-		gc_buf = GC::CreateGraphics(gc.width, gc.height);
+		gc_buf = GC(gc.width, gc.height);
 		gc_out = gc;
 
 		m_width = gc_buf.width;
@@ -177,7 +177,6 @@ namespace gl
 
 	void GL::SwapBuffers()
 	{
-		//Drawing::Draw(gc);
 		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 	}
 

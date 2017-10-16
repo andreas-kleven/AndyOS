@@ -99,7 +99,7 @@ void stuff()
 Mandelbrot::Mandelbrot(GC gc)
 {
 	this->gc_out = gc;
-	this->gc_buf = GC::CreateGraphics(gc.width, gc.height);
+	this->gc_buf = GC(gc.width, gc.height);
 }
 
 void Mandelbrot::Run()

@@ -38,8 +38,8 @@
 #define AC97_BDL_BUFFER_LEN       0x1000                /* Length of buffer in BDL */
 #define AC97_CL_GET_LENGTH(cl)    ((cl) & 0xFFFF)       /* Decode length from cl */
 #define AC97_CL_SET_LENGTH(cl, v) ((cl) = (v) & 0xFFFF) /* Encode length to cl */
-#define AC97_CL_BUP               ((uint32_t)1 << 30)             /* Buffer underrun policy in cl */
-#define AC97_CL_IOC               ((uint32_t)1 << 31)             /* Interrupt on completion flag in cl */
+#define AC97_CL_BUP               ((uint32)1 << 30)             /* Buffer underrun policy in cl */
+#define AC97_CL_IOC               ((uint32)1 << 31)             /* Interrupt on completion flag in cl */
 
 uint8* buf;
 
@@ -51,10 +51,12 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 	device.nambar = dev->configSpace.BAR0 & ~1;
 	device.nabmbar = dev->configSpace.BAR1 & ~1;
 	device.irq = dev->configSpace.interruptLine;
-	device.bdl = new AC97_BUFFER_ENTRY;
-	device.lvi = AC97_BDL_LEN;
+	device.bdl = new AC97_BUFFER_ENTRY[AC97_BDL_LEN];
+	memset(device.bdl, 0, AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY));
 
+	//Enable interrupts
 	IDT::SetISR(0x20 + device.irq, AC97_ISR);
+	outb(device.nabmbar + AC97_PO_CR, (1 << 3) | (1 << 4));
 
 	Debug::Print("0x%ux\n", device.nambar);
 	Debug::Print("0x%ux\n", device.nabmbar);
@@ -79,6 +81,7 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 	if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1))
 	{
 		/*Sample Rate fixed at 48kHz */
+		Debug::Print("Sample rate 48kHz\n");
 	}
 	else
 	{
@@ -88,6 +91,7 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 		if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1))
 		{
 			/*Sample Rate fixed at 48kHz */
+			Debug::Print("Sample rate 48kHz\n");
 		}
 
 		else
@@ -97,6 +101,7 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 			outw(device.nambar + AC97_NAM_LR_SPLRATE, 44100); // Stereo Samplerate: 44100 Hz 
 			PIT::Sleep(10);
 			//Actual Samplerate is now in AC97_NAM_FRONT_SPLRATE or AC97_NAM_LR_SPLRATE 
+			Debug::Print("Sample rate 44.1kHz\n");
 		}
 	}
 
@@ -127,50 +132,52 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 	/*for (i = 0; (i < 32) && size; i++)
 	{
 		device.bdl[i].buffer = buffers[i];
-		if (size >= 0x20000)  // Even more than 128 KB, so the buffer is full 
+		if (size >= 0x20000)  // Even more than 128 KB, so the buffer is full
 		{
-			// Maximum length is 0xFFFE and NOT 0xFFFF! 
-			//Left and right // must have the same number of samples, so this number must be even. 
+			// Maximum length is 0xFFFE and NOT 0xFFFF!
+			//Left and right // must have the same number of samples, so this number must be even.
 			device.bdl[i].length = 0xFFFE;
-			size -= 0x20000; // 128 & nbsp; kB away 
+			size -= 0x20000; // 128 & nbsp; kB away
 		}
 		else
 		{
-			// Half the length in bytes because 16-bit samples need two bytes 
+			// Half the length in bytes because 16-bit samples need two bytes
 			device.bdl[i].length = size >> 1;
-			size = 0; // Nix more now 
+			size = 0; // Nix more now
 		}
 
 		//device.bdl[i].length |= ((uint32)1 << 31);
 
 		device.bdl[i].ioc = 1;
 
-		if (size)  // Another buffer 
+		if (size)  // Another buffer
 			device.bdl[i].bup = 0;
-		else  // No more buffers 
+		else  // No more buffers
 		{
 			device.bdl[i].bup = 1;
-			final = i; // Last valid buffer is this here 
+			final = i; // Last valid buffer is this here
 		}
 
 		final = i;
 	}*/
 
-	int size = 65534;
+	int size = 0x1000;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < AC97_BDL_LEN; i++)
 	{
+		//memset(&device.bdl[i], 0, sizeof(AC97_BUFFER_ENTRY));
 		device.bdl[i].buffer = new uint8[size];
+		memset(device.bdl[i].buffer, 0, size);
 
-		for (int x = 0; x < size; x++)
-			device.bdl[i].buffer[x] = x;
+		//for (int x = 0; x < size; x++)
+		//	device.bdl[i].buffer[x] = sin(x);
 
 		device.bdl[i].length = size;
 		device.bdl[i].ioc = 1;
 		device.bdl[i].bup = 0;
 	}
 
-	device.lvi = 10;
+	device.lvi = 2;
 	device.bdl[device.lvi].bup = 1;
 
 	outl(device.nabmbar + AC97_NABM_POBDBAR, (uint32)device.bdl);
@@ -198,7 +205,7 @@ void INTERRUPT AC97::AC97_ISR()
 	if (1)
 	{
 		uint16 sr = inw(device.nabmbar + AC97_PO_SR);
-		//Debug::Print("%x   ", sr);
+		Debug::Print("SR: %x   \n", sr);
 
 		if (sr & AC97_X_SR_LVBCI)
 		{
@@ -210,7 +217,7 @@ void INTERRUPT AC97::AC97_ISR()
 		else if (sr & AC97_X_SR_BCIS)
 		{
 			Debug::Print("2\n");
-			//device.lvi = (device.lvi + 1) % AC97_BDL_LEN;
+			device.lvi = (device.lvi + 1) % AC97_BDL_LEN;
 			outw(device.nabmbar + AC97_PO_LVI, device.lvi);
 			outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_BCIS);
 		}

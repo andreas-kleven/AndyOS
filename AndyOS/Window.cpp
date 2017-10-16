@@ -27,7 +27,7 @@ namespace gui
 		bounds.width = Drawing::gc.width / 2;
 		bounds.height = Drawing::gc.height / 2;
 
-		gc = GC::CreateGraphics(bounds.width, bounds.height);
+		gc = GC(bounds.width, bounds.height);
 
 		int cw = gc.width - GUI_WINDOW_BORDER_WIDTH * 2;
 		int ch = gc.height - GUI_TITLEBAR_HEIGHT - GUI_WINDOW_BORDER_WIDTH;
@@ -175,8 +175,7 @@ namespace gui
 
 		if (ctrl->separate_gc)
 		{
-			ctrl->gc = GC::CreateGraphics(
-				clamp(ctrl->bounds.width, 0, gc_content.width),
+			ctrl->gc = GC(clamp(ctrl->bounds.width, 0, gc_content.width),
 				clamp(ctrl->bounds.height, 0, gc_content.height));
 		}
 		else

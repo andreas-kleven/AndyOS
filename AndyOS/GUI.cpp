@@ -58,9 +58,9 @@ namespace gui
 
 	STATUS WindowManager::Init()
 	{
-		gc_background = GC::CreateGraphics(Drawing::gc.width, Drawing::gc.height);
-		gc_taskbar = GC::CreateGraphics(Drawing::gc.width, GUI_TASKBAR_HEIGHT);
-		gc_cursor = GC::CreateGraphics(8, 14);
+		gc_background = GC(Drawing::gc.width, Drawing::gc.height);
+		gc_taskbar = GC(Drawing::gc.width, GUI_TASKBAR_HEIGHT);
+		gc_cursor = GC(8, 14);
 
 		//char* img_buf;
 		//if (!ISO_FS::ReadFile("img_hd.bmp", img_buf))

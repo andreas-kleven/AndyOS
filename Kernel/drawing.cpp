@@ -18,7 +18,7 @@ STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 
 	screenBuffer = framebuffer;
 
-	gc = GC::CreateGraphics(width, height);
+	gc = GC(width, height);
 
 	gc_direct = gc;
 	gc_direct.framebuffer = framebuffer;

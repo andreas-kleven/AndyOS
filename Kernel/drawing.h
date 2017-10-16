@@ -72,6 +72,16 @@ struct GC
 	GC()
 	{ }
 
+	GC(int width, int height)
+	{
+		this->x = 0;
+		this->y = 0;
+		this->width = width;
+		this->height = height;
+		this->stride = width;
+		this->framebuffer = new uint32[width * height];
+	}
+
 	GC(GC gc, int x, int y, int width, int height)
 	{
 		this->x = x + gc.x;
@@ -94,18 +104,6 @@ struct GC
 	inline int pixels()
 	{
 		return width * height;
-	}
-
-	static GC CreateGraphics(int width, int height)
-	{
-		GC gc;
-		gc.x = 0;
-		gc.y = 0;
-		gc.width = width;
-		gc.height = height;
-		gc.stride = width;
-		gc.framebuffer = new uint32[width * height];
-		return gc;
 	}
 };
 
