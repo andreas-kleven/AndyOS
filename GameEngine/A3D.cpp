@@ -28,6 +28,7 @@ A3D::A3D(char* buffer)
 	{
 		RAW_VERTEX raw = *vertex++;
 
+		//gl::ColRGB col(i % 3 == 0, i % 3 == 1, i % 3 == 2);
 		gl::ColRGB col(1, 1, 1);
 		gl::Vector4 norm = gl::Vector4(raw.norm_x, raw.norm_y, raw.norm_z, 1);
 		gl::Vertex vert(raw.pos_x, raw.pos_y, raw.pos_z, col, norm);

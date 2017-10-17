@@ -10,6 +10,7 @@
 #include "dhcp.h"
 #include "http.h"
 #include "task.h"
+#include "font.h"
 #include "GUI.h"
 
 #include "Mandelbrot.h"
@@ -46,9 +47,9 @@ void Game()
 
 	while (1)
 	{
+		GEngine* engine = new GEngine(gameGC);
 		MyGame* game = new MyGame();
-		GEngine* engine = new GEngine();
-		engine->StartGame(game, gameGC);
+		engine->StartGame(game);
 	}
 }
 
@@ -69,6 +70,21 @@ void Audio()
 	while (1);
 }
 
+void _Font()
+{
+	char* buf;
+	if (ISO_FS::ReadFile("arial.ttf", buf))
+	{
+		Font font(buf);
+	}
+	else
+	{
+		Debug::Print("Could not read font file!\n");
+	}
+
+	while (1);
+}
+
 void OS::Main()
 {
 	ISO_FS::Init();
@@ -78,8 +94,9 @@ void OS::Main()
 	//mandelbrot.Run();
 
 	//GUI();
-	Game();
+	//Game();
 	//Audio();
+	_Font();
 
 	PIT::Sleep(2000);
 	GUI();

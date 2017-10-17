@@ -49,6 +49,9 @@
     <Filter Include="Drawing\File Formats">
       <UniqueIdentifier>{24ef2580-cd77-46b1-be48-06c79ac44f1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FIle System">
+      <UniqueIdentifier>{9466eb91-61af-413d-8693-baa2a31f948f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vbe.cpp">
@@ -131,6 +134,18 @@
     </ClCompile>
     <ClCompile Include="bmp.cpp">
       <Filter>Drawing\File Formats</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="font.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>FIle System</Filter>
+    </ClCompile>
+    <ClCompile Include="iso.cpp">
+      <Filter>FIle System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +244,15 @@
     </ClInclude>
     <ClInclude Include="bmp.h">
       <Filter>Drawing\File Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem.h">
+      <Filter>FIle System</Filter>
+    </ClInclude>
+    <ClInclude Include="iso.h">
+      <Filter>FIle System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

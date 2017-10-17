@@ -52,9 +52,9 @@ namespace gl
 
 		DrawTriangle2(v0, v1, v2, texture);
 
-		Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, GL::gc_buf);
-		Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, GL::gc_buf);
-		Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, GL::gc_buf);
+		//Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, GL::gc_buf);
+		//Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, GL::gc_buf);
+		//Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, GL::gc_buf);
 	}
 
 	void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
@@ -123,13 +123,22 @@ namespace gl
 
 						float lum = 0.21 * r + 0.72 * g + 0.07 * b;
 
-						int X = texture->width * U;
-						int Y = texture->height * V;
+						if (texture)
+						{
+							int X = texture->width * U;
+							int Y = texture->height * V;
 
-						uint32 color = texture->pixels[(int)(Y * texture->width + X)];
-						r = lum * (uint8)(color >> 16);
-						g = lum * (uint8)(color >> 8);
-						b = lum * (uint8)(color >> 0);
+							uint32 color = texture->pixels[(int)(Y * texture->width + X)];
+							r = lum * (uint8)(color >> 16);
+							g = lum * (uint8)(color >> 8);
+							b = lum * (uint8)(color >> 0);
+						}
+						else
+						{
+							r *= 255;
+							g *= 255;
+							b *= 255;
+						}
 
 						int col = ((int)(r) << 16) | ((int)(g) << 8) | (int)(b);
 

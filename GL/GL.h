@@ -7,9 +7,9 @@
 #include "Color.h"
 #include "List.h"
 
-#define GL_MAX_TEXTURES 32
-#define GL_MAX_LIGHTSOURCES 4
-#define GL_MATRIX_STACK_LENGTH 32
+#define GL_MAX_TEXTURES			1024
+#define GL_MAX_LIGHTSOURCES		4
+#define GL_MATRIX_STACK_LENGTH	32
 
 enum GLMatrixMode
 {
@@ -29,7 +29,7 @@ namespace gl
 		static uint32 m_height;
 		static uint32 m_stride;
 
-		static BMP* m_textures[];
+		static BMP** m_textures;
 
 		static STATUS Init(GC gc);
 
@@ -58,6 +58,6 @@ namespace gl
 	private:
 		static Matrix4& SelectedMatrix();
 
-		static ColRGB (*LightingFunction)(int x, int y, int z);
+		static ColRGB (*LightingFunction)(int x, int y, int z, const Vector4& normal);
 	};
 }

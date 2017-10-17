@@ -65,9 +65,9 @@ void Kernel::Init(MULTIBOOT_INFO* bootinfo)
 
 	Debug::Print("Found network card\n");
 
-	//KNet::Init();
-	//E1000* e1000 = new E1000(net_dev);
-	//KNet::intf = e1000;
+	KNet::Init();
+	E1000* e1000 = new E1000(net_dev);
+	KNet::intf = e1000;
 
 	return;
 

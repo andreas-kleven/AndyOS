@@ -44,6 +44,7 @@ namespace gl
 	{
 		return ColRGB(r * f, g * f, b * f);
 	}
+
 	ColRGB ColRGB::operator*=(float f)
 	{
 		r = clamp(f, 0.f, 1.f);

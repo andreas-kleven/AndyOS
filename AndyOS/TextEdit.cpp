@@ -43,8 +43,8 @@ namespace apps
 		else
 		{
 			MyGame* game = new MyGame();
-			GEngine* engine = new GEngine();
-			engine->StartGame(game, canvas->gc);
+			GEngine* engine = new GEngine(canvas->gc);
+			engine->StartGame(game);
 		}
 
 		while (1);

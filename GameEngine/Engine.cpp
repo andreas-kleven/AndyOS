@@ -26,15 +26,18 @@ int startTicks = 0;
 
 bool BOOL1 = false;
 
-GEngine::GEngine()
+GC _gc;
+
+GEngine::GEngine(GC gc)
 {
+	_gc = gc;
+	GL::Init(gc);
 	active_game = 0;
 	deltaTime = 1 / 100.0f;
 }
 
-void GEngine::StartGame(Game* game, GC gc)
+void GEngine::StartGame(Game* game)
 {
-	GL::Init(gc);
 	active_game = game;
 
 	startTicks = PIT::ticks;
@@ -56,7 +59,7 @@ void GEngine::StartGame(Game* game, GC gc)
 	ticks = PIT::ticks;
 
 	GL::MatrixMode(GL_PROJECTION);
-	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10));
+	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10));
 	GL::MatrixMode(GL_MODELVIEW);
 
 	/*while (1)
@@ -117,7 +120,7 @@ void GEngine::StartGame(Game* game, GC gc)
 			break;
 
 		Update();
-		Collision();
+		//Collision();
 		Render();
 
 		totalFrames++;
@@ -152,7 +155,8 @@ void GEngine::Update()
 	}
 
 	Vector3 mouse_pos(Mouse::x, Mouse::y, 0);
-	Vector3 mouse_axis = (mouse_pos - last_mouse_pos) * deltaTime;
+	Vector3 mouse_delta = mouse_pos - last_mouse_pos;
+	Vector3 mouse_axis = mouse_delta * deltaTime;
 	last_mouse_pos = mouse_pos;
 
 
@@ -206,17 +210,7 @@ void GEngine::Update()
 
 	if (Mouse::mouse_R)
 	{
-		Vector3 euler = cam->transform.rotation.ToEuler();
-		euler.x += mouse_axis.y;
-		euler.y += mouse_axis.x;
-		cam->transform.rotation = Quaternion::FromEuler(euler);
-
-		//cam->transform.rotation.Rotate(Vector3(1, 0, 0), -mouse_axis.y);
-		//cam->transform.rotation *= Quaternion(1, 0, 0, mouse_axis.x * deltaTime);
-
-		//cam->transform.Rotate(Vector3(0, 1, 0), mouse_axis.x);
-		//cam->Rotate(Vector3(0, 1, 0) * -mouse_axis.x);
-		//cam->Rotate(-Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.2);
+		cam->RotateEuler(Vector3(mouse_delta.y, mouse_delta.x, 0) * 0.01);
 	}
 	else if (Mouse::mouse_L)
 	{
@@ -255,6 +249,8 @@ void GEngine::Update()
 		}
 	}
 }
+
+float err = 0;
 
 void GEngine::Collision()
 {
@@ -313,7 +309,18 @@ void GEngine::Collision()
 	Debug::color = 0xFF00FF00;*/
 
 	float hjk = (PIT::ticks % 2000) / 2000.0f;
-	Debug::Print("%f %f\n", (asin(sin(hjk)) - hjk) * 1000, 0);
+	while (hjk > M_PI / 2)
+		hjk -= M_PI / 2;
+	//hjk = 30 * M_PI / 180.0f;
+	//hjk = 0.54630248984379051325517946578029;
+	Debug::Print("%f %f %f %f\n", tan(hjk), atan(hjk), (atan(tan(hjk)) - hjk) * 1000, 0);
+
+
+	float asd = (atan(tan(hjk)) - hjk) * 1000;
+	if (asd > err)
+		err = asd;
+
+	Debug::Print("Err: %f\n", err);
 
 	for (int i = 0; i < all.Count(); i++)
 	{

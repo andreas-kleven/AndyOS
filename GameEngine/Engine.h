@@ -13,9 +13,9 @@ public:
 	Game* active_game;
 	float deltaTime;
 
-	GEngine();
+	GEngine(GC gc);
 
-	void StartGame(Game* game, GC gc);
+	void StartGame(Game* game);
 
 private:
 	std::List<Component*> all_components;

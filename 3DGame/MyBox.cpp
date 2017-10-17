@@ -6,17 +6,24 @@
 #include "Model3D.h"
 #include "ModelLoader.h"
 
+Model3D* mod = 0;
+char* img_buf = 0;
+BMP* bmp = 0;
+
 MyBox::MyBox()
 {
-	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
+	if (!mod)
+		mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 
-	char* img_buf;
-	if (!ISO_FS::ReadFile("img.bmp", img_buf))
+	if (!img_buf)
 	{
-		Debug::Print("bmp not found");
-		while (1);
+		if (!ISO_FS::ReadFile("img.bmp", img_buf))
+		{
+			Debug::Print("bmp not found");
+			while (1);
+		}
+		bmp = new BMP(img_buf);
 	}
-	BMP* bmp = new BMP(img_buf);
 	Debug::Print("%i\n", bmp->width);
 
 	//for (int y = 0; y < bmp->height; y++)
@@ -41,5 +48,5 @@ MyBox::MyBox()
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->collider = new BoxCollider();
 	//phys->bEnabled = 0;
-	phys->bEnabledGravity = 0;
+	//phys->bEnabledGravity = 0;
 }

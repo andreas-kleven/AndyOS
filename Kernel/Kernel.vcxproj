@@ -174,6 +174,7 @@
     <ClInclude Include="drawing.h" />
     <ClInclude Include="e1000.h" />
     <ClInclude Include="exceptions.h" />
+    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="hal.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="idt.h" />
     <ClInclude Include="Include\KernelAPI.h" />
     <ClInclude Include="disk.h" />
+    <ClInclude Include="iso.h" />
     <ClInclude Include="kernel.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="memory.h" />
@@ -196,6 +198,7 @@
     <ClInclude Include="pit.h" />
     <ClInclude Include="rtc.h" />
     <ClInclude Include="task.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="vbe.h" />
   </ItemGroup>
   <ItemGroup>
@@ -208,10 +211,13 @@
     <ClCompile Include="drawing.cpp" />
     <ClCompile Include="e1000.cpp" />
     <ClCompile Include="exceptions.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="font.cpp" />
     <ClCompile Include="hal.cpp" />
     <ClCompile Include="i825.cpp" />
     <ClCompile Include="idt.cpp" />
     <ClCompile Include="Include\KernelAPI.cpp" />
+    <ClCompile Include="iso.cpp" />
     <ClCompile Include="kernel.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="memory.cpp" />
@@ -225,6 +231,7 @@
     <ClCompile Include="pit.cpp" />
     <ClCompile Include="rtc.cpp" />
     <ClCompile Include="task.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="vbe.cpp" />
   </ItemGroup>
   <ItemGroup>

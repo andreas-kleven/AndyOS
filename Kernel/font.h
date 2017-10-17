@@ -1,4 +1,60 @@
 #pragma once
+#include "definitions.h"
+
+struct TTF_HEADER
+{
+	uint32 scalar_type;
+	uint16 num_tables;
+	uint16 search_range;
+	uint16 entry_selector;
+	uint16 range_shift;
+};
+
+struct TTF_HEAD_DATA
+{
+	uint32 version;
+	uint32 font_revision;
+	uint32 checksum_adjust;
+	uint32 magic;
+	uint16 flags;
+	uint16 upe;
+	uint64 created;
+	uint64 modified;
+	uint32 minx;
+	uint32 miny;
+	uint32 maxx;
+	uint32 maxy;
+	uint16 mac_style;
+	uint16 lowrec_ppem;
+	uint16 font_dir_hint;
+	uint16 index_to_loc;
+	uint16 glyph_format;
+};
+
+struct TTF_TABLE
+{
+	char tag[4];
+	uint32 checksum;
+	uint32 offset;
+	uint32 length;
+};
+
+class Font
+{
+public:
+	char* data;
+
+	TTF_HEADER header;
+	TTF_TABLE* tables;
+	TTF_HEAD_DATA head;
+
+	Font(char* ttf);
+
+private:
+	TTF_TABLE* FindTable(char* tag);
+	void ReadHead();
+};
+
 
 
 static unsigned char DEFAULT_FONT[4096] =

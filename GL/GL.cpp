@@ -12,7 +12,7 @@ namespace gl
 	uint32 GL::m_height;
 	uint32 GL::m_stride;
 
-	BMP* GL::m_textures[GL_MAX_TEXTURES];
+	BMP** GL::m_textures;
 	int tex_index = 0;
 	int bound_tex = -1;
 
@@ -23,11 +23,10 @@ namespace gl
 	Matrix4 mat_projection;
 	Matrix4 mat_viewmodel;
 
-	Matrix4 mat_stack[GL_MATRIX_STACK_LENGTH];
+	Matrix4* mat_stack;
 	int mat_stack_index = 0;
 
 	Vertex* vert_ptr;
-
 
 	STATUS GL::Init(GC gc)
 	{
@@ -37,6 +36,9 @@ namespace gl
 		m_width = gc_buf.width;
 		m_height = gc_buf.height;
 		m_stride = gc_buf.stride;
+
+		m_textures = new BMP*[GL_MAX_TEXTURES];
+		mat_stack = new Matrix4[GL_MATRIX_STACK_LENGTH];
 
 		tex_index = 0;
 		bound_tex = -1;
@@ -128,6 +130,7 @@ namespace gl
 		Vector4 light2 = Vector4(-1, 0.8, -1, 0).Normalized();
 
 		Matrix4 M = mat_projection * mat_viewmodel;
+		BMP* texture = bound_tex != -1 ? m_textures[bound_tex] : 0;
 
 		int end = start + count;
 		for (int i = start; i < end; i += 3)
@@ -170,7 +173,7 @@ namespace gl
 
 			if (a.tmpPos.w > 0 && b.tmpPos.w > 0 && c.tmpPos.w > 0)
 			{
-				Rasterizer::DrawTriangle(a, b, c, m_textures[bound_tex]);
+				Rasterizer::DrawTriangle(a, b, c, texture);
 			}
 		}
 	}
