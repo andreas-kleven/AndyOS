@@ -56,22 +56,25 @@ Font::Font(char* name)
 	ReadHead();
 	Drawing::Clear(0, Drawing::gc_direct);
 
-	int x = 60;
-	int y = 600;
+	int w = 20;
+	int h = 40;
 
-	Print(19, x, y, 10);
-	return;
+	int x = w;
+	int y = h;
 
-	for (int i = 0; i < 10000; i++)
+	//Print(19, x, y, 10);
+	//return;
+
+	for (int i = 0; i < 2000; i++)
 	{
-		if (Print(i, x, y, 0.5))
+		if (Print(i, x, y, 0.4))
 		{
-			x += 30;
+			x += w;
 
-			if (x > Drawing::gc.width)
+			if (x > Drawing::gc.width - w)
 			{
-				x = 0;
-				y += 30;
+				x = w;
+				y += h;
 			}
 
 			//PIT::Sleep(500);
@@ -219,8 +222,8 @@ bool Font::Print(int index, int _posx, int _posy, float _scale)
 		}
 
 		//if (i > total - 48)
-		if (i < 48)
-			Debug::Print("%i:\t%ux\t%ux\t%i\n", i, flag, val, (flag & GLYPH_ON_CURVE) == 1);
+		//if (i < 48)
+		//	Debug::Print("%i:\t%ux\t%ux\t%i\n", i, flag, val, (flag & GLYPH_ON_CURVE) == 1);
 
 		x += (int16)val;
 		points[i].x = x;
@@ -299,7 +302,7 @@ bool Font::Print(int index, int _posx, int _posy, float _scale)
 		}
 		else
 		{
-			if (i > 1 && ~p.flags & GLYPH_ON_CURVE)
+			/*if (i > 1 && ~p.flags & GLYPH_ON_CURVE)
 			{
 				Point a(points[i - 1].x * scale + _posx, points[i - 1].y* scale + _posy);
 				Point b(p.x * scale + _posx, p.y* scale + _posy);
@@ -308,9 +311,9 @@ bool Font::Print(int index, int _posx, int _posy, float _scale)
 				Point ps[] = { a, b, c };
 
 				Drawing::DrawBezierQuad(ps, 3, Drawing::gc_direct);
-			}
+			}*/
 
-			//Drawing::DrawLine(p1.x * scale + _posx, p1.y * scale + _posy, p.x * scale + _posx, p.y * scale + _posy, 0xFFFF0000, Drawing::gc_direct);
+			Drawing::DrawLine(p1.x * scale + _posx, p1.y * scale + _posy, p.x * scale + _posx, p.y * scale + _posy, 0xFFFF0000, Drawing::gc_direct);
 		}
 
 		lx = p.x;

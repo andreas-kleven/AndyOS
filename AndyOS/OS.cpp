@@ -74,6 +74,7 @@ void _Font()
 {
 	char* name = "arial";
 	//name = "calibri";
+	name = "consolas"; 
 
 	Font font(name);
 	while (1);
