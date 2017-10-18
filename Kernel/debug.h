@@ -6,6 +6,7 @@ static class Debug
 public:
 	static int x;
 	static int y;
+	static int x0;
 
 	static uint32 color;
 	static uint32 bcolor;

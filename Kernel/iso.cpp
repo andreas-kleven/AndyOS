@@ -80,7 +80,7 @@ ISO_DIRECTORY* ISO_FS::FindFile(char* filename)
 		}
 	}
 
-	return STATUS_FAILED;
+	return 0;
 }
 
 STATUS ISO_FS::ReadFile(ISO_DIRECTORY* file, char*& buffer)

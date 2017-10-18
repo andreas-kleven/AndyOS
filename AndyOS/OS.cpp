@@ -72,23 +72,17 @@ void Audio()
 
 void _Font()
 {
-	char* buf;
-	if (ISO_FS::ReadFile("arial.ttf", buf))
-	{
-		Font font(buf);
-	}
-	else
-	{
-		Debug::Print("Could not read font file!\n");
-	}
+	char* name = "arial";
+	//name = "calibri";
 
+	Font font(name);
 	while (1);
 }
 
 void OS::Main()
 {
-	ISO_FS::Init();
-	Net::Init();
+	FS::Init();
+	//Net::Init();
 
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
 	//mandelbrot.Run();

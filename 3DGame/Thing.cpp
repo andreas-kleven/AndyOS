@@ -13,7 +13,7 @@ Thing::Thing()
 	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
-	if (!ISO_FS::ReadFile("earth.bmp", img_buf))
+	if (!FS::ReadFile("earth.bmp", img_buf))
 	{
 		Debug::Print("bmp not found");
 		while (1);

@@ -151,9 +151,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Control.cpp" />
-    <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GUI.cpp" />
-    <ClCompile Include="iso.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
@@ -184,10 +182,8 @@
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="definitions.h" />
-    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="GUIApi.h" />
-    <ClInclude Include="iso.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="List.h" />

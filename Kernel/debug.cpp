@@ -6,6 +6,7 @@
 
 int Debug::x;
 int Debug::y;
+int Debug::x0;
 
 uint32 Debug::color = 0xFFFFFFFF;
 uint32 Debug::bcolor = 0xFF000000;
@@ -31,12 +32,12 @@ void Debug::Putc(char c, bool escape)
 		switch (c)
 		{
 		case '\n':
-			x = 0;
+			x = x0;
 			y += 1;
 			break;
 
 		case '\r':
-			x = 0;
+			x = x0;
 			break;
 
 		case '\t':
@@ -67,20 +68,20 @@ void Debug::Putc(char c, bool escape)
 
 	if (x > Drawing::gc.width / 8)
 	{
-		x = 0;
+		x = x0;
 		y++;
 	}
 
 	if (y > Drawing::gc.height / 16)
 	{
-		x = 0;
+		x = x0;
 		y = 0;
 	}
 }
 
 void Debug::Clear(uint32 c)
 {
-	x = 0;
+	x = x0;
 	y = 0;
 }
 

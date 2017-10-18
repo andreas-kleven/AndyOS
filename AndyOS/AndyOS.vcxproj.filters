@@ -1,14 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="File System">
-      <UniqueIdentifier>{28f8fd55-cdfc-4adc-a2c4-37623dd8cffd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OS">
       <UniqueIdentifier>{8926f176-0fd7-4540-9a01-3af4dfc247be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File System\ISO">
-      <UniqueIdentifier>{8e1b4438-277a-49cc-a348-e2c57a1a7326}</UniqueIdentifier>
     </Filter>
     <Filter Include="Input">
       <UniqueIdentifier>{87a312a9-64aa-4316-bfe6-a9f8cd0bc74f}</UniqueIdentifier>
@@ -42,9 +36,6 @@
     <ClInclude Include="OS.h">
       <Filter>OS</Filter>
     </ClInclude>
-    <ClInclude Include="iso.h">
-      <Filter>File System\ISO</Filter>
-    </ClInclude>
     <ClInclude Include="mouse.h">
       <Filter>Input</Filter>
     </ClInclude>
@@ -65,9 +56,6 @@
     </ClInclude>
     <ClInclude Include="stdio.h">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSystem.h">
-      <Filter>File System</Filter>
     </ClInclude>
     <ClInclude Include="net.h">
       <Filter>Net</Filter>
@@ -152,9 +140,6 @@
     <ClCompile Include="System.cpp">
       <Filter>OS</Filter>
     </ClCompile>
-    <ClCompile Include="iso.cpp">
-      <Filter>File System\ISO</Filter>
-    </ClCompile>
     <ClCompile Include="mouse.cpp">
       <Filter>Input</Filter>
     </ClCompile>
@@ -166,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="string.cpp">
       <Filter>Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSystem.cpp">
-      <Filter>File System</Filter>
     </ClCompile>
     <ClCompile Include="arp.cpp">
       <Filter>Net</Filter>

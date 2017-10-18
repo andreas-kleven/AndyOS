@@ -1,5 +1,4 @@
 #include "ModelLoader.h"
-#include "FileSystem.h"
 #include "Obj.h"
 #include "A3D.h"
 
@@ -7,7 +6,7 @@ Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
 	char* buffer;
 
-	STATUS status = FileSystem::ReadFile(filename, buffer);
+	STATUS status = FS::ReadFile(filename, buffer);
 
 	if (status)
 	{

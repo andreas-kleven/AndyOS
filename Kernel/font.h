@@ -17,7 +17,7 @@ struct TTF_HEAD_DATA
 	uint32 checksum_adjust;
 	uint32 magic;
 	uint16 flags;
-	uint16 upe;
+	uint16 upem;
 	uint64 created;
 	uint64 modified;
 	uint32 minx;
@@ -39,20 +39,39 @@ struct TTF_TABLE
 	uint32 length;
 };
 
+struct TTF_GLYPH
+{
+	int16 num_contours;
+	int16 minx;
+	int16 miny;
+	int16 maxx;
+	int16 maxy;
+};
+
+struct TTF_POINT
+{
+	uint8 flags;
+	int16 x;
+	int16 y;
+};
+
 class Font
 {
 public:
 	char* data;
 
-	TTF_HEADER header;
+	TTF_HEADER* header;
 	TTF_TABLE* tables;
-	TTF_HEAD_DATA head;
+	TTF_HEAD_DATA* head;
 
-	Font(char* ttf);
+	Font(char* name);
 
 private:
 	TTF_TABLE* FindTable(char* tag);
 	void ReadHead();
+	bool Print(int index, int x, int y, float scale);
+
+	uint32 GetGlyphOffset(int index);
 };
 
 

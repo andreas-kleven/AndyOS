@@ -153,9 +153,6 @@ void Drawing::SetPixel(int x, int y, uint32 c, GC gc)
 
 void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc)
 {
-	const int width = gc.width;
-	const int height = gc.height;
-
 	int deltax = x1 - x0;
 	int deltay = y1 - y0;
 
@@ -175,8 +172,8 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc)
 	{
 		for (x = 0; x < deltax; x++)
 		{
-			if (px < width && px > 0)
-				if (py < height && py > 0)
+			if (px < gc.width && px > 0)
+				if (py < gc.height && py > 0)
 					SetPixel(px, py, c, gc);
 
 			y += deltay;
@@ -194,8 +191,8 @@ void Drawing::DrawLine(int x0, int y0, int x1, int y1, uint32 c, GC gc)
 	{
 		for (y = 0; y < deltay; y++)
 		{
-			if (px < width && px > 0)
-				if (py < height && py > 0)
+			if (px < gc.width && px > 0)
+				if (py < gc.height && py > 0)
 					SetPixel(px, py, c, gc);
 
 			x += deltax;
@@ -221,8 +218,8 @@ void Drawing::DrawBezierQuad(Point* points, int count, GC gc)
 		Point& b = points[i + 1];
 		Point& c = points[i + 2];
 
-		DrawLine(a.x, a.y, b.x, b.y, 0xFF);
-		DrawLine(b.x, b.y, c.x, c.y, 0xFF);
+		//DrawLine(a.x, a.y, b.x, b.y, 0xFF0000FF);
+		//DrawLine(b.x, b.y, c.x, c.y, 0xFF0000FF);
 
 		int lastx = a.x;
 		int lasty = a.y;
@@ -239,7 +236,7 @@ void Drawing::DrawBezierQuad(Point* points, int count, GC gc)
 			float px10 = px00 + (px01 - px00) * alpha;
 			float py10 = py00 + (py01 - py00) * alpha;
 
-			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFF0000, gc);
+			Drawing::DrawLine(lastx, lasty, (int)px10, (int)py10, 0xFFFF0000, gc);
 			lastx = (int)px10;
 			lasty = (int)py10;
 		}
