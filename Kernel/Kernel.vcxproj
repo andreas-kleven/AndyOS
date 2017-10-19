@@ -257,7 +257,7 @@
       </RandomizedBaseAddress>
       <FixedBaseAddress>
       </FixedBaseAddress>
-      <MapFileName>MAP.map</MapFileName>
+      <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
