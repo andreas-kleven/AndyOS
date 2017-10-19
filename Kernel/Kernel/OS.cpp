@@ -1,5 +1,4 @@
 #include "OS.h"
-#include "../3DGame/3DGame.h"
 #include "panic.h"
 #include "stdio.h"
 #include "Drivers/ac97.h"
@@ -17,6 +16,9 @@
 #include "Test/TextEdit.h"
 
 #include "debug.h"
+
+#include "../3DGame/3DGame.h"
+
 
 void GUI()
 {
