@@ -39,7 +39,7 @@ void render()
 	}
 }
 
-/*void Game()
+void Game()
 {
 	gameGC = Drawing::gc_direct;
 	//gameGC = GC(Drawing::gc_direct, 100, 100, 800, 600);
@@ -53,7 +53,7 @@ void render()
 		MyGame* game = new MyGame();
 		engine->StartGame(game);
 	}
-}*/
+}
 
 void Audio()
 {
@@ -91,7 +91,7 @@ void OS::Main()
 	//mandelbrot.Run();
 
 	//GUI();
-	//Game();
+	Game();
 	//Audio();
 	_Font();
 

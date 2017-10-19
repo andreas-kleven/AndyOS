@@ -149,6 +149,17 @@
     <ClInclude Include="Test\Mandelbrot.h" />
     <ClInclude Include="Test\TextEdit.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\3DGame\3DGame.vcxproj">
+      <Project>{a1c979e5-6f07-472d-98ab-4d2b72c9ca53}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameEngine\GameEngine.vcxproj">
+      <Project>{9cf87b8e-7795-4a9b-beca-3a4a62a3109a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GL\GL.vcxproj">
+      <Project>{4e773009-cb83-4b52-afc6-df744c94c9af}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{670D753F-8824-43AC-95EC-130845F75F0A}</ProjectGuid>

@@ -14,7 +14,7 @@ BMP* bmp = 0;
 MyBox::MyBox()
 {
 	if (!mod)
-		mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
+		mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 
 	if (!img_buf)
 	{
@@ -48,6 +48,6 @@ MyBox::MyBox()
 
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->collider = new BoxCollider();
-	//phys->bEnabled = 0;
+	phys->bEnabled = 0;
 	//phys->bEnabledGravity = 0;
 }

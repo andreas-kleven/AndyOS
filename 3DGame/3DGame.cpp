@@ -29,6 +29,7 @@ MyGame::MyGame()
 	box->transform.scale = Vector3(10, 1, 10);
 	//box->SetScale(Vector3(10, 1, 10));
 
+	return;
 	int num = 100;
 	for (int i = 0; i < 100; i++)
 	{
