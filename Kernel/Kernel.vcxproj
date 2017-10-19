@@ -203,7 +203,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>KERNEL</TargetName>
+    <TargetName>andyos</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -231,7 +231,7 @@
       <PrecompiledHeader />
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>$(SolutionDir)Lib\;$(ProjectDir);$(ProjectDir)Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
     </ClCompile>
@@ -251,8 +251,7 @@
       </IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>call "$(SolutionDir)build.bat"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
