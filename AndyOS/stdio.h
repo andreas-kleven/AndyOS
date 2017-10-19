@@ -1,2 +1,2 @@
 #pragma once
-#include "../Lib/stdio.h"
+#include "stdio.h"

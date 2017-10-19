@@ -5,7 +5,6 @@
 #include "Vector4.h"
 #include "Matrix4.h"
 #include "Color.h"
-#include "List.h"
 
 #define GL_MAX_TEXTURES			1024
 #define GL_MAX_LIGHTSOURCES		4

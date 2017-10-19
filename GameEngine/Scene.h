@@ -6,7 +6,7 @@
 class Scene
 {
 public:
-	std::String name;
+	String name;
 
 	Scene();
 };

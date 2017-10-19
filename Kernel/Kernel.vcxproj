@@ -18,6 +18,137 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Boot\boot.cpp" />
+    <ClCompile Include="Drawing\bmp.cpp" />
+    <ClCompile Include="Drawing\drawing.cpp" />
+    <ClCompile Include="Drawing\font.cpp" />
+    <ClCompile Include="Drawing\TextRenderer.cpp" />
+    <ClCompile Include="Drawing\vbe.cpp" />
+    <ClCompile Include="Drivers\ac97.cpp" />
+    <ClCompile Include="Drivers\ata.cpp" />
+    <ClCompile Include="Drivers\e1000.cpp" />
+    <ClCompile Include="Drivers\i825.cpp" />
+    <ClCompile Include="Drivers\keyboard.cpp" />
+    <ClCompile Include="Drivers\mouse.cpp" />
+    <ClCompile Include="Drivers\ne1000.cpp" />
+    <ClCompile Include="File System\disk.cpp" />
+    <ClCompile Include="File System\FileSystem.cpp" />
+    <ClCompile Include="File System\iso.cpp" />
+    <ClCompile Include="GUI\Controls\Button.cpp" />
+    <ClCompile Include="GUI\Controls\Canvas.cpp" />
+    <ClCompile Include="GUI\Controls\Control.cpp" />
+    <ClCompile Include="GUI\Controls\Label.cpp" />
+    <ClCompile Include="GUI\Controls\TextBox.cpp" />
+    <ClCompile Include="GUI\GUI.cpp" />
+    <ClCompile Include="GUI\Message.cpp" />
+    <ClCompile Include="GUI\Window.cpp" />
+    <ClCompile Include="HAL\cpu.cpp" />
+    <ClCompile Include="HAL\hal.cpp" />
+    <ClCompile Include="HAL\idt.cpp" />
+    <ClCompile Include="HAL\pic.cpp" />
+    <ClCompile Include="HAL\pit.cpp" />
+    <ClCompile Include="HAL\rtc.cpp" />
+    <ClCompile Include="Kernel\exceptions.cpp" />
+    <ClCompile Include="Kernel\kernel.cpp" />
+    <ClCompile Include="Kernel\OS.cpp" />
+    <ClCompile Include="Kernel\panic.cpp" />
+    <ClCompile Include="Kernel\task.cpp" />
+    <ClCompile Include="Lib\debug.cpp" />
+    <ClCompile Include="Lib\KernelAPI.cpp" />
+    <ClCompile Include="Lib\math.cpp" />
+    <ClCompile Include="Lib\stdio.cpp" />
+    <ClCompile Include="Lib\string.cpp" />
+    <ClCompile Include="Memory\memory.cpp" />
+    <ClCompile Include="Net\arp.cpp" />
+    <ClCompile Include="Net\dhcp.cpp" />
+    <ClCompile Include="Net\dns.cpp" />
+    <ClCompile Include="Net\eth.cpp" />
+    <ClCompile Include="Net\http.cpp" />
+    <ClCompile Include="Net\icmp.cpp" />
+    <ClCompile Include="Net\ipv4.cpp" />
+    <ClCompile Include="Net\net.cpp" />
+    <ClCompile Include="Net\netinterface.cpp" />
+    <ClCompile Include="Net\tcp.cpp" />
+    <ClCompile Include="Net\tcpsession.cpp" />
+    <ClCompile Include="Net\tcpsocket.cpp" />
+    <ClCompile Include="Net\udp.cpp" />
+    <ClCompile Include="Net\udpsocket.cpp" />
+    <ClCompile Include="PCI\pci.cpp" />
+    <ClCompile Include="Test\Mandelbrot.cpp" />
+    <ClCompile Include="Test\TextEdit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Boot\multiboot.h" />
+    <ClInclude Include="Drawing\bmp.h" />
+    <ClInclude Include="Drawing\drawing.h" />
+    <ClInclude Include="Drawing\font.h" />
+    <ClInclude Include="Drawing\TextRenderer.h" />
+    <ClInclude Include="Drawing\vbe.h" />
+    <ClInclude Include="Drivers\ac97.h" />
+    <ClInclude Include="Drivers\ata.h" />
+    <ClInclude Include="Drivers\e1000.h" />
+    <ClInclude Include="Drivers\i825.h" />
+    <ClInclude Include="Drivers\keyboard.h" />
+    <ClInclude Include="Drivers\mouse.h" />
+    <ClInclude Include="Drivers\ne1000.h" />
+    <ClInclude Include="File System\disk.h" />
+    <ClInclude Include="File System\FileSystem.h" />
+    <ClInclude Include="File System\iso.h" />
+    <ClInclude Include="GUI\Controls\Button.h" />
+    <ClInclude Include="GUI\Controls\Canvas.h" />
+    <ClInclude Include="GUI\Controls\Control.h" />
+    <ClInclude Include="GUI\Controls\Label.h" />
+    <ClInclude Include="GUI\Controls\TextBox.h" />
+    <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="GUI\GUIApi.h" />
+    <ClInclude Include="GUI\Message.h" />
+    <ClInclude Include="GUI\Window.h" />
+    <ClInclude Include="HAL\cpu.h" />
+    <ClInclude Include="HAL\hal.h" />
+    <ClInclude Include="HAL\idt.h" />
+    <ClInclude Include="HAL\pic.h" />
+    <ClInclude Include="HAL\pit.h" />
+    <ClInclude Include="HAL\rtc.h" />
+    <ClInclude Include="Kernel\exceptions.h" />
+    <ClInclude Include="Kernel\kernel.h" />
+    <ClInclude Include="Kernel\OS.h" />
+    <ClInclude Include="Kernel\panic.h" />
+    <ClInclude Include="Kernel\task.h" />
+    <ClInclude Include="Lib\ctype.h" />
+    <ClInclude Include="Lib\debug.h" />
+    <ClInclude Include="Lib\definitions.h" />
+    <ClInclude Include="Lib\globals.h" />
+    <ClInclude Include="Lib\KernelAPI.h" />
+    <ClInclude Include="Lib\limits.h" />
+    <ClInclude Include="Lib\List.h" />
+    <ClInclude Include="Lib\math.h" />
+    <ClInclude Include="Lib\stdarg.h" />
+    <ClInclude Include="Lib\stdio.h" />
+    <ClInclude Include="Lib\string.h" />
+    <ClInclude Include="Lib\System.h" />
+    <ClInclude Include="Memory\memory.h" />
+    <ClInclude Include="Net\address.h" />
+    <ClInclude Include="Net\arp.h" />
+    <ClInclude Include="Net\dhcp.h" />
+    <ClInclude Include="Net\dns.h" />
+    <ClInclude Include="Net\eth.h" />
+    <ClInclude Include="Net\http.h" />
+    <ClInclude Include="Net\icmp.h" />
+    <ClInclude Include="Net\ipv4.h" />
+    <ClInclude Include="Net\net.h" />
+    <ClInclude Include="Net\netinterface.h" />
+    <ClInclude Include="Net\netpacket.h" />
+    <ClInclude Include="Net\tcp.h" />
+    <ClInclude Include="Net\tcpsession.h" />
+    <ClInclude Include="Net\tcpsocket.h" />
+    <ClInclude Include="Net\tcptypes.h" />
+    <ClInclude Include="Net\udp.h" />
+    <ClInclude Include="Net\udpsocket.h" />
+    <ClInclude Include="PCI\pci.h" />
+    <ClInclude Include="Test\Mandelbrot.h" />
+    <ClInclude Include="Test\TextEdit.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{670D753F-8824-43AC-95EC-130845F75F0A}</ProjectGuid>
@@ -31,7 +162,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>
     </CharacterSet>
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -73,6 +204,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>KERNEL</TargetName>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -99,7 +231,7 @@
       <PrecompiledHeader />
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>$(SolutionDir)Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Lib\;$(ProjectDir);$(ProjectDir)Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
     </ClCompile>
@@ -164,84 +296,6 @@
       <BaseAddress>0x10000</BaseAddress>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="ac97.h" />
-    <ClInclude Include="address.h" />
-    <ClInclude Include="ata.h" />
-    <ClInclude Include="bmp.h" />
-    <ClInclude Include="cpu.h" />
-    <ClInclude Include="debug.h" />
-    <ClInclude Include="drawing.h" />
-    <ClInclude Include="e1000.h" />
-    <ClInclude Include="exceptions.h" />
-    <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="font.h" />
-    <ClInclude Include="globals.h" />
-    <ClInclude Include="hal.h" />
-    <ClInclude Include="i825.h" />
-    <ClInclude Include="idt.h" />
-    <ClInclude Include="Include\KernelAPI.h" />
-    <ClInclude Include="disk.h" />
-    <ClInclude Include="iso.h" />
-    <ClInclude Include="kernel.h" />
-    <ClInclude Include="keyboard.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="mouse.h" />
-    <ClInclude Include="multiboot.h" />
-    <ClInclude Include="ne1000.h" />
-    <ClInclude Include="net.h" />
-    <ClInclude Include="netinterface.h" />
-    <ClInclude Include="netpacket.h" />
-    <ClInclude Include="panic.h" />
-    <ClInclude Include="pci.h" />
-    <ClInclude Include="pic.h" />
-    <ClInclude Include="pit.h" />
-    <ClInclude Include="rtc.h" />
-    <ClInclude Include="task.h" />
-    <ClInclude Include="TextRenderer.h" />
-    <ClInclude Include="vbe.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ac97.cpp" />
-    <ClCompile Include="ata.cpp" />
-    <ClCompile Include="bmp.cpp" />
-    <ClCompile Include="cpu.cpp" />
-    <ClCompile Include="debug.cpp" />
-    <ClCompile Include="disk.cpp" />
-    <ClCompile Include="drawing.cpp" />
-    <ClCompile Include="e1000.cpp" />
-    <ClCompile Include="exceptions.cpp" />
-    <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="font.cpp" />
-    <ClCompile Include="hal.cpp" />
-    <ClCompile Include="i825.cpp" />
-    <ClCompile Include="idt.cpp" />
-    <ClCompile Include="Include\KernelAPI.cpp" />
-    <ClCompile Include="iso.cpp" />
-    <ClCompile Include="kernel.cpp" />
-    <ClCompile Include="keyboard.cpp" />
-    <ClCompile Include="memory.cpp" />
-    <ClCompile Include="mouse.cpp" />
-    <ClCompile Include="ne1000.cpp" />
-    <ClCompile Include="net.cpp" />
-    <ClCompile Include="netinterface.cpp" />
-    <ClCompile Include="panic.cpp" />
-    <ClCompile Include="pci.cpp" />
-    <ClCompile Include="pic.cpp" />
-    <ClCompile Include="pit.cpp" />
-    <ClCompile Include="rtc.cpp" />
-    <ClCompile Include="task.cpp" />
-    <ClCompile Include="TextRenderer.cpp" />
-    <ClCompile Include="vbe.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Todo.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lib\Lib.vcxproj">
-      <Project>{6a2835e8-c0a3-4660-884b-fb188b09ad12}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

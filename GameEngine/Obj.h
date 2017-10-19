@@ -8,10 +8,10 @@
 class Obj : public Model3D
 {
 public:
-	std::List<Vector3> positions;
-	std::List<Vector3> normals;
-	std::List<Vector3> uvs;
-	std::List<Face> faces;
+	List<Vector3> positions;
+	List<Vector3> normals;
+	List<Vector3> uvs;
+	List<Face> faces;
 
 	Obj(char* file);
 

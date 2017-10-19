@@ -5,6 +5,7 @@
 #include "Model3D.h"
 #include "ModelLoader.h"
 #include "Engine.h"
+#include "debug.h"
 
 Rigidbody* phys;
 

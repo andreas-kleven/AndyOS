@@ -11,10 +11,10 @@ public:
 	Transform transform;
 
 	GameObject* parent;
-	std::List<GameObject*> children;
+	List<GameObject*> children;
 
-	std::List<Component*> components;
-	std::List<MeshComponent*> meshComponents;
+	List<Component*> components;
+	List<MeshComponent*> meshComponents;
 	Rigidbody* rigidbody;
 
 	GameObject();
@@ -22,8 +22,8 @@ public:
 	virtual void Start() { }
 	virtual void Update(float deltaTime) { }
 
-	void SetName(std::String name);
-	std::String GetName();
+	void SetName(String name);
+	String GetName();
 
 	Transform GetWorldTransform();
 	Vector3 GetWorldPosition();
@@ -31,18 +31,18 @@ public:
 	Vector3 GetWorldScale();
 
 	void AddComponent(Component* comp);
-	Component* GetComponent(std::String name);
+	Component* GetComponent(String name);
 
 	template<class T>
-	T* CreateComponent(std::String name);
+	T* CreateComponent(String name);
 
 private:
-	std::String name;
+	String name;
 	Transform world_transform;
 };
 
 template<class T>
-T* GameObject::CreateComponent(std::String name)
+T* GameObject::CreateComponent(String name)
 {
 	Component* t = new T;
 	t->SetName(name);

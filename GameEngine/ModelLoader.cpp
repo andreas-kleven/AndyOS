@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 #include "Obj.h"
 #include "A3D.h"
+#include "debug.h"
 
 Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {

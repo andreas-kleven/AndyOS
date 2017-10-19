@@ -18,10 +18,10 @@ public:
 	void StartGame(Game* game);
 
 private:
-	std::List<Component*> all_components;
-	std::List<MeshComponent*> meshComponents;
-	std::List<Rigidbody*> rigidbodies;
-	std::List<Component*> physics_components;
+	List<Component*> all_components;
+	List<MeshComponent*> meshComponents;
+	List<Rigidbody*> rigidbodies;
+	List<Component*> physics_components;
 
 	void Update();
 	void Collision();

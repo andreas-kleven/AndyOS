@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "math.h"
 #include "Vector3.h"
+#include "debug.h"
 
 #define EPSILON 0.00001f
 #define DEPSILON 0.05f
@@ -272,7 +273,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 	int colIndex = 0;
 
 	//points.Clear();
-	//points = std::List<Manifold*>();
+	//points = List<Manifold*>();
 
 	//vertices of object 2 in object1
 	for (int i = 0; i < 8; i++)

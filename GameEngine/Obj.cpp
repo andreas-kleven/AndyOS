@@ -13,7 +13,7 @@ Obj::Obj(char* file)
 void Obj::ReadFile(char* file)
 {
 	return;
-	String text = file;
+	/*String text = file;
 	List<String> lines;
 	text.Split(lines, '\n');
 
@@ -47,7 +47,7 @@ void Obj::ReadFile(char* file)
 		else if (args[0] == "f")
 		{
 			if (args.Count() == 5)
-				OS::ThrowException("Quad exception", "Obj file");
+				Exceptions::ThrowException("Quad exception", "Obj file");
 
 			Face face;
 			for (int i = 0; i < 3; i++)
@@ -68,7 +68,7 @@ void Obj::ReadFile(char* file)
 		}
 	}
 
-	Debug::Print("--END\n");
+	Debug::Print("--END\n");*/
 }
 
 void Obj::CreateVertices()

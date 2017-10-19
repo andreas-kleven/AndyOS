@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kernel", "Kernel\Kernel.vcxproj", "{670D753F-8824-43AC-95EC-130845F75F0A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GL", "GL\GL.vcxproj", "{4E773009-CB83-4B52-AFC6-DF744C94C9AF}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib", "Lib\Lib.vcxproj", "{6A2835E8-C0A3-4660-884B-FB188B09AD12}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine", "GameEngine\GameEngine.vcxproj", "{9CF87B8E-7795-4A9B-BECA-3A4A62A3109A}"
 EndProject
@@ -15,8 +13,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DGame", "3DGame\3DGame.vcx
 	ProjectSection(ProjectDependencies) = postProject
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF} = {4E773009-CB83-4B52-AFC6-DF744C94C9AF}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AndyOS", "AndyOS\AndyOS.vcxproj", "{63756F75-0F50-4CC1-BD62-60667EEBD3DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,17 +46,6 @@ Global
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Release|x64.Build.0 = Release|x64
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Release|x86.ActiveCfg = Release|Win32
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF}.Release|x86.Build.0 = Release|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|Any CPU.Build.0 = Debug|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|x64.ActiveCfg = Debug|x64
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|x64.Build.0 = Debug|x64
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|x86.ActiveCfg = Debug|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Debug|x86.Build.0 = Debug|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Release|Any CPU.ActiveCfg = Release|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Release|x64.ActiveCfg = Release|x64
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Release|x64.Build.0 = Release|x64
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Release|x86.ActiveCfg = Release|Win32
-		{6A2835E8-C0A3-4660-884B-FB188B09AD12}.Release|x86.Build.0 = Release|Win32
 		{9CF87B8E-7795-4A9B-BECA-3A4A62A3109A}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{9CF87B8E-7795-4A9B-BECA-3A4A62A3109A}.Debug|Any CPU.Build.0 = Debug|Win32
 		{9CF87B8E-7795-4A9B-BECA-3A4A62A3109A}.Debug|x64.ActiveCfg = Debug|x64
@@ -83,17 +68,6 @@ Global
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x64.Build.0 = Release|x64
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x86.ActiveCfg = Release|Win32
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x86.Build.0 = Release|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|Any CPU.Build.0 = Debug|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|x64.ActiveCfg = Debug|x64
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|x64.Build.0 = Debug|x64
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|x86.ActiveCfg = Debug|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Debug|x86.Build.0 = Debug|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Release|Any CPU.ActiveCfg = Release|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Release|x64.ActiveCfg = Release|x64
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Release|x64.Build.0 = Release|x64
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Release|x86.ActiveCfg = Release|Win32
-		{63756F75-0F50-4CC1-BD62-60667EEBD3DF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

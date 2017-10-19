@@ -13,9 +13,9 @@ public:
 	virtual void Start() { }
 	virtual void Update(float delta) { }
 
-	void SetName(std::String name);
-	std::String GetName();
+	void SetName(String name);
+	String GetName();
 
 private:
-	std::String name;
+	String name;
 };

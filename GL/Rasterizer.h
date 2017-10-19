@@ -1,6 +1,7 @@
 #pragma once
 #include "definitions.h"
 #include "Vertex.h"
+#include "Drawing\bmp.h"
 
 namespace gl
 {

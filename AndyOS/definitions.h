@@ -1,2 +1,2 @@
 #pragma once
-#include "../Lib/definitions.h"
+#include "definitions.h"

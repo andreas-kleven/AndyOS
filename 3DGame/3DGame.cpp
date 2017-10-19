@@ -32,7 +32,7 @@ MyGame::MyGame()
 	int num = 100;
 	for (int i = 0; i < 100; i++)
 	{
-		std::String name = "Box_";
+		String name = "Box_";
 		name += i;
 		MyBox* b = CreateObject<MyBox>(name);
 		//b->transform.position = Vector3((rand() % num) - num / 2, (rand() % num) - num / 2, (rand() % num) - num / 2);

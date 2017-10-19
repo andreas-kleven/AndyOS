@@ -10,8 +10,7 @@
 #include "BoxCollider.h"
 #include "DirectionalLight.h"
 #include "stdio.h"
-
-using namespace gl;
+#include "debug.h"
 
 int p1 = 0;
 float p2 = 0;
@@ -256,7 +255,7 @@ void GEngine::Collision()
 {
 	float energy = 0;
 
-	std::List<Rigidbody*> all;
+	List<Rigidbody*> all;
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
 	{

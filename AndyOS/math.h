@@ -1,2 +1,2 @@
 #pragma once
-#include "../Lib/math.h"
+#include "math.h"

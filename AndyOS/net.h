@@ -1,8 +1,8 @@
 #pragma once
 #include "definitions.h"
-#include "../Kernel/net.h"
+#include "Net/net.h"
 
-static class Net : public KNet
+static class Net
 {
 public:
 	static STATUS Init();

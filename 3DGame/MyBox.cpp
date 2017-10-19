@@ -5,6 +5,7 @@
 #include "Rigidbody.h"
 #include "Model3D.h"
 #include "ModelLoader.h"
+#include "debug.h"
 
 Model3D* mod = 0;
 char* img_buf = 0;

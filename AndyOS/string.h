@@ -1,5 +1,5 @@
 #pragma once
-#include "../Lib/string.h"
+#include "string.h"
 #include "List.h"
 #include "System.h"
 

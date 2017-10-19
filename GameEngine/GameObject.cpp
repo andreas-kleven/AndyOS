@@ -7,12 +7,12 @@ GameObject::GameObject()
 	this->name = "GameObject";
 }
 
-void GameObject::SetName(std::String name)
+void GameObject::SetName(String name)
 {
 	this->name = name;
 }
 
-std::String GameObject::GetName()
+String GameObject::GetName()
 {
 	return name;
 }
@@ -48,7 +48,7 @@ Vector3 GameObject::GetWorldScale()
 
 void GameObject::AddComponent(Component* comp)
 {
-	std::String compName = comp->GetName();
+	String compName = comp->GetName();
 	comp->parent = this;
 
 	if (compName.Contains("Mesh"))
@@ -75,7 +75,7 @@ void GameObject::AddComponent(Component* comp)
 	components.Add(comp);
 }
 
-Component* GameObject::GetComponent(std::String name)
+Component* GameObject::GetComponent(String name)
 {
 	for (int i = 0; i < components.Count(); i++)
 	{

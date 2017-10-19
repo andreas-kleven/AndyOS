@@ -5,9 +5,9 @@ class Game
 {
 public:
 	//Scene* scene;
-	std::List<GameObject*> objects;
-	std::List<Camera*> cameras;
-	std::List<LightSource*> lights;
+	List<GameObject*> objects;
+	List<Camera*> cameras;
+	List<LightSource*> lights;
 
 	Game();
 
@@ -18,18 +18,18 @@ public:
 	Camera* GetActiveCamera();
 	void SetActiveCamera(Camera* cam);
 
-	GameObject* GetObject(std::String name);
-	Camera* GetCamera(std::String name);
-	LightSource* GetLightSource(std::String name);
+	GameObject* GetObject(String name);
+	Camera* GetCamera(String name);
+	LightSource* GetLightSource(String name);
 
 	template<class T>
-	T* CreateObject(std::String name);
+	T* CreateObject(String name);
 
 	template<class T>
-	T* CreateCamera(std::String name);
+	T* CreateCamera(String name);
 
 	template<class T>
-	T* CreateLightSource(std::String name);
+	T* CreateLightSource(String name);
 
 private:
 	Camera* active_cam;
@@ -38,7 +38,7 @@ private:
 
 //Creates an object and adds it
 template<class T>
-T* Game::CreateObject(std::String name)
+T* Game::CreateObject(String name)
 {
 	GameObject* t = new T;
 	t->SetName(name);
@@ -48,7 +48,7 @@ T* Game::CreateObject(std::String name)
 
 //Creates a camera and adds it
 template<class T>
-T* Game::CreateCamera(std::String name)
+T* Game::CreateCamera(String name)
 {
 	Camera* t = new T;
 	t->SetName(name);
@@ -58,7 +58,7 @@ T* Game::CreateCamera(std::String name)
 
 //Creates a light source and adds it
 template<class T>
-T* Game::CreateLightSource(std::String name)
+T* Game::CreateLightSource(String name)
 {
 	LightSource* t = new T;
 	t->SetName(name);

@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Engine.h"
+#include "debug.h"
 
 Game::Game()
 {
@@ -34,7 +35,7 @@ void Game::SetActiveCamera(Camera* cam)
 	active_cam = cam;
 }
 
-GameObject* Game::GetObject(std::String name)
+GameObject* Game::GetObject(String name)
 {
 	for (int i = 0; i < objects.Count(); i++)
 	{
@@ -48,7 +49,7 @@ GameObject* Game::GetObject(std::String name)
 	return 0;
 }
 
-Camera* Game::GetCamera(std::String name)
+Camera* Game::GetCamera(String name)
 {
 	for (int i = 0; i < cameras.Count(); i++)
 	{
@@ -60,7 +61,7 @@ Camera* Game::GetCamera(std::String name)
 	return 0;
 }
 
-LightSource* Game::GetLightSource(std::String name)
+LightSource* Game::GetLightSource(String name)
 {
 	for (int i = 0; i < lights.Count(); i++)
 	{
