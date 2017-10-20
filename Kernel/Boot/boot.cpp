@@ -1,4 +1,5 @@
 #include "definitions.h"
+#include "multiboot.h"
 #include "Kernel/kernel.h"
 
 __declspec(align(16)) char _kernel_stack[8096];
@@ -18,7 +19,7 @@ void Entry(MULTIBOOT_HEADER* header)
 	{
 		_asm lea esp, WORD ptr[_kernel_stack + 8096];
 
-		Kernel::Main(bootinfo);
+		Kernel::Setup(bootinfo);
 	}
 
 	_asm cli

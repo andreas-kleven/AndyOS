@@ -1,6 +1,7 @@
 #include "paging.h"
 #include "pmem.h"
 #include "memory.h"
+#include "Kernel\kernel.h"
 #include "string.h"
 #include "debug.h"
 
@@ -8,138 +9,98 @@
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)
 #define PAGE_GET_PHYSICAL_ADDRESS(x) (*x & ~0xFFF)
 
-STATUS Paging::Init()
+PAGE_DIR* current_dir;
+
+void Paging::Init(MULTIBOOT_INFO* bootinfo)
 {
-	PAGE_DIR* dir = (PAGE_DIR*)Memory::AllocBlocks(1);
+	MULTIBOOT_INFO* info = 0;
+	memcpy(info, bootinfo, sizeof(MULTIBOOT_INFO));
+
+	//PAGE_DIR* dir = (PAGE_DIR*)Memory::AllocBlocks(1);
+	PAGE_DIR* dir = (PAGE_DIR*)0x1000;
 	memset(dir, 0, sizeof(PAGE_DIR));
+
+	uint32 flags = PDE_PRESENT | PDE_WRITABLE;
+
+	//Identity map first 16 MB
+	MapPhysAddr(dir, 0, 0, flags, 0x1000);
+
+	//Map kernel to higher half
+	int blocks = (0x100000000 - KERNEL_BASE) / PAGE_SIZE;
+	MapPhysAddr(dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, blocks);
+
+	//Map framebuffer for debugging
+	//MapPhysAddr(dir, 0xE0000000, 0xE0000000, 3, 128 * 1024);
+
+	SwitchDir(dir);
+	EnablePaging();
+	current_dir = dir;
+
+	Kernel::HigherHalf(info);
+}
+
+bool Paging::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags)
+{
+	PAGE_DIR_ENTRY* dir_entry = &dir->entries[PAGE_DIR_INDEX(virt)];
+
+	if (dir_entry->value == 0)
+		CreatePageTable(dir, virt, flags);
+
+	PAGE_TABLE* table = dir_entry->GetTable();
+	PAGE_TABLE_ENTRY* table_entry = &table->entries[PAGE_TABLE_INDEX(virt)];
+	table_entry->SetFlag(flags);
+	table_entry->SetAddr(phys);
+	return 1;
+}
+
+bool Paging::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks)
+{
+	for (int i = 0; i < blocks; i++)
+	{
+		if (!MapPhysAddr(dir, phys, virt, flags))
+			return 0;
+
+		phys += PAGE_SIZE;
+		virt += PAGE_SIZE;
+	}
+
+	return 1;
+}
+
+PAGE_DIR* Paging::GetCurrentDir()
+{
+	return current_dir;
+}
+
+bool Paging::CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags)
+{
+	PAGE_DIR_ENTRY* dir_entry = &dir->entries[PAGE_DIR_INDEX(virt)];
+
+	if (dir_entry->value)
+		return 0;
 
 	PAGE_TABLE* table = (PAGE_TABLE*)Memory::AllocBlocks(1);
 
-	uint32 addr = 0;
-	for (int i = 0; i < PAGES_PER_TABLE; i++, addr += PAGE_SIZE)
-	{
-		PAGE_TABLE_ENTRY entry;
-		entry.SetFlag(PTE_PRESENT);
-		entry.SetFlag(PTE_USER);
-		entry.SetAddr(addr);
-		table->entries[i] = entry;
-	}
+	if (!table)
+		return 0;
 
-	PAGE_DIR_ENTRY* dir_entry = &dir->entries[0];
-	dir_entry->SetFlag(PDE_PRESENT);
-	dir_entry->SetFlag(PDE_WRITABLE);
-	dir_entry->SetFlag(PDE_USER);
+	memset(table, 0, PAGE_SIZE);
+	dir_entry->SetFlag(flags);
 	dir_entry->SetTable(table);
-
-	//PAGE_DIR_ENTRY* dir_entry = &dir.entries[0];
-	//dir_entry->SetFlag(PDE_PRESENT);
-	//dir_entry->SetFlag(PDE_WRITABLE);
-	//dir_entry->SetFlag(PDE_USER);
-	//dir_entry->SetAddr((uint32)table);
-
-	/*uint32 addr = 0;
-	for (int i = 0; i < 1; i++)
-	{
-		PAGE_TABLE* table = (PAGE_TABLE*)Memory::AllocBlocks(1);
-
-		for (int j = 0; j < PAGES_PER_TABLE; j++)
-		{
-			PAGE_TABLE_ENTRY entry;
-			entry.SetFlag(PTE_PRESENT);
-			entry.SetFlag(PTE_USER);
-			entry.SetAddr(addr);
-			table->entries[j] = entry;
-
-			addr += PAGE_SIZE;
-		}
-
-		PAGE_DIR_ENTRY* dir_entry = &dir->entries[i];
-		dir_entry->SetFlag(PDE_PRESENT);
-		dir_entry->SetFlag(PDE_WRITABLE);
-		dir_entry->SetFlag(PDE_USER);
-		dir_entry->SetTable(table);
-	}*/
-
-	addr = KERNEL_BASE_PHYS;
-	for (int i = 768; i < PAGES_PER_DIR; i++)
-	{
-		PAGE_TABLE* table = (PAGE_TABLE*)Memory::AllocBlocks(1);
-
-		for (int j = 0; j < PAGES_PER_TABLE; j++)
-		{
-			PAGE_TABLE_ENTRY entry;
-			entry.SetFlag(PTE_PRESENT);
-			entry.SetFlag(PTE_USER);
-			entry.SetAddr(addr);
-			table->entries[j] = entry;
-
-			addr += PAGE_SIZE;
-		} 
-
-		PAGE_DIR_ENTRY* dir_entry = &dir->entries[i];
-		dir_entry->SetFlag(PDE_PRESENT);
-		dir_entry->SetFlag(PDE_WRITABLE);
-		dir_entry->SetFlag(PDE_USER);
-		dir_entry->SetTable(table);
-	}
-
-	//Map framebuffer for debugging
-	addr = 0xE0000000;
-	for (int i = 896; i < 1024; i++)
-	{
-		PAGE_TABLE* table = (PAGE_TABLE*)Memory::AllocBlocks(1);
-
-		for (int j = 0; j < PAGES_PER_TABLE; j++)
-		{
-			PAGE_TABLE_ENTRY entry;
-			entry.SetFlag(PTE_PRESENT);
-			entry.SetFlag(PTE_USER);
-			entry.SetAddr(addr);
-			table->entries[j] = entry;
-
-			addr += PAGE_SIZE;
-		}
-
-		PAGE_DIR_ENTRY* dir_entry = &dir->entries[i];
-		dir_entry->SetFlag(PDE_PRESENT);
-		dir_entry->SetFlag(PDE_WRITABLE);
-		dir_entry->SetFlag(PDE_USER);
-		dir_entry->SetTable(table);
-	}
-
-	LoadDir((uint32)&dir->entries);
-
-	EnablePaging();
-
-	*(uint32*)(0xE0000000) = 0xFFFF00;
-	*(uint32*)(0xE0000004) = 0xFFFF00;
-	*(uint32*)(0xE0000008) = 0xFFFF00;
-	*(uint32*)(0xE000000C) = 0xFFFF00;
-	*(uint32*)(0xE0000010) = 0xFFFF00;
-	_asm cli
-	_asm hlt
-
-	//Debug::Print("Paging enabled\n");
-
-	//_asm cli
-	//_asm hlt
-
-	return STATUS_SUCCESS;
+	MapPhysAddr(dir, (uint32)table, (uint32)table, flags);
+	return 1;
 }
 
-void Paging::LoadDir(uint32 addr)
+void Paging::SwitchDir(PAGE_DIR* dir)
 {
+	uint32 addr = (uint32)&dir->entries;
+	current_dir = dir;
+
 	_asm
 	{
 		mov	eax, [addr]
 		mov	cr3, eax
 	}
-}
-
-#include "Kernel\kernel.h"
-__declspec (naked) void hello()
-{
-	_asm lea eax, Kernel::Main;
 }
 
 void Paging::EnablePaging()

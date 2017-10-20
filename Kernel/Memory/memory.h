@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "paging.h"
 
 #define BLOCK_SIZE			0x1000
 #define KERNEL_BASE_PHYS	0x100000

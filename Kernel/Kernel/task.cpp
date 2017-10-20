@@ -28,7 +28,7 @@ Thread* Task::CreateThread(void* main)
 {
 	Thread* thread = new Thread;
 	//TASK_REGS* regs = (TASK_REGS*)((uint8*)thread + sizeof(THREAD) - sizeof(TASK_REGS));
-	void* esp = (char*)Memory::AllocBlocks(1) + 0x1000 - sizeof(TASK_REGS);
+	void* esp = new char[PAGE_SIZE] + 0x1000 - sizeof(TASK_REGS);
 
 	thread->esp = (uint32)esp;
 	TASK_REGS* regs = (TASK_REGS*)thread->esp;

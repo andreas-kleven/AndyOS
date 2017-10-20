@@ -87,13 +87,14 @@ void _Font()
 void OS::Main()
 {
 	FS::Init();
+
 	//Net::Init();
 
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
 	//mandelbrot.Run();
 
 	//GUI();
-	Game();
+	//Game();
 	//Audio();
 	_Font();
 

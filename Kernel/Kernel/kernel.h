@@ -4,5 +4,6 @@
 static class Kernel
 {
 public:
-	static void Main(MULTIBOOT_INFO* bootinfo);
+	static void Setup(MULTIBOOT_INFO* bootinfo);
+	static void HigherHalf(MULTIBOOT_INFO* bootinfo);
 };

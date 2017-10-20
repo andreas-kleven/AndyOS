@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "Boot\multiboot.h"
 
 #define PAGE_SIZE		0x1000
 
@@ -45,12 +46,12 @@ struct PAGE_TABLE_ENTRY
 {
 	uint32 value = 0;
 
-	void SetFlag(PAGE_TABLE_FLAG flag)
+	void SetFlag(uint32 flag)
 	{
 		value |= flag;
 	}
 
-	void UnsetFlag(PAGE_TABLE_FLAG flag)
+	void UnsetFlag(uint32 flag)
 	{
 		value &= ~flag;
 	}
@@ -65,12 +66,12 @@ struct PAGE_DIR_ENTRY
 {
 	uint32 value = 0;
 
-	void SetFlag(PAGE_DIR_FLAG flag)
+	void SetFlag(uint32 flag)
 	{
 		value |= flag;
 	}
 
-	void UnsetFlag(PAGE_DIR_FLAG flag)
+	void UnsetFlag(uint32 flag)
 	{
 		value &= ~flag;
 	}
@@ -78,6 +79,11 @@ struct PAGE_DIR_ENTRY
 	void SetTable(PAGE_TABLE* table)
 	{
 		value = (value & ~PDE_FRAME) | (uint32)table;
+	}
+
+	PAGE_TABLE* GetTable()
+	{
+		return (PAGE_TABLE*)(value & PDE_FRAME);
 	}
 };
 
@@ -94,11 +100,14 @@ struct PAGE_DIR
 static class Paging
 {
 public:
-	static STATUS Init();
+	static void Init(MULTIBOOT_INFO* bootinfo);
+	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags);
+	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
-	static void MapMem(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 length);
+	static PAGE_DIR* GetCurrentDir();
 
 private:
-	static void LoadDir(uint32 addr);
+	static bool CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags);
+	static void SwitchDir(PAGE_DIR* dir);
 	static void EnablePaging();
 };

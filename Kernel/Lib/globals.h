@@ -35,7 +35,11 @@ void* operator new(unsigned size)
 	}*/
 
 	int blocks = ceil(size / 4096.f);
-	return Memory::AllocBlocks(blocks);
+
+	void* addr = Memory::AllocBlocks(blocks);
+	Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)addr, (uint32)addr, PDE_PRESENT | PDE_WRITABLE, blocks);
+
+	return addr;
 }
 void operator delete(void* p)
 {
@@ -53,7 +57,10 @@ void* operator new[](unsigned size)
 	if (size > mem_left)
 	{
 		int blocks = ceil(size / 4096.f);
+
 		uint8* ptr = (uint8*)Memory::AllocBlocks(blocks);
+		Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PDE_PRESENT | PDE_WRITABLE, blocks);
+
 		mem_ptr = ptr + size;
 		mem_left = size % BLOCK_SIZE;
 		return ptr;

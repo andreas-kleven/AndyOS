@@ -5,7 +5,6 @@
 #include "debug.h"
 #include "Boot/multiboot.h"
 #include "Memory/memory.h"
-#include "Memory/paging.h"
 #include "HAL/cpu.h"
 #include "Drawing/vbe.h"
 #include "Drawing/drawing.h"
@@ -34,17 +33,17 @@
 #define MEMORY_SIZE 0xFFFFFFFF //4 GB
 #define MEMORY_MAP_SIZE 0x20000
 
-void Kernel::Main(MULTIBOOT_INFO* bootinfo)
+void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
 	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
 	Memory::Init(MEMORY_SIZE, (uint32*)mem_map);
 	Memory::InitRegion((uint32*)(mem_map + MEMORY_MAP_SIZE), MEMORY_SIZE - (mem_map + MEMORY_MAP_SIZE));
-	Paging::Init();
+	//Memory::InitRegion((uint32*)(KERNEL_BASE + KERNEL_SIZE), 0x100000000 - KERNEL_BASE - KERNEL_SIZE);
+	Paging::Init(bootinfo);
+}
 
-	*(uint32*)0xE0000000 = 0xFF0000;
-	_asm cli
-	_asm hlt
-	
+void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
+{
 	CPU::Init();
 	HAL::Init();
 	Exceptions::Init();
@@ -53,12 +52,6 @@ void Kernel::Main(MULTIBOOT_INFO* bootinfo)
 	/**/VBE::Init(vbeMode);
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 	/**/Debug::Print("%ux\n", VBE::mode.framebuffer);
-
-	Paging::Init();
-	*(uint32*)0xE0000000 = 0xFF0000;
-
-	Debug::Print("\nDone\n");
-	while (1);
 
 	ATA::Init();
 

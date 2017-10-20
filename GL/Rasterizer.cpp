@@ -20,9 +20,7 @@ namespace gl
 	STATUS Rasterizer::Init()
 	{
 		uint32 pixels = GL::m_height * GL::m_width;
-		uint32 blocks = pixels * sizeof(uint32) / BLOCK_SIZE;
-
-		depth_buffer = (float*)Memory::AllocBlocks(blocks);
+		depth_buffer = new float[pixels];
 		return STATUS_SUCCESS;
 	}
 

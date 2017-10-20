@@ -1,6 +1,8 @@
 #include "Drawing/drawing.h"
+#include "Memory/memory.h"
 #include "string.h"
 #include "math.h"
+#include "debug.h"
 
 //int Drawing::width;
 //int Drawing::height;
@@ -22,6 +24,8 @@ STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 
 	gc_direct = gc;
 	gc_direct.framebuffer = framebuffer;
+
+	Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)framebuffer, (uint32)framebuffer, PDE_PRESENT | PDE_WRITABLE, gc_direct.memsize() / PAGE_SIZE);
 	return STATUS_SUCCESS;
 }
 
