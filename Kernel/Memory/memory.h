@@ -1,7 +1,11 @@
 #pragma once
 #include "definitions.h"
 
-#define BLOCK_SIZE 0x1000
+#define BLOCK_SIZE			0x1000
+#define KERNEL_BASE_PHYS	0x100000
+#define KERNEL_BASE			0xC0000000
+#define KERNEL_SIZE			0x40000000
+#define USER_BASE			0xB0000000
 
 static class Memory
 {

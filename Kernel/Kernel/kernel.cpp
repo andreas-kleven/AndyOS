@@ -4,7 +4,8 @@
 #include "string.h"
 #include "debug.h"
 #include "Boot/multiboot.h"
-#include "Memory\memory.h"
+#include "Memory/memory.h"
+#include "Memory/paging.h"
 #include "HAL/cpu.h"
 #include "Drawing/vbe.h"
 #include "Drawing/drawing.h"
@@ -30,26 +31,35 @@
 #include "task.h"
 #include "Kernel/OS.h"
 
-#define KERNEL_BASE 0x100000 //1 MB
-#define KERNEL_SIZE 0x40000000 //1 GB
-
 #define MEMORY_SIZE 0xFFFFFFFF //4 GB
 #define MEMORY_MAP_SIZE 0x20000
 
 void Kernel::Main(MULTIBOOT_INFO* bootinfo)
 {
-	VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo->vbe_mode_info;
-
-	HAL::Init();
-	Exceptions::Init();
-	CPU::Init();
-
-	uint32 mem_map = KERNEL_BASE + KERNEL_SIZE;
+	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
 	Memory::Init(MEMORY_SIZE, (uint32*)mem_map);
 	Memory::InitRegion((uint32*)(mem_map + MEMORY_MAP_SIZE), MEMORY_SIZE - (mem_map + MEMORY_MAP_SIZE));
+	Paging::Init();
 
-	VBE::Init(vbeMode);
-	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
+	*(uint32*)0xE0000000 = 0xFF0000;
+	_asm cli
+	_asm hlt
+	
+	CPU::Init();
+	HAL::Init();
+	Exceptions::Init();
+
+	/**/VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo->vbe_mode_info;
+	/**/VBE::Init(vbeMode);
+	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
+	/**/Debug::Print("%ux\n", VBE::mode.framebuffer);
+
+	Paging::Init();
+	*(uint32*)0xE0000000 = 0xFF0000;
+
+	Debug::Print("\nDone\n");
+	while (1);
+
 	ATA::Init();
 
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 1);

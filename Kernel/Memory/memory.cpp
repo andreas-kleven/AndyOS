@@ -1,4 +1,5 @@
 #include "Memory/memory.h"
+#include "paging.h"
 
 uint32 Memory::mem_size;
 uint32* Memory::mem_map;

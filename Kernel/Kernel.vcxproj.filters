@@ -112,6 +112,9 @@
     <ClCompile Include="PCI\pci.cpp" />
     <ClCompile Include="Test\Mandelbrot.cpp" />
     <ClCompile Include="Test\TextEdit.cpp" />
+    <ClCompile Include="Memory\paging.cpp" />
+    <ClCompile Include="Memory\pmem.cpp" />
+    <ClCompile Include="Memory\vmem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boot\multiboot.h" />
@@ -183,5 +186,8 @@
     <ClInclude Include="PCI\pci.h" />
     <ClInclude Include="Test\Mandelbrot.h" />
     <ClInclude Include="Test\TextEdit.h" />
+    <ClInclude Include="Memory\paging.h" />
+    <ClInclude Include="Memory\pmem.h" />
+    <ClInclude Include="Memory\vmem.h" />
   </ItemGroup>
 </Project>

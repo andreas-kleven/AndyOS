@@ -60,6 +60,9 @@
     <ClCompile Include="Lib\stdio.cpp" />
     <ClCompile Include="Lib\string.cpp" />
     <ClCompile Include="Memory\memory.cpp" />
+    <ClCompile Include="Memory\paging.cpp" />
+    <ClCompile Include="Memory\pmem.cpp" />
+    <ClCompile Include="Memory\vmem.cpp" />
     <ClCompile Include="Net\arp.cpp" />
     <ClCompile Include="Net\dhcp.cpp" />
     <ClCompile Include="Net\dns.cpp" />
@@ -128,6 +131,9 @@
     <ClInclude Include="Lib\string.h" />
     <ClInclude Include="Lib\System.h" />
     <ClInclude Include="Memory\memory.h" />
+    <ClInclude Include="Memory\paging.h" />
+    <ClInclude Include="Memory\pmem.h" />
+    <ClInclude Include="Memory\vmem.h" />
     <ClInclude Include="Net\address.h" />
     <ClInclude Include="Net\arp.h" />
     <ClInclude Include="Net\dhcp.h" />
@@ -247,7 +253,7 @@
       </CompileAsWinRT>
     </ClCompile>
     <Link>
-      <BaseAddress>0x100000</BaseAddress>
+      <BaseAddress>0xC0000000</BaseAddress>
       <EntryPointSymbol>Entry</EntryPointSymbol>
       <SubSystem>Native</SubSystem>
       <AdditionalDependencies />
@@ -255,11 +261,13 @@
       <SectionAlignment>512</SectionAlignment>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>
-      <FixedBaseAddress>
-      </FixedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <Driver>Driver</Driver>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)build.bat"</Command>
