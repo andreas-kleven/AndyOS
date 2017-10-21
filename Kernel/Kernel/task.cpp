@@ -28,9 +28,6 @@ Thread* Task::CreateThread(void* main)
 {
 	Thread* thread = new Thread;
 	//TASK_REGS* regs = (TASK_REGS*)((uint8*)thread + sizeof(THREAD) - sizeof(TASK_REGS));
-	void* esp = new char[PAGE_SIZE] + 0x1000 - sizeof(TASK_REGS);
-
-	thread->esp = (uint32)esp;
 	TASK_REGS* regs = (TASK_REGS*)thread->esp;
 
 	regs->flags = 0x202;
@@ -101,6 +98,41 @@ void Task::StartThreading()
 	}
 }
 
+void Task::RemoveThread(Thread* thread)
+{
+	_asm cli
+
+	if (!thread)
+		return;
+
+	Thread* t = first_thread;
+	while (t)
+	{
+		Thread* next = t->next;
+
+		if (next == thread)
+		{
+			t->next = next->next;
+
+			if (thread == current_thread)
+				current_thread = t;
+
+			delete thread;
+			_asm sti
+			return;
+		}
+
+		t = next;
+	}
+
+	_asm sti
+}
+
+void Task::Exit(int exitcode)
+{
+	RemoveThread(current_thread);
+}
+
 void Task::Schedule()
 {
 	current_thread = current_thread->next;
@@ -160,4 +192,9 @@ void _declspec (naked) Task::Idle()
 		//Debug::Print("Idle");
 		_asm pause
 	}
+}
+
+Thread::Thread()
+{
+	esp = (uint32)(new char[PAGE_SIZE] + 0x1000 - sizeof(TASK_REGS));
 }

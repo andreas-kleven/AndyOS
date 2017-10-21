@@ -33,6 +33,8 @@ public:
 	//TASK_REGS regs;
 	uint32 esp;
 	Thread* next;
+
+	Thread();
 };
 
 static class Task
@@ -44,6 +46,9 @@ public:
 	static void InsertThread(Thread* thread);
 
 	static void StartThreading();
+	static void RemoveThread(Thread* thread);
+
+	static void Exit(int exitcode);
 
 private:
 	static void Schedule();
