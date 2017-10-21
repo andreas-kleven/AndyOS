@@ -4,8 +4,8 @@
 
 #define PAGE_SIZE		0x1000
 
-#define PAGES_PER_TABLE	1024
-#define PAGES_PER_DIR	1024
+#define PAGE_TABLE_LENGTH	1024
+#define PAGE_DIR_LENGTH		1024
 
 //typedef uint32 PAGE_TABLE_ENTRY;
 //typedef uint32 PAGE_DIR_ENTRY;
@@ -89,12 +89,12 @@ struct PAGE_DIR_ENTRY
 
 struct PAGE_TABLE
 {
-	PAGE_TABLE_ENTRY entries[PAGES_PER_TABLE];
+	PAGE_TABLE_ENTRY entries[PAGE_TABLE_LENGTH];
 };
 
 struct PAGE_DIR
 {
-	PAGE_DIR_ENTRY entries[PAGES_PER_DIR];
+	PAGE_DIR_ENTRY entries[PAGE_DIR_LENGTH];
 };
 
 static class Paging
@@ -105,6 +105,8 @@ public:
 	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
 	static PAGE_DIR* GetCurrentDir();
+
+	static bool AllocPage(void* virt);
 
 private:
 	static bool CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags);

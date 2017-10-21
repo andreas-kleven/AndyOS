@@ -129,9 +129,20 @@ void INTERRUPT Exceptions::ISR13()
 	Panic::KernelPanic("General protection fault");
 }
 
-void INTERRUPT Exceptions::ISR14()
+void INTERRUPT Exceptions::ISR14(uint32 err, uint32 eflags, uint32 cs, uint32 eip)
 {
-	Panic::KernelPanic("Page fault");
+	_asm cli
+	_asm sub ebp, 4
+
+	static int faultAddr = 0;
+
+	_asm
+	{
+		mov eax, cr2
+		mov[faultAddr], eax
+	}
+
+	Panic::KernelPanic("Page fault", "ADDR: %ux    ERR: %ux    EFLAGS: %ux    CS: %ux    EIP: %ux", faultAddr, err, eflags, cs, eip);
 }
 
 void INTERRUPT Exceptions::ISR15()

@@ -26,7 +26,7 @@ private:
 	static void _cdecl ISR11();
 	static void _cdecl ISR12();
 	static void _cdecl ISR13();
-	static void _cdecl ISR14();
+	static void _cdecl ISR14(uint32 err, uint32 eflags, uint32 cs, uint32 eip);
 	static void _cdecl ISR15();
 	static void _cdecl ISR16();
 	static void _cdecl ISR17();

@@ -10,7 +10,7 @@ cd "C:\Users\Andyhk\Documents\visual studio 2017\Projects\AndyOS\"
 @SET FILE1="IMG.BMP"
 @SET FILE2="MODEL.3D"
 
-%Rebase% 0x100000 %OS%
+%Rebase% 0xC0000000 %OS%
 REM %FileAdder% %MapPath% %Kernel% %FILE1% "FILE1"
 REM %FileAdder% %MapPath% %Kernel% %FILE2% "FILE2"
 copy %OS% %BootBinary% /y

@@ -86,6 +86,15 @@ void _Font()
 
 void OS::Main()
 {
+	void* asd = new uint8[4096];
+
+	Debug::Print("_ %ux\n", OS::Main);
+
+	//for (int i = 0; i < 10; i++)
+	//	Debug::Print("%ux\n", new uint8[4096]);
+	//
+	//while (1);
+
 	FS::Init();
 
 	//Net::Init();
