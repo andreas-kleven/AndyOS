@@ -28,7 +28,7 @@
 //#include "tcp.h"
 //#include "tcpsocket.h"
 #include "task.h"
-#include "Kernel/OS.h"
+#include "Kernel/os.h"
 
 #define MEMORY_SIZE 0xFFFFFFFF //4 GB
 #define MEMORY_MAP_SIZE 0x20000

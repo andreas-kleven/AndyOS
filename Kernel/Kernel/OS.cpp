@@ -1,4 +1,4 @@
-#include "OS.h"
+#include "os.h"
 #include "panic.h"
 #include "stdio.h"
 #include "Drivers/ac97.h"

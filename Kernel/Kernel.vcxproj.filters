@@ -68,7 +68,6 @@
     <ClCompile Include="Drivers\mouse.cpp" />
     <ClCompile Include="Drivers\ne1000.cpp" />
     <ClCompile Include="File System\disk.cpp" />
-    <ClCompile Include="File System\FileSystem.cpp" />
     <ClCompile Include="File System\iso.cpp" />
     <ClCompile Include="GUI\Controls\Button.cpp" />
     <ClCompile Include="GUI\Controls\Canvas.cpp" />
@@ -86,7 +85,6 @@
     <ClCompile Include="HAL\rtc.cpp" />
     <ClCompile Include="Kernel\exceptions.cpp" />
     <ClCompile Include="Kernel\kernel.cpp" />
-    <ClCompile Include="Kernel\OS.cpp" />
     <ClCompile Include="Kernel\panic.cpp" />
     <ClCompile Include="Kernel\task.cpp" />
     <ClCompile Include="Lib\debug.cpp" />
@@ -115,6 +113,8 @@
     <ClCompile Include="Memory\paging.cpp" />
     <ClCompile Include="Memory\pmem.cpp" />
     <ClCompile Include="Memory\vmem.cpp" />
+    <ClCompile Include="Kernel\os.cpp" />
+    <ClCompile Include="File System\filesys.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boot\multiboot.h" />
@@ -131,7 +131,6 @@
     <ClInclude Include="Drivers\mouse.h" />
     <ClInclude Include="Drivers\ne1000.h" />
     <ClInclude Include="File System\disk.h" />
-    <ClInclude Include="File System\FileSystem.h" />
     <ClInclude Include="File System\iso.h" />
     <ClInclude Include="GUI\Controls\Button.h" />
     <ClInclude Include="GUI\Controls\Canvas.h" />
@@ -150,7 +149,6 @@
     <ClInclude Include="HAL\rtc.h" />
     <ClInclude Include="Kernel\exceptions.h" />
     <ClInclude Include="Kernel\kernel.h" />
-    <ClInclude Include="Kernel\OS.h" />
     <ClInclude Include="Kernel\panic.h" />
     <ClInclude Include="Kernel\task.h" />
     <ClInclude Include="Lib\ctype.h" />
@@ -189,5 +187,7 @@
     <ClInclude Include="Memory\paging.h" />
     <ClInclude Include="Memory\pmem.h" />
     <ClInclude Include="Memory\vmem.h" />
+    <ClInclude Include="Kernel\os.h" />
+    <ClInclude Include="File System\filesys.h" />
   </ItemGroup>
 </Project>
