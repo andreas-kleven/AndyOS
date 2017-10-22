@@ -19,9 +19,9 @@ enum PAGE_TABLE_FLAG
 	PTE_CACHE_DISABLED = 0x10,
 	PTE_ACCESSED = 0x20,
 	PTE_DIRTY = 0x40,
-	//PTE_PAT = 0x80,
+	PTE_PAT = 0x80,
 	PTE_CPU_GLOBAL = 0x100,
-	//PTE_LV4_GLOBAL = 0x200,
+	PTE_LV4_GLOBAL = 0x200,
 	PTE_FRAME = 0x7FFFF000
 };
 
@@ -36,7 +36,7 @@ enum PAGE_DIR_FLAG
 	PDE_DIRTY = 0x40,
 	PDE_4MB = 0x80,
 	PDE_CPU_GLOBAL = 0x100,
-	//PDE_LV4_GLOBAL = 0x200,
+	PDE_LV4_GLOBAL = 0x200,
 	PDE_FRAME = 0x7FFFF000
 };
 
@@ -107,9 +107,9 @@ public:
 	static PAGE_DIR* GetCurrentDir();
 
 	static bool AllocPage(void* virt);
+	static void SwitchDir(PAGE_DIR* dir);
 
 private:
 	static bool CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags);
-	static void SwitchDir(PAGE_DIR* dir);
 	static void EnablePaging();
 };

@@ -4,6 +4,7 @@
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
 #include "HAL/hal.h"
+#include "stdio.h"
 #include "debug.h"
 
 namespace gui
@@ -190,6 +191,15 @@ namespace gui
 		int y = Drawing::gc.height - gc_taskbar.height;
 
 		Drawing::FillRect(0, 0, gc_taskbar.width, gc_taskbar.height, col_taskbar, gc_taskbar);
+
+		char buf[64];
+		char buf2[64];
+		vprintf(buf, "%i.%i.%i", RTC::Hour(), RTC::Minute(), RTC::Second());
+		vprintf(buf2, "%i.%i.%i", RTC::Day(), RTC::Month(), RTC::Year());
+
+		Drawing::DrawText(gc_taskbar.width - 100, 0, buf, COLOR_BLACK, gc_taskbar);		//Time
+		Drawing::DrawText(gc_taskbar.width - 100, 16, buf2, COLOR_BLACK, gc_taskbar);	//Date
+
 		Drawing::BitBlt(gc_taskbar, 0, 0, gc_taskbar.width, gc_taskbar.height, Drawing::gc, 0, y);
 	}
 

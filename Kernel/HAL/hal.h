@@ -3,6 +3,7 @@
 #include "pit.h"
 #include "pic.h"
 #include "idt.h"
+#include "rtc.h"
 
 uint8 inb(uint16 port);
 uint16 inw(uint16 port);

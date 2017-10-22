@@ -38,31 +38,6 @@ void Paging::Init(MULTIBOOT_INFO* bootinfo)
 	//Map framebuffer for debugging
 	//MapPhysAddr(dir, 0xE0000000, 0xE0000000, 3, 128 * 1024);
 
-	/*uint32 memptr = PAGE_ROOT_DIR_ADDR + sizeof(PAGE_DIR);
-
-	uint32 addr = 0;
-
-	for (int i = 0; i < 2; i++)
-	{
-		PAGE_TABLE* table = (PAGE_TABLE*)memptr;
-		memptr += PAGE_SIZE;
-
-		for (int j = 0; j < PAGE_TABLE_LENGTH; j++)
-		{
-			PAGE_TABLE_ENTRY* entry = &table->entries[j];
-			entry->SetFlag(PDE_PRESENT | PDE_WRITABLE);
-			entry->SetAddr(addr);
-			addr += PAGE_SIZE;
-		}
-
-		PAGE_DIR_ENTRY* dir_entry = &dir->entries[i];
-		dir_entry->SetFlag(PDE_PRESENT | PDE_WRITABLE);
-		dir_entry->SetTable(table);
-	}
-
-	_asm cli
-	_asm hlt*/
-
 	SwitchDir(dir);
 	EnablePaging();
 

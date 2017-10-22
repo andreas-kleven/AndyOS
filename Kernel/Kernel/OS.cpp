@@ -102,7 +102,7 @@ void OS::Main()
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
 	//mandelbrot.Run();
 
-	//GUI();
+	GUI();
 	//Game();
 	//Audio();
 	_Font();
