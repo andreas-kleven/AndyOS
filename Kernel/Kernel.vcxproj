@@ -170,7 +170,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{670D753F-8824-43AC-95EC-130845F75F0A}</ProjectGuid>
     <RootNamespace>Kernel</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>Kernel</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -253,7 +253,7 @@
       </CompileAsWinRT>
     </ClCompile>
     <Link>
-      <BaseAddress>0xC0000000</BaseAddress>
+      <BaseAddress>0x100000</BaseAddress>
       <EntryPointSymbol>Entry</EntryPointSymbol>
       <SubSystem>Native</SubSystem>
       <AdditionalDependencies />
