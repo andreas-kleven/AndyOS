@@ -1,4 +1,4 @@
-cd "C:\Users\Andyhk\Documents\visual studio 2017\Projects\AndyOS\"
+cd "C:\Users\Andyhk\Documents\visual studio 2017\Projects\AndyOS 2.0\"
 
 @SET Rebase="Rebase\bin\debug\Rebase.exe"
 @SET FileAdder="FileAdder\bin\debug\FileAdder.exe"
