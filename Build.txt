@@ -1,0 +1,4 @@
+xorriso
+grub
+
+https://askubuntu.com/questions/928550/grub-mkrescue-not-creating-iso-file
