@@ -8,8 +8,8 @@
 static class Mouse
 {
 public:
-	static int x;
-	static int y;
+	static float x;
+	static float y;
 	static float sensitivity;
 
 	static bool mouse_L;

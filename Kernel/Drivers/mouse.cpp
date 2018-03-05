@@ -2,8 +2,8 @@
 #include "HAL/hal.h"
 #include "math.h"
 
-int Mouse::x;
-int Mouse::y;
+float Mouse::x;
+float Mouse::y;
 float Mouse::sensitivity;
 
 bool Mouse::mouse_L;
@@ -26,6 +26,13 @@ STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 	w = width;
 	h = height;
 	sensitivity = sens;
+
+	mouse_L = 0;
+	mouse_R = 0;
+	mouse_M = 0;
+
+	x = 0;
+	y = 0;
 
 	IDT::SetISR(44, Mouse_ISR);
 	IDT::SetISR(33, IDT::EmptyISR);
@@ -73,13 +80,7 @@ STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 
 	initialized = 1;
 
-
 	_asm int 44
-	mouse_L = 0;
-	mouse_R = 0;
-	mouse_M = 0;
-	x = 0;
-	y = 0;
 
 	return STATUS_SUCCESS;
 }
@@ -139,8 +140,14 @@ void INTERRUPT Mouse::Mouse_ISR()
 		{
 			mouse_byte[2] = inb(MOUSE_PORT0);
 
-			x = clamp((int)(x + mouse_byte[1]), 0, (int)w);
-			y = clamp((int)(y - mouse_byte[2]), 0, (int)h);
+			float deltaX = mouse_byte[1] * sensitivity;
+			float deltaY = mouse_byte[2] * sensitivity;
+
+			//float scaleX = abs(deltaX) / 20 + 1;
+			//float scaleY = abs(deltaY) / 20 + 1;
+
+			x = clamp(x + deltaX, 0.f, (float)w);
+			y = clamp(y - deltaY, 0.f, (float)h);
 
 			mouse_L = mouse_byte[0] & 1;
 			mouse_R = mouse_byte[0] >> 1 & 1;
