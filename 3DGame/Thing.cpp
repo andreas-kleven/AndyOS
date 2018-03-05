@@ -11,7 +11,7 @@ Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* mod = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
+	Model3D* mod = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!FS::ReadFile("earth.bmp", img_buf))
@@ -36,7 +36,8 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = mod->vertices;
 	mesh->vertex_count = mod->vertex_count;
-	mesh->texId = gl::GL::AddTexture(bmp);
+	mesh->texId = 100;
+	//mesh->texId = gl::GL::AddTexture(bmp);
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	//sphere->radius = 1;

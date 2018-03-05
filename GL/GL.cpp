@@ -13,18 +13,18 @@ namespace gl
 	uint32 GL::m_stride;
 
 	BMP** GL::m_textures;
-	int tex_index = 0;
-	int bound_tex = -1;
+	int tex_index;
+	int bound_tex;
 
 	Vector4 lightsources[GL_MAX_LIGHTSOURCES];
-	int light_index = 0;
+	int light_index;
 
 	GLMatrixMode mat_mode = GL_PROJECTION;
 	Matrix4 mat_projection;
 	Matrix4 mat_viewmodel;
 
 	Matrix4* mat_stack;
-	int mat_stack_index = 0;
+	int mat_stack_index;
 
 	Vertex* vert_ptr;
 
@@ -37,11 +37,13 @@ namespace gl
 		m_height = gc_buf.height;
 		m_stride = gc_buf.stride;
 
-		m_textures = new BMP*[GL_MAX_TEXTURES];
+		m_textures = new BMP*[GL_MAX_TEXTURES + 1];
+		m_textures[0] = 0;
+
 		mat_stack = new Matrix4[GL_MATRIX_STACK_LENGTH];
 
-		tex_index = 0;
-		bound_tex = -1;
+		tex_index = 1;
+		bound_tex = 0;
 		light_index = 0;
 		mat_stack_index = 0;
 
@@ -51,8 +53,8 @@ namespace gl
 
 	int GL::AddTexture(BMP* bmp)
 	{
-		if (tex_index == GL_MAX_TEXTURES)
-			return -1;
+		if (tex_index == GL_MAX_TEXTURES + 1)
+			return 0;
 
 		m_textures[tex_index] = bmp;
 		return tex_index++;
@@ -130,7 +132,7 @@ namespace gl
 		Vector4 light2 = Vector4(-1, 0.8, -1, 0).Normalized();
 
 		Matrix4 M = mat_projection * mat_viewmodel;
-		BMP* texture = bound_tex != -1 ? m_textures[bound_tex] : 0;
+		BMP* texture = m_textures[bound_tex];
 
 		int end = start + count;
 		for (int i = start; i < end; i += 3)
