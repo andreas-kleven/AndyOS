@@ -12,8 +12,9 @@
 
 enum GLMatrixMode
 {
-	GL_PROJECTION,
-	GL_MODELVIEW
+	GL_MODEL,
+	GL_VIEW,
+	GL_PROJECTION
 };
 
 namespace gl
@@ -47,11 +48,12 @@ namespace gl
 		static void PopMatrix();
 
 		static void VertexPointer(Vertex* ptr);
+		static void CameraDirection(Vector4 dir);
 
 		//static void LightingFunction()
 
-		static void Clear(uint32 color);
 		static void Draw(int start, int count);
+		static void Clear(uint32 color);
 		static void SwapBuffers();
 
 	private:

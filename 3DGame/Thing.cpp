@@ -36,7 +36,6 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = mod->vertices;
 	mesh->vertex_count = mod->vertex_count;
-	mesh->texId = 100;
 	//mesh->texId = gl::GL::AddTexture(bmp);
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");

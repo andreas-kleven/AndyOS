@@ -20,13 +20,16 @@ namespace gl
 	int light_index;
 
 	GLMatrixMode mat_mode = GL_PROJECTION;
+	Matrix4 mat_model;
+	Matrix4 mat_view;
 	Matrix4 mat_projection;
-	Matrix4 mat_viewmodel;
 
 	Matrix4* mat_stack;
 	int mat_stack_index;
 
 	Vertex* vert_ptr;
+
+	Vector4 cam_dir;
 
 	STATUS GL::Init(GC gc)
 	{
@@ -118,12 +121,13 @@ namespace gl
 	}
 
 
-	void GL::Clear(uint32 color)
-	{
-		Drawing::Clear(color, gc_buf);
+	void GL::CameraDirection(Vector4 dir) {
+		cam_dir = dir;
+	}
 
-		float val = 1e100;
-		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
+	Vector4 Reflect(Vector4 d, Vector4 n)
+	{
+		return d - n * d.Dot(n) * 2;
 	}
 
 	void GL::Draw(int start, int count)
@@ -131,7 +135,10 @@ namespace gl
 		Vector4 light = Vector4(0.3, -1, 0.5, 0).Normalized();
 		Vector4 light2 = Vector4(-1, 0.8, -1, 0).Normalized();
 
-		Matrix4 M = mat_projection * mat_viewmodel;
+		float diffuse = 1;
+		float specular = 1;
+
+		Matrix4 M = mat_projection * mat_view * mat_model;
 		BMP* texture = m_textures[bound_tex];
 
 		int end = start + count;
@@ -141,43 +148,41 @@ namespace gl
 			Vertex& b = vert_ptr[i + 1];
 			Vertex& c = vert_ptr[i + 2];
 
+			a.MulMatrix(mat_model);
+			b.MulMatrix(mat_model);
+			c.MulMatrix(mat_model);
+
+			//Specular
+			float specA = clamp(cam_dir.Dot(-Reflect(light, a.worldNormal)), 0.f, 1.f);
+			float specB = clamp(cam_dir.Dot(-Reflect(light, b.worldNormal)), 0.f, 1.f);
+			float specC = clamp(cam_dir.Dot(-Reflect(light, c.worldNormal)), 0.f, 1.f);
+
+			//Diffuse
+			float diffA = clamp(-a.worldNormal.Dot(light), 0.f, 1.f);
+			float diffB = clamp(-b.worldNormal.Dot(light), 0.f, 1.f);
+			float diffC = clamp(-c.worldNormal.Dot(light), 0.f, 1.f);
+
+			a.builtColor = a.color * (0.1 + diffuse * diffA + specular * pow(specA, 5));
+			b.builtColor = b.color * (0.1 + diffuse * diffB + specular * pow(specB, 5));
+			c.builtColor = c.color * (0.1 + diffuse * diffC + specular * pow(specC, 5));
+
 			a.MulMatrix(M);
 			b.MulMatrix(M);
 			c.MulMatrix(M);
-
-			float la = -a.worldNormal.Dot(light);
-			float lc = -c.worldNormal.Dot(light);
-			float lb = -b.worldNormal.Dot(light);
-
-			//la = 100 * pow(clamp(Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(a.normal) * 2)), 0.f, a.normal.Dot(Vector4(0, 0, 1, 0))), 10);
-			//lb = 100 * pow(clamp(Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(b.normal) * 2)), 0.f, b.normal.Dot(Vector4(0, 0, 1, 0))), 10);
-			//lc = 100 * pow(clamp(Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(c.normal) * 2)), 0.f, c.normal.Dot(Vector4(0, 0, 1, 0))), 10);
-
-			//la += Vector4(0, 0, 1, 0).Dot(a.normal * Vector4::Dot(light, a.normal) - light);
-			//lb += Vector4(0, 0, 1, 0).Dot(b.normal * Vector4::Dot(light, b.normal) - light);
-			//lc += Vector4(0, 0, 1, 0).Dot(c.normal * Vector4::Dot(light, c.normal) - light);
-
-			//la = light.Dot(light - a.normal * (((light * 2).Dot(a.normal)) / (a.normal.Magnitude() * a.normal.Magnitude())));
-			//lb = light.Dot(light - b.normal * (((light * 2).Dot(b.normal)) / (b.normal.Magnitude() * b.normal.Magnitude())));
-			//lc = light.Dot(light - c.normal * (((light * 2).Dot(c.normal)) / (c.normal.Magnitude() * c.normal.Magnitude())));
-
-			//a.builtColor = (a.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(a.normal) * 2)))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
-			//b.builtColor = (b.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(b.normal) * 2)))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
-			//c.builtColor = (c.color * Vector4(0, 0, 1, 0).Dot(light - (light * light.Dot(c.normal) * 2)))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
-
-			//a.builtColor = (a.color * -a.normal.Dot(light))/* * 1 + (a.color * -a.normal.Dot(light2)) * 0.1*/;
-			//b.builtColor = (b.color * -b.normal.Dot(light))/* * 1 + (b.color * -b.normal.Dot(light2)) * 0.1*/;
-			//c.builtColor = (c.color * -c.normal.Dot(light))/* * 1 + (c.color * -c.normal.Dot(light2)) * 0.1*/;
-
-			a.builtColor = (a.color * la);
-			b.builtColor = (b.color * lb);
-			c.builtColor = (c.color * lc);
 
 			if (a.tmpPos.w > 0 && b.tmpPos.w > 0 && c.tmpPos.w > 0)
 			{
 				Rasterizer::DrawTriangle(a, b, c, texture);
 			}
 		}
+	}
+
+	void GL::Clear(uint32 color)
+	{
+		Drawing::Clear(color, gc_buf);
+
+		float val = 1e100;
+		memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
 	}
 
 	void GL::SwapBuffers()
@@ -190,11 +195,14 @@ namespace gl
 	{
 		switch (mat_mode)
 		{
+		case GL_MODEL:
+			return mat_model;
+
+		case GL_VIEW:
+			return mat_view;
+
 		case GL_PROJECTION:
 			return mat_projection;
-
-		case GL_MODELVIEW:
-			return mat_viewmodel;
 		}
 	}
 }
