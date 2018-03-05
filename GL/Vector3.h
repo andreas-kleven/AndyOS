@@ -1,5 +1,6 @@
 #pragma once
-#include "../GL/GL.h"
+#include "math.h"
+#include "Vector4.h"
 
 struct Vector3
 {

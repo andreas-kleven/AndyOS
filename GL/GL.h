@@ -2,6 +2,8 @@
 #include "definitions.h"
 #include "System.h"
 #include "Vertex.h"
+#include "Vector3.h"
+#include "Matrix3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
 #include "Color.h"

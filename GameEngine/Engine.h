@@ -1,5 +1,5 @@
 #pragma once
-#include "Vector3.h"
+#include "../GL/Vector3.h"
 #include "Transform.h"
 #include "GameObject.h"
 #include "Scene.h"

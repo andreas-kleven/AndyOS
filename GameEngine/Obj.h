@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
 #include "list.h"
-#include "Vector3.h"
+#include "../GL/Vector3.h"
 #include "Vertex.h"
 #include "Model3D.h"
 

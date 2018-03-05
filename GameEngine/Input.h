@@ -1,6 +1,6 @@
 #pragma once
 #include "System.h"
-#include "Vector3.h"
+#include "../GL/Vector3.h"
 
 static class Input
 {
