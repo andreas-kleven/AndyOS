@@ -1,7 +1,6 @@
 #include "Collision.h"
 #include "GameObject.h"
 #include "math.h"
-#include "Vector3.h"
 #include "debug.h"
 
 #define EPSILON 0.00001f

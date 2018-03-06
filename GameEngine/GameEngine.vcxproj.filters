@@ -86,12 +86,6 @@
     <ClCompile Include="Quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix3.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Physics\Collider</Filter>
     </ClCompile>
@@ -171,12 +165,6 @@
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollider.h">
       <Filter>Physics\Collider</Filter>

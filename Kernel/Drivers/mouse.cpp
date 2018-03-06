@@ -2,8 +2,8 @@
 #include "HAL/hal.h"
 #include "math.h"
 
-int Mouse::x;
-int Mouse::y;
+float Mouse::x;
+float Mouse::y;
 float Mouse::sensitivity;
 
 bool Mouse::mouse_L;
@@ -13,19 +13,29 @@ bool Mouse::mouse_M;
 int Mouse::scroll_x;
 int Mouse::scroll_y;
 
-uint32 Mouse::w;
-uint32 Mouse::h;
+uint32 w;
+uint32 h;
 
-uint8 Mouse::mouse_cycle;
-int8 Mouse::mouse_byte[4];
+uint8 mouse_cycle;
+int8 mouse_byte[4];
 
-bool Mouse::initialized;
+bool initialized;
+
+float deltaX;
+float deltaY;
 
 STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 {
 	w = width;
 	h = height;
 	sensitivity = sens;
+
+	mouse_L = 0;
+	mouse_R = 0;
+	mouse_M = 0;
+
+	x = 0;
+	y = 0;
 
 	IDT::SetISR(44, Mouse_ISR);
 	IDT::SetISR(33, IDT::EmptyISR);
@@ -73,13 +83,7 @@ STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 
 	initialized = 1;
 
-
 	_asm int 44
-	mouse_L = 0;
-	mouse_R = 0;
-	mouse_M = 0;
-	x = 0;
-	y = 0;
 
 	return STATUS_SUCCESS;
 }
@@ -123,24 +127,37 @@ void INTERRUPT Mouse::Mouse_ISR()
 
 	if (initialized)
 	{
-		if (mouse_cycle == 0)
+		switch (mouse_cycle)
 		{
+		default:
 			mouse_byte[0] = inb(MOUSE_PORT0);
 
 			if (mouse_byte[0] & 8)
 				mouse_cycle++;
-		}
-		else if (mouse_cycle == 1)
-		{
+			break;
+
+		case 1:
 			mouse_byte[1] = inb(MOUSE_PORT0);
 			mouse_cycle++;
-		}
-		else if (mouse_cycle == 2)
-		{
+			break;
+
+		case 2:
 			mouse_byte[2] = inb(MOUSE_PORT0);
 
-			x = clamp((int)(x + mouse_byte[1]), 0, (int)w);
-			y = clamp((int)(y - mouse_byte[2]), 0, (int)h);
+			if (mouse_byte[0] & 0x80 || mouse_byte[0] & 0x40)
+			{
+				//Bad packet
+				break;
+			}
+
+			deltaX = mouse_byte[1] * sensitivity;
+			deltaY = mouse_byte[2] * sensitivity;
+
+			//float scaleX = abs(deltaX) / 20 + 1;
+			//float scaleY = abs(deltaY) / 20 + 1;
+
+			x = clamp(x + deltaX, 0.f, (float)w);
+			y = clamp(y - deltaY, 0.f, (float)h);
 
 			mouse_L = mouse_byte[0] & 1;
 			mouse_R = mouse_byte[0] >> 1 & 1;
@@ -148,9 +165,9 @@ void INTERRUPT Mouse::Mouse_ISR()
 
 			mouse_cycle = 0;
 			mouse_cycle = 3;
-		}
-		else if (mouse_cycle == 3)
-		{
+			break;
+
+		case 3:
 			mouse_byte[3] = inb(MOUSE_PORT0);
 			mouse_cycle = 0;
 
@@ -158,6 +175,7 @@ void INTERRUPT Mouse::Mouse_ISR()
 				scroll_y += mouse_byte[3];
 			else
 				scroll_x += mouse_byte[3];
+			break;
 		}
 	}
 

@@ -1,8 +1,7 @@
 #pragma once
+#include "../GL/GL.h"
 #include "IMesh.h"
 #include "Transform.h"
-
-#include "../GL/GL.h"
 
 class IMesh
 {

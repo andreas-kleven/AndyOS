@@ -1,6 +1,6 @@
 #include "BoxCollider.h"
 #include "GameObject.h"
-#include "Matrix3.h"
+#include "../GL/Matrix3.h"
 
 BoxCollider::BoxCollider()
 {

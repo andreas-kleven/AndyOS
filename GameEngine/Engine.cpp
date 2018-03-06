@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include "math.h"
 #include "../GL/GL.h"
-#include "Matrix3.h"
 #include "System.h"
 #include "MeshComponent.h"
 #include "Collision.h"
@@ -59,7 +58,6 @@ void GEngine::StartGame(Game* game)
 
 	GL::MatrixMode(GL_PROJECTION);
 	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10));
-	GL::MatrixMode(GL_MODELVIEW);
 
 	/*while (1)
 	{
@@ -112,7 +110,6 @@ void GEngine::StartGame(Game* game)
 		{
 			GL::MatrixMode(GL_PROJECTION);
 			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * GL::gc_out.width, 1080 * GL::gc_out.height, 90, 1, 10));
-			GL::MatrixMode(GL_MODELVIEW);
 		}
 
 		if (Keyboard::GetKeyDown(KEY_ESCAPE))
@@ -615,10 +612,15 @@ void GEngine::Render()
 		cam->transform.position.ToVector4());
 
 	Vector3 v = cam->transform.GetUpVector();
-	Debug::Print("%f\t%f\t%f", v.x, v.y, v.z);
+	Debug::Print("%f\t%f\t%f\n", v.x, v.y, v.z);
+
+	Vector3 ang = cam->GetWorldRotation() * Vector3(0, 0, 1);
+	GL::CameraDirection(ang.ToVector4());
 
 	GL::Clear(0x7F7F7F);
+	GL::MatrixMode(GL_VIEW);
 	GL::LoadMatrix(V);
+	GL::MatrixMode(GL_MODEL);
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
 	{
@@ -639,14 +641,11 @@ void GEngine::Render()
 
 			Matrix4 M = T * R * S;
 
-			GL::PushMatrix();
-			GL::MulMatrix(M);
+			GL::LoadMatrix(M);
 
 			GL::BindTexture(mesh->texId);
 			GL::VertexPointer(mesh->vertices);
 			GL::Draw(0, mesh->vertex_count);
-
-			GL::PopMatrix();
 		}
 	}
 

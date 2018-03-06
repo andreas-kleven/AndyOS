@@ -55,7 +55,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	
 	ATA::Init();
 
-	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 1);
+	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
 	Keyboard::Init();
 	
 	Task::Init();

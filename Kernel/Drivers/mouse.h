@@ -8,8 +8,8 @@
 static class Mouse
 {
 public:
-	static int x;
-	static int y;
+	static float x;
+	static float y;
 	static float sensitivity;
 
 	static bool mouse_L;
@@ -22,16 +22,8 @@ public:
 	static STATUS Init(uint32 width, uint32 height, float sens);
 
 private:
-	static uint32 w;
-	static uint32 h;
-
-	static uint8 mouse_cycle;
-	static int8 mouse_byte[];
-
 	static void MouseWait(uint8 type);
 	static void MouseWrite(uint8 val);
 	static uint8 MouseRead();
 	static void _cdecl Mouse_ISR();
-
-	static bool initialized;
 };
