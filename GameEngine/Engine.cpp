@@ -265,6 +265,12 @@ Vector4 WorldToScreen(Game* game, Vector3 pos)
 	return v0;
 }
 
+void DrawLine(Game* game, Vector3 start, Vector3 end, uint32 color) {
+	Vector4 lpstart = WorldToScreen(game, start);
+	Vector4 lpend = WorldToScreen(game, end);
+	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color, Drawing::gc_direct);
+}
+
 void GEngine::Collision()
 {
 	float energy = 0;
@@ -367,6 +373,8 @@ void GEngine::Collision()
 
 					//a->velocity = Vector3(0, 0, 0);
 					a->parent->transform.position += mtv;
+
+					DrawLine(active_game, a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, 0xFF00FF00);
 
 					//Debug::Print("COLLISION");
 
@@ -506,6 +514,7 @@ void GEngine::Collision()
 						Vector3 n = -mtv.Normalized();
 						//Vector3 n = test.points[0]->Normal;
 
+						Vector3 totalForce;
 						Vector3 totalra;
 						Vector3 totalrb;
 
@@ -518,7 +527,7 @@ void GEngine::Collision()
 							}
 							//n = man[p].Normal;
 
-							n = -Vector3(0, 1, 0);
+							//n = -Vector3(0, 1, 0);
 
 							//ra = a->parent->GetWorldRotation() * Vector3(0, -1, 0);
 							//rb = b->parent->GetWorldRotation() * Vector3(0, 1, 0);
@@ -558,6 +567,8 @@ void GEngine::Collision()
 							a->AddImpulse(force);
 							b->AddImpulse(-force);
 
+							totalForce += force;
+
 							Vector3 waf = inva * Vector3::Cross(ra, force);
 							Vector3 wbf = invb * Vector3::Cross(rb, force);
 
@@ -573,10 +584,10 @@ void GEngine::Collision()
 
 							//Debug::Print("J: %f\n", j);
 
-							Vector4 lpstart = WorldToScreen(active_game, man[p].Point);
-							Vector4 lpend = WorldToScreen(active_game, man[p].Point + force * sqrt(force.Magnitude()) * 100);
-							Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, 0xFFFF0000, Drawing::gc_direct);
+							DrawLine(active_game, man[p].Point, man[p].Point + force * sqrt(force.Magnitude()) * 100, 0xFFFF0000);
 						}
+
+						DrawLine(active_game, a->parent->GetWorldPosition(), a->parent->GetWorldPosition() + totalForce * sqrt(totalForce.Magnitude()) * 20, 0xFFFF0000);
 
 						//a->parent->transform.rotation = Quaternion::FromAxisAngle(Vector3(0, 0, 1), 0.1);
 						//a->angularVelocity = totalra;

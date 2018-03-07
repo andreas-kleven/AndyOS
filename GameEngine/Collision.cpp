@@ -79,17 +79,17 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 	axes[4] = o2.parent->GetWorldRotation() * Vector3(0, 1, 0);
 	axes[5] = o2.parent->GetWorldRotation() * Vector3(0, 0, 1);
 
-	axes[6] = Vector3::Cross(axes[0], axes[3]);
-	axes[7] = Vector3::Cross(axes[0], axes[4]);
-	axes[8] = Vector3::Cross(axes[0], axes[5]);
-
-	axes[9] = Vector3::Cross(axes[1], axes[3]);
-	axes[10] = Vector3::Cross(axes[1], axes[4]);
-	axes[11] = Vector3::Cross(axes[1], axes[5]);
-
-	axes[12] = Vector3::Cross(axes[2], axes[3]);
-	axes[13] = Vector3::Cross(axes[2], axes[4]);
-	axes[14] = Vector3::Cross(axes[2], axes[5]);
+	//axes[6] = Vector3::Cross(axes[0], axes[3]);
+	//axes[7] = Vector3::Cross(axes[0], axes[4]);
+	//axes[8] = Vector3::Cross(axes[0], axes[5]);
+	//
+	//axes[9] = Vector3::Cross(axes[1], axes[3]);
+	//axes[10] = Vector3::Cross(axes[1], axes[4]);
+	//axes[11] = Vector3::Cross(axes[1], axes[5]);
+	//
+	//axes[12] = Vector3::Cross(axes[2], axes[3]);
+	//axes[13] = Vector3::Cross(axes[2], axes[4]);
+	//axes[14] = Vector3::Cross(axes[2], axes[5]);
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -119,7 +119,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 			if (axes[i] == axes[j + 3])
 				continue;
 
-			Vector3 axis = Vector3::Cross(axes[i], axes[j + 3]);
+			Vector3 axis = Vector3::Cross(axes[i], axes[j + 3]).Normalized();
 
 			GetInterval(o1, axis, min1, max1);
 			GetInterval(o2, axis, min2, max2);
@@ -278,7 +278,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 	for (int i = 0; i < 8; i++)
 	{
 		Vector3 CP = obj2.parent->GetWorldRotation() * obj2.collider->GetVertex(i) + obj2.parent->GetWorldPosition();
-		if (isInside(CP, obj1)) 
+		if (isInside(CP, obj1))
 		{
 			//collision manifold contains position, bodies, normal and penetration depth
 			Manifold colision = Manifold(CP);
@@ -387,7 +387,7 @@ bool Collision::isInside(Vector3 ip, Rigidbody obj1)
 }
 
 //Method finds the closest point between 2 lines, used for edge to edge collisions
-void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Vector3&c1, Vector3&c2) 
+void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Vector3&c1, Vector3&c2)
 {
 	Vector3 d1 = q1 - p1;  //direction of segment S1
 	Vector3 d2 = q2 - p2;  //direction of segment S2
@@ -400,11 +400,11 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 	float f = Vector3::Dot(d2, r);
 	float c = Vector3::Dot(d1, r);
 	float b = Vector3::Dot(d1, d2);
-	float denom = a*e - b*b;  //always positive
+	float denom = a * e - b * b;  //always positive
 
 							  //if segments not parallel, compute closest point on L1 to L2 and clamp segment S1. Else pick arbitrary s (here 0)
 	if (denom != 0.0f) {
-		s = clamp((b*f - c*e) / denom, 0.0f, 1.0f);
+		s = clamp((b*f - c * e) / denom, 0.0f, 1.0f);
 	}
 	else
 		s = 0.0f;
@@ -431,7 +431,7 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 //finds the normal for collision between 2 edges
 Vector3 Collision::getNormalEdge(Vector3& p1, Vector3& q1, Vector3& p2, Vector3& q2)
 {
-	Vector3 normal = Vector3::Cross(p1 - q1, p2 - q2);
+	Vector3 normal = Vector3::Cross(p1 - q1, p2 - q2).Normalized();
 	if (normal.Magnitude() != 0)
 		normal = normal.Normalized();
 	return normal;
