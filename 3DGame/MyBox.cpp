@@ -48,6 +48,6 @@ MyBox::MyBox()
 
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->collider = new BoxCollider();
-	phys->bEnabled = 0;
-	//phys->bEnabledGravity = 0;
+	//phys->bEnabled = 0;
+	phys->bEnabledGravity = 0;
 }

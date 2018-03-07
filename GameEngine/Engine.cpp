@@ -116,7 +116,7 @@ void GEngine::StartGame(Game* game)
 			break;
 
 		Update();
-		//Collision();
+		Collision();
 		Render();
 
 		totalFrames++;
@@ -204,7 +204,7 @@ void GEngine::Update()
 		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
 
-	if (Mouse::mouse_R)
+	if (true || Mouse::mouse_R)
 	{
 		cam->RotateEuler(Vector3(mouse_delta.y, mouse_delta.x, 0) * 0.01);
 	}
@@ -247,6 +247,23 @@ void GEngine::Update()
 }
 
 float err = 0;
+
+Vector4 WorldToScreen(Game* game, Vector3 pos)
+{
+	Matrix4 P = Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10);
+
+	Camera* cam = game->GetActiveCamera();
+	Matrix4 V = Matrix4::CreateView(
+		-cam->transform.GetForwardVector().ToVector4(),
+		cam->transform.GetUpVector().ToVector4(),
+		cam->transform.GetRightVector().ToVector4(),
+		cam->transform.position.ToVector4());
+
+	Vector4 v0 = P * V * pos.ToVector4();
+	v0.x = v0.x * GL::m_width / v0.w + GL::m_width * 0.5;
+	v0.y = v0.y * GL::m_height / v0.w + GL::m_height * 0.5;
+	return v0;
+}
 
 void GEngine::Collision()
 {
@@ -360,13 +377,15 @@ void GEngine::Collision()
 
 						int h = m.Bod1 == a;
 						Debug::Print("%i %i\t%f %f %f\n", p, h, m.Point.x, m.Point.y, m.Point.z);
+						Vector4 sc = WorldToScreen(active_game, m.Point);
+						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFFFF0000, Drawing::gc_direct);
 					}
 					Debug::color = 0xFF00FF00;
 
 					if (count == 0)
 						continue;
 
-					//PIT::Sleep(100);
+					//PIT::Sleep(10);
 
 					Vector3 va;
 					Vector3 vb;
@@ -395,6 +414,7 @@ void GEngine::Collision()
 
 						a->mass = 1;
 						//b->mass = 1;
+						//b->mass = 10;
 						b->mass = 1e10;
 
 						float e = 1;
@@ -552,15 +572,21 @@ void GEngine::Collision()
 							//Debug::color = 0xFF00FF00;
 
 							//Debug::Print("J: %f\n", j);
+
+							Vector4 lpstart = WorldToScreen(active_game, man[p].Point);
+							Vector4 lpend = WorldToScreen(active_game, man[p].Point + force * sqrt(force.Magnitude()) * 100);
+							Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, 0xFFFF0000, Drawing::gc_direct);
 						}
 
 						//a->parent->transform.rotation = Quaternion::FromAxisAngle(Vector3(0, 0, 1), 0.1);
-						a->angularVelocity = totalra;
-						b->angularVelocity = totalrb;
+						//a->angularVelocity = totalra;
+						//b->angularVelocity = totalrb;
 
 						//Debug::Print("_ %f\t%f\t%f\n", mtv.x, mtv.y, mtv.z);
 						//PIT::Sleep(100);
 					}
+
+					PIT::Sleep(10);
 				}
 			}
 			//else if (all[i]->IsSphere() && all[j]->IsSphere())
