@@ -162,34 +162,34 @@ void GEngine::Update()
 	{
 		p1 += sign * deltaTime * 2000;
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D3))
 	{
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), 2 * M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D4))
 	{
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D5))
 	{
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), 2 * M_PI * deltaTime * sign);
+		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D6))
 	{
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), 2 * M_PI * deltaTime * sign);
+		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 
@@ -291,56 +291,6 @@ void GEngine::Collision()
 
 	Debug::Print("Energy: %f\n", energy);
 
-	/*Matrix mat;
-	mat[0] = 3;
-	mat[1] = 12;
-	mat[2] = 4;
-	mat[3] = 5;
-	mat[4] = 6;
-	mat[5] = 8;
-	mat[6] = 1;
-	mat[7] = 0;
-	mat[8] = 2;
-
-	Matrix m2 = mat.Inverse();
-	Debug::Clear(0);
-
-	for (int i = 0; i < 9; i++)
-	{
-		Debug::Print("%f\t", m2[i]);
-	}
-	while (1);*/
-
-	/*Debug::color = 0xFFFFFF00;
-	Debug::Print("%f\n", atan2(1, 1));
-	Debug::Print("%f\n", tan(atan(4)));
-	Debug::Print("%f\n", atan(PIT::ticks / 1000.0f) - PIT::ticks / 1000.0f);
-
-	Vector3 start(M_PI, 0, 0);
-	Quaternion quat = Quaternion::FromEuler(start);
-	//quat.Rotate(Vector3(1, 0, 0), M_PI);
-	Vector3 ve = quat.ToEuler();
-	Quaternion quat2 = Quaternion::FromEuler(ve);
-
-	Debug::Print("%f\t%f\t%f\n", ve.x, ve.y, ve.z);
-	Debug::Print("%f\t%f\t%f\n", start.x, start.y, start.z);
-
-	Debug::color = 0xFF00FF00;*/
-
-	float hjk = (PIT::ticks % 2000) / 2000.0f;
-	while (hjk > M_PI / 2)
-		hjk -= M_PI / 2;
-	//hjk = 30 * M_PI / 180.0f;
-	//hjk = 0.54630248984379051325517946578029;
-	Debug::Print("%f %f %f %f\n", tan(hjk), atan(hjk), (atan(tan(hjk)) - hjk) * 1000, 0);
-
-
-	float asd = (atan(tan(hjk)) - hjk) * 1000;
-	if (asd > err)
-		err = asd;
-
-	Debug::Print("Err: %f\n", err);
-
 	for (int i = 0; i < all.Count(); i++)
 	{
 		int start = i + 1;
@@ -353,6 +303,7 @@ void GEngine::Collision()
 				Rigidbody* b = (Rigidbody*)all[j];
 				a->collider->size = a->parent->GetWorldScale();
 				b->collider->size = b->parent->GetWorldScale();
+				//b->parent->transform.position = Vector3();
 
 				//if (a->parent->GetWorldPosition().y > 9)
 				//	a->parent->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
@@ -378,10 +329,14 @@ void GEngine::Collision()
 
 					//Debug::Print("COLLISION");
 
+					Vector3 colPoint;
+
 					Debug::color = 0xFFFF0000;
 					for (int p = 0; p < count; p++)
 					{
 						Manifold& m = man[p];
+
+						colPoint += m.Point / count;
 
 						int h = m.Bod1 == a;
 						Debug::Print("%i %i\t%f %f %f\n", p, h, m.Point.x, m.Point.y, m.Point.z);
@@ -414,18 +369,12 @@ void GEngine::Collision()
 					//if (dot < 0 && !BOOL1)
 					{
 						//BOOL1 = 1;
-						//Vector3 imp = dir * dot * dv.Magnitude() / 1.5;
-						//pha->AddImpulse(-imp);
-						//phb->AddImpulse(imp);
-
-						//pha->AddImpulseAt(-imp, a->parent->GetWorldPosition());
 
 						a->mass = 1;
-						//b->mass = 1;
-						//b->mass = 10;
+						b->mass = 1;
 						b->mass = 1e10;
 
-						float e = 1;
+						float e = .5;
 						float ma = a->mass;
 						float mb = b->mass;
 
@@ -441,7 +390,6 @@ void GEngine::Collision()
 						Ib[0] = mb * (sizeb.y * sizeb.y + sizeb.z * sizeb.z) / 12;
 						Ib[4] = mb * (sizeb.x * sizeb.x + sizeb.z * sizeb.z) / 12;
 						Ib[8] = mb * (sizeb.x * sizeb.x + sizeb.y * sizeb.y) / 12;
-
 
 						//Matrix3 MatR = a->parent->GetWorldRotation().ToMatrix3();
 						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
@@ -511,49 +459,35 @@ void GEngine::Collision()
 						Vector3 Xa = posa;
 						Vector3 Xb = posb;
 
-						Vector3 n = -mtv.Normalized();
+						Vector3 n = mtv.Normalized();
 						//Vector3 n = test.points[0]->Normal;
 
 						Vector3 totalForce;
 						Vector3 totalra;
 						Vector3 totalrb;
 
-						for (int p = 0; p < count; p++)
+						//for (int p = 0; p < count; p++)
 						{
+							/*colPoint = man[p].Point;
+
 							if (man[p].Bod1 == a)
 							{
 								man[p].Point = -man[p].Point;
 								//n = -n;
-							}
+							}*/
 							//n = man[p].Normal;
 
-							//n = -Vector3(0, 1, 0);
+							DrawLine(active_game, colPoint, colPoint + n, 0xFF0000FF);
 
-							//ra = a->parent->GetWorldRotation() * Vector3(0, -1, 0);
-							//rb = b->parent->GetWorldRotation() * Vector3(0, 1, 0);
-
-							//ra = Vector3(-1, -1, -1);
-							//rb = Vector3(1, 1, 1);
-
-							Vector3 ra = a->parent->GetWorldRotation() * -(Xa - man[p].Point);
-							Vector3 rb = b->parent->GetWorldRotation() * -(man[p].Point - Xb);
+							Vector3 ra = /*a->parent->GetWorldRotation() **/ (Xa - colPoint);
+							Vector3 rb = /*b->parent->GetWorldRotation() **/ (colPoint - Xb);
 							Debug::Print("%f %f %f\n", ra.x, ra.y, ra.z);
 							Debug::Print("%f %f %f\n", n.x, n.y, n.z);
-							//PIT::Sleep(10000);
-
-							//ra = Vector3(0, -1, 0);
-							//rb = Vector3(0, 1, 0);
-
-							//ra = a->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / 2, -1, (posb.z - posa.z) / 2);
-							//rb = b->parent->GetWorldRotation() * Vector3((posb.x - posa.x) / -2, 1, (posb.z - posa.z) / -2);
-							//ra = man[0].Point - a->parent->GetWorldPosition();
-							//rb = man[0].Point - a->parent->GetWorldPosition();
 
 							Matrix3 inva = Ia.Inverse();
 							Matrix3 invb = Ib.Inverse();
 
-							float Vrel = -(b->velocity - a->velocity).Dot(n);
-
+							float Vrel = n.Dot(b->velocity - a->velocity);
 
 							float N = -(1 + e) * Vrel;
 							float t1 = 1 / ma;
@@ -564,18 +498,21 @@ void GEngine::Collision()
 							float J = N / (t1 + t2 + t3 + t4);
 							Vector3 force = n * J;
 
-							a->AddImpulse(force);
-							b->AddImpulse(-force);
+							if (force.Dot(n) < 0)
+							{
+								a->AddImpulse(-force);
+								b->AddImpulse(force);
 
-							totalForce += force;
+								totalForce += force;
 
-							Vector3 waf = inva * Vector3::Cross(ra, force);
-							Vector3 wbf = invb * Vector3::Cross(rb, force);
+								Vector3 waf = inva * Vector3::Cross(ra, force);
+								Vector3 wbf = invb * Vector3::Cross(rb, force);
 
-							//a->angularVelocity = waf;
-							//b->angularVelocity = wbf;
-							totalra -= waf;
-							totalrb += wbf;
+								totalra += waf;
+								totalrb += wbf;
+
+								DrawLine(active_game, colPoint, colPoint + force * sqrt(force.Magnitude()) * 100, 0xFFFF0000);
+							}
 
 							//Debug::color = 0xFF0000FF;
 							//Debug::Print("%f\t%f\t%f\n", waf.x, waf.y, waf.z);
@@ -583,15 +520,13 @@ void GEngine::Collision()
 							//Debug::color = 0xFF00FF00;
 
 							//Debug::Print("J: %f\n", j);
-
-							DrawLine(active_game, man[p].Point, man[p].Point + force * sqrt(force.Magnitude()) * 100, 0xFFFF0000);
 						}
 
 						DrawLine(active_game, a->parent->GetWorldPosition(), a->parent->GetWorldPosition() + totalForce * sqrt(totalForce.Magnitude()) * 20, 0xFFFF0000);
 
 						//a->parent->transform.rotation = Quaternion::FromAxisAngle(Vector3(0, 0, 1), 0.1);
-						//a->angularVelocity = totalra;
-						//b->angularVelocity = totalrb;
+						a->angularVelocity = totalra;
+						b->angularVelocity = totalrb;
 
 						//Debug::Print("_ %f\t%f\t%f\n", mtv.x, mtv.y, mtv.z);
 						//PIT::Sleep(100);

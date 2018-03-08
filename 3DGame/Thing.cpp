@@ -89,7 +89,7 @@ void Thing::Update(float delta)
 
 	if (Keyboard::GetKeyDown(KEY_O))
 	{
-		phys->AddImpulse(Vector3(0, speed, 0) * delta);
+		phys->AddImpulse(Vector3(0, speed + 9.8, 0) * delta);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_U))
