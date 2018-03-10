@@ -24,52 +24,28 @@ float distance(float minA, float maxA, float minB, float maxB)
 	else return minA - maxB;
 }
 
+Vector3 transform(Rigidbody& body, Vector3 point)
+{
+	Transform transform = body.parent->GetWorldTransform();
+	point = Vector3(point.x * transform.scale.x, point.y * transform.scale.y, point.z * transform.scale.z);
+	return transform.rotation * point + transform.position;
+}
+
+Vector3 transform2(Rigidbody& body, Vector3 point)
+{
+	Transform transform = body.parent->GetWorldTransform();
+	Vector3 pos = body.parent->GetWorldPosition();
+	pos = point - pos;
+	pos = Vector3(pos.x / transform.scale.x, pos.y / transform.scale.y, pos.z / transform.scale.z);
+	return -transform.rotation * pos;
+}
+
 bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Manifold*& col, int& count)
 {
 	float min1, max1, min2, max2;
 
 	float lowest = 1e100;
 	Vector3 la;
-
-	/*for (int i = 0; i < 6; i++)
-	{
-		GetInterval(o1, o1.collider->GetFaceDir(i), min1, max1);
-		GetInterval(o2, o1.collider->GetFaceDir(i), min2, max2);
-
-		if (max1 < min2 || max2 < min1)
-		{
-			Debug::Print("FACE2");
-			return 0;
-		}
-
-		float m = max(max1 - min2, -max2 + min1);
-
-		if (m < lowest)
-		{
-			lowest = m;
-			la = o1.collider->GetFaceDir(i);
-		}
-	}
-
-	for (int i = 0; i < 6; i++)
-	{
-		GetInterval(o1, o2.collider->GetFaceDir(i), min1, max1);
-		GetInterval(o2, o2.collider->GetFaceDir(i), min2, max2);
-
-		if (max1 < min2 || max2 < min1)
-		{
-			Debug::Print("FACE2");
-			return 0;
-		}
-
-		float m = max(max1 - min2, -max2 + min1);
-
-		if (m < lowest)
-		{
-			lowest = m;
-			la = o2.collider->GetFaceDir(i);
-		}
-	}*/
 
 	Vector3 axes[15];
 	axes[0] = o1.parent->GetWorldRotation() * Vector3(1, 0, 0);
@@ -146,116 +122,17 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 	*mtv = la * lowest;
 
 	col = CollisionPoint(o1, o2, count);
-
 	return 1;
-
-	//SAT with quick exit, for pseudo broadphase
-	/*float min1, max1, min2, max2;
-	//Faces' projection check
-	for (int i = 0; i < 3; i++)
-	{
-		GetInterval(o1, o1.collider->GetFaceDir(i), min1, max1);
-		GetInterval(o2, o1.collider->GetFaceDir(i), min2, max2);
-		if (max1 < min2 || max2 < min1) return false;
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		GetInterval(o1, o2.collider->GetFaceDir(i), min1, max1);
-		GetInterval(o2, o2.collider->GetFaceDir(i), min2, max2);
-		if (max1 < min2 || max2 < min1) return false;
-	}
-
-	//Edges' projection check check
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 3; j++) {
-			Vector3 axis = Vector3::Cross(o1.parent->GetWorldRotation() * o1.collider->GetEdgeDir(i), o2.parent->GetWorldRotation() * o2.collider->GetEdgeDir(j));
-			GetInterval(o1, axis, min1, max1);
-			GetInterval(o2, axis, min2, max2);
-			if (max1 < min2 || max2 < min1) return false;
-		}
-	}*/
-
-	/*Vector3 a = o1.parent->GetWorldPosition();
-	Vector3 b = o2.parent->GetWorldPosition();
-
-	Vector3 T = b - a;
-
-	Quaternion rotA = o1.parent->GetWorldRotation();
-	Quaternion rotB = o2.parent->GetWorldRotation();
-
-	Vector3 axes[15];
-	axes[0] = rotA * Vector3(1, 0, 0);
-	axes[1] = rotA * Vector3(0, 1, 0);
-	axes[2] = rotA * Vector3(0, 0, 1);
-	axes[3] = rotB * Vector3(1, 0, 0);
-	axes[4] = rotB * Vector3(0, 1, 0);
-	axes[5] = rotB * Vector3(0, 0, 1);
-
-	axes[6] = Vector3::Cross(axes[0], axes[3]);
-	axes[7] = Vector3::Cross(axes[0], axes[4]);
-	axes[8] = Vector3::Cross(axes[0], axes[5]);
-
-	axes[9] = Vector3::Cross(axes[1], axes[3]);
-	axes[10] = Vector3::Cross(axes[1], axes[4]);
-	axes[11] = Vector3::Cross(axes[1], axes[5]);
-
-	axes[12] = Vector3::Cross(axes[2], axes[3]);
-	axes[13] = Vector3::Cross(axes[2], axes[4]);
-	axes[14] = Vector3::Cross(axes[2], axes[5]);
-
-	float smallest = 1e100;
-	int smallestIndex = -1;
-
-	for (int i = 0; i < 15; i++)
-	{
-		Vector3 L = axes[i];
-
-		float R = abs(Vector3::Dot(T, L));
-
-		float P1x = abs(Vector3::Dot(axes[0] * o1.parent->transform.scale.x, L));
-		float P1y = abs(Vector3::Dot(axes[1] * o1.parent->transform.scale.y, L));
-		float P1z = abs(Vector3::Dot(axes[2] * o1.parent->transform.scale.z, L));
-
-		float P2x = abs(Vector3::Dot(axes[3] * o2.parent->transform.scale.x, L));
-		float P2y = abs(Vector3::Dot(axes[5] * o2.parent->transform.scale.z, L));
-		float P2z = abs(Vector3::Dot(axes[4] * o2.parent->transform.scale.y, L));
-
-		float sum = P1x + P1y + P1z + P2x + P2z + P2y;
-
-		if (R > sum)
-		{
-			return 0;
-		}
-		else
-		{
-			if (sum < smallest)
-			{
-				smallest = sum - R;
-				*mtv = Vector3(0, P1y, P2y);
-				Debug::Print("SUM: %f %f %f\n", P1y, P2y, P1y - P2y);
-				smallestIndex = i;
-
-			}
-		}
-	}*/
-
-	//if(smallestIndex != -1)
-	//*mtv = axes[smallestIndex] * smallest;
-
-	//get the manifold
-	//CollisionPoint(o1, o2);
 }
 
 //make projection of desired axis
 void Collision::GetInterval(Rigidbody& o, Vector3 axis, float &min, float &max)
 {
-	min = max = Vector3::Dot(axis, o.parent->GetWorldRotation() * o.collider->GetVertex(0) + o.parent->GetWorldPosition());
+	min = max = Vector3::Dot(axis, transform(o, o.collider->GetVertex(0)));
 
 	for (int i = 1; i < 8; i++)
 	{
-		float value = Vector3::Dot(axis, o.parent->GetWorldRotation() * o.collider->GetVertex(i) + o.parent->GetWorldPosition());
+		float value = Vector3::Dot(axis, transform(o, o.collider->GetVertex(i)));
 		min = ::min(min, value);
 		max = ::max(max, value);
 	}
@@ -277,7 +154,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 	//vertices of object 2 in object1
 	for (int i = 0; i < 8; i++)
 	{
-		Vector3 CP = obj2.parent->GetWorldRotation() * obj2.collider->GetVertex(i) + obj2.parent->GetWorldPosition();
+		Vector3 CP = transform(obj2, obj2.collider->GetVertex(i));
 		if (isInside(CP, obj1))
 		{
 			//collision manifold contains position, bodies, normal and penetration depth
@@ -297,7 +174,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 			cols[colIndex++] = colision;
 		}
 
-		CP = obj1.parent->GetWorldRotation() * obj1.collider->GetVertex(i) + obj1.parent->GetWorldPosition();
+		CP = transform(obj1, obj1.collider->GetVertex(i));
 		if (isInside(CP, obj2))
 		{
 			Manifold colision = Manifold(CP);
@@ -340,16 +217,26 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 	{
 		//continue;
 		Vector3* pointsEd1 = obj1.collider->GetEdge(i);
-		pointsEd1[0] = obj1.parent->GetWorldRotation() * pointsEd1[0] + obj1.parent->GetWorldPosition();
-		pointsEd1[1] = obj1.parent->GetWorldRotation() * pointsEd1[1] + obj1.parent->GetWorldPosition();
+		pointsEd1[0] = transform(obj1, pointsEd1[0]);
+		pointsEd1[1] = transform(obj1, pointsEd1[1]);
 
 		for (int j = 0; j < 12; j++)
 		{
 			Vector3* pointsEd2 = obj2.collider->GetEdge(j);
-			pointsEd2[0] = obj2.parent->GetWorldRotation() * pointsEd2[0] + obj2.parent->GetWorldPosition();
-			pointsEd2[1] = obj2.parent->GetWorldRotation() * pointsEd2[1] + obj2.parent->GetWorldPosition();
+			pointsEd2[0] = transform(obj2, pointsEd2[0]);
+			pointsEd2[1] = transform(obj2, pointsEd2[1]);
 
 			closest_Point(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1], colisionPoint1, colisionPoint2);
+
+			int c = Debug::color;
+			Debug::color = 0xFFFF0000;
+
+			Vector3 po = (colisionPoint2 - colisionPoint1);
+			//Debug::Print("%f\t%f\t%f\n", po.x, po.y, po.z);
+			Debug::Print("%f\n", po.Magnitude() * 1000);
+			//PIT::Sleep(1000);
+
+			Debug::color = c;
 
 			if ((colisionPoint2 - colisionPoint1).Magnitude() < 0.1f)
 			{
@@ -379,7 +266,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 //Checks if point is inside the Box
 bool Collision::isInside(Vector3 ip, Rigidbody obj1)
 {
-	Vector3 localP = -obj1.parent->GetWorldRotation() * (ip - obj1.parent->GetWorldPosition());
+	Vector3 localP = transform2(obj1, ip);
 	if (localP.x < -obj1.collider->size.x || localP.x > obj1.collider->size.x) return 0;
 	if (localP.y < -obj1.collider->size.y || localP.y > obj1.collider->size.y) return 0;
 	if (localP.z < -obj1.collider->size.z || localP.z > obj1.collider->size.z) return 0;
@@ -441,7 +328,7 @@ Vector3 Collision::getNormalEdge(Vector3& p1, Vector3& q1, Vector3& p2, Vector3&
 Vector3 Collision::getNormalFace(Rigidbody& obj1, Vector3 ip)
 {
 	// Transform the point into box coordinates.
-	Vector3 relPt = -obj1.parent->GetWorldRotation() * (ip - obj1.parent->GetWorldPosition());
+	Vector3 relPt = transform2(obj1, ip);
 	Vector3 normal;
 	// Check each axis, looking for the axis on which the
 	// penetration is least deep.

@@ -28,7 +28,7 @@ MyGame::MyGame()
 	box->transform.rotation = Quaternion();
 	box->transform.scale = Vector3(10, 1, 10);
 
-	MyBox* box1 = CreateObject<MyBox>("Floor");
+	/*MyBox* box1 = CreateObject<MyBox>("Floor");
 	box1->transform.position = Vector3(11.1, 11, 0);
 	box1->transform.rotation = Quaternion();
 	box1->transform.scale = Vector3(1, 10, 10);
@@ -41,7 +41,7 @@ MyGame::MyGame()
 	MyBox* box3 = CreateObject<MyBox>("Floor");
 	box3->transform.position = Vector3(0, 22.1, 0);
 	box3->transform.rotation = Quaternion();
-	box3->transform.scale = Vector3(10, 1, 10);
+	box3->transform.scale = Vector3(10, 1, 10);*/
 
 	return;
 	int num = 3;

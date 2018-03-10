@@ -390,9 +390,8 @@ void GEngine::Collision()
 			{
 				Rigidbody* a = (Rigidbody*)all[i];
 				Rigidbody* b = (Rigidbody*)all[j];
-				a->collider->size = a->parent->GetWorldScale();
-				b->collider->size = b->parent->GetWorldScale();
-				//b->parent->transform.position = Vector3();
+				//a->collider->size = a->parent->GetWorldScale();
+				//b->collider->size = b->parent->GetWorldScale();
 
 				Vector3 mtv(0, 0, 0);
 				int count;
@@ -402,9 +401,6 @@ void GEngine::Collision()
 
 				if (test.TestIntersection(*a, *b, &mtv, man, count))
 				{
-					if (count == 0)
-						continue;
-
 					//Debug::color = 0xFFFFFFFF;
 
 					//a->velocity = Vector3(0, 0, 0);
@@ -413,6 +409,9 @@ void GEngine::Collision()
 					b->parent->transform.position -= mtv * a->mass / (a->mass + b->mass);
 
 					//DrawLine(active_game, a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, 0xFF00FF00);
+
+					if (count == 0)
+						continue;
 
 					Vector3 colPoint;
 
@@ -528,8 +527,8 @@ void GEngine::Collision()
 							Vector3 waf = inva * Vector3::Cross(ra, force);
 							Vector3 wbf = invb * Vector3::Cross(rb, force);
 
-							a->angularVelocity -= waf;
-							b->angularVelocity += wbf;
+							//a->angularVelocity -= waf;
+							//b->angularVelocity += wbf;
 
 							DrawLine(active_game, colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, 0xFF00FF00);
 
