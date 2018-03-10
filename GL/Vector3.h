@@ -67,6 +67,11 @@ public:
 		return sqrt(x * x + y * y + z * z);
 	}
 
+	float MagnitudeSquared()
+	{
+		return x * x + y * y + z * z;
+	}
+
 	Vector3 Normalized()
 	{
 		float mag = Magnitude();

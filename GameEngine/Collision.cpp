@@ -140,7 +140,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 	}
 
 	if (Vector3::Dot(la, o1.parent->GetWorldPosition() - o2.parent->GetWorldPosition()) < 0)
-		lowest *= -1;
+		lowest = -lowest;
 
 	Debug::Print("%f\n", lowest);
 	*mtv = la * lowest;

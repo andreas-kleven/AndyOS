@@ -47,6 +47,7 @@ MyBox::MyBox()
 	//sphere->radius = 1;
 
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
+	phys->mass = 1e10;
 	phys->collider = new BoxCollider();
 	//phys->bEnabled = 0;
 	phys->bEnabledGravity = 0;

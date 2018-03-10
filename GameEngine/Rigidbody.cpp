@@ -29,24 +29,16 @@ void Rigidbody::Update(float deltaTime)
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
 
+	parent->transform.Rotate(Quaternion::FromEuler(angularVelocity * deltaTime));
+
 	//Vector3 rot = parent->transform.rotation.ToEuler();
 	//rot += angularVelocity * deltaTime;
 	//parent->transform.rotation = Quaternion::FromEuler(rot);
 
-	//Vector3 rot;
-	//float ang;
-	//parent->transform.rotation.ToAxisAngle(rot, ang);
-	
-	parent->transform.rotation.Rotate(angularVelocity.Normalized(), angularVelocity.Magnitude() * deltaTime);
-
-	//parent->transform.rotation.Rotate(Vector3(1, 0, 0), 1 * delta);
-	//parent->transform.Rotate(Quaternion(0, 0.5 *delta, 0, 1).Normalized());
+	//parent->transform.rotation.Rotate(angularVelocity.Normalized(), angularVelocity.Magnitude() * deltaTime);
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;
-
-	//angularVelocity.Normalize();
-	//parent->transform.rotation *= angularVelocity;
 
 	velocity += F / mass * deltaTime;
 }
@@ -58,7 +50,7 @@ void Rigidbody::AddImpulse(Vector3 imp)
 
 void Rigidbody::AddImpulseAt(Vector3 imp, Vector3 pos)
 {
-	
+
 }
 
 float Rigidbody::Speed()
