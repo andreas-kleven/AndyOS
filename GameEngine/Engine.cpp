@@ -524,8 +524,8 @@ void GEngine::Collision()
 							a->AddImpulse(-force);
 							b->AddImpulse(force);
 
-							Vector3 waf = inva * Vector3::Cross(ra, force);
-							Vector3 wbf = invb * Vector3::Cross(rb, force);
+							Vector3 waf = inva * (Vector3::Cross(ra, force));
+							Vector3 wbf = invb * (Vector3::Cross(rb, force));
 
 							//a->angularVelocity -= waf;
 							//b->angularVelocity += wbf;

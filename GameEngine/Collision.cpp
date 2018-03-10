@@ -34,9 +34,8 @@ Vector3 transform(Rigidbody& body, Vector3 point)
 Vector3 transform2(Rigidbody& body, Vector3 point)
 {
 	Transform transform = body.parent->GetWorldTransform();
-	Vector3 pos = body.parent->GetWorldPosition();
-	pos = point - pos;
-	pos = Vector3(pos.x / transform.scale.x, pos.y / transform.scale.y, pos.z / transform.scale.z);
+	Vector3 pos = point - transform.position;
+	//pos = Vector3(pos.x / transform.scale.x, pos.y / transform.scale.y, pos.z / transform.scale.z);
 	return -transform.rotation * pos;
 }
 
@@ -233,7 +232,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 
 			Vector3 po = (colisionPoint2 - colisionPoint1);
 			//Debug::Print("%f\t%f\t%f\n", po.x, po.y, po.z);
-			Debug::Print("%f\n", po.Magnitude() * 1000);
+			Debug::Print("%f\n", colisionPoint1.Magnitude() * 10000);
 			//PIT::Sleep(1000);
 
 			Debug::color = c;
@@ -267,9 +266,11 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 bool Collision::isInside(Vector3 ip, Rigidbody obj1)
 {
 	Vector3 localP = transform2(obj1, ip);
-	if (localP.x < -obj1.collider->size.x || localP.x > obj1.collider->size.x) return 0;
-	if (localP.y < -obj1.collider->size.y || localP.y > obj1.collider->size.y) return 0;
-	if (localP.z < -obj1.collider->size.z || localP.z > obj1.collider->size.z) return 0;
+	Vector3 scale = obj1.parent->GetWorldScale();
+
+	if (localP.x < -obj1.collider->size.x * scale.x || localP.x > obj1.collider->size.x * scale.x) return 0;
+	if (localP.y < -obj1.collider->size.y * scale.y || localP.y > obj1.collider->size.y * scale.y) return 0;
+	if (localP.z < -obj1.collider->size.z * scale.z || localP.z > obj1.collider->size.z * scale.z) return 0;
 	return 1;
 }
 
@@ -287,7 +288,7 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 	float f = Vector3::Dot(d2, r);
 	float c = Vector3::Dot(d1, r);
 	float b = Vector3::Dot(d1, d2);
-	float denom = a * e - b * b;  //always positive
+	float denom = a * a - b * b;  //always positive
 
 							  //if segments not parallel, compute closest point on L1 to L2 and clamp segment S1. Else pick arbitrary s (here 0)
 	if (denom != 0.0f) {
@@ -329,21 +330,23 @@ Vector3 Collision::getNormalFace(Rigidbody& obj1, Vector3 ip)
 {
 	// Transform the point into box coordinates.
 	Vector3 relPt = transform2(obj1, ip);
+	Vector3 scale = obj1.parent->GetWorldScale();
+
 	Vector3 normal;
 	// Check each axis, looking for the axis on which the
 	// penetration is least deep.
-	float min_depth = (obj1.collider->size.x) - abs(relPt.x);
+	float min_depth = (obj1.collider->size.x * scale.x) - abs(relPt.x);
 	if (min_depth > EPSILON)
 		normal = obj1.collider->GetFaceDir(0) * ((relPt.x < 0) ? -1.0f : 1.0f);
 
-	float depth = (obj1.collider->size.y) - abs(relPt.y);
+	float depth = (obj1.collider->size.y * scale.y) - abs(relPt.y);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;
 		normal = obj1.collider->GetFaceDir(1) * ((relPt.y < 0) ? -1.0f : 1.0f);
 	}
 
-	depth = (obj1.collider->size.z) - abs(relPt.z);
+	depth = (obj1.collider->size.z * scale.z) - abs(relPt.z);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;
