@@ -288,7 +288,7 @@ void Collision::closest_Point(Vector3 p1, Vector3 q1, Vector3 p2, Vector3 q2, Ve
 	float f = Vector3::Dot(d2, r);
 	float c = Vector3::Dot(d1, r);
 	float b = Vector3::Dot(d1, d2);
-	float denom = a * a - b * b;  //always positive
+	float denom = a * e - b * b;  //always positive
 
 							  //if segments not parallel, compute closest point on L1 to L2 and clamp segment S1. Else pick arbitrary s (here 0)
 	if (denom != 0.0f) {
