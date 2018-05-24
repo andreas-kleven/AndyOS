@@ -33,6 +33,9 @@
     <Filter Include="Physics\Collider">
       <UniqueIdentifier>{c4f3468a-5691-43f3-aa94-a47c4dfa835d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Raytracing">
+      <UniqueIdentifier>{75ca7e93-3ac2-4d57-9fdf-6bac798a9020}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Raytracer.cpp">
+      <Filter>Raytracing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Raytracer.h">
+      <Filter>Raytracing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

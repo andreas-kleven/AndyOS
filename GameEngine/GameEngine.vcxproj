@@ -138,6 +138,7 @@
     <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Obj.cpp" />
+    <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Quaternion.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Model3D.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Obj.h" />
+    <ClInclude Include="Raytracer.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Quaternion.h" />

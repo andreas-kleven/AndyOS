@@ -15,8 +15,9 @@ MyGame::MyGame()
 	Camera* cam = CreateCamera<Camera>("Cam1");
 	cam->transform.position = Vector3(0, 5, -15);
 
-	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
-	//light->SetRotation(Vector3(-1.6, 1, 0.5).Normalized());
+	DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
+	light->transform.position = Vector3(0, 100, 0);
+	light->transform.rotation = Quaternion::FromEuler(Vector3(-1.6, 1, 0.5).Normalized());
 
 	Thing* thing = CreateObject<Thing>("Thing");
 	thing->transform.position = Vector3(0, 10, 0);
