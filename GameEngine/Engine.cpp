@@ -8,6 +8,7 @@
 #include "SphereCollider.h"
 #include "BoxCollider.h"
 #include "DirectionalLight.h"
+#include "Raytracer.h"
 #include "stdio.h"
 #include "debug.h"
 
@@ -61,25 +62,25 @@ void GEngine::StartGame(Game* game)
 
 	/*while (1)
 	{
-		Point points[] = {
-			Point(100, 100),
-			Point(200, 200),
+	Point points[] = {
+	Point(100, 100),
+	Point(200, 200),
 
-			Point(250, 300),
-			Point(300, 400),
+	Point(250, 300),
+	Point(300, 400),
 
-			Point(550, 300),
-			Point(800, 200),
+	Point(550, 300),
+	Point(800, 200),
 
-			Point(600, 500),
-			Point(400, 800),
+	Point(600, 500),
+	Point(400, 800),
 
-			Point(200, 500)
-		};
+	Point(200, 500)
+	};
 
-		//Drawing::Clear(0, gc);
-		Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
-		Drawing::Draw(gc);
+	//Drawing::Clear(0, gc);
+	Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
+	Drawing::Draw(gc);
 	}*/
 
 	while (1)
@@ -436,6 +437,9 @@ void GEngine::Collision()
 					Vector3 posa = a->parent->GetWorldPosition();
 					Vector3 posb = b->parent->GetWorldPosition();
 
+					Vector3 scalea = a->parent->GetWorldScale();
+					Vector3 scaleb = b->parent->GetWorldScale();
+
 					Vector3 dp = posa - posb;
 
 					va = a->velocity;
@@ -457,28 +461,31 @@ void GEngine::Collision()
 						float ma = a->mass;
 						float mb = b->mass;
 
-						Matrix3 Ia = Matrix3();
-						Matrix3 Ib = Matrix3();
+						Matrix3 IbodyA = Matrix3();
+						Matrix3 IbodyB = Matrix3();
 
-						Vector3& sizea = a->collider->size;
-						Ia[0] = ma * (sizea.y * sizea.y + sizea.z * sizea.z) / 12;
-						Ia[4] = ma * (sizea.x * sizea.x + sizea.z * sizea.z) / 12;
-						Ia[8] = ma * (sizea.x * sizea.x + sizea.y * sizea.y) / 12;
+						Vector3 sizea = Vector3(a->collider->size.x * scalea.x, a->collider->size.y * scalea.y, a->collider->size.z * scalea.z);
+						IbodyA[0] = ma * (sizea.y * sizea.y + sizea.z * sizea.z) / 12;
+						IbodyA[4] = ma * (sizea.x * sizea.x + sizea.z * sizea.z) / 12;
+						IbodyA[8] = ma * (sizea.x * sizea.x + sizea.y * sizea.y) / 12;
 
-						Vector3& sizeb = b->collider->size;
-						Ib[0] = mb * (sizeb.y * sizeb.y + sizeb.z * sizeb.z) / 12;
-						Ib[4] = mb * (sizeb.x * sizeb.x + sizeb.z * sizeb.z) / 12;
-						Ib[8] = mb * (sizeb.x * sizeb.x + sizeb.y * sizeb.y) / 12;
+						Vector3 sizeb = Vector3(b->collider->size.x * scaleb.x, b->collider->size.y * scaleb.y, b->collider->size.z * scaleb.z);
+						IbodyB[0] = mb * (sizeb.y * sizeb.y + sizeb.z * sizeb.z) / 12;
+						IbodyB[4] = mb * (sizeb.x * sizeb.x + sizeb.z * sizeb.z) / 12;
+						IbodyB[8] = mb * (sizeb.x * sizeb.x + sizeb.y * sizeb.y) / 12;
 
 						Matrix3 MRA = rota.ToMatrix3();
-						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
-						Matrix3 inva = (MRA * Ia.Inverse() * MRA.Transpose());
-						//Debug::Print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 						Matrix3 MRB = rotb.ToMatrix3();
+						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
+						//Debug::Print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 						//Matrix3 MatR2 = Matrix3::CreateRotation(b->parent->transform.rotation.ToEuler());
-						Matrix3 invb = (MRB * Ib.Inverse() * MRB.Transpose());
 
-						PrintMatrix(inva);
+						Matrix3 invbA = IbodyA.Inverse();
+						Matrix3 invbB = IbodyB.Inverse();
+						Matrix3 invA = (MRA * invbA * MRA.Transpose());
+						Matrix3 invB = (MRB * invbB * MRB.Transpose());
+
+						PrintMatrix(invA);
 						//PIT::Sleep(200000);
 
 						Vector3 Xa = posa;
@@ -486,9 +493,11 @@ void GEngine::Collision()
 
 						Vector3 n = mtv.Normalized();
 
+						//colPoint = Vector3(-1, 0.5, -1);
+
 						//DrawLine(active_game, colPoint, colPoint + n, 0xFF0000FF);
-						Vector3 ra = colPoint - Xa;
-						Vector3 rb = colPoint - Xb;
+						Vector3 ra = /*-rota * */(colPoint - Xa);
+						Vector3 rb = /*-rotb * */(colPoint - Xb);
 
 						Vector3 pa = (a->velocity + a->angularVelocity.Cross(ra));
 						Vector3 pb = (b->velocity + b->angularVelocity.Cross(rb));
@@ -498,8 +507,8 @@ void GEngine::Collision()
 						float N = Vrel * -(1 + e);
 						float t1 = 1 / ma;
 						float t2 = 1 / mb;
-						float t3 = ra.Cross(n).Dot(inva * ra.Cross(n));
-						float t4 = rb.Cross(n).Dot(invb * rb.Cross(n));
+						float t3 = ra.Cross(n).Dot(invA * ra.Cross(n));
+						float t4 = rb.Cross(n).Dot(invB * rb.Cross(n));
 
 						//t3 = n.Dot(inva * ra.Cross(n).Cross(ra));
 						//t4 = n.Dot(invb * rb.Cross(n).Cross(rb));
@@ -524,11 +533,28 @@ void GEngine::Collision()
 							a->AddImpulse(-force);
 							b->AddImpulse(force);
 
-							Vector3 waf = inva * (Vector3::Cross(ra, force));
-							Vector3 wbf = invb * (Vector3::Cross(rb, force));
+							ra = -rota * (colPoint - Xa);
+							rb = -rotb * (colPoint - Xb);
 
-							//a->angularVelocity -= waf;
-							//b->angularVelocity += wbf;
+							pa = (a->velocity + a->angularVelocity.Cross(ra));
+							pb = (b->velocity + b->angularVelocity.Cross(rb));
+							vr = pb - pa;
+							Vrel = vr.Dot(n);
+
+							N = Vrel * -(1 + e);
+							t1 = 1 / ma;
+							t2 = 1 / mb;
+							t3 = ra.Cross(n).Dot(invA * ra.Cross(n));
+							t4 = rb.Cross(n).Dot(invB * rb.Cross(n));
+
+							J = N / (t1 + t2 + t3 + t4);
+							force = n * J;
+
+							Vector3 waf = invA * Vector3::Cross(ra, force);
+							Vector3 wbf = invB * Vector3::Cross(rb, force);
+
+							a->angularVelocity -= waf;
+							b->angularVelocity += wbf;
 
 							DrawLine(active_game, colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, 0xFF00FF00);
 
@@ -598,6 +624,13 @@ void GEngine::Collision()
 
 void GEngine::Render()
 {
+	if (Keyboard::GetKeyDown(KEY_RETURN))
+	{
+		Raytracer tracer(Drawing::gc_direct);
+		tracer.Render(active_game);
+		return;
+	}
+
 	Camera* cam = active_game->GetActiveCamera();
 	Matrix4 V = Matrix4::CreateView(
 		-cam->transform.GetForwardVector().ToVector4(),
