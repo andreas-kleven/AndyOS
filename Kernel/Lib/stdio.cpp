@@ -279,10 +279,14 @@ float atof(const char* s)
 	return rez * fact;
 }
 
-#define PRECISION 0.0001
+#include "debug.h"
+
+#define PRECISION 0.00001
 //Converts float to string
 char* ftoa(float f, unsigned base, char* buf)
 {
+	char* _buf = buf;
+
 	if (f < 0)
 	{
 		*(buf++) = '-';
@@ -297,32 +301,55 @@ char* ftoa(float f, unsigned base, char* buf)
 	{
 		strcpy(buf, "inf");
 	}
-	else if (f == 0.0)
+	else if (abs(f) < PRECISION)
 	{
 		strcpy(buf, "0");
 	}
 	else
 	{
 		float l10 = log10(f);
+
 		int m = (int)l10;
 		int digit;
 
-		while (f > 0 + PRECISION || m >= 1)
+		if (m < 1)
+			m = 0;
+
+		if (f <= 0 + PRECISION && m == 0)
 		{
-			float weight = pow(10.0f, m);
-			digit = floor(f / weight);
-			f -= (digit * weight);
-			*(buf++) = '0' + digit;
-
-			if (m == 0)
-				*(buf++) = '.';
-			m--;
+			strcpy(buf, "0");
 		}
-
-		if (*(buf - 1) == '.')
-			*(--buf) = '\0';
 		else
-			*(buf) = '\0';
+		{
+			Debug::color = 0xFFFF0000;
+			while (f > 0 + PRECISION || m >= 0)
+			{
+				if (abs(f) < PRECISION)
+				{
+					*(buf++) = '0';
+				}
+				else
+				{
+					float weight = pow(10.0f, m);
+					digit = floor(f / weight);
+
+					//Debug::Print("(%i %i %i) ", m, digit, (int)(f * 1000000));
+
+					f -= (digit * weight);
+					*(buf++) = '0' + digit;
+				}
+
+				if (m == 0)
+					*(buf++) = '.';
+				m--;
+			}
+			Debug::color = 0xFF00FF00;
+
+			if (*(buf - 1) == '.')
+				*(--buf) = '\0';
+			else
+				*(buf) = '\0';
+		}
 	}
-	return buf;
+	return _buf;
 }
