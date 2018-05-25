@@ -98,6 +98,8 @@ void GEngine::StartGame(Game* game)
 		Debug::Print("Ticks: %i\n", ticks);
 		Debug::Print("Free %i\n", Memory::num_free);
 
+		Debug::Print("Mouse: %i, %i\n", (int)Mouse::x, (int)Mouse::y);
+
 		Debug::Print("Cam: %s\n", cam->transform.ToString(buf));
 		Debug::Print("P1: %s\n", thing->transform.ToString(buf));
 
@@ -626,8 +628,12 @@ void GEngine::Render()
 {
 	if (Keyboard::GetKeyDown(KEY_RETURN))
 	{
-		Raytracer tracer(Drawing::gc_direct);
-		tracer.Render(active_game);
+		while (Keyboard::GetKeyDown(KEY_RETURN))
+		{
+			Raytracer tracer(active_game, Drawing::gc_direct);
+			tracer.Render();
+		}
+
 		return;
 	}
 

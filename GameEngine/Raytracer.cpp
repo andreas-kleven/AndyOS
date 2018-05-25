@@ -5,66 +5,13 @@
 
 namespace gl
 {
+	Game* game;
 	GC gc;
 
-	Raytracer::Raytracer(GC _gc)
+	Raytracer::Raytracer(Game* _game, GC _gc)
 	{
+		game = _game;
 		gc = _gc;
-	}
-
-	bool rayTriangleIntersect(
-		Vector3 &orig, Vector3 &dir,
-		Vector3 &v0, Vector3 &v1, Vector3 &v2,
-		float &t)
-	{
-		// compute plane's normal
-		Vector3 v0v1 = v1 - v0;
-		Vector3 v0v2 = v2 - v0;
-		// no need to normalize
-		Vector3 N = v0v1.Cross(v0v2); // N 
-		float area2 = N.Magnitude();
-
-		// Step 1: finding P
-
-		// check if ray and plane are parallel ?
-		float NdotRayDirection = N.Dot(dir);
-		if (abs(NdotRayDirection) < FLT_EPSILON) // almost 0 
-			return false; // they are parallel so they don't intersect ! 
-
-						  // compute d parameter using equation 2
-		float d = N.Dot(v0);
-
-		// compute t (equation 3)
-		t = -(N.Dot(orig) + d) / NdotRayDirection;
-		//Debug::Print("%f\n", t);
-		// check if the triangle is in behind the ray
-		if (t < 0) return false; // the triangle is behind 
-
-								 // compute the intersection point using equation 1
-		Vector3 P = orig + dir * t;
-
-		// Step 2: inside-outside test
-		Vector3 C; // vector perpendicular to triangle's plane 
-
-				 // edge 0
-		Vector3 edge0 = v1 - v0;
-		Vector3 vp0 = P - v0;
-		C = edge0.Cross(vp0);
-		if (N.Dot(C) < 0) return false; // P is on the right side 
-
-											   // edge 1
-		Vector3 edge1 = v2 - v1;
-		Vector3 vp1 = P - v1;
-		C = edge1.Cross(vp1);
-		if (N.Dot(C) < 0)  return false; // P is on the right side 
-
-												// edge 2
-		Vector3 edge2 = v0 - v2;
-		Vector3 vp2 = P - v2;
-		C = edge2.Cross(vp2);
-		if (N.Dot(C) < 0) return false; // P is on the right side; 
-
-		return true; // this ray hits the triangle 
 	}
 
 	Vector3 GetPos(Vertex& vert)
@@ -72,61 +19,117 @@ namespace gl
 		return Vector3(vert.tmpPos.x, vert.tmpPos.y, vert.tmpPos.z);
 	}
 
-	bool Intersect(MeshComponent* mesh, Vector3& orig, Vector3& dir, float& distance, Vector3& hit)
+	//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+	bool RayTriangleIntersection(
+		Vector3 &rayOrigin, Vector3 &rayDir,
+		Vertex &vert0, Vertex &vert1, Vertex &vert2,
+		float &t,
+		float &tex_u, float &tex_v)
 	{
-		float minDist = FLT_MAX;
+		const float EPSILON = 0.0001;
+		Vector3 v0 = GetPos(vert0);
+		Vector3 v1 = GetPos(vert1);
+		Vector3 v2 = GetPos(vert2);
 
-		for (int k = 0; k < mesh->vertex_count; k += 3)
+		Vector3 edge1, edge2, h, s, q;
+		float a, f, u, v;
+
+		edge1 = v1 - v0;
+		edge2 = v2 - v0;
+
+		//Backface culling
+		//Vector3 N = edge1.Cross(edge2);
+		//if (rayDir.Dot(N.Normalized()) > 0)
+		//	return false;
+
+		h = rayDir.Cross(edge2);
+		a = edge1.Dot(h);
+
+		if (a > -EPSILON && a < EPSILON)
+			return false;
+
+		f = 1 / a;
+		s = rayOrigin - v0;
+		u = f * (s.Dot(h));
+		if (u < 0.0 || u > 1.0)
+			return false;
+
+		q = s.Cross(edge1);
+		v = f * rayDir.Dot(q);
+		if (v < 0.0 || u + v > 1.0)
+			return false;
+		// At this stage we can compute t to find out where the intersection point is on the line.
+		t = f * edge2.Dot(q);
+
+		if (t > EPSILON) // ray intersection
 		{
-			Vertex& v0 = mesh->vertices[k + 0];
-			Vertex& v1 = mesh->vertices[k + 1];
-			Vertex& v2 = mesh->vertices[k + 2];
+			float w = 1 - u - v;
 
-			Vector3 p0 = GetPos(v0);
-			Vector3 p1 = GetPos(v1);
-			Vector3 p2 = GetPos(v2);
+			tex_u = (vert0.tex_u * w) + (vert1.tex_u * u) + (vert2.tex_u * v);
+			tex_v = (vert0.tex_v * w) + (vert1.tex_v * u) + (vert2.tex_v * v);
 
-			//p0 = Vector3(-1000, -1000, 0);
-			//p1 = Vector3(1000, -1000, 0);
-			//p2 = Vector3(0, 1000, 0);
+			return true;
+		}
+		else // This means that there is a line intersection but not a ray intersection.
+			return false;
+	}
 
-			//Debug::Print("%f\t%f\t%f\n", p0.x + 0.01, p0.y + 0.01, p0.z + 0.01);
+	bool Intersect(Vector3& rayOrigin, Vector3& rayDir, float& minDist, float& tex_u, float& tex_v, Vector3& hit, MeshComponent*& hitMesh)
+	{
+		minDist = FLT_MAX;
 
-			if (rayTriangleIntersect(orig, dir, p0, p1, p2, distance))
+		for (int i = 0; i < game->objects.Count(); i++)
+		{
+			GameObject* obj = game->objects[i];
+
+			for (int j = 0; j < obj->meshComponents.Count(); j++)
 			{
-				if (distance < minDist) {
-					minDist = distance;
+				MeshComponent* mesh = obj->meshComponents[j];
+
+				for (int k = 0; k < mesh->vertex_count; k += 3)
+				{
+					Vertex& v0 = mesh->vertices[k + 0];
+					Vertex& v1 = mesh->vertices[k + 1];
+					Vertex& v2 = mesh->vertices[k + 2];
+
+					float dist, u, v;
+
+					if (RayTriangleIntersection(rayOrigin, rayDir, v0, v1, v2, dist, u, v))
+					{
+						if (dist < minDist) {
+							minDist = dist;
+							tex_u = u;
+							tex_v = v;
+							hitMesh = mesh;
+						}
+					}
 				}
 			}
 		}
 
-		if (minDist != FLT_MAX)
+		if (minDist < FLT_MAX)
 		{
-			hit = orig + dir * distance;
-			return true;
-		}
+			hit = rayOrigin + rayDir * minDist;
+			return true;		}
 
 		return false;
 	}
 
-	void Raytracer::Render(Game* game)
+	bool Intersect(Vector3& rayOrigin, Vector3& rayDir)
 	{
-		Camera* cam = game->GetActiveCamera();
-		LightSource* lightSource = game->lights[0];
+		float dist, u, v;
+		Vector3 hit;
+		MeshComponent* mesh;
 
-		const float fov = 60;
-		const float imageAspectRatio = gc.width / (float)gc.height;
-		const float dy = tan(fov / 2 * M_PI / 180);
-		const float dx = dy * imageAspectRatio;
+		return Intersect(rayOrigin, rayDir, dist, u, v, hit, mesh);
+	}
 
-		//Transform
+	void CalculateVertices()
+	{
 		for (int i = 0; i < game->objects.Count(); i++)
 		{
 			GameObject* obj = game->objects[i];
 			Transform* trans = &obj->GetWorldTransform();
-
-			//Vector3 v = cam->GetWorldPosition();
-			//Debug::Print("%f\t%f\t%f\n", v.x + 0.001, v.y + 0.001, v.z + 0.001);
 
 			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
 			Matrix4 R = trans->rotation.ToMatrix();
@@ -152,74 +155,65 @@ namespace gl
 				}
 			}
 		}
+	}
+
+	void Raytracer::Render()
+	{
+		Camera* cam = game->GetActiveCamera();
+		LightSource* lightSource = game->lights[0];
+
+		const float fov = 53;
+		const float imageAspectRatio = gc.width / (float)gc.height;
+		const float scale = tan(fov * M_PI / 180.0f / 2.0f);
+
+		CalculateVertices();
 
 		for (int y = 0; y < gc.height; y++)
 		{
 			for (int x = 0; x < gc.width; x++)
 			{
-				float Px = (2 * ((x + 0.5) / gc.width) - 1) * dx;
-				float Py = (1 - 2 * ((y + 0.5) / gc.height)) * dy;
+				float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
+				float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
 
 				Vector3 rayOrigin = cam->GetWorldPosition();
-				//Vector3 rayOrigin(0, 0, 0);
-				Vector3 ray = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
+				Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
 
-				float minDist = FLT_MAX;
+				float dist, u, v;
 				Vector3 hit;
+				MeshComponent* hitMesh;
 
-				for (int i = 0; i < game->objects.Count(); i++)
+				if (Intersect(rayOrigin, rayDir, dist, u, v, hit, hitMesh))
 				{
-					GameObject* obj = game->objects[i];
+					Vector3 lightVector = Vector3(-0.4, -1, 0.1);
+					Vector3 shadowRay = -lightVector.Normalized();
+					bool isShadow = Intersect(hit, shadowRay);
 
-					for (int j = 0; j < obj->meshComponents.Count(); j++)
+					BMP* texture = GL::m_textures[hitMesh->texId];
+
+					int X = texture->width * u;
+					int Y = texture->height * v;
+
+					float lum = 1;
+
+					uint32 color = texture->pixels[(int)(Y * texture->width + X)];
+					float r = lum * (uint8)(color >> 16);
+					float g = lum * (uint8)(color >> 8);
+					float b = lum * (uint8)(color >> 0);
+
+					if (isShadow)
 					{
-						MeshComponent* mesh = obj->meshComponents[j];
-
-						float distance;
-						Vector3 pHit;
-
-						if (Intersect(mesh, rayOrigin, ray, distance, pHit))
-						{
-							if (distance < minDist)
-							{
-								minDist = distance;
-								hit = pHit;
-							}
-						}
+						r *= 0;
+						g *= 0;
+						b *= 0;
 					}
+
+					int col = (0xFF << 24) | ((int)(r) << 16) | ((int)(g) << 8) | (int)(b);
+					Drawing::SetPixel(x, y, col, gc);
 				}
-
-				bool isShadow = false;
-
-				/*if (minDist < FLT_MAX)
-				{
-					Vector3 shadowRay = lightSource->GetWorldPosition() - hit;
-					//Vector3 shadowRay = lightSource->GetDirectionVector(hit);
-
-					for (int i = 0; i < game->objects.Count(); i++)
-					{
-						GameObject* obj = game->objects[i];
-
-						for (int j = 0; j < obj->meshComponents.Count(); j++)
-						{
-							MeshComponent* mesh = obj->meshComponents[j];
-
-							float distance;
-							Vector3 pHit;
-
-							if (Intersect(mesh, hit, shadowRay, distance, pHit))
-							{
-								isShadow = true;
-								break;
-							}
-						}
-					}
-				}*/
-
-				if (minDist < FLT_MAX && !isShadow)
-					Drawing::SetPixel(x, y, COLOR_WHITE, gc);
 				else
+				{
 					Drawing::SetPixel(x, y, 0xFF7F7F7F, gc);
+				}
 			}
 		}
 	}

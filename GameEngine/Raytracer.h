@@ -8,7 +8,7 @@ namespace gl
 	class Raytracer
 	{
 	public:
-		Raytracer(GC gc);
-		void Render(Game* game);
+		Raytracer(Game* game, GC gc);
+		void Render();
 	};
 }
