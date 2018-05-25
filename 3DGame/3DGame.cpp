@@ -13,7 +13,7 @@
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 5, -15);
+	cam->transform.position = Vector3(0, 8, -30);
 
 	DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
 	light->transform.position = Vector3(0, 100, 0);
