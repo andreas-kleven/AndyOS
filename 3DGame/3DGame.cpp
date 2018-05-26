@@ -16,38 +16,80 @@ MyGame::MyGame()
 	Camera* cam = CreateCamera<Camera>("Cam1");
 	cam->transform.position = Vector3(0, 6, -20);
 
-	DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
-	light->transform.position = Vector3(0, 100, 0);
-	light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
+	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
+	//light->transform.position = Vector3(0, 100, 0);
+	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
+
+	PointLight* light = CreateLightSource<PointLight>("PointLight");
+	light->transform.position = Vector3(2, 2, -2);
+	light->intensity = 100;
 
 	Thing* thing = CreateObject<Thing>("Thing");
 	thing->transform.position = Vector3(0, 6, 0);
 	thing->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
 	thing->transform.scale = Vector3(4, 0.2, 0.2);
 
-	MyBox* box = CreateObject<MyBox>("Floor");
-	box->transform.position = Vector3(0, 0, 0);
-	box->transform.rotation = Quaternion();
-	box->transform.scale = Vector3(10, 1, 10);
-
 	MySphere* sphere = CreateObject<MySphere>("Sphere");
 	sphere->transform.position = Vector3(0, 4, 0);
 	sphere->transform.scale = Vector3(4, 4, 1);
 
-	/*MyBox* box1 = CreateObject<MyBox>("Floor");
-	box1->transform.position = Vector3(11.1, 11, 0);
-	box1->transform.rotation = Quaternion();
-	box1->transform.scale = Vector3(1, 10, 10);
+	//Walls
+	MyBox* walls[6];
 
-	MyBox* box2 = CreateObject<MyBox>("Floor");
-	box2->transform.position = Vector3(-11.1, 11, 0);
-	box2->transform.rotation = Quaternion();
-	box2->transform.scale = Vector3(1, 10, 10);
+	walls[0] = CreateObject<MyBox>("Floor");
+	walls[0]->transform.position = Vector3(0, -1, 0);
+	walls[0]->transform.scale = Vector3(1, 1, 2);
 
-	MyBox* box3 = CreateObject<MyBox>("Floor");
-	box3->transform.position = Vector3(0, 22.1, 0);
-	box3->transform.rotation = Quaternion();
-	box3->transform.scale = Vector3(10, 1, 10);*/
+	walls[1] = CreateObject<MyBox>("Roof");
+	walls[1]->transform.position = Vector3(0, 1, 0);
+	walls[1]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI));
+	walls[1]->transform.scale = Vector3(1, 1, 2);
+
+	walls[2] = CreateObject<MyBox>("Wall-Left");
+	walls[2]->transform.position = Vector3(-1, 0, 0);
+	walls[2]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, -M_PI_2));
+	walls[2]->transform.scale = Vector3(1, 1, 2);
+
+	walls[3] = CreateObject<MyBox>("Wall-Right");
+	walls[3]->transform.position = Vector3(1, 0, 0);
+	walls[3]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_2));
+	walls[3]->transform.scale = Vector3(1, 1, 2);
+
+	walls[4] = CreateObject<MyBox>("Wall-Back");
+	walls[4]->transform.position = Vector3(0, 0, -1);
+	walls[4]->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
+
+	walls[5] = CreateObject<MyBox>("Wall-Front");
+	walls[5]->transform.position = Vector3(0, 0, 1);
+	walls[5]->transform.rotation = Quaternion::FromEuler(Vector3(-M_PI_2, 0, 0));
+
+	ColRGB colors[] =
+	{
+		ColRGB(1, 1, 1),
+		ColRGB(1, 1, 1),
+		ColRGB(1, 0, 0),
+		ColRGB(0, 1, 0),
+		ColRGB(1, 1, 1),
+		ColRGB(1, 1, 1)
+	};
+
+	for (int i = 0; i < 6; i++)
+	{
+		Vector3 scale(10, 10, 20);
+
+		walls[i]->transform.position.x *= scale.x;
+		walls[i]->transform.position.y *= scale.y;
+		walls[i]->transform.position.z *= scale.z;
+
+		walls[i]->transform.Scale(Vector3(10, 1, 10));
+
+		MeshComponent* mesh = walls[i]->meshComponents[0];
+
+		for (int j = 0; j < mesh->vertex_count; j++)
+		{
+			mesh->vertices[j].color = colors[i];
+		}
+	}
 
 	return;
 	int num = 3;

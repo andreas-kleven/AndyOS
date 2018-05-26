@@ -173,7 +173,7 @@ namespace gl
 			color = ColRGB(pixel) * lum;
 		}
 
-		return color;
+		return color * lightSource->GetIntensityAtPoint(hit);
 	}
 
 	bool Intersect(
