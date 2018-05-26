@@ -27,7 +27,10 @@ namespace gl
 
 	uint32 ColRGB::ToInt()
 	{
-		return (0xFF << 24) | ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
+		return (0xFF << 24)
+			| (clamp((int)(r * 255), 0, 255) << 16)
+			| (clamp((int)(g * 255), 0, 255) << 8)
+			| clamp((int)(b * 255), 0, 255);
 	}
 
 	float ColRGB::Luminosity()
@@ -47,9 +50,9 @@ namespace gl
 
 	ColRGB ColRGB::operator*=(float f)
 	{
-		r = clamp(f, 0.f, 1.f);
-		g = clamp(f, 0.f, 1.f);
-		b = clamp(f, 0.f, 1.f);
+		r = r * f;
+		g = g * f;
+		b = b * f;
 		return *(this);
 	}
 }

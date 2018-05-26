@@ -14,25 +14,25 @@
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 6, -20);
+	cam->transform.position = Vector3(0, 0, -8);
 
 	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
 	//light->transform.position = Vector3(0, 100, 0);
 	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
 
 	PointLight* light = CreateLightSource<PointLight>("Light");
-	light->transform.position = Vector3(2, 2, 0);
+	light->transform.position = Vector3(0, 3, 0);
 	light->intensity = 100;
 
 	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(0, 6, 2);
-	thing->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
-	thing->transform.scale = Vector3(4, 0.2, 0.2);
+	thing->transform.position = Vector3(0, 0, 2);
+	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.2, M_PI_4));
+	thing->transform.scale = Vector3(2, 0.1, 0.1);
 
 	MySphere* sphere = CreateObject<MySphere>("Sphere");
-	sphere->transform.position = Vector3(0, 4, 2);
-	sphere->transform.scale = Vector3(4, 4, 1);
+	sphere->transform.position = Vector3(0, 0, 2);
+	sphere->transform.scale = Vector3(1, 1, 1);
 
 	//Walls
 	MyBox* walls[6];
@@ -76,13 +76,13 @@ MyGame::MyGame()
 
 	for (int i = 0; i < 6; i++)
 	{
-		Vector3 scale(10, 10, 20);
+		Vector3 scale(4, 4, 8);
 
 		walls[i]->transform.position.x *= scale.x;
 		walls[i]->transform.position.y *= scale.y;
 		walls[i]->transform.position.z *= scale.z;
 
-		walls[i]->transform.Scale(Vector3(10, 1, 10));
+		walls[i]->transform.Scale(Vector3(4, 1, 4));
 
 		MeshComponent* mesh = walls[i]->meshComponents[0];
 

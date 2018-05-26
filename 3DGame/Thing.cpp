@@ -24,6 +24,10 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = mod->vertices;
 	mesh->vertex_count = mod->vertex_count;
+
+	for (int i = 0; i < mesh->vertex_count; i++)
+		mesh->vertices[i].color = COLOR_RED;
+
 	//mesh->texId = gl::GL::AddTexture(bmp);
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");

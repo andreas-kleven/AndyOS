@@ -11,9 +11,6 @@ MySphere::MySphere()
 {
 	Model3D* model = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 
-	for (int i = 0; i < model->vertex_count; i++)
-		model->vertices[i].color = COLOR_WHITE;
-
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = model->vertices;
 	mesh->vertex_count = model->vertex_count;
