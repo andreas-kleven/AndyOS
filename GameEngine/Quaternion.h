@@ -23,6 +23,14 @@ public:
 		this->w = w;
 	}
 
+	Quaternion(Vector3 v, float w)
+	{
+		this->x = v.x;
+		this->y = v.y;
+		this->z = v.z;
+		this->w = w;
+	}
+
 	void Rotate(Vector3 axis, float ang)
 	{
 		Quaternion local;
@@ -39,7 +47,7 @@ public:
 
 	float Magnitude()
 	{
-		return sqrt(x*x + y*y + z*z + w*w);
+		return sqrt(x*x + y * y + z * z + w * w);
 	}
 
 	void Normalize()
@@ -67,27 +75,27 @@ public:
 		//Normalize();
 		Matrix4 mat;
 
-		double sqw = w*w;
-		double sqx = x*x;
-		double sqy = y*y;
-		double sqz = z*z;
+		double sqw = w * w;
+		double sqx = x * x;
+		double sqy = y * y;
+		double sqz = z * z;
 
 		double invs = 1 / (sqx + sqy + sqz + sqw);
 		mat[0] = (sqx - sqy - sqz + sqw) * invs;
 		mat[5] = (-sqx + sqy - sqz + sqw) * invs;
 		mat[10] = (-sqx - sqy + sqz + sqw) * invs;
 
-		double tmp1 = x*y;
-		double tmp2 = z*w;
+		double tmp1 = x * y;
+		double tmp2 = z * w;
 		mat[4] = 2.0 * (tmp1 + tmp2) * invs;
 		mat[1] = 2.0 * (tmp1 - tmp2) * invs;
 
-		tmp1 = x*z;
-		tmp2 = y*w;
+		tmp1 = x * z;
+		tmp2 = y * w;
 		mat[8] = 2.0 * (tmp1 - tmp2) * invs;
 		mat[2] = 2.0 * (tmp1 + tmp2) * invs;
-		tmp1 = y*z;
-		tmp2 = x*w;
+		tmp1 = y * z;
+		tmp2 = x * w;
 		mat[9] = 2.0 * (tmp1 + tmp2) * invs;
 		mat[6] = 2.0 * (tmp1 - tmp2) * invs;
 		return mat;
@@ -98,27 +106,27 @@ public:
 		//Normalize();
 		Matrix3 mat;
 
-		double sqw = w*w;
-		double sqx = x*x;
-		double sqy = y*y;
-		double sqz = z*z;
+		double sqw = w * w;
+		double sqx = x * x;
+		double sqy = y * y;
+		double sqz = z * z;
 
 		double invs = 1 / (sqx + sqy + sqz + sqw);
 		mat[0] = (sqx - sqy - sqz + sqw) * invs;
 		mat[4] = (-sqx + sqy - sqz + sqw) * invs;
 		mat[8] = (-sqx - sqy + sqz + sqw) * invs;
 
-		double tmp1 = x*y;
-		double tmp2 = z*w;
+		double tmp1 = x * y;
+		double tmp2 = z * w;
 		mat[3] = 2.0 * (tmp1 + tmp2) * invs;
 		mat[1] = 2.0 * (tmp1 - tmp2) * invs;
 
-		tmp1 = x*z;
-		tmp2 = y*w;
+		tmp1 = x * z;
+		tmp2 = y * w;
 		mat[6] = 2.0 * (tmp1 - tmp2) * invs;
 		mat[2] = 2.0 * (tmp1 + tmp2) * invs;
-		tmp1 = y*z;
-		tmp2 = x*w;
+		tmp1 = y * z;
+		tmp2 = x * w;
 		mat[7] = 2.0 * (tmp1 + tmp2) * invs;
 		mat[5] = 2.0 * (tmp1 - tmp2) * invs;
 		return mat;
@@ -212,4 +220,5 @@ public:
 
 	static Quaternion FromEuler(const Vector3& euler);
 	static Quaternion FromAxisAngle(const Vector3& axis, float ang);
+	static Quaternion LookAt(Vector3& from, Vector3& to);
 };
