@@ -228,6 +228,9 @@ void GEngine::Update()
 
 	float speed = 10;
 
+	if (Keyboard::GetKeyDown(KEY_LSHIFT))
+		speed /= 4;
+
 	if (Keyboard::GetKeyDown(KEY_D))
 		cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime);
 	if (Keyboard::GetKeyDown(KEY_A))
