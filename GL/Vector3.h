@@ -1,10 +1,18 @@
 #pragma once
 #include "math.h"
-#include "Vector4.h"
+
+namespace gl
+{
+	struct Vector4;
+}
 
 struct Vector3
 {
 public:
+	static Vector3 right;
+	static Vector3 up; 
+	static Vector3 forward;
+	
 	float x = 0;
 	float y = 0;
 	float z = 0;

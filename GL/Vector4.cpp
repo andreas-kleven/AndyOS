@@ -1,4 +1,5 @@
 #include "Vector4.h"
+#include "Vector3.h"
 
 namespace gl
 {
@@ -16,6 +17,11 @@ namespace gl
 		this->y = y;
 		this->z = z;
 		this->w = w;
+	}
+
+	Vector3 Vector4::ToVector3()
+	{
+		return Vector3(x, y, z);
 	}
 
 	float Vector4::Dot(const Vector4& a, const Vector4& b)

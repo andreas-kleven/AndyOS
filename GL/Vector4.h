@@ -1,6 +1,8 @@
 #pragma once
 #include "math.h"
 
+struct Vector3;
+
 namespace gl
 {
 	struct Vector4
@@ -13,6 +15,8 @@ namespace gl
 
 		Vector4();
 		Vector4(float x, float y, float z, float w);
+
+		Vector3 ToVector3();
 
 		Vector4 operator+(Vector4& vec)
 		{
