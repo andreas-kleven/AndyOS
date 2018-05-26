@@ -190,5 +190,8 @@
     <ClInclude Include="Raytracer.h">
       <Filter>Raytracing</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

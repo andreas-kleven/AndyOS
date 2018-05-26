@@ -171,6 +171,7 @@
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="Transform.h" />
