@@ -20,6 +20,9 @@
     <ClInclude Include="MyBox.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="MySphere.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3DGame.cpp">
@@ -29,6 +32,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

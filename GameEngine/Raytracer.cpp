@@ -14,33 +14,96 @@ namespace gl
 		gc = _gc;
 	}
 
+	void swap(float& a, float& b)
+	{
+		float tmp = a;
+		a = b;
+		b = tmp;
+	}
+
 	Vector3 GetPos(Vertex& vert)
 	{
 		return Vector3(vert.tmpPos.x, vert.tmpPos.y, vert.tmpPos.z);
 	}
 
+	Vector3 Reflect(Vector3 I, Vector3 N)
+	{
+		return I - N * I.Dot(N) * 2;
+	}
+
+	Vector3 Refract(Vector3& I, Vector3& N, float &ior)
+	{
+		float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+		float etai = 1, etat = ior;
+		Vector3 n = N;
+
+		if (cosi < 0)
+		{
+			cosi = -cosi;
+		}
+		else
+		{
+			swap(etai, etat);
+			n = -N;
+		}
+
+		float eta = etai / etat;
+		float k = 1 - eta * eta * (1 - cosi * cosi);
+
+		if (k < 0)
+			return Vector3();
+		else
+			return I * eta + n * (eta * cosi - sqrt(k));
+	}
+
+	float Fresnel(Vector3 &I, Vector3 &N, const float& ior)
+	{
+		float etai = 1;
+		float etat = ior;
+
+		float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+
+		if (cosi > 0)
+			swap(etai, etat);
+
+		//Compute sini using Snell's law
+		float sint = etai / etat * sqrt(max(0.0f, 1 - cosi * cosi));
+
+		if (sint >= 1)
+		{
+			//Total internal reflection
+			return 1;
+		}
+		else
+		{
+			float cost = sqrt(max(0.f, 1 - sint * sint));
+			cosi = abs(cosi);
+			float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+			float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+			return (Rs * Rs + Rp * Rp) / 2;
+		}
+	}
+
 	//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
 	bool RayTriangleIntersection(
 		Vector3 &rayOrigin, Vector3 &rayDir,
-		Vertex &vert0, Vertex &vert1, Vertex &vert2,
+		Vector3 &v0, Vector3 &v1, Vector3 &v2,
 		float &t,
-		float &tex_u, float &tex_v)
+		float &u, float &v,
+		bool backfaces)
 	{
 		const float EPSILON = 0.0001;
-		Vector3 v0 = GetPos(vert0);
-		Vector3 v1 = GetPos(vert1);
-		Vector3 v2 = GetPos(vert2);
 
 		Vector3 edge1, edge2, h, s, q;
-		float a, f, u, v;
+		float a, f;
 
 		edge1 = v1 - v0;
 		edge2 = v2 - v0;
 
 		//Backface culling
-		//Vector3 N = edge1.Cross(edge2);
-		//if (rayDir.Dot(N.Normalized()) > 0)
-		//	return false;
+		Vector3 N = edge1.Cross(edge2);
+		if (!backfaces && rayDir.Dot(N.Normalized()) > 0)
+			return false;
 
 		h = rayDir.Cross(edge2);
 		a = edge1.Dot(h);
@@ -63,20 +126,63 @@ namespace gl
 
 		if (t > EPSILON) // ray intersection
 		{
-			float w = 1 - u - v;
-
-			tex_u = (vert0.tex_u * w) + (vert1.tex_u * u) + (vert2.tex_u * v);
-			tex_v = (vert0.tex_v * w) + (vert1.tex_v * u) + (vert2.tex_v * v);
-
 			return true;
 		}
 		else // This means that there is a line intersection but not a ray intersection.
 			return false;
 	}
 
-	bool Intersect(Vector3& rayOrigin, Vector3& rayDir, float& minDist, float& tex_u, float& tex_v, Vector3& hit, MeshComponent*& hitMesh)
+	ColRGB GetColor(
+		Vector3& rayDir,
+		MeshComponent* mesh,
+		Vertex& v0, Vertex& v1, Vertex& v2,
+		Vector3& hit,
+		float u, float v)
 	{
-		minDist = FLT_MAX;
+		float w = 1 - u - v;
+
+		LightSource* lightSource = game->lights[0];
+		Vector3 lightDir = lightSource->GetDirectionVector(hit);
+
+		Shader& shader = mesh->shader;
+
+		Vector3 N = ((v0.worldNormal * w) + (v1.worldNormal * u) + (v2.worldNormal * v)).ToVector3();
+		Vector3 R = Reflect(lightDir, N);
+
+		float diffuse = shader.diffuse * clamp(-N.Dot(lightDir), 0.0f, 1.0f);
+		float specular = shader.specular * pow(max(-R.Dot(rayDir), 0.0f), 8) * 0.08;
+		float totalLight = (clamp(diffuse + specular, 0.0f, 1.0f));
+
+		ColRGB color;
+		color.r = ((v0.color.r * w) + (v1.color.r * u) + (v2.color.r * v)) * totalLight;
+		color.g = ((v0.color.g * w) + (v1.color.g * u) + (v2.color.g * v)) * totalLight;
+		color.b = ((v0.color.b * w) + (v1.color.b * u) + (v2.color.b * v)) * totalLight;
+
+		BMP* texture = GL::m_textures[mesh->texId];
+		if (texture)
+		{
+			float tex_u = (v0.tex_u * w) + (v1.tex_u * u) + (v2.tex_u * v);
+			float tex_v = (v0.tex_v * w) + (v1.tex_v * u) + (v2.tex_v * v);
+
+			int X = texture->width * tex_u;
+			int Y = texture->height * tex_v;
+
+			float lum = color.Luminosity();
+
+			uint32 pixel = texture->pixels[(int)(Y * texture->width + X)];
+			color = ColRGB(pixel) * lum;
+		}
+
+		return color;
+	}
+
+	bool Intersect(
+		Vector3& rayOrigin, Vector3& rayDir,
+		ColRGB& color,
+		bool backfaces = false,
+		int maxRays = 5)
+	{
+		float minDist = FLT_MAX;
 
 		for (int i = 0; i < game->objects.Count(); i++)
 		{
@@ -92,36 +198,74 @@ namespace gl
 					Vertex& v1 = mesh->vertices[k + 1];
 					Vertex& v2 = mesh->vertices[k + 2];
 
+					Vector3 p0 = GetPos(v0);
+					Vector3 p1 = GetPos(v1);
+					Vector3 p2 = GetPos(v2);
+
 					float dist, u, v;
 
-					if (RayTriangleIntersection(rayOrigin, rayDir, v0, v1, v2, dist, u, v))
+					if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, u, v, backfaces))
 					{
-						if (dist < minDist) {
+						Vector3 hit = rayOrigin + rayDir * dist;
+						Shader& shader = mesh->shader;
+
+						if (dist < minDist)
+						{
 							minDist = dist;
-							tex_u = u;
-							tex_v = v;
-							hitMesh = mesh;
+
+							//Shadow
+							LightSource* lightSource = game->lights[0];
+							Vector3 lightDir = lightSource->GetDirectionVector(hit);
+
+							ColRGB _color;
+							//if (Intersect(hit, -lightDir, _color, true, maxRays - 1))
+							//{
+							//	color = ColRGB(0, 0, 0);
+							//}
+							//else
+							{
+								color = GetColor(rayDir, mesh, v0, v1, v2, hit, u, v);
+							}
+
+							if (maxRays > 1 && shader.ior != 0)
+							{
+								Vector3 N = ((v0.worldNormal * (1 - u - v)) + (v1.worldNormal * u) + (v2.worldNormal * v)).ToVector3();
+
+								bool outside = rayDir.Dot(N) < 0;
+								Vector3 bias = N * 0.01f;
+
+								if (outside)
+									bias = -bias;
+
+								ColRGB refraction;
+								ColRGB reflection;
+
+								float kr = Fresnel(rayDir, N, shader.ior);
+
+								if (kr < 1)
+								{
+									Vector3 refractionOrigin = hit + bias;
+									Vector3 refractionRay = Refract(rayDir, N, shader.ior);
+
+									if (!Intersect(refractionOrigin, refractionRay, refraction, true, maxRays - 1))
+										refraction = ColRGB(0.5f, 0.5f, 0.5f);
+								}
+
+								Vector3 reflectionOrigin = hit - bias;
+								Vector3 reflectionRay = Reflect(rayDir, N);
+
+								if (!Intersect(reflectionOrigin, reflectionRay, reflection, true, maxRays - 1))
+									reflection = ColRGB(0.5f, 0.5f, 0.5f);
+
+								color = color + reflection * kr + refraction * (1 - kr);
+							}
 						}
 					}
 				}
 			}
 		}
 
-		if (minDist < FLT_MAX)
-		{
-			hit = rayOrigin + rayDir * minDist;
-			return true;		}
-
-		return false;
-	}
-
-	bool Intersect(Vector3& rayOrigin, Vector3& rayDir)
-	{
-		float dist, u, v;
-		Vector3 hit;
-		MeshComponent* mesh;
-
-		return Intersect(rayOrigin, rayDir, dist, u, v, hit, mesh);
+		return minDist < FLT_MAX;
 	}
 
 	void CalculateVertices()
@@ -140,18 +284,12 @@ namespace gl
 			{
 				MeshComponent* mesh = obj->meshComponents[j];
 
-				for (int v = 0; v < mesh->vertex_count; v++)
-					mesh->vertices[v].worldNormal = R * mesh->vertices[v].normal;
-
-				for (int k = 0; k < mesh->vertex_count; k += 3)
+				for (int k = 0; k < mesh->vertex_count; k++)
 				{
-					Vertex& v0 = mesh->vertices[k + 0];
-					Vertex& v1 = mesh->vertices[k + 1];
-					Vertex& v2 = mesh->vertices[k + 2];
+					Vertex& vert = mesh->vertices[k];
 
-					v0.MulMatrix(M);
-					v1.MulMatrix(M);
-					v2.MulMatrix(M);
+					vert.worldNormal = R * vert.normal;
+					vert.MulMatrix(M);
 				}
 			}
 		}
@@ -178,37 +316,15 @@ namespace gl
 				Vector3 rayOrigin = cam->GetWorldPosition();
 				Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
 
-				float dist, u, v;
 				Vector3 hit;
 				MeshComponent* hitMesh;
+				Vertex* triangle;
 
-				if (Intersect(rayOrigin, rayDir, dist, u, v, hit, hitMesh))
+				ColRGB color;
+
+				if (Intersect(rayOrigin, rayDir, color))
 				{
-					Vector3 lightVector = Vector3(-0.4, -1, 0.1);
-					Vector3 shadowRay = -lightVector.Normalized();
-					bool isShadow = Intersect(hit, shadowRay);
-
-					BMP* texture = GL::m_textures[hitMesh->texId];
-
-					int X = texture->width * u;
-					int Y = texture->height * v;
-
-					float lum = 1;
-
-					uint32 color = texture->pixels[(int)(Y * texture->width + X)];
-					float r = lum * (uint8)(color >> 16);
-					float g = lum * (uint8)(color >> 8);
-					float b = lum * (uint8)(color >> 0);
-
-					if (isShadow)
-					{
-						r *= 0;
-						g *= 0;
-						b *= 0;
-					}
-
-					int col = (0xFF << 24) | ((int)(r) << 16) | ((int)(g) << 8) | (int)(b);
-					Drawing::SetPixel(x, y, col, gc);
+					Drawing::SetPixel(x, y, color.ToInt(), gc);
 				}
 				else
 				{

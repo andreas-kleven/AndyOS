@@ -372,13 +372,17 @@ void GEngine::Collision()
 		GameObject* obj = active_game->objects[i];
 
 		Rigidbody* comp = obj->rigidbody;
-		all.Add(comp);
 
-		if (comp->bEnabledGravity)
-			energy += 1 * 9.8 * (obj->GetWorldPosition().y + 1000);
+		if (comp->bEnabled)
+		{
+			all.Add(comp);
 
-		energy += 0.5 * comp->SpeedSquared();
-		energy += 0.5 * comp->angularVelocity.MagnitudeSquared();
+			if (comp->bEnabledGravity)
+				energy += 1 * 9.8 * (obj->GetWorldPosition().y + 1000);
+
+			energy += 0.5 * comp->SpeedSquared();
+			energy += 0.5 * comp->angularVelocity.MagnitudeSquared();
+		}
 	}
 
 	Debug::Print("Energy: %f\n", energy);
@@ -628,10 +632,21 @@ void GEngine::Render()
 {
 	if (Keyboard::GetKeyDown(KEY_RETURN))
 	{
+		bool freezeWhenDone = Keyboard::GetKeyDown(KEY_LCTRL);
+
 		while (Keyboard::GetKeyDown(KEY_RETURN))
 		{
-			Raytracer tracer(active_game, Drawing::gc_direct);
+			int width = 1024;
+			int height = 768;
+
+			Raytracer tracer(active_game, GC(Drawing::gc_direct, 1024 - width, 0, width, height));
 			tracer.Render();
+		}
+
+		if (freezeWhenDone)
+		{
+			while (!Keyboard::GetKeyDown(KEY_RETURN));
+			while (Keyboard::GetKeyDown(KEY_RETURN));
 		}
 
 		return;

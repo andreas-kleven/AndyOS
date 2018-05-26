@@ -6,6 +6,7 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Thing.h"
+#include "MySphere.h"
 #include "BoxCollider.h"
 
 #include "../GL/GL.h"
@@ -13,21 +14,25 @@
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 8, -30);
+	cam->transform.position = Vector3(0, 6, -20);
 
 	DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
 	light->transform.position = Vector3(0, 100, 0);
-	light->transform.rotation = Quaternion::FromEuler(Vector3(-1.6, 1, 0.5).Normalized());
+	light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
 
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(0, 10, 0);
-	thing->transform.rotation = Quaternion();
-	thing->transform.scale = Vector3(1, 1, 1);
+	thing->transform.position = Vector3(0, 6, 0);
+	thing->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
+	thing->transform.scale = Vector3(4, 0.2, 0.2);
 
 	MyBox* box = CreateObject<MyBox>("Floor");
 	box->transform.position = Vector3(0, 0, 0);
 	box->transform.rotation = Quaternion();
 	box->transform.scale = Vector3(10, 1, 10);
+
+	MySphere* sphere = CreateObject<MySphere>("Sphere");
+	sphere->transform.position = Vector3(0, 4, 0);
+	sphere->transform.scale = Vector3(4, 4, 1);
 
 	/*MyBox* box1 = CreateObject<MyBox>("Floor");
 	box1->transform.position = Vector3(11.1, 11, 0);
