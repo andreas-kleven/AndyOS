@@ -8,6 +8,9 @@ namespace gl
 	Game* game;
 	GC gc;
 
+	Transform prevCamTransform;
+	int resolution;
+
 	Raytracer::Raytracer(Game* _game, GC _gc)
 	{
 		game = _game;
@@ -300,16 +303,43 @@ namespace gl
 		Camera* cam = game->GetActiveCamera();
 		LightSource* lightSource = game->lights[0];
 
+		//Resolution
+		Transform& camTransform = cam->GetWorldTransform();
+
+		if (camTransform.position == prevCamTransform.position && camTransform.rotation == prevCamTransform.rotation)
+		{
+			if (resolution > 1)
+				resolution /= 2;
+		}
+		else
+		{
+			resolution = 16;
+		}
+
+		prevCamTransform = camTransform;
+
+		int mouseX = Mouse::x;
+		int mouseY = Mouse::y;
+
+		//Perspective
 		const float fov = 53;
 		const float imageAspectRatio = gc.width / (float)gc.height;
 		const float scale = tan(fov * M_PI / 180.0f / 2.0f);
 
+		//Calculate global vertex positions
 		CalculateVertices();
 
-		for (int y = 0; y < gc.height; y++)
+		for (int y = 0; y < gc.height; y += resolution)
 		{
-			for (int x = 0; x < gc.width; x++)
+			for (int x = 0; x < gc.width; x += resolution)
 			{
+				//Stop on input
+				if (Keyboard::GetLastKey().key != KEY_INVALID || (int)Mouse::x != mouseX || (int)Mouse::y != mouseY)
+				{
+					Keyboard::DiscardLastKey();
+					return;
+				}
+
 				float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
 				float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
 
@@ -320,16 +350,10 @@ namespace gl
 				MeshComponent* hitMesh;
 				Vertex* triangle;
 
-				ColRGB color;
+				ColRGB color(0.5f, 0.5f, 0.5f);
+				Intersect(rayOrigin, rayDir, color);
 
-				if (Intersect(rayOrigin, rayDir, color))
-				{
-					Drawing::SetPixel(x, y, color.ToInt(), gc);
-				}
-				else
-				{
-					Drawing::SetPixel(x, y, 0xFF7F7F7F, gc);
-				}
+				Drawing::FillRect(x, y, resolution, resolution, color.ToInt(), gc);
 			}
 		}
 	}

@@ -630,7 +630,7 @@ void GEngine::Collision()
 
 void GEngine::Render()
 {
-	if (Keyboard::GetKeyDown(KEY_RETURN))
+	/*if (Keyboard::GetKeyDown(KEY_RETURN))
 	{
 		bool freezeWhenDone = Keyboard::GetKeyDown(KEY_LCTRL);
 
@@ -650,7 +650,11 @@ void GEngine::Render()
 		}
 
 		return;
-	}
+	}*/
+
+	Raytracer tracer(active_game, Drawing::gc_direct);
+	tracer.Render();
+	return;
 
 	Camera* cam = active_game->GetActiveCamera();
 	Matrix4 V = Matrix4::CreateView(
