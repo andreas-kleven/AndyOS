@@ -18,7 +18,7 @@ float pow(float x, int n)
 
 	/*if (n == 0)
 		return 1;
-	
+
 	if (n > 0)
 	{
 		return pow(x, n - 1);
@@ -213,14 +213,17 @@ float logn(float val, float n)
 	return ret;
 }
 
-
-#define RAND_MAX 32768
 static unsigned long int next = 1;
 
 int rand()
 {
 	next = next * 1103515245 + 12345;
 	return (unsigned int)(next / 65536) % RAND_MAX;
+}
+
+float frand()
+{
+	return (float)rand() / RAND_MAX;
 }
 
 void srand(unsigned int seed)
