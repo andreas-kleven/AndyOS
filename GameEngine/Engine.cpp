@@ -42,7 +42,6 @@ void GEngine::StartGame(Game* game)
 	startTicks = PIT::ticks;
 
 	Camera* cam = active_game->GetActiveCamera();
-	LightSource* light = (LightSource*)active_game->GetLightSource("Light");
 
 	GameObject* thing = active_game->GetObject("Thing");
 	GameObject* thing2 = active_game->GetObject("Thing2");
@@ -217,13 +216,14 @@ void GEngine::Update()
 		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
 
-	if (true || Mouse::mouse_R)
+	if (Mouse::mouse_R)
 	{
-		cam->RotateEuler(Vector3(mouse_delta.y, mouse_delta.x, 0) * 0.01);
+		LightSource* light = active_game->lights[0];
+		light->transform.Translate(Vector3(mouse_delta.x, -mouse_delta.y, 0) * 0.1f);
 	}
-	else if (Mouse::mouse_L)
+	else
 	{
-		//light->Rotate(Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.2);
+		cam->RotateEuler(Vector3(mouse_delta.y, mouse_delta.x, 0) * 0.01f);
 	}
 
 	float speed = 10;

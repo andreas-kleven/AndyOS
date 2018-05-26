@@ -9,6 +9,8 @@ namespace gl
 	GC gc;
 
 	Transform prevCamTransform;
+	int mouseX;
+	int mouseY;
 	int resolution;
 
 	Raytracer::Raytracer(Game* _game, GC _gc)
@@ -304,22 +306,25 @@ namespace gl
 		LightSource* lightSource = game->lights[0];
 
 		//Resolution
+		const int maxResolution = 16;
 		Transform& camTransform = cam->GetWorldTransform();
 
-		if (camTransform.position == prevCamTransform.position && camTransform.rotation == prevCamTransform.rotation)
+		if (camTransform.position == prevCamTransform.position
+			&& camTransform.rotation == prevCamTransform.rotation
+			&& (int)Mouse::x == mouseX && (int)Mouse::y == mouseY)
 		{
 			if (resolution > 1)
 				resolution /= 2;
 		}
 		else
 		{
-			resolution = 16;
+			resolution = maxResolution;
 		}
 
 		prevCamTransform = camTransform;
 
-		int mouseX = Mouse::x;
-		int mouseY = Mouse::y;
+		mouseX = Mouse::x;
+		mouseY = Mouse::y;
 
 		//Perspective
 		const float fov = 53;
@@ -334,10 +339,14 @@ namespace gl
 			for (int x = 0; x < gc.width; x += resolution)
 			{
 				//Stop on input
-				if (Keyboard::GetLastKey().key != KEY_INVALID || (int)Mouse::x != mouseX || (int)Mouse::y != mouseY)
+				if (resolution < maxResolution)
 				{
-					Keyboard::DiscardLastKey();
-					return;
+					if (Keyboard::GetLastKey().key != KEY_INVALID || (int)Mouse::x != mouseX || (int)Mouse::y != mouseY)
+					{
+						Keyboard::DiscardLastKey();
+						resolution = maxResolution;
+						return;
+					}
 				}
 
 				float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
