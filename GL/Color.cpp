@@ -27,7 +27,7 @@ namespace gl
 
 	uint32 ColRGB::ToInt()
 	{
-		return ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
+		return (0xFF << 24) | ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
 	}
 
 	float ColRGB::Luminosity()
