@@ -27,7 +27,7 @@ MyBox::MyBox()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = model->vertices;
 	mesh->vertex_count = model->vertex_count;
-	//mesh->texId = gl::GL::AddTexture(bmp);
+	//mesh->texId = GL::AddTexture(bmp);
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	//sphere->radius = 1;

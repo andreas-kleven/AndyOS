@@ -1,9 +1,9 @@
 #pragma once
 #include "definitions.h"
 #include "list.h"
-#include "../GL/Vector3.h"
 #include "Vertex.h"
 #include "Model3D.h"
+#include "../GL/Vector3.h"
 
 class Obj : public Model3D
 {

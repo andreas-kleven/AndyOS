@@ -1,11 +1,12 @@
 #pragma once
-#include "../GL/Vector3.h"
 #include "Transform.h"
 #include "GameObject.h"
 #include "Scene.h"
 #include "Game.h"
 #include "MeshComponent.h"
 #include "List.h"
+#include "Drawing/drawing.h"
+#include "../GL/GL.h"
 
 class GEngine
 {

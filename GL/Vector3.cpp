@@ -24,9 +24,9 @@ Vector3 Vector3::EulerAngles()
 	return Vector3(-cos(x) * sin(y), sin(x), cos(x) * cos(y));
 }
 
-gl::Vector4 Vector3::ToVector4()
+Vector4 Vector3::ToVector4()
 {
-	return gl::Vector4(x, y, z, 1);
+	return Vector4(x, y, z, 1);
 }
 
 float Vector3::Dot(const Vector3& a, const Vector3& b)

@@ -12,7 +12,7 @@ class Model3D
 {
 public:
 	int vertex_count;
-	gl::Vertex* vertices;
+	Vertex* vertices;
 
 	//void SetTexture(int index);
 };

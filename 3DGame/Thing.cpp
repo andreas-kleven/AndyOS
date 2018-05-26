@@ -28,7 +28,7 @@ Thing::Thing()
 	for (int i = 0; i < mesh->vertex_count; i++)
 		mesh->vertices[i].color = COLOR_RED;
 
-	//mesh->texId = gl::GL::AddTexture(bmp);
+	//mesh->texId = GL::AddTexture(bmp);
 
 	//SphereCollider* sphere = CreateComponent<SphereCollider>("SphereCollider");
 	//sphere->radius = 1;

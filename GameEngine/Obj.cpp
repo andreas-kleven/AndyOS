@@ -74,13 +74,13 @@ void Obj::ReadFile(char* file)
 void Obj::CreateVertices()
 {
 	vertex_count = faces.Count() * 3;
-	vertices = new gl::Vertex[vertex_count];
+	vertices = new Vertex[vertex_count];
 
 	for (int i = 0; i < faces.Count(); i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			gl::Vertex vert;
+			Vertex vert;
 
 			Vector3 pos = positions[faces[i].positions[j] - 1];
 			vert.pos.x = pos.x;
@@ -94,7 +94,7 @@ void Obj::CreateVertices()
 			vert.tex_u = uv.x;
 			vert.tex_v = uv.y;
 
-			vert.color = gl::ColRGB(1, 1, 1);
+			vert.color = ColRGB(1, 1, 1);
 
 			vertices[i * 3 + j] = vert;
 		}

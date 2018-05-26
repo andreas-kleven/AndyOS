@@ -1,7 +1,9 @@
+#include "System.h"
 #include "Raytracer.h"
 #include "Vector3.h"
 #include "limits.h"
 #include "debug.h"
+#include "../GL/GL.h"
 
 Game* game;
 GC gc;

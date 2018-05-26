@@ -4,7 +4,7 @@ PointLight::PointLight()
 {
 	this->intensity = 1;
 	this->maxDist = 100;
-	this->color = gl::ColRGB(1, 1, 1);
+	this->color = ColRGB(1, 1, 1);
 }
 
 float PointLight::GetIntensityAtPoint(Vector3 point)
@@ -20,7 +20,7 @@ Vector3 PointLight::GetDirectionVector(Vector3 point)
 	return dist.Normalized();
 }
 
-gl::ColRGB PointLight::GetColor()
+ColRGB PointLight::GetColor()
 {
 	return color;
 }

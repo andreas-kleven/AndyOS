@@ -1,18 +1,15 @@
 #pragma once
 #include "math.h"
 
-namespace gl
-{
-	struct Vector4;
-}
+struct Vector4;
 
 struct Vector3
 {
 public:
 	static Vector3 right;
-	static Vector3 up; 
+	static Vector3 up;
 	static Vector3 forward;
-	
+
 	float x = 0;
 	float y = 0;
 	float z = 0;
@@ -21,7 +18,7 @@ public:
 	Vector3(float x, float y, float z);
 
 	Vector3 EulerAngles();
-	gl::Vector4 ToVector4();
+	Vector4 ToVector4();
 
 	bool operator==(const Vector3& b)
 	{
