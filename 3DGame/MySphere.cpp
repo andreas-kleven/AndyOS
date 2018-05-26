@@ -17,7 +17,7 @@ MySphere::MySphere()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->vertices = model->vertices;
 	mesh->vertex_count = model->vertex_count;
-	//mesh->shader = Shader(0.1f, 0.0f, 1.5f);
+	mesh->shader = Shader(0.1f, 0.0f, 1.5f);
 
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->collider = new SphereCollider();

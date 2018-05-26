@@ -20,17 +20,18 @@ MyGame::MyGame()
 	//light->transform.position = Vector3(0, 100, 0);
 	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
 
-	PointLight* light = CreateLightSource<PointLight>("PointLight");
-	light->transform.position = Vector3(2, 2, -2);
+	PointLight* light = CreateLightSource<PointLight>("Light");
+	light->transform.position = Vector3(2, 2, 0);
 	light->intensity = 100;
 
+	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(0, 6, 0);
+	thing->transform.position = Vector3(0, 6, 2);
 	thing->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_4));
 	thing->transform.scale = Vector3(4, 0.2, 0.2);
 
 	MySphere* sphere = CreateObject<MySphere>("Sphere");
-	sphere->transform.position = Vector3(0, 4, 0);
+	sphere->transform.position = Vector3(0, 4, 2);
 	sphere->transform.scale = Vector3(4, 4, 1);
 
 	//Walls
