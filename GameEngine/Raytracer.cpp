@@ -1,5 +1,6 @@
-#include "System.h"
 #include "Raytracer.h"
+#include "Engine.h"
+#include "System.h"
 #include "Vector3.h"
 #include "limits.h"
 #include "debug.h"
@@ -9,8 +10,10 @@ Game* game;
 GC gc;
 
 const int numPhotons = 10000;
-Photon photons[numPhotons];
+Photon photonMap[numPhotons];
+Photon causticsMap[numPhotons];
 int currentNumPhotons;
+int currentNumCausticsPhotons;
 
 Transform prevCamTransform;
 int mouseX;
@@ -192,10 +195,16 @@ bool Trace(
 	for (int i = 0; i < game->objects.Count(); i++)
 	{
 		GameObject* obj = game->objects[i];
+		Transform& transform = obj->GetWorldTransform();
 
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
+			mesh->CalculateBounds();
+
+			float tb;
+			if (!mesh->bounds.RayIntersection(rayOrigin, rayDir, tb))
+				continue;
 
 			for (int k = 0; k < mesh->vertex_count; k += 3)
 			{
@@ -231,6 +240,7 @@ bool Trace(
 bool TracePhoton(
 	Vector3& rayOrigin, Vector3& rayDir,
 	Photon& photon,
+	bool& caustics,
 	bool backfaces = false,
 	int maxRays = 5)
 {
@@ -256,15 +266,17 @@ bool TracePhoton(
 
 	if (shader.ior > 0)
 	{
+		caustics = true;
+
 		if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1)
 		{
 			Vector3 R = Refract(rayDir, N, shader.ior);
-			return TracePhoton(hit, R, photon, backfaces, maxRays - 1);
+			return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
 		}
 		else
 		{
 			Vector3 R = Reflect(rayDir, N);
-			return TracePhoton(hit, R, photon, backfaces, maxRays - 1);
+			return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
 		}
 	}
 
@@ -289,29 +301,19 @@ bool TracePhoton(
 	}
 	else
 	{
-		//Reflect
+		float ru = frand();
+		float rv = frand();
+		float ru2 = ru * ru;
+
+		float theta = M_PI * ru;
+		float phi = acos(2 * rv - 1);
+
 		Vector3 R;
+		R.x = sqrt(1 - ru2) * cos(theta);
+		R.y = sqrt(1 - ru2) * sin(theta);
+		R.z = ru;
 
-		if (shader.ior > 0)
-		{
-			//Mirror
-			R = Reflect(rayDir, N);
-		}
-		else
-		{
-			float ru = frand();
-			float rv = frand();
-			float ru2 = ru * ru;
-
-			float theta = M_PI * ru;
-			float phi = acos(2 * rv - 1);
-
-			R.x = sqrt(1 - ru2) * cos(theta);
-			R.y = sqrt(1 - ru2) * sin(theta);
-			R.z = ru;
-		}
-
-		return TracePhoton(hit, R, photon, backfaces, maxRays - 1);
+		return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
 	}
 }
 
@@ -362,7 +364,23 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 
 	for (int i = 0; i < currentNumPhotons; i++)
 	{
-		Photon& p = photons[i];
+		Photon& p = photonMap[i];
+		float sqDist = (p.position - hit).MagnitudeSquared();
+
+		if (sqDist < 4)
+		{
+			float weight = max(0.0f, N.Dot(-p.direction));
+			weight *= (2 - sqrt(sqDist)) / 400;
+
+			color.r += p.color.r * weight;
+			color.g += p.color.g * weight;
+			color.b += p.color.b * weight;
+		}
+	}
+
+	for (int i = 0; i < currentNumCausticsPhotons; i++)
+	{
+		Photon& p = causticsMap[i];
 		float sqDist = (p.position - hit).MagnitudeSquared();
 
 		if (sqDist < 4)
@@ -377,6 +395,56 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 	}
 
 	return color * resolution;
+}
+
+void EmitPhotons()
+{
+	LightSource* lightSource = game->lights[0];
+	Vector3 rayOrigin = lightSource->GetWorldPosition();
+
+	srand(0);
+
+	int i = 0;
+	int j = 0;
+
+	while (i < currentNumPhotons || j < currentNumCausticsPhotons)
+	{
+		float sin_theta = sqrt(frand());
+		float cos_theta = sqrt(1 - sin_theta * sin_theta);
+
+		float psi = frand() * 2 * M_PI;
+
+		Vector3 rayDir;
+		rayDir.x = sin_theta * cos(psi);
+		rayDir.y = sin_theta * sin(psi);
+		rayDir.z = cos_theta;
+
+		Photon photon;
+		photon.color = lightSource->GetColor();
+		bool caustics = 0;
+
+		if (TracePhoton(rayOrigin, rayDir, photon, caustics))
+		{
+			//if (caustics)
+			//{
+			//	if (j < currentNumPhotons)
+			//	{
+			//		causticsMap[j++] = photon;
+			//	}
+			//}
+			//else
+			{
+				if (i < currentNumPhotons)
+				{
+					photonMap[i++] = photon;
+				}
+				else if (j == 0)
+				{
+					currentNumCausticsPhotons = 0;
+				}
+			}
+		}
+	}
 }
 
 void CalculateVertices()
@@ -409,7 +477,6 @@ void CalculateVertices()
 void Raytracer::Render()
 {
 	Camera* cam = game->GetActiveCamera();
-	LightSource* lightSource = game->lights[0];
 
 	//Resolution
 	const int maxResolution = 16;
@@ -428,6 +495,7 @@ void Raytracer::Render()
 	}
 
 	currentNumPhotons = numPhotons / resolution;
+	currentNumCausticsPhotons = 0;
 
 	prevCamTransform = camTransform;
 	mouseX = Mouse::x;
@@ -441,44 +509,7 @@ void Raytracer::Render()
 	//Calculate global vertex positions
 	CalculateVertices();
 
-
-	//Photon mapping
-	srand(0);
-
-	LightSource* light = game->lights[0];
-	Vector3 rayOrigin = light->GetWorldPosition();
-
-	Matrix4 V = Matrix4::CreateView(
-		-cam->transform.GetForwardVector().ToVector4(),
-		cam->transform.GetUpVector().ToVector4(),
-		cam->transform.GetRightVector().ToVector4(),
-		cam->transform.position.ToVector4());
-	Matrix4 M = Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 0.1, 100) * V;
-
-	//Drawing::Clear(0xFF000000, gc);
-
-	int i = 0;
-	while (i < currentNumPhotons)
-	{
-		float sin_theta = sqrt(frand());
-		float cos_theta = sqrt(1 - sin_theta * sin_theta);
-
-		float psi = frand() * 2 * M_PI;
-
-		Vector3 rayDir;
-		rayDir.x = sin_theta * cos(psi);
-		rayDir.y = sin_theta * sin(psi);
-		rayDir.z = cos_theta;
-
-		Photon photon;
-		MeshComponent* mesh;
-		photon.color = light->GetColor();
-
-		if (TracePhoton(rayOrigin, rayDir, photon, mesh))
-		{
-			photons[i++] = photon;
-		}
-	}
+	EmitPhotons();
 
 	for (int y = 0; y < gc.height; y += resolution)
 	{
@@ -510,12 +541,8 @@ void Raytracer::Render()
 
 	for (int i = 0; i < currentNumPhotons; i++)
 	{
-		Photon& photon = photons[i];
-
-		Vector4 pos = M * photon.position.ToVector4();
-		int x = pos.x * GL::m_width / pos.w + GL::m_width * 0.5;
-		int y = pos.y * GL::m_height / pos.w + GL::m_height * 0.5;
-
-		Drawing::SetPixel(x, y, photon.color.ToInt(), gc);
+		Photon& photon = photonMap[i];
+		Vector3 p = GEngine::WorldToScreen(game, photon.position);
+		Drawing::SetPixel(p.x, p.y, photon.color.ToInt(), gc);
 	}
 }
