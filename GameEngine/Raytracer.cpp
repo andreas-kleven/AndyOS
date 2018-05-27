@@ -200,7 +200,6 @@ bool Trace(
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
-			mesh->CalculateBounds();
 
 			float tb;
 			if (!mesh->bounds.RayIntersection(rayOrigin, rayDir, tb))
@@ -268,10 +267,10 @@ bool TracePhoton(
 	{
 		caustics = true;
 
-		if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1)
+		if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1 && shader.ior < FLT_MAX)
 		{
 			Vector3 R = Refract(rayDir, N, shader.ior);
-			return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
+			return TracePhoton(hit, R, photon, caustics, true, maxRays - 1);
 		}
 		else
 		{
@@ -462,6 +461,7 @@ void CalculateVertices()
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
+			mesh->CalculateBounds();
 
 			for (int k = 0; k < mesh->vertex_count; k++)
 			{

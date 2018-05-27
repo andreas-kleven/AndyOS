@@ -8,6 +8,7 @@
 #include "Thing.h"
 #include "MySphere.h"
 #include "BoxCollider.h"
+#include "limits.h"
 
 #include "../GL/GL.h"
 
@@ -26,13 +27,18 @@ MyGame::MyGame()
 
 	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(0, 0, 2);
+	thing->transform.position = Vector3(-1, -1, 2);
 	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.2, M_PI_4));
 	thing->transform.scale = Vector3(2, 0.1, 0.1);
 
 	MySphere* sphere = CreateObject<MySphere>("Sphere");
-	sphere->transform.position = Vector3(0, 0, 2);
+	sphere->transform.position = Vector3(-1, -1, 2);
 	sphere->transform.scale = Vector3(1, 1, 1);
+
+	MySphere* sphere2 = CreateObject<MySphere>("Sphere");
+	sphere2->transform.position = Vector3(1, -2, 2);
+	sphere2->transform.scale = Vector3(1, 1, 1);
+	sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
 
 	//Walls
 	MyBox* walls[6];
