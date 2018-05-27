@@ -11,7 +11,7 @@ Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* model = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("cylinder.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!FS::ReadFile("earth.bmp", img_buf))

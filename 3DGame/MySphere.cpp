@@ -9,7 +9,7 @@
 
 MySphere::MySphere()
 {
-	Model3D* model = ModelLoader::LoadModel("sphere.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("cube.a3d", Format3D::FORMAT_A3D);
 
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->SetModel(model);

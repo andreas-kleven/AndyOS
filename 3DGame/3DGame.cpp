@@ -27,13 +27,13 @@ MyGame::MyGame()
 
 	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(-1, -1, 2);
-	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.2, M_PI_4));
-	thing->transform.scale = Vector3(2, 0.1, 0.1);
+	thing->transform.position = Vector3(-0.8, -0.6, 2);
+	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
+	thing->transform.scale = Vector3(0.05, 1.5, 0.05);
 
 	MySphere* sphere = CreateObject<MySphere>("Sphere");
 	sphere->transform.position = Vector3(-1, -1, 2);
-	sphere->transform.scale = Vector3(1, 1, 1);
+	sphere->transform.scale = Vector3(0.7, 1, 0.7);
 
 	MySphere* sphere2 = CreateObject<MySphere>("Sphere");
 	sphere2->transform.position = Vector3(1, -2, 2);
@@ -45,22 +45,18 @@ MyGame::MyGame()
 
 	walls[0] = CreateObject<MyBox>("Floor");
 	walls[0]->transform.position = Vector3(0, -1, 0);
-	walls[0]->transform.scale = Vector3(1, 1, 2);
 
 	walls[1] = CreateObject<MyBox>("Roof");
 	walls[1]->transform.position = Vector3(0, 1, 0);
 	walls[1]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI));
-	walls[1]->transform.scale = Vector3(1, 1, 2);
 
 	walls[2] = CreateObject<MyBox>("Wall-Left");
 	walls[2]->transform.position = Vector3(-1, 0, 0);
 	walls[2]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, -M_PI_2));
-	walls[2]->transform.scale = Vector3(1, 1, 2);
 
 	walls[3] = CreateObject<MyBox>("Wall-Right");
 	walls[3]->transform.position = Vector3(1, 0, 0);
 	walls[3]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_2));
-	walls[3]->transform.scale = Vector3(1, 1, 2);
 
 	walls[4] = CreateObject<MyBox>("Wall-Back");
 	walls[4]->transform.position = Vector3(0, 0, -1);
@@ -82,7 +78,7 @@ MyGame::MyGame()
 
 	for (int i = 0; i < 6; i++)
 	{
-		Vector3 scale(4, 4, 8);
+		Vector3 scale(4, 4, 4);
 
 		walls[i]->transform.position.x *= scale.x;
 		walls[i]->transform.position.y *= scale.y;
