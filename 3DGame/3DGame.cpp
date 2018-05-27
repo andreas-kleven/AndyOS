@@ -88,28 +88,9 @@ MyGame::MyGame()
 
 		MeshComponent* mesh = walls[i]->meshComponents[0];
 
-		for (int j = 0; j < mesh->vertex_count; j++)
+		for (int j = 0; j < mesh->model->vertices.Count(); j++)
 		{
-			mesh->vertices[j].color = colors[i];
+			mesh->model->vertices[j]->color = colors[i];
 		}
-	}
-
-	return;
-	int num = 3;
-	int dist = 4;
-	for (int i = 0; i < 9; i++)
-	{
-		String name = "Box_";
-		name += i;
-		MyBox* b = CreateObject<MyBox>(name);
-		//b->transform.position = Vector3((rand() % num) - num / 2, (rand() % num) - num / 2, (rand() % num) - num / 2);
-		b->transform.position = Vector3((i % num) * dist, ((i / num) % num) * dist + num, ((i / num / num) % num) * dist) - Vector3((num + 1) * dist / 2, 0, 0);
-		thing->transform.rotation = Quaternion();
-		thing->transform.scale = Vector3(1, 1, 1);
-
-		Rigidbody* phys = b->CreateComponent<Rigidbody>("Rigidbody");
-		phys->collider = new BoxCollider();
-		//phys->bEnabled = 0;
-		phys->bEnabledGravity = 0;
 	}
 }

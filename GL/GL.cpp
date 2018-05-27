@@ -24,9 +24,6 @@ Matrix4 mat_projection;
 
 Matrix4* mat_stack;
 int mat_stack_index;
-
-Vertex* vert_ptr;
-
 Vector4 cam_dir;
 
 STATUS GL::Init(GC gc)
@@ -112,13 +109,6 @@ void GL::PopMatrix()
 	SelectedMatrix() = mat_stack[--mat_stack_index];
 }
 
-
-void GL::VertexPointer(Vertex* ptr)
-{
-	vert_ptr = ptr;
-}
-
-
 void GL::CameraDirection(Vector4 dir) {
 	cam_dir = dir;
 }
@@ -128,7 +118,7 @@ Vector4 Reflect(Vector4 d, Vector4 n)
 	return d - n * d.Dot(n) * 2;
 }
 
-void GL::Draw(int start, int count)
+void GL::Draw(Vertex* verts, int count)
 {
 	Vector4 light = Vector4(0.3, -1, 0.5, 0).Normalized();
 	Vector4 light2 = Vector4(-1, 0.8, -1, 0).Normalized();
@@ -139,12 +129,11 @@ void GL::Draw(int start, int count)
 	Matrix4 M = mat_projection * mat_view * mat_model;
 	BMP* texture = m_textures[bound_tex];
 
-	int end = start + count;
-	for (int i = start; i < end; i += 3)
+	for (int i = 0; i < count; i += 3)
 	{
-		Vertex& a = vert_ptr[i];
-		Vertex& b = vert_ptr[i + 1];
-		Vertex& c = vert_ptr[i + 2];
+		Vertex& a = verts[i];
+		Vertex& b = verts[i + 1];
+		Vertex& c = verts[i + 2];
 
 		a.MulMatrix(mat_model);
 		b.MulMatrix(mat_model);

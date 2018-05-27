@@ -13,16 +13,15 @@ void MeshComponent::Update(float delta)
 {
 }
 
-void MeshComponent::SetModel(Model3D* model)
+void MeshComponent::SetModel(Model3D* _model)
 {
-	vertices = model->vertices;
-	vertex_count = model->vertex_count;
+	model = _model;
 	CalculateBounds();
 }
 
 void MeshComponent::CalculateBounds()
 {
-	if (vertex_count == 0)
+	if (!model || model->vertices.Count() == 0)
 	{
 		bounds = Box();
 		return;
@@ -39,9 +38,9 @@ void MeshComponent::CalculateBounds()
 	Matrix4 S = Matrix4::CreateScale(transform.scale.ToVector4());
 	Matrix4 M = T * R * S;
 
-	for (int i = 0; i < vertex_count; i++)
+	for (int i = 0; i < model->vertices.Count(); i++)
 	{
-		Vector4& pos = M * vertices[i].pos;
+		Vector4& pos = M * model->vertices[i]->pos;
 
 		if (pos.x < bounds.min.x) bounds.min.x = pos.x;
 		if (pos.y < bounds.min.y) bounds.min.y = pos.y;

@@ -24,8 +24,10 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->SetModel(model);
 
-	for (int i = 0; i < mesh->vertex_count; i++)
-		mesh->vertices[i].color = COLOR_RED;
+	for (int i = 0; i < mesh->model->vertices.Count(); i++)
+	{
+		mesh->model->vertices[i]->color = COLOR_RED;
+	}
 
 	//mesh->texId = GL::AddTexture(bmp);
 

@@ -73,8 +73,7 @@ void Obj::ReadFile(char* file)
 
 void Obj::CreateVertices()
 {
-	vertex_count = faces.Count() * 3;
-	vertices = new Vertex[vertex_count];
+	/*int vertex_count = faces.Count() * 3;
 
 	for (int i = 0; i < faces.Count(); i++)
 	{
@@ -98,5 +97,5 @@ void Obj::CreateVertices()
 
 			vertices[i * 3 + j] = vert;
 		}
-	}
+	}*/
 }

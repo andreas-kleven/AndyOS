@@ -44,12 +44,7 @@ void GEngine::StartGame(Game* game)
 	Camera* cam = active_game->GetActiveCamera();
 
 	GameObject* thing = active_game->GetObject("Thing");
-	GameObject* thing2 = active_game->GetObject("Thing2");
 	GameObject* floor = active_game->GetObject("Floor");
-
-	MeshComponent* mesh = (MeshComponent*)thing->GetComponent("Mesh");
-	MeshComponent* mesh2 = (MeshComponent*)thing2->GetComponent("Mesh");
-	MeshComponent* mesh3 = (MeshComponent*)floor->GetComponent("Mesh");
 
 	char buf[256];
 
@@ -309,7 +304,7 @@ void GEngine::DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color)
 		while (1);
 	}
 
-	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, COLOR_RED, Drawing::gc_direct);
+	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color.ToInt(), Drawing::gc_direct);
 }
 
 void GEngine::DebugBox(Game* game, Box& box, ColRGB& color)
@@ -711,6 +706,10 @@ void GEngine::Render()
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
+			Model3D* model = mesh->model;
+
+			if (!model)
+				return;
 
 			GameObject* parent = mesh->parent;
 			Transform* trans = &parent->GetWorldTransform();
@@ -718,16 +717,15 @@ void GEngine::Render()
 			Matrix4 R = trans->rotation.ToMatrix();
 			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
 
-			for (int v = 0; v < mesh->vertex_count; v++)
-				mesh->vertices[v].worldNormal = R * mesh->vertices[v].normal;
+			for (int v = 0; v < mesh->model->vertices.Count(); v++)
+				model->vertex_buffer[v].worldNormal = R * model->vertex_buffer[v].normal;
 
 			Matrix4 M = T * R * S;
 
 			GL::LoadMatrix(M);
 
 			GL::BindTexture(mesh->texId);
-			GL::VertexPointer(mesh->vertices);
-			GL::Draw(0, mesh->vertex_count);
+			GL::Draw(model->vertex_buffer, model->vertices.Count());
 		}
 	}
 

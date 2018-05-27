@@ -18,27 +18,30 @@ struct RAW_VERTEX
 
 A3D::A3D(char* buffer)
 {
-	vertex_count = *(uint32*)buffer;
-	vertex_count;
+	int vertex_count = *(uint32*)buffer;
+	vertex_buffer = new Vertex[vertex_count];
+	triangle_buffer = new Triangle[vertex_count / 3];
 
 	RAW_VERTEX* vertex = (RAW_VERTEX*)((char*)buffer + 4);
-	vertices = new Vertex[vertex_count];
 
 	for (int i = 0; i < vertex_count; i++)
 	{
 		RAW_VERTEX raw = *vertex++;
 
-		//gl::ColRGB col(i % 3 == 0, i % 3 == 1, i % 3 == 2);
 		ColRGB col(1, 1, 1);
 		Vector4 norm = Vector4(raw.norm_x, raw.norm_y, raw.norm_z, 1);
 		Vertex vert(raw.pos_x, raw.pos_y, raw.pos_z, col, norm);
 		vert.tex_u = raw.tex_u;
 		vert.tex_v = raw.tex_v;
-		vertices[i] = vert;
 
-		//Debug::Print("%f, %f, %f\n", raw.pos_x, raw.pos_y, raw.pos_z);
+		vertex_buffer[i] = vert;
+		vertices.Add(&vertex_buffer[i]);
 	}
 
-	//Debug::Print("%i", vertex_count);
-	//while (1);
+	for (int i = 0; i < vertex_count; i += 3)
+	{
+		Triangle tri(vertices[i], vertices[i + 1], vertices[i + 2]);
+		triangle_buffer[i / 3] = tri;
+		triangles.Add(&triangle_buffer[i / 3]);
+	}
 }

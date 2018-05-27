@@ -33,14 +33,9 @@ void swap(float& a, float& b)
 	b = tmp;
 }
 
-Vector3 GetPos(Vertex& vert)
+Vector3 GetPos(Vertex* vert)
 {
-	return Vector3(vert.tmpPos.x, vert.tmpPos.y, vert.tmpPos.z);
-}
-
-Vector3 GetNormal(Vertex& v0, Vertex v1, Vertex v2, float u, float v)
-{
-	return ((v0.worldNormal * (1 - u - v)) + (v1.worldNormal * u) + (v2.worldNormal * v)).ToVector3();;
+	return vert->tmpPos.ToVector3();
 }
 
 Vector3 Reflect(Vector3 I, Vector3 N)
@@ -149,43 +144,11 @@ bool RayTriangleIntersection(
 		return false;
 }
 
-ColRGB GetColor(
-	Vector3& rayDir,
-	MeshComponent* mesh,
-	Vertex& v0, Vertex& v1, Vertex& v2,
-	Vector3& hit,
-	float u, float v)
-{
-	float w = 1 - u - v;
-
-	ColRGB color;
-	color.r = ((v0.color.r * w) + (v1.color.r * u) + (v2.color.r * v));
-	color.g = ((v0.color.g * w) + (v1.color.g * u) + (v2.color.g * v));
-	color.b = ((v0.color.b * w) + (v1.color.b * u) + (v2.color.b * v));
-
-	BMP* texture = GL::m_textures[mesh->texId];
-	if (texture)
-	{
-		float tex_u = (v0.tex_u * w) + (v1.tex_u * u) + (v2.tex_u * v);
-		float tex_v = (v0.tex_v * w) + (v1.tex_v * u) + (v2.tex_v * v);
-
-		int X = texture->width * tex_u;
-		int Y = texture->height * tex_v;
-
-		float lum = color.Luminosity();
-
-		uint32 pixel = texture->pixels[(int)(Y * texture->width + X)];
-		color = ColRGB(pixel) * lum;
-	}
-
-	return color;
-}
-
 bool Trace(
 	Vector3& rayOrigin, Vector3& rayDir,
 	Vector3& hit,
 	MeshComponent*& hitMesh,
-	Vertex*& triangle,
+	Triangle*& triangle,
 	float& u, float& v,
 	bool backfaces,
 	int maxRays)
@@ -200,20 +163,21 @@ bool Trace(
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
+			Model3D* model = mesh->model;
+
+			if (!mesh->model)
+				continue;
 
 			float tb;
 			if (!mesh->bounds.RayIntersection(rayOrigin, rayDir, tb))
 				continue;
 
-			for (int k = 0; k < mesh->vertex_count; k += 3)
+			for (int k = 0; k < model->triangles.Count(); k++)
 			{
-				Vertex& v0 = mesh->vertices[k + 0];
-				Vertex& v1 = mesh->vertices[k + 1];
-				Vertex& v2 = mesh->vertices[k + 2];
-
-				Vector3 p0 = GetPos(v0);
-				Vector3 p1 = GetPos(v1);
-				Vector3 p2 = GetPos(v2);
+				Triangle* tri = &model->triangle_buffer[k];
+				Vector3 p0 = GetPos(tri->v0);
+				Vector3 p1 = GetPos(tri->v1);
+				Vector3 p2 = GetPos(tri->v2);
 
 				float dist, _u, _v;
 
@@ -224,7 +188,7 @@ bool Trace(
 						minDist = dist;
 						hit = rayOrigin + rayDir * dist;
 						hitMesh = mesh;
-						triangle = mesh->vertices + k;
+						triangle = tri;
 						u = _u;
 						v = _v;
 					}
@@ -245,7 +209,7 @@ bool TracePhoton(
 {
 	Vector3 hit;
 	MeshComponent* mesh;
-	Vertex* triangle;
+	Triangle* triangle;
 	float u, v;
 
 	if (maxRays < 1)
@@ -254,12 +218,8 @@ bool TracePhoton(
 	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, backfaces, maxRays))
 		return false;
 
-	Vertex& v0 = triangle[0];
-	Vertex& v1 = triangle[1];
-	Vertex& v2 = triangle[2];
-
 	Shader& shader = mesh->shader;
-	Vector3 N = GetNormal(v0, v1, v2, u, v);
+	Vector3 N = triangle->WorldNormal(u, v);
 
 	float rnd = frand();
 
@@ -279,9 +239,9 @@ bool TracePhoton(
 		}
 	}
 
-	ColRGB color = GetColor(rayDir, mesh, v0, v1, v2, hit, u, v);
-
 	photon.surfaceNormal = N;
+
+	ColRGB color = triangle->Color(u, v);
 
 	photon.color = ColRGB(
 		color.r,
@@ -323,13 +283,13 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 
 	Vector3 hit;
 	MeshComponent* mesh;
-	Vertex* triangle;
+	Triangle* triangle;
 	float u, v;
 
 	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
 		return ColRGB(0.5, 0.5, 0.5);
 
-	Vector3 N = GetNormal(triangle[0], triangle[1], triangle[2], u, v);
+	Vector3 N = triangle->WorldNormal(u, v);
 	Shader& shader = mesh->shader;
 
 	if (shader.ior > 0)
@@ -463,12 +423,15 @@ void CalculateVertices()
 			MeshComponent* mesh = obj->meshComponents[j];
 			mesh->CalculateBounds();
 
-			for (int k = 0; k < mesh->vertex_count; k++)
+			if (mesh->model)
 			{
-				Vertex& vert = mesh->vertices[k];
+				for (int k = 0; k < mesh->model->vertices.Count(); k++)
+				{
+					Vertex* vert = mesh->model->vertices[k];
 
-				vert.worldNormal = R * vert.normal;
-				vert.MulMatrix(M);
+					vert->worldNormal = R * vert->normal;
+					vert->MulMatrix(M);
+				}
 			}
 		}
 	}

@@ -47,12 +47,11 @@ public:
 	static void PushMatrix();
 	static void PopMatrix();
 
-	static void VertexPointer(Vertex* ptr);
 	static void CameraDirection(Vector4 dir);
 
 	//static void LightingFunction()
 
-	static void Draw(int start, int count);
+	static void Draw(Vertex* verts, int count);
 	static void Clear(uint32 color);
 	static void SwapBuffers();
 

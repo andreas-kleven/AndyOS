@@ -8,8 +8,7 @@
 class MeshComponent : public Component
 {
 public:
-	Vertex* vertices;
-	int vertex_count;
+	Model3D* model;
 	Box bounds;
 
 	Shader shader;
