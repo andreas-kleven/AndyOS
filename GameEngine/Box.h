@@ -8,10 +8,27 @@ struct Box
 
 	Box() { }
 
-	Box(Vector3 min, Vector3 max)
+	Box(Vector3& min, Vector3& max)
 	{
 		this->min = min;
 		this->max = max;
+	}
+
+	void Translate(Vector3& translation)
+	{
+		min += translation;
+		max += translation;
+	}
+
+	void Scale(Vector3& scaling)
+	{
+		min = Vector3(min.x * scaling.x, min.y * scaling.y, min.z * scaling.z);
+		max = Vector3(max.x * scaling.x, max.y * scaling.y, max.z * scaling.z);
+	}
+
+	Vector3 Size()
+	{
+		return max - min;
 	}
 
 	bool IsInside(const Vector3& in)
@@ -22,5 +39,41 @@ struct Box
 	bool IsInside(const Box& other)
 	{
 		return (IsInside(other.min) && IsInside(other.max));
+	}
+
+	//https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
+	bool RayIntersection(Vector3& rayOrigin, Vector3& rayDir, float& t)
+	{
+		Vector3 dirfrac;
+		dirfrac.x = 1.0f / rayDir.x;
+		dirfrac.y = 1.0f / rayDir.y;
+		dirfrac.z = 1.0f / rayDir.z;
+
+		float t1 = (min.x - rayOrigin.x) * dirfrac.x;
+		float t2 = (max.x - rayOrigin.x) * dirfrac.x;
+		float t3 = (min.y - rayOrigin.y) * dirfrac.y;
+		float t4 = (max.y - rayOrigin.y) * dirfrac.y;
+		float t5 = (min.z - rayOrigin.z) * dirfrac.z;
+		float t6 = (max.z - rayOrigin.z) * dirfrac.z;
+
+		float tmin = ::max(::max(::min(t1, t2), ::min(t3, t4)), ::min(t5, t6));
+		float tmax = ::min(::min(::max(t1, t2), ::max(t3, t4)), ::max(t5, t6));
+
+		// if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+		if (tmax < 0)
+		{
+			t = tmax;
+			return false;
+		}
+
+		// if tmin > tmax, ray doesn't intersect AABB
+		if (tmin > tmax)
+		{
+			t = tmax;
+			return false;
+		}
+
+		t = tmin;
+		return true;
 	}
 };
