@@ -18,6 +18,10 @@ public:
 
 	void StartGame(Game* game);
 
+	static Vector3 WorldToScreen(Game* game, Vector3& point);
+	static void DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color);
+	static void DebugBox(Game* game, Box& box, ColRGB& color);
+
 private:
 	List<Component*> all_components;
 	List<MeshComponent*> meshComponents;
