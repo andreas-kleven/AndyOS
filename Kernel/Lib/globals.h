@@ -51,9 +51,6 @@ void* operator new[](unsigned size)
 	if (size == 0)
 		return 0;
 
-	//size += sizeof(ARRAY_ALLOC);
-	//size += BLOCK_SIZE;
-
 	if (size > mem_left)
 	{
 		int blocks = ceil(size / 4096.f);
@@ -62,7 +59,7 @@ void* operator new[](unsigned size)
 		Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PTE_PRESENT | PTE_WRITABLE, blocks);
 
 		mem_ptr = ptr + size;
-		mem_left = size % BLOCK_SIZE;
+		mem_left = BLOCK_SIZE - (size % BLOCK_SIZE);
 		return ptr;
 	}
 	else
@@ -72,17 +69,6 @@ void* operator new[](unsigned size)
 		mem_left -= size;
 		return ptr;
 	}
-
-	//uint32 blocks = ceil(size / 4096.f);
-	//return Memory::AllocBlocks(blocks);
-
-	/*ARRAY_ALLOC* addr = (ARRAY_ALLOC*)Memory::AllocBlocks(blocks);
-	memset(addr, 0, size);
-
-	addr->blocks = blocks;
-	addr->addr = (uint32)addr;
-
-	return (uint8*)addr + BLOCK_SIZE;*/
 }
 
 void operator delete[](void* p)
