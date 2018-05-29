@@ -15,9 +15,6 @@
     <Filter Include="Components">
       <UniqueIdentifier>{313a34b5-df3e-44f7-86a7-b5bf3866ad53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Meshes">
-      <UniqueIdentifier>{b3e07003-f89a-46aa-b625-68d65a819041}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameObjects">
       <UniqueIdentifier>{db40ed4a-8f62-4e9e-815d-5dac58a4062d}</UniqueIdentifier>
     </Filter>
@@ -124,12 +121,6 @@
     <ClInclude Include="Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IMesh.h">
-      <Filter>Meshes</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxMesh.h">
-      <Filter>Meshes</Filter>
-    </ClInclude>
     <ClInclude Include="Obj.h">
       <Filter>Header Files\File Formats</Filter>
     </ClInclude>
@@ -189,6 +180,9 @@
     </ClInclude>
     <ClInclude Include="Raytracer.h">
       <Filter>Raytracing</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -41,3 +41,27 @@ Quaternion Quaternion::FromAxisAngle(const Vector3& axis, float ang)
 	q.z = axis.z * sa;
 	return q;
 }
+
+//https://stackoverflow.com/questions/12435671/quaternion-lookat-function
+Quaternion Quaternion::LookAt(Vector3& from, Vector3& to)
+{
+	Vector3 forwardVector = (to - from).Normalized();
+
+	float dot = Vector3::Dot(Vector3::forward, forwardVector);
+
+	if (abs(dot - (-1.0f)) < 0.000001f)
+	{
+		return Quaternion(Vector3::up, M_PI);
+	}
+
+	if (abs(dot - (1.0f)) < 0.000001f)
+	{
+		return Quaternion();
+	}
+
+	float rotAngle = (float)acos(dot);
+	Vector3 rotAxis = Vector3::Cross(Vector3::forward, forwardVector);
+	rotAxis = rotAxis.Normalized();
+
+	return FromAxisAngle(rotAxis, rotAngle);
+}

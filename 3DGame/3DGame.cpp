@@ -6,60 +6,91 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Thing.h"
+#include "MySphere.h"
 #include "BoxCollider.h"
+#include "limits.h"
 
 #include "../GL/GL.h"
 
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 5, -15);
+	cam->transform.position = Vector3(0, 0, -8);
 
-	DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
-	light->transform.position = Vector3(0, 100, 0);
-	light->transform.rotation = Quaternion::FromEuler(Vector3(-1.6, 1, 0.5).Normalized());
+	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
+	//light->transform.position = Vector3(0, 100, 0);
+	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
 
+	PointLight* light = CreateLightSource<PointLight>("Light");
+	light->transform.position = Vector3(0, 3, 0);
+	light->intensity = 100;
+
+	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(0, 10, 0);
-	thing->transform.rotation = Quaternion();
-	thing->transform.scale = Vector3(1, 1, 1);
+	thing->transform.position = Vector3(-0.8, -0.6, 2);
+	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
+	thing->transform.scale = Vector3(0.05, 1.5, 0.05);
 
-	MyBox* box = CreateObject<MyBox>("Floor");
-	box->transform.position = Vector3(0, 0, 0);
-	box->transform.rotation = Quaternion();
-	box->transform.scale = Vector3(10, 1, 10);
+	MySphere* sphere = CreateObject<MySphere>("Sphere");
+	sphere->transform.position = Vector3(-1, -1, 2);
+	sphere->transform.scale = Vector3(0.7, 1, 0.7);
 
-	/*MyBox* box1 = CreateObject<MyBox>("Floor");
-	box1->transform.position = Vector3(11.1, 11, 0);
-	box1->transform.rotation = Quaternion();
-	box1->transform.scale = Vector3(1, 10, 10);
+	MySphere* sphere2 = CreateObject<MySphere>("Sphere");
+	sphere2->transform.position = Vector3(1, -2, 2);
+	sphere2->transform.scale = Vector3(1, 1, 1);
+	sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
 
-	MyBox* box2 = CreateObject<MyBox>("Floor");
-	box2->transform.position = Vector3(-11.1, 11, 0);
-	box2->transform.rotation = Quaternion();
-	box2->transform.scale = Vector3(1, 10, 10);
+	//Walls
+	MyBox* walls[6];
 
-	MyBox* box3 = CreateObject<MyBox>("Floor");
-	box3->transform.position = Vector3(0, 22.1, 0);
-	box3->transform.rotation = Quaternion();
-	box3->transform.scale = Vector3(10, 1, 10);*/
+	walls[0] = CreateObject<MyBox>("Floor");
+	walls[0]->transform.position = Vector3(0, -1, 0);
 
-	return;
-	int num = 3;
-	int dist = 4;
-	for (int i = 0; i < 9; i++)
+	walls[1] = CreateObject<MyBox>("Roof");
+	walls[1]->transform.position = Vector3(0, 1, 0);
+	walls[1]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI));
+
+	walls[2] = CreateObject<MyBox>("Wall-Left");
+	walls[2]->transform.position = Vector3(-1, 0, 0);
+	walls[2]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, -M_PI_2));
+
+	walls[3] = CreateObject<MyBox>("Wall-Right");
+	walls[3]->transform.position = Vector3(1, 0, 0);
+	walls[3]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_2));
+
+	walls[4] = CreateObject<MyBox>("Wall-Back");
+	walls[4]->transform.position = Vector3(0, 0, -1);
+	walls[4]->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
+
+	walls[5] = CreateObject<MyBox>("Wall-Front");
+	walls[5]->transform.position = Vector3(0, 0, 1);
+	walls[5]->transform.rotation = Quaternion::FromEuler(Vector3(-M_PI_2, 0, 0));
+
+	ColRGB colors[] =
 	{
-		String name = "Box_";
-		name += i;
-		MyBox* b = CreateObject<MyBox>(name);
-		//b->transform.position = Vector3((rand() % num) - num / 2, (rand() % num) - num / 2, (rand() % num) - num / 2);
-		b->transform.position = Vector3((i % num) * dist, ((i / num) % num) * dist + num, ((i / num / num) % num) * dist) - Vector3((num + 1) * dist / 2, 0, 0);
-		thing->transform.rotation = Quaternion();
-		thing->transform.scale = Vector3(1, 1, 1);
+		ColRGB(1, 1, 1),
+		ColRGB(1, 1, 1),
+		ColRGB(1, 0, 0),
+		ColRGB(0, 1, 0),
+		ColRGB(1, 1, 1),
+		ColRGB(1, 1, 1)
+	};
 
-		Rigidbody* phys = b->CreateComponent<Rigidbody>("Rigidbody");
-		phys->collider = new BoxCollider();
-		//phys->bEnabled = 0;
-		phys->bEnabledGravity = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		Vector3 scale(4, 4, 4);
+
+		walls[i]->transform.position.x *= scale.x;
+		walls[i]->transform.position.y *= scale.y;
+		walls[i]->transform.position.z *= scale.z;
+
+		walls[i]->transform.Scale(Vector3(4, 1, 4));
+
+		MeshComponent* mesh = walls[i]->meshComponents[0];
+
+		for (int j = 0; j < mesh->model->vertices.Count(); j++)
+		{
+			mesh->model->vertices[j]->color = colors[i];
+		}
 	}
 }

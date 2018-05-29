@@ -11,6 +11,7 @@
 #include "task.h"
 #include "Drawing/font.h"
 #include "GUI/GUI.h"
+#include "System.h"
 
 #include "Test/Mandelbrot.h"
 #include "Test/TextEdit.h"

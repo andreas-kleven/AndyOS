@@ -1,11 +1,12 @@
 #pragma once
-#include "../GL/Vector3.h"
 #include "Transform.h"
 #include "GameObject.h"
 #include "Scene.h"
 #include "Game.h"
 #include "MeshComponent.h"
 #include "List.h"
+#include "Drawing/drawing.h"
+#include "../GL/GL.h"
 
 class GEngine
 {
@@ -16,6 +17,10 @@ public:
 	GEngine(GC gc);
 
 	void StartGame(Game* game);
+
+	static Vector3 WorldToScreen(Game* game, Vector3& point);
+	static void DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color);
+	static void DebugBox(Game* game, Box& box, ColRGB& color);
 
 private:
 	List<Component*> all_components;

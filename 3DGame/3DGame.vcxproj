@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)GameEngine\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GL\;$(SolutionDir)GameEngine\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>ARCH_X86</PreprocessorDefinitions>
       <MinimalRebuild />
@@ -124,11 +124,13 @@
   <ItemGroup>
     <ClCompile Include="3DGame.cpp" />
     <ClCompile Include="MyBox.cpp" />
+    <ClCompile Include="MySphere.cpp" />
     <ClCompile Include="Thing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DGame.h" />
     <ClInclude Include="MyBox.h" />
+    <ClInclude Include="MySphere.h" />
     <ClInclude Include="Thing.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,226 +1,511 @@
 #include "Raytracer.h"
+#include "Engine.h"
+#include "System.h"
 #include "Vector3.h"
 #include "limits.h"
 #include "debug.h"
+#include "../GL/GL.h"
 
-namespace gl
+Game* game;
+GC gc;
+
+const int numPhotons = 10000;
+Photon photonMap[numPhotons];
+Photon causticsMap[numPhotons];
+int currentNumPhotons;
+int currentNumCausticsPhotons;
+
+Transform prevCamTransform;
+int mouseX;
+int mouseY;
+int resolution;
+
+Raytracer::Raytracer(Game* _game, GC _gc)
 {
-	GC gc;
+	game = _game;
+	gc = _gc;
+}
 
-	Raytracer::Raytracer(GC _gc)
+void swap(float& a, float& b)
+{
+	float tmp = a;
+	a = b;
+	b = tmp;
+}
+
+Vector3 GetPos(Vertex* vert)
+{
+	return vert->tmpPos.ToVector3();
+}
+
+Vector3 Reflect(Vector3 I, Vector3 N)
+{
+	return I - N * I.Dot(N) * 2;
+}
+
+Vector3 Refract(Vector3& I, Vector3& N, float &ior)
+{
+	float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+	float etai = 1, etat = ior;
+	Vector3 n = N;
+
+	if (cosi < 0)
 	{
-		gc = _gc;
+		cosi = -cosi;
+	}
+	else
+	{
+		swap(etai, etat);
+		n = -N;
 	}
 
-	bool rayTriangleIntersect(
-		Vector3 &orig, Vector3 &dir,
-		Vector3 &v0, Vector3 &v1, Vector3 &v2,
-		float &t)
+	float eta = etai / etat;
+	float k = 1 - eta * eta * (1 - cosi * cosi);
+
+	if (k < 0)
+		return Vector3();
+	else
+		return I * eta + n * (eta * cosi - sqrt(k));
+}
+
+float Fresnel(Vector3 &I, Vector3 &N, const float& ior)
+{
+	float etai = 1;
+	float etat = ior;
+
+	float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+
+	if (cosi > 0)
+		swap(etai, etat);
+
+	//Compute sini using Snell's law
+	float sint = etai / etat * sqrt(max(0.0f, 1 - cosi * cosi));
+
+	if (sint >= 1)
 	{
-		// compute plane's normal
-		Vector3 v0v1 = v1 - v0;
-		Vector3 v0v2 = v2 - v0;
-		// no need to normalize
-		Vector3 N = v0v1.Cross(v0v2); // N 
-		float area2 = N.Magnitude();
-
-		// Step 1: finding P
-
-		// check if ray and plane are parallel ?
-		float NdotRayDirection = N.Dot(dir);
-		if (abs(NdotRayDirection) < FLT_EPSILON) // almost 0 
-			return false; // they are parallel so they don't intersect ! 
-
-						  // compute d parameter using equation 2
-		float d = N.Dot(v0);
-
-		// compute t (equation 3)
-		t = -(N.Dot(orig) + d) / NdotRayDirection;
-		//Debug::Print("%f\n", t);
-		// check if the triangle is in behind the ray
-		if (t < 0) return false; // the triangle is behind 
-
-								 // compute the intersection point using equation 1
-		Vector3 P = orig + dir * t;
-
-		// Step 2: inside-outside test
-		Vector3 C; // vector perpendicular to triangle's plane 
-
-				 // edge 0
-		Vector3 edge0 = v1 - v0;
-		Vector3 vp0 = P - v0;
-		C = edge0.Cross(vp0);
-		if (N.Dot(C) < 0) return false; // P is on the right side 
-
-											   // edge 1
-		Vector3 edge1 = v2 - v1;
-		Vector3 vp1 = P - v1;
-		C = edge1.Cross(vp1);
-		if (N.Dot(C) < 0)  return false; // P is on the right side 
-
-												// edge 2
-		Vector3 edge2 = v0 - v2;
-		Vector3 vp2 = P - v2;
-		C = edge2.Cross(vp2);
-		if (N.Dot(C) < 0) return false; // P is on the right side; 
-
-		return true; // this ray hits the triangle 
+		//Total internal reflection
+		return 1;
 	}
-
-	Vector3 GetPos(Vertex& vert)
+	else
 	{
-		return Vector3(vert.tmpPos.x, vert.tmpPos.y, vert.tmpPos.z);
+		float cost = sqrt(max(0.f, 1 - sint * sint));
+		cosi = abs(cosi);
+		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+		return (Rs * Rs + Rp * Rp) / 2;
 	}
+}
 
-	bool Intersect(MeshComponent* mesh, Vector3& orig, Vector3& dir, float& distance, Vector3& hit)
-	{
-		float minDist = FLT_MAX;
+//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+bool RayTriangleIntersection(
+	Vector3 &rayOrigin, Vector3 &rayDir,
+	Vector3 &v0, Vector3 &v1, Vector3 &v2,
+	float &t,
+	float &u, float &v,
+	bool backfaces)
+{
+	const float EPSILON = 0.0001;
 
-		for (int k = 0; k < mesh->vertex_count; k += 3)
-		{
-			Vertex& v0 = mesh->vertices[k + 0];
-			Vertex& v1 = mesh->vertices[k + 1];
-			Vertex& v2 = mesh->vertices[k + 2];
+	Vector3 edge1, edge2, h, s, q;
+	float a, f;
 
-			Vector3 p0 = GetPos(v0);
-			Vector3 p1 = GetPos(v1);
-			Vector3 p2 = GetPos(v2);
+	edge1 = v1 - v0;
+	edge2 = v2 - v0;
 
-			//p0 = Vector3(-1000, -1000, 0);
-			//p1 = Vector3(1000, -1000, 0);
-			//p2 = Vector3(0, 1000, 0);
-
-			//Debug::Print("%f\t%f\t%f\n", p0.x + 0.01, p0.y + 0.01, p0.z + 0.01);
-
-			if (rayTriangleIntersect(orig, dir, p0, p1, p2, distance))
-			{
-				if (distance < minDist) {
-					minDist = distance;
-				}
-			}
-		}
-
-		if (minDist != FLT_MAX)
-		{
-			hit = orig + dir * distance;
-			return true;
-		}
-
+	//Backface culling
+	Vector3 N = edge1.Cross(edge2);
+	if (!backfaces && rayDir.Dot(N.Normalized()) > 0)
 		return false;
+
+	h = rayDir.Cross(edge2);
+	a = edge1.Dot(h);
+
+	if (a > -EPSILON && a < EPSILON)
+		return false;
+
+	f = 1 / a;
+	s = rayOrigin - v0;
+	u = f * (s.Dot(h));
+	if (u < 0.0 || u > 1.0)
+		return false;
+
+	q = s.Cross(edge1);
+	v = f * rayDir.Dot(q);
+	if (v < 0.0 || u + v > 1.0)
+		return false;
+	// At this stage we can compute t to find out where the intersection point is on the line.
+	t = f * edge2.Dot(q);
+
+	if (t > EPSILON) // ray intersection
+	{
+		return true;
+	}
+	else // This means that there is a line intersection but not a ray intersection.
+		return false;
+}
+
+bool Trace(
+	Vector3& rayOrigin, Vector3& rayDir,
+	Vector3& hit,
+	MeshComponent*& hitMesh,
+	Triangle*& triangle,
+	float& u, float& v,
+	bool backfaces,
+	int maxRays)
+{
+	float minDist = FLT_MAX;
+
+	for (int i = 0; i < game->objects.Count(); i++)
+	{
+		GameObject* obj = game->objects[i];
+		Transform& transform = obj->GetWorldTransform();
+
+		for (int j = 0; j < obj->meshComponents.Count(); j++)
+		{
+			MeshComponent* mesh = obj->meshComponents[j];
+			Model3D* model = mesh->model;
+
+			if (!mesh->model)
+				continue;
+
+			float tb;
+			if (!mesh->bounds.RayIntersection(rayOrigin, rayDir, tb))
+				continue;
+
+			for (int k = 0; k < model->triangles.Count(); k++)
+			{
+				Triangle* tri = &model->triangle_buffer[k];
+				Vector3 p0 = GetPos(tri->v0);
+				Vector3 p1 = GetPos(tri->v1);
+				Vector3 p2 = GetPos(tri->v2);
+
+				float dist, _u, _v;
+
+				if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, _u, _v, backfaces))
+				{
+					if (dist < minDist)
+					{
+						minDist = dist;
+						hit = rayOrigin + rayDir * dist;
+						hitMesh = mesh;
+						triangle = tri;
+						u = _u;
+						v = _v;
+					}
+				}
+			}
+		}
 	}
 
-	void Raytracer::Render(Game* game)
+	return minDist < FLT_MAX;
+}
+
+bool TracePhoton(
+	Vector3& rayOrigin, Vector3& rayDir,
+	Photon& photon,
+	bool& caustics,
+	bool backfaces = false,
+	int maxRays = 5)
+{
+	Vector3 hit;
+	MeshComponent* mesh;
+	Triangle* triangle;
+	float u, v;
+
+	if (maxRays < 1)
+		return false;
+
+	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, backfaces, maxRays))
+		return false;
+
+	Shader& shader = mesh->shader;
+	Vector3 N = triangle->WorldNormal(u, v);
+
+	float rnd = frand();
+
+	if (shader.ior > 0)
 	{
-		Camera* cam = game->GetActiveCamera();
-		LightSource* lightSource = game->lights[0];
+		caustics = true;
 
-		const float fov = 60;
-		const float imageAspectRatio = gc.width / (float)gc.height;
-		const float dy = tan(fov / 2 * M_PI / 180);
-		const float dx = dy * imageAspectRatio;
-
-		//Transform
-		for (int i = 0; i < game->objects.Count(); i++)
+		if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1 && shader.ior < FLT_MAX)
 		{
-			GameObject* obj = game->objects[i];
-			Transform* trans = &obj->GetWorldTransform();
+			Vector3 R = Refract(rayDir, N, shader.ior);
+			return TracePhoton(hit, R, photon, caustics, true, maxRays - 1);
+		}
+		else
+		{
+			Vector3 R = Reflect(rayDir, N);
+			return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
+		}
+	}
 
-			//Vector3 v = cam->GetWorldPosition();
-			//Debug::Print("%f\t%f\t%f\n", v.x + 0.001, v.y + 0.001, v.z + 0.001);
+	photon.surfaceNormal = N;
 
-			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
-			Matrix4 R = trans->rotation.ToMatrix();
-			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
-			Matrix4 M = T * R * S;
+	ColRGB color = triangle->Color(u, v);
 
-			for (int j = 0; j < obj->meshComponents.Count(); j++)
+	photon.color = ColRGB(
+		color.r,
+		color.g,
+		color.b);
+
+	float Pa = 0.8;
+	float Pr = 0.2;
+	float Pt = 0.3;
+
+	if (rnd < Pa || maxRays <= 1)
+	{
+		//Absorb
+		photon.position = hit;
+		photon.direction = rayDir;
+	}
+	else
+	{
+		float ru = frand();
+		float rv = frand();
+		float ru2 = ru * ru;
+
+		float theta = M_PI * ru;
+		float phi = acos(2 * rv - 1);
+
+		Vector3 R;
+		R.x = sqrt(1 - ru2) * cos(theta);
+		R.y = sqrt(1 - ru2) * sin(theta);
+		R.z = ru;
+
+		return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
+	}
+}
+
+ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
+{
+	if (maxRays < 1)
+		return ColRGB(0.5, 0.5, 0.5);
+
+	Vector3 hit;
+	MeshComponent* mesh;
+	Triangle* triangle;
+	float u, v;
+
+	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
+		return ColRGB(0.5, 0.5, 0.5);
+
+	Vector3 N = triangle->WorldNormal(u, v);
+	Shader& shader = mesh->shader;
+
+	if (shader.ior > 0)
+	{
+		bool outside = rayDir.Dot(N) < 0;
+		Vector3 bias = N * 0.01f;
+
+		if (outside)
+			bias = -bias;
+
+		ColRGB refraction;
+		ColRGB reflection;
+
+		float kr = Fresnel(rayDir, N, shader.ior);
+
+		if (kr < 1)
+		{
+			Vector3 refractionOrigin = hit + bias;
+			Vector3 refractionRay = Refract(rayDir, N, shader.ior);
+			refraction = TraceColor(refractionOrigin, refractionRay, maxRays - 1);
+		}
+
+		Vector3 reflectionOrigin = hit - bias;
+		Vector3 reflectionRay = Reflect(rayDir, N);
+		reflection = TraceColor(reflectionOrigin, reflectionRay, maxRays - 1);
+
+		return reflection * kr + refraction * (1 - kr);
+	}
+
+	ColRGB color;
+
+	for (int i = 0; i < currentNumPhotons; i++)
+	{
+		Photon& p = photonMap[i];
+		float sqDist = (p.position - hit).MagnitudeSquared();
+
+		if (sqDist < 4)
+		{
+			float weight = max(0.0f, N.Dot(-p.direction));
+			weight *= (2 - sqrt(sqDist)) / 400;
+
+			color.r += p.color.r * weight;
+			color.g += p.color.g * weight;
+			color.b += p.color.b * weight;
+		}
+	}
+
+	for (int i = 0; i < currentNumCausticsPhotons; i++)
+	{
+		Photon& p = causticsMap[i];
+		float sqDist = (p.position - hit).MagnitudeSquared();
+
+		if (sqDist < 4)
+		{
+			float weight = max(0.0f, N.Dot(-p.direction));
+			weight *= (2 - sqrt(sqDist)) / 400;
+
+			color.r += p.color.r * weight;
+			color.g += p.color.g * weight;
+			color.b += p.color.b * weight;
+		}
+	}
+
+	return color * resolution;
+}
+
+void EmitPhotons()
+{
+	LightSource* lightSource = game->lights[0];
+	Vector3 rayOrigin = lightSource->GetWorldPosition();
+
+	srand(0);
+
+	int i = 0;
+	int j = 0;
+
+	while (i < currentNumPhotons || j < currentNumCausticsPhotons)
+	{
+		float sin_theta = sqrt(frand());
+		float cos_theta = sqrt(1 - sin_theta * sin_theta);
+
+		float psi = frand() * 2 * M_PI;
+
+		Vector3 rayDir;
+		rayDir.x = sin_theta * cos(psi);
+		rayDir.y = sin_theta * sin(psi);
+		rayDir.z = cos_theta;
+
+		Photon photon;
+		photon.color = lightSource->GetColor();
+		bool caustics = 0;
+
+		if (TracePhoton(rayOrigin, rayDir, photon, caustics))
+		{
+			//if (caustics)
+			//{
+			//	if (j < currentNumPhotons)
+			//	{
+			//		causticsMap[j++] = photon;
+			//	}
+			//}
+			//else
 			{
-				MeshComponent* mesh = obj->meshComponents[j];
-
-				for (int v = 0; v < mesh->vertex_count; v++)
-					mesh->vertices[v].worldNormal = R * mesh->vertices[v].normal;
-
-				for (int k = 0; k < mesh->vertex_count; k += 3)
+				if (i < currentNumPhotons)
 				{
-					Vertex& v0 = mesh->vertices[k + 0];
-					Vertex& v1 = mesh->vertices[k + 1];
-					Vertex& v2 = mesh->vertices[k + 2];
-
-					v0.MulMatrix(M);
-					v1.MulMatrix(M);
-					v2.MulMatrix(M);
+					photonMap[i++] = photon;
+				}
+				else if (j == 0)
+				{
+					currentNumCausticsPhotons = 0;
 				}
 			}
 		}
+	}
+}
 
-		for (int y = 0; y < gc.height; y++)
+void CalculateVertices()
+{
+	for (int i = 0; i < game->objects.Count(); i++)
+	{
+		GameObject* obj = game->objects[i];
+		Transform* trans = &obj->GetWorldTransform();
+
+		Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
+		Matrix4 R = trans->rotation.ToMatrix();
+		Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
+		Matrix4 M = T * R * S;
+
+		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
-			for (int x = 0; x < gc.width; x++)
+			MeshComponent* mesh = obj->meshComponents[j];
+			mesh->CalculateBounds();
+
+			if (mesh->model)
 			{
-				float Px = (2 * ((x + 0.5) / gc.width) - 1) * dx;
-				float Py = (1 - 2 * ((y + 0.5) / gc.height)) * dy;
-
-				Vector3 rayOrigin = cam->GetWorldPosition();
-				//Vector3 rayOrigin(0, 0, 0);
-				Vector3 ray = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
-
-				float minDist = FLT_MAX;
-				Vector3 hit;
-
-				for (int i = 0; i < game->objects.Count(); i++)
+				for (int k = 0; k < mesh->model->vertices.Count(); k++)
 				{
-					GameObject* obj = game->objects[i];
+					Vertex* vert = mesh->model->vertices[k];
 
-					for (int j = 0; j < obj->meshComponents.Count(); j++)
-					{
-						MeshComponent* mesh = obj->meshComponents[j];
-
-						float distance;
-						Vector3 pHit;
-
-						if (Intersect(mesh, rayOrigin, ray, distance, pHit))
-						{
-							if (distance < minDist)
-							{
-								minDist = distance;
-								hit = pHit;
-							}
-						}
-					}
+					vert->worldNormal = R * vert->normal;
+					vert->MulMatrix(M);
 				}
-
-				bool isShadow = false;
-
-				/*if (minDist < FLT_MAX)
-				{
-					Vector3 shadowRay = lightSource->GetWorldPosition() - hit;
-					//Vector3 shadowRay = lightSource->GetDirectionVector(hit);
-
-					for (int i = 0; i < game->objects.Count(); i++)
-					{
-						GameObject* obj = game->objects[i];
-
-						for (int j = 0; j < obj->meshComponents.Count(); j++)
-						{
-							MeshComponent* mesh = obj->meshComponents[j];
-
-							float distance;
-							Vector3 pHit;
-
-							if (Intersect(mesh, hit, shadowRay, distance, pHit))
-							{
-								isShadow = true;
-								break;
-							}
-						}
-					}
-				}*/
-
-				if (minDist < FLT_MAX && !isShadow)
-					Drawing::SetPixel(x, y, COLOR_WHITE, gc);
-				else
-					Drawing::SetPixel(x, y, 0xFF7F7F7F, gc);
 			}
 		}
+	}
+}
+
+void Raytracer::Render()
+{
+	Camera* cam = game->GetActiveCamera();
+
+	//Resolution
+	const int maxResolution = 16;
+	Transform& camTransform = cam->GetWorldTransform();
+
+	if (camTransform.position == prevCamTransform.position
+		&& camTransform.rotation == prevCamTransform.rotation
+		&& (int)Mouse::x == mouseX && (int)Mouse::y == mouseY)
+	{
+		if (resolution > 1)
+			resolution /= 2;
+	}
+	else
+	{
+		resolution = maxResolution;
+	}
+
+	currentNumPhotons = numPhotons / resolution;
+	currentNumCausticsPhotons = 0;
+
+	prevCamTransform = camTransform;
+	mouseX = Mouse::x;
+	mouseY = Mouse::y;
+
+	//Perspective
+	const float fov = 53;
+	const float imageAspectRatio = gc.width / (float)gc.height;
+	const float scale = tan(fov * M_PI / 180.0f / 2.0f);
+
+	//Calculate global vertex positions
+	CalculateVertices();
+
+	EmitPhotons();
+
+	for (int y = 0; y < gc.height; y += resolution)
+	{
+		for (int x = 0; x < gc.width; x += resolution)
+		{
+			//Stop on input
+			if (resolution < maxResolution)
+			{
+				if (Keyboard::GetLastKey().key != KEY_INVALID || (int)Mouse::x != mouseX || (int)Mouse::y != mouseY)
+				{
+					Keyboard::DiscardLastKey();
+					resolution = maxResolution;
+					return;
+				}
+			}
+
+			float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
+			float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
+
+			Vector3 rayOrigin = cam->GetWorldPosition();
+			Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
+
+			ColRGB color = TraceColor(rayOrigin, rayDir);
+			Drawing::FillRect(x, y, resolution, resolution, color.ToInt(), gc);
+		}
+	}
+
+	return;
+
+	for (int i = 0; i < currentNumPhotons; i++)
+	{
+		Photon& photon = photonMap[i];
+		Vector3 p = GEngine::WorldToScreen(game, photon.position);
+		Drawing::SetPixel(p.x, p.y, photon.color.ToInt(), gc);
 	}
 }

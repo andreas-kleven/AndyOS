@@ -1,5 +1,5 @@
 #pragma once
-#include "IMesh.h"
+#include "string.h"
 
 class GameObject;
 

@@ -5,6 +5,8 @@
 #define M_PI_4	M_PI / 4
 #define M_E		2.71828182845904523536
 
+#define RAND_MAX 32768
+
 float fact(float number);
 float pow(float x, int n);
 float sqrt(float square);
@@ -28,6 +30,7 @@ float log10(float val);
 float logn(float val, float n);
 
 int rand();
+float frand();
 void srand(unsigned int seed);
 
 

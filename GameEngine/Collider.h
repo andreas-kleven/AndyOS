@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "../GL/Vector3.h"
 
 class Collider
 {
