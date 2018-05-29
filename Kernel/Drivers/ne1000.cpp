@@ -205,7 +205,7 @@ void E1000::InitTX()
 	uint32 ptr;
 	E1000_TX_DESC *descs;
 	//ptr = (uint32)(kmalloc(sizeof(struct E1000_TX_DESC)*NUM_TX_DESC + 16));
-	ptr = (uint32)(new uint8[sizeof(E1000_RX_DESC)*NUM_RX_DESC + 16]);
+	ptr = (uint32)(new uint8[sizeof(E1000_TX_DESC) * NUM_TX_DESC + 16]);
 
 	if (ptr % 16 != 0)
 		ptr = (ptr + 16) - (ptr % 16);
@@ -241,9 +241,7 @@ bool E1000::DetectEEPROM()
 		val = ReadCommand(REG_EEPROM);
 		if (val & 0x10)
 			eeprom_exists = true;
-		else
-			eeprom_exists = false;
-	}
+		else 
 
 	return eeprom_exists;
 }
@@ -252,6 +250,7 @@ uint32 E1000::ReadEEPROM(uint8 addr)
 {
 	uint16 data = 0;
 	uint32 tmp = 0;
+
 	if (eeprom_exists)
 	{
 		WriteCommand(REG_EEPROM, (1) | ((uint32)(addr) << 8));
@@ -269,13 +268,13 @@ uint32 E1000::ReadEEPROM(uint8 addr)
 
 void E1000::WriteCommand(uint16 addr, uint32 val)
 {
-	outl(io_base, addr);
+	outw(io_base, addr);
 	outl(io_base + 4, val);
 }
 
 uint32 E1000::ReadCommand(uint16 addr)
 {
-	outl(io_base, addr);
+	outw(io_base, addr);
 	return inl(io_base + 4);
 }
 
