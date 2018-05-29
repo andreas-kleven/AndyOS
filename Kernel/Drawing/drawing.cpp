@@ -35,7 +35,7 @@ inline uint32 Drawing::BlendAlpha(uint32 src, uint32 dst)
 
 	if (a == 0)
 		return dst;
-	
+
 	if (a == 0xFF)
 		return src;
 
@@ -293,10 +293,10 @@ void Drawing::DrawBezierCube(Point* points, int count, GC gc)
 
 void Drawing::DrawRect(int x, int y, int w, int h, int bw, uint32 c, GC gc)
 {
-	FillRect(x, y, x + w, y + bw, c, gc);			//Top
-	FillRect(x, y + h - bw, x + w, y + h, c, gc);	//Botom
-	FillRect(x, y, x + bw, y + h, c, gc);			//Left
-	FillRect(x + w - bw, y, x + w, y + h, c, gc);	//Right
+	FillRect(x, y, w, bw, c, gc);			//Top
+	FillRect(x, y + h - bw, w, bw, c, gc);	//Botom
+	FillRect(x, y, bw, h, c, gc);			//Left
+	FillRect(x + w - bw, y, bw, h, c, gc);	//Right
 }
 
 void Drawing::FillRect(int x, int y, int w, int h, uint32 c, GC gc)
