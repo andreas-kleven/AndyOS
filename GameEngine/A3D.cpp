@@ -40,7 +40,7 @@ A3D::A3D(char* buffer)
 
 	for (int i = 0; i < vertex_count; i += 3)
 	{
-		Triangle tri(vertices[i], vertices[i + 1], vertices[i + 2]);
+		Triangle tri(&vertex_buffer[i], &vertex_buffer[i + 1], &vertex_buffer[i + 2]);
 		triangle_buffer[i / 3] = tri;
 		triangles.Add(&triangle_buffer[i / 3]);
 	}

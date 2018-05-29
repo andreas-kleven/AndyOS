@@ -104,6 +104,9 @@
     <ClCompile Include="Raytracer.cpp">
       <Filter>Raytracing</Filter>
     </ClCompile>
+    <ClCompile Include="KDTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -182,6 +185,9 @@
       <Filter>Raytracing</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KDTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

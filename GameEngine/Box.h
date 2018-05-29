@@ -6,7 +6,11 @@ struct Box
 	Vector3 min;
 	Vector3 max;
 
-	Box() { }
+	Box()
+	{
+		this->min = Vector3(0, 0, 0);
+		this->max = Vector3(0, 0, 0);
+	}
 
 	Box(Vector3& min, Vector3& max)
 	{
@@ -26,19 +30,49 @@ struct Box
 		max = Vector3(max.x * scaling.x, max.y * scaling.y, max.z * scaling.z);
 	}
 
+	void Expand(Box box)
+	{
+		min.x = ::min(min.x, box.min.x);
+		min.y = ::min(min.y, box.min.y);
+		min.z = ::min(min.z, box.min.z);
+
+		max.x = ::max(max.x, box.max.x);
+		max.y = ::max(max.y, box.max.y);
+		max.z = ::max(max.z, box.max.z);
+	}
+
 	Vector3 Size()
 	{
 		return max - min;
 	}
 
+	int LongestAxis()
+	{
+		Vector3& size = max - min;
+
+		if (size.x > size.z)
+		{
+			return size.x < size.y;
+		}
+		else
+		{
+			return (size.y > size.z) ? 1 : 2;
+		}
+	}
+
 	bool IsInside(const Vector3& in)
 	{
-		return ((in.x > min.x) && (in.x < max.x) && (in.y > min.y) && (in.y < max.y) && (in.z > min.z) && (in.z < max.z));
+		return ((in.x >= min.x) && (in.x <= max.x) && (in.y >= min.y) && (in.y <= max.y) && (in.z >= min.z) && (in.z <= max.z));
 	}
 
 	bool IsInside(const Box& other)
 	{
 		return (IsInside(other.min) && IsInside(other.max));
+	}
+
+	bool Overlaps(const Box& other)
+	{
+		return (IsInside(other.min) || IsInside(other.max));
 	}
 
 	//https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms

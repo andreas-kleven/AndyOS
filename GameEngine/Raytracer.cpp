@@ -144,6 +144,71 @@ bool RayTriangleIntersection(
 		return false;
 }
 
+bool TraceNode(
+	KDNode* node,
+	MeshComponent* mesh,
+	Vector3& rayOrigin, Vector3& rayDir,
+	float& distance,
+	Vector3& hit,
+	Triangle*& triangle,
+	float& u, float& v,
+	bool backfaces)
+{
+	if (!node)
+		return false;
+
+	Transform& trans = mesh->parent->GetWorldTransform();
+
+	Matrix4 invT = Matrix4::CreateTranslation(-trans.position.ToVector4());
+	Matrix4 invR = (-trans.rotation).ToMatrix();
+	Matrix4 invS = Matrix4::CreateScale(Vector4(1 / trans.scale.x, 1 / trans.scale.y, 1 / trans.scale.z, 0));
+
+	//Matrix4 inverse = (T * R * S).Inverse();
+	Matrix4 invM = invS * invR * invT;
+	Vector4 _rayOrigin = invM * rayOrigin.ToVector4();
+	Vector4 _rayDir = (invM * rayDir.ToVector4(0)).Normalized();
+
+	float t;
+	if (!node->bounds.RayIntersection(_rayOrigin.ToVector3(), _rayDir.ToVector3(), t))
+		return false;
+
+	if (node->left || node->right)
+	{
+		return TraceNode(node->left, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces)
+			|| TraceNode(node->right, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces);
+	}
+	else
+	{
+		bool hasHit = false;
+
+		for (int i = 0; i < node->triangle_count; i++)
+		{
+			Triangle* tri = node->triangles[i];
+			Vector3 p0 = GetPos(tri->v0);
+			Vector3 p1 = GetPos(tri->v1);
+			Vector3 p2 = GetPos(tri->v2);
+
+			float dist, _u, _v;
+
+			if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, _u, _v, backfaces))
+			{
+				if (dist < distance)
+				{
+					distance = dist;
+					hit = rayOrigin + rayDir * dist;
+					triangle = tri;
+					u = _u;
+					v = _v;
+
+					hasHit = true;
+				}
+			}
+		}
+
+		return hasHit;
+	}
+}
+
 bool Trace(
 	Vector3& rayOrigin, Vector3& rayDir,
 	Vector3& hit,
@@ -153,7 +218,9 @@ bool Trace(
 	bool backfaces,
 	int maxRays)
 {
-	float minDist = FLT_MAX;
+	hitMesh = 0;
+
+	float distance = FLT_MAX;
 
 	for (int i = 0; i < game->objects.Count(); i++)
 	{
@@ -165,39 +232,17 @@ bool Trace(
 			MeshComponent* mesh = obj->meshComponents[j];
 			Model3D* model = mesh->model;
 
-			if (!mesh->model)
+			if (!model)
 				continue;
 
-			float tb;
-			if (!mesh->bounds.RayIntersection(rayOrigin, rayDir, tb))
-				continue;
-
-			for (int k = 0; k < model->triangles.Count(); k++)
+			if (TraceNode(mesh->bvh->root, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces))
 			{
-				Triangle* tri = &model->triangle_buffer[k];
-				Vector3 p0 = GetPos(tri->v0);
-				Vector3 p1 = GetPos(tri->v1);
-				Vector3 p2 = GetPos(tri->v2);
-
-				float dist, _u, _v;
-
-				if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, _u, _v, backfaces))
-				{
-					if (dist < minDist)
-					{
-						minDist = dist;
-						hit = rayOrigin + rayDir * dist;
-						hitMesh = mesh;
-						triangle = tri;
-						u = _u;
-						v = _v;
-					}
-				}
+				hitMesh = mesh;
 			}
 		}
 	}
 
-	return minDist < FLT_MAX;
+	return distance < FLT_MAX;
 }
 
 bool TracePhoton(
@@ -240,13 +285,7 @@ bool TracePhoton(
 	}
 
 	photon.surfaceNormal = N;
-
-	ColRGB color = triangle->Color(u, v);
-
-	photon.color = ColRGB(
-		color.r,
-		color.g,
-		color.b);
+	photon.color = triangle->Color(u, v);
 
 	float Pa = 0.8;
 	float Pr = 0.2;
@@ -353,7 +392,7 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 		}
 	}
 
-	return color * resolution;
+	return color * resolution + ColRGB(0.05, 0.05, 0.05);
 }
 
 void EmitPhotons()
@@ -421,13 +460,12 @@ void CalculateVertices()
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
-			mesh->CalculateBounds();
 
 			if (mesh->model)
 			{
 				for (int k = 0; k < mesh->model->vertices.Count(); k++)
 				{
-					Vertex* vert = mesh->model->vertices[k];
+					Vertex* vert = &mesh->model->vertex_buffer[k];
 
 					vert->worldNormal = R * vert->normal;
 					vert->MulMatrix(M);
@@ -472,7 +510,10 @@ void Raytracer::Render()
 	//Calculate global vertex positions
 	CalculateVertices();
 
+	int emitTime = PIT::ticks;
 	EmitPhotons();
+
+	int renderTime = PIT::ticks;
 
 	for (int y = 0; y < gc.height; y += resolution)
 	{
@@ -500,6 +541,10 @@ void Raytracer::Render()
 		}
 	}
 
+	int finishTime = PIT::ticks;
+
+	Debug::y = gc.height / 16 - 4;
+	Debug::Print("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
 	return;
 
 	for (int i = 0; i < currentNumPhotons; i++)

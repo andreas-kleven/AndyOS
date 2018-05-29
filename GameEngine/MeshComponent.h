@@ -3,13 +3,14 @@
 #include "Model3D.h"
 #include "Shader.h"
 #include "Box.h"
+#include "KDTree.h"
 #include "../GL/Vertex.h"
 
 class MeshComponent : public Component
 {
 public:
 	Model3D* model;
-	Box bounds;
+	KDTree* bvh;
 
 	Shader shader;
 	int texId;
@@ -19,5 +20,4 @@ public:
 	virtual void Update(float delta);
 
 	void SetModel(Model3D* model);
-	void CalculateBounds();
 };

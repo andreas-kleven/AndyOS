@@ -26,7 +26,7 @@ Thing::Thing()
 
 	for (int i = 0; i < mesh->model->vertices.Count(); i++)
 	{
-		mesh->model->vertices[i]->color = COLOR_RED;
+		mesh->model->vertex_buffer[i].color = COLOR_RED;
 	}
 
 	//mesh->texId = GL::AddTexture(bmp);

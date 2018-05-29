@@ -12,57 +12,30 @@
 
 #include "../GL/GL.h"
 
-MyGame::MyGame()
+void CreateCornell(Game* game)
 {
-	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 0, -8);
-
-	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
-	//light->transform.position = Vector3(0, 100, 0);
-	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
-
-	PointLight* light = CreateLightSource<PointLight>("Light");
-	light->transform.position = Vector3(0, 3, 0);
-	light->intensity = 100;
-
-	//Objects
-	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(-0.8, -0.6, 2);
-	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
-	thing->transform.scale = Vector3(0.05, 1.5, 0.05);
-
-	MySphere* sphere = CreateObject<MySphere>("Sphere");
-	sphere->transform.position = Vector3(-1, -1, 2);
-	sphere->transform.scale = Vector3(0.7, 1, 0.7);
-
-	MySphere* sphere2 = CreateObject<MySphere>("Sphere");
-	sphere2->transform.position = Vector3(1, -2, 2);
-	sphere2->transform.scale = Vector3(1, 1, 1);
-	sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
-
-	//Walls
 	MyBox* walls[6];
 
-	walls[0] = CreateObject<MyBox>("Floor");
+	walls[0] = game->CreateObject<MyBox>("Floor");
 	walls[0]->transform.position = Vector3(0, -1, 0);
 
-	walls[1] = CreateObject<MyBox>("Roof");
+	walls[1] = game->CreateObject<MyBox>("Roof");
 	walls[1]->transform.position = Vector3(0, 1, 0);
 	walls[1]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI));
 
-	walls[2] = CreateObject<MyBox>("Wall-Left");
+	walls[2] = game->CreateObject<MyBox>("Wall-Left");
 	walls[2]->transform.position = Vector3(-1, 0, 0);
 	walls[2]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, -M_PI_2));
-
-	walls[3] = CreateObject<MyBox>("Wall-Right");
+	
+	walls[3] = game->CreateObject<MyBox>("Wall-Right");
 	walls[3]->transform.position = Vector3(1, 0, 0);
 	walls[3]->transform.rotation = Quaternion::FromEuler(Vector3(0, 0, M_PI_2));
-
-	walls[4] = CreateObject<MyBox>("Wall-Back");
+	
+	walls[4] = game->CreateObject<MyBox>("Wall-Back");
 	walls[4]->transform.position = Vector3(0, 0, -1);
 	walls[4]->transform.rotation = Quaternion::FromEuler(Vector3(M_PI_2, 0, 0));
-
-	walls[5] = CreateObject<MyBox>("Wall-Front");
+	
+	walls[5] = game->CreateObject<MyBox>("Wall-Front");
 	walls[5]->transform.position = Vector3(0, 0, 1);
 	walls[5]->transform.rotation = Quaternion::FromEuler(Vector3(-M_PI_2, 0, 0));
 
@@ -90,7 +63,38 @@ MyGame::MyGame()
 
 		for (int j = 0; j < mesh->model->vertices.Count(); j++)
 		{
-			mesh->model->vertices[j]->color = colors[i];
+			mesh->model->vertex_buffer[j].color = colors[i];
 		}
 	}
+}
+
+MyGame::MyGame()
+{
+	Camera* cam = CreateCamera<Camera>("Cam1");
+	cam->transform.position = Vector3(0, 0, -8);
+
+	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
+	//light->transform.position = Vector3(0, 100, 0);
+	//light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
+
+	PointLight* light = CreateLightSource<PointLight>("Light");
+	light->transform.position = Vector3(0, 3, 0);
+	light->intensity = 100;
+
+	//Objects
+	Thing* thing = CreateObject<Thing>("Thing");
+	thing->transform.position = Vector3(-0.8, -0.6, 2);
+	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
+	thing->transform.scale = Vector3(0.05, 1.5, 0.05);
+
+	MySphere* sphere = CreateObject<MySphere>("Sphere");
+	sphere->transform.position = Vector3(-1, -1, 2);
+	sphere->transform.scale = Vector3(0.7, 1, 0.7);
+
+	MySphere* sphere2 = CreateObject<MySphere>("Sphere2");
+	sphere2->transform.position = Vector3(1, -2, 2);
+	sphere2->transform.scale = Vector3(1, 1, 1);
+	sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
+
+	CreateCornell(this);
 }
