@@ -241,9 +241,7 @@ bool E1000::DetectEEPROM()
 		val = ReadCommand(REG_EEPROM);
 		if (val & 0x10)
 			eeprom_exists = true;
-		else
-			eeprom_exists = false;
-	}
+		else 
 
 	return eeprom_exists;
 }
