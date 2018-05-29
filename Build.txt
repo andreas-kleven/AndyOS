@@ -1,3 +1,6 @@
+Create Root directory
+Build Rebase
+
 xorriso
 grub
 
