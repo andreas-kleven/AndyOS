@@ -64,7 +64,7 @@ struct Triangle
 		return bounds;
 	}
 
-	Vertex* Get(int index)
+	Vertex*& Get(int index)
 	{
 		if (index == 0)
 			return v0;
@@ -78,7 +78,7 @@ struct Triangle
 		Exceptions::ThrowException("Index out of range exception", "Vertex index must be in the range 0-2");
 	}
 
-	Vertex* operator[](int index)
+	Vertex*& operator[](int index)
 	{
 		return Get(index);
 	}
