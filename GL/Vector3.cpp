@@ -1,5 +1,6 @@
 #include "Vector3.h"
 #include "Vector4.h"
+#include "System.h"
 
 Vector3 Vector3::right = Vector3(1, 0, 0);
 Vector3 Vector3::up = Vector3(0, 1, 0);
@@ -24,9 +25,28 @@ Vector3 Vector3::EulerAngles()
 	return Vector3(-cos(x) * sin(y), sin(x), cos(x) * cos(y));
 }
 
-Vector4 Vector3::ToVector4()
+Vector4 Vector3::ToVector4(float w)
 {
-	return Vector4(x, y, z, 1);
+	return Vector4(x, y, z, w);
+}
+
+float& Vector3::operator[](int axis)
+{
+	switch (axis)
+	{
+	case 0:
+		return x;
+
+	case 1:
+		return y;
+
+	case 2:
+		return z;
+
+	default:
+		Exceptions::ThrowException("Index out of range exception", "Vector3::operator[]");
+		break;
+	}
 }
 
 float Vector3::Dot(const Vector3& a, const Vector3& b)

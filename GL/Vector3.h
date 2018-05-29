@@ -18,7 +18,7 @@ public:
 	Vector3(float x, float y, float z);
 
 	Vector3 EulerAngles();
-	Vector4 ToVector4();
+	Vector4 ToVector4(float w = 1.0f);
 
 	bool operator==(const Vector3& b)
 	{
@@ -98,6 +98,8 @@ public:
 			z * v.x - x * v.z,
 			x * v.y - y * v.x);
 	}
+
+	float& operator[](int axis);
 
 	static float Dot(const Vector3& a, const Vector3& b);
 	static Vector3 Cross(const Vector3& a, const Vector3& b);
