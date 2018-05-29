@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Game.h"
 #include "MeshComponent.h"
+#include "Box.h"
 #include "List.h"
 #include "Drawing/drawing.h"
 #include "../GL/GL.h"

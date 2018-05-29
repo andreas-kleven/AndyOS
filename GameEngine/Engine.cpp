@@ -10,6 +10,7 @@
 #include "DirectionalLight.h"
 #include "Raytracer.h"
 #include "stdio.h"
+#include "ctype.h"
 #include "debug.h"
 
 int p1 = 0;
@@ -82,7 +83,7 @@ void GEngine::StartGame(Game* game)
 		Debug::x = 0;
 		Debug::y = 0;
 
-		if (PIT::ticks != ticks)
+		if (PIT::ticks != ticks && totalFrames > 0)
 		{
 			Debug::Print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks, (ticks - startTicks) / totalFrames);
 			char buf[20];
@@ -113,7 +114,7 @@ void GEngine::StartGame(Game* game)
 			break;
 
 		Update();
-		Collision();
+		//Collision();
 		Render();
 
 		totalFrames++;
@@ -181,17 +182,20 @@ void GEngine::Update()
 	if (Keyboard::GetKeyDown(KEY_D4))
 	{
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.Translate(Vector3(1, 0, 0) * deltaTime * sign);
+		//active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D5))
 	{
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.Translate(Vector3(0, 1, 0) * deltaTime * sign);
+		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Keyboard::GetKeyDown(KEY_D6))
 	{
-		active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
+		active_game->objects[0]->transform.Translate(Vector3(0, 0, 1) * deltaTime * sign);
+		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 
@@ -259,7 +263,6 @@ void GEngine::Update()
 
 float err = 0;
 
-#include "ctype.h"
 Vector3 GEngine::WorldToScreen(Game* game, Vector3& point)
 {
 	Matrix4 P = Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10);
