@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "HAL/idt.h"
 
 #define KEYBOARD_IRQ 33
 #define MAX_KEYS 0xFF
@@ -134,5 +135,5 @@ public:
 
 private:
 	static void DecodeAscii(KEY_PACKET& key);
-	static void Keyboard_ISR();
+	static void Keyboard_ISR(REGS* regs);
 };

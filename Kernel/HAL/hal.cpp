@@ -7,10 +7,10 @@ STATUS HAL::Init()
 {
 	_asm cli
 
-	if (!IDT::Init())
+	if (!PIC::Init())
 		return STATUS_FAILED;
 
-	if (!PIC::Init())
+	if (!IDT::Init())
 		return STATUS_FAILED;
 
 	if (!PIT::Init())

@@ -9,27 +9,27 @@ public:
 
 	static void ThrowException(char* error, char* msg = "");
 
-	static void _cdecl DefaultISR();
+	static void DefaultISR(REGS* regs);
 
 private:
-	static void _cdecl ISR0();
-	static void _cdecl ISR1();
-	static void _cdecl ISR2();
-	static void _cdecl ISR3();
-	static void _cdecl ISR4();
-	static void _cdecl ISR5();
-	static void _cdecl ISR6(uint32 cs, uint32 eip, uint32 eflags);
-	static void _cdecl ISR7();
-	static void _cdecl ISR8();
-	static void _cdecl ISR9();
-	static void _cdecl ISR10();
-	static void _cdecl ISR11();
-	static void _cdecl ISR12();
-	static void _cdecl ISR13();
-	static void _cdecl ISR14(uint32 err, uint32 eflags, uint32 cs, uint32 eip);
-	static void _cdecl ISR15();
-	static void _cdecl ISR16();
-	static void _cdecl ISR17();
-	static void _cdecl ISR18();
-	static void _cdecl ISR19();
+	static void ISR0(REGS* regs);
+	static void ISR1(REGS* regs);
+	static void ISR2(REGS* regs);
+	static void ISR3(REGS* regs);
+	static void ISR4(REGS* regs);
+	static void ISR5(REGS* regs);
+	static void ISR6(REGS* regs);
+	static void ISR7(REGS* regs);
+	static void ISR8(REGS* regs);
+	static void ISR9(REGS* regs);
+	static void ISR10(REGS* regs);
+	static void ISR11(REGS* regs);
+	static void ISR12(REGS* regs);
+	static void ISR13(REGS* regs);
+	static void ISR14(REGS* regs);
+	static void ISR15(REGS* regs);
+	static void ISR16(REGS* regs);
+	static void ISR17(REGS* regs);
+	static void ISR18(REGS* regs);
+	static void ISR19(REGS* regs);
 };

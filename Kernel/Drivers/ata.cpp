@@ -5,8 +5,8 @@
 
 STATUS ATA::Init()
 {
-	IDT::SetISR(0x2E, ATA_Interrupt);
-	IDT::SetISR(0x2F, ATA_Interrupt);
+	IDT::InstallIRQ(0x2E, (IRQ_HANDLER)ATA_Interrupt);
+	IDT::InstallIRQ(0x2F, (IRQ_HANDLER)ATA_Interrupt);
 	return STATUS_SUCCESS;
 }
 
@@ -82,13 +82,6 @@ STATUS ATA::ReadSector(int bus, int drive, int sector, char* buffer)
 	return STATUS_SUCCESS;
 }
 
-void INTERRUPT ATA::ATA_Interrupt()
+void ATA::ATA_Interrupt(REGS* regs)
 {
-	_asm pushad
-	//PIC::InterruptDone(0x2E);
-	PIC::InterruptDone(14);
-	//PIC::InterruptDone(8);
-	//Debug::Print("#%i\n", inb(ATA_BUS_PRIMARY + ATA_LBA_STATUS));
-	_asm popad
-	_asm iretd
 }

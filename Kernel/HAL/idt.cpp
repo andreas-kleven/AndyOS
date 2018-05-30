@@ -4,7 +4,12 @@
 #include "pic.h"
 
 IDT_DESCRIPTOR IDT::idt[MAX_INTERRUPTS];
+IRQ_HANDLER IDT::handlers[MAX_INTERRUPTS];
 IDT_REG IDT::idt_reg;
+
+/*push eax; push irq; mov eax, addr; jmp eax*/
+const char irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
+char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
 
 STATUS IDT::Init()
 {
@@ -14,22 +19,49 @@ STATUS IDT::Init()
 	memset(idt, 0, sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1);
 
 	for (int i = 0; i < MAX_INTERRUPTS; i++)
-		SetISR(i, (IRQ_HANDLER)Exceptions::DefaultISR);
+	{
+		//Copy irq code
+		char* ptr = (char*)&isrs[i * sizeof(irs_code)];
+		memcpy(ptr, (char*)irs_code, sizeof(irs_code));
+
+		//Set irq values
+		uint32 target_addr = (uint32)CommonIRQ;
+
+		ptr[2] = i;
+		ptr[4] = target_addr & 0xFF;
+		ptr[5] = (target_addr >> 8) & 0xFF;
+		ptr[6] = (target_addr >> 16) & 0xFF;
+		ptr[7] = (target_addr >> 24) & 0xFF;
+
+		SetISR(i, ptr);
+		handlers[i] = 0;
+	}
 
 	_asm lidt[idt_reg]
 
+		return STATUS_SUCCESS;
+}
+
+STATUS IDT::InstallIRQ(uint32 i, IRQ_HANDLER handler)
+{
+	if (i > MAX_INTERRUPTS || !handler)
+		return STATUS_FAILED;
+
+	handlers[i] = handler;
 	return STATUS_SUCCESS;
 }
 
-STATUS IDT::SetISR(uint32 i, IRQ_HANDLER irq)
+IRQ_HANDLER IDT::GetHandler(uint32 i)
 {
-	if (i > MAX_INTERRUPTS)
-		return 0;
+	return handlers[i];
+}
 
-	if (!irq)
-		return 0;
+STATUS IDT::SetISR(uint32 i, void* irq)
+{
+	if (i > MAX_INTERRUPTS || !irq)
+		return STATUS_FAILED;
 
-	uint32 uiBase = (uint32)&(*irq);
+	uint32 uiBase = (uint32)irq;
 
 	idt[i].low = uint16(uiBase & 0xffff);
 	idt[i].high = uint16((uiBase >> 16) & 0xffff);
@@ -51,13 +83,48 @@ void INTERRUPT IDT::EmptyISR()
 	_asm iretd
 }
 
-void(*IDT::GetVect(int i))()
+void INTERRUPT IDT::CommonIRQ()
 {
-	IDT_DESCRIPTOR* desc = GetIR(i);
-	if (!desc)
-		return 0;
+	_asm
+	{
+		//Pop irq and eax
+		pop eax
+		sub esp, 48
+		push eax
+		add esp, 52
+		pop eax
 
-	uint32 addr = desc->low | (desc->high << 16);
-	IRQ_HANDLER irq = (IRQ_HANDLER)addr;
-	return irq;
+		//Push registers
+		pushad
+
+		push ds
+		push es
+		push fs
+		push gs
+
+		//Call handler
+		push esp
+		sub esp, 4
+		call CommonHandler
+		add esp, 8
+
+		//Pop registers
+		pop gs
+		pop fs
+		pop es
+		pop ds
+
+		popad
+
+		//Return
+		iretd
+	}
+}
+
+void IDT::CommonHandler(int i, REGS* regs)
+{
+	if (handlers[i])
+		handlers[i](regs);
+
+	PIC::InterruptDone(i);
 }

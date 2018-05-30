@@ -52,7 +52,7 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 	memset(device.bdl, 0, AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY));
 
 	//Enable interrupts
-	IDT::SetISR(0x20 + device.irq, AC97_ISR);
+	IDT::InstallIRQ(0x20 + device.irq, (IRQ_HANDLER)AC97_ISR);
 	outb(device.nabmbar + AC97_PO_CR, (1 << 3) | (1 << 4));
 
 	Debug::Print("0x%ux\n", device.nambar);
@@ -184,11 +184,8 @@ STATUS AC97::Init(PCI_DEVICE* dev)
 	return STATUS_SUCCESS;
 }
 
-void INTERRUPT AC97::AC97_ISR()
+void AC97::AC97_ISR(REGS* regs)
 {
-	_asm pushad
-
-
 	//{
 	//	uint8 pi = inb(device.nabmbar + 0x0006) & 0x1C;
 	//	uint8 po = inb(device.nabmbar + 0x0016) & 0x1C;
@@ -228,9 +225,4 @@ void INTERRUPT AC97::AC97_ISR()
 			outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_FIFOE);
 		}
 	}
-
-	PIC::InterruptDone(0xB);
-
-	_asm popad
-	_asm iretd
 }

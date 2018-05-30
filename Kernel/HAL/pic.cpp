@@ -29,10 +29,10 @@ STATUS PIC::Init()
 
 void PIC::InterruptDone(uint16 picNum)
 {
-	if (picNum > 16)
-		return;
+	//if (picNum >= 16)
+	//	return;
 
-	if (picNum >= 8)
+	if (picNum % 16 >= 8)
 		SendCommand(PIC_OCW2_MASK_EOI, 1);
 
 	SendCommand(PIC_OCW2_MASK_EOI, 0);

@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "HAL/idt.h"
 
 #define ATA_SECTOR_SIZE 2048
 
@@ -34,5 +35,5 @@ public:
 
 private:
 	static STATUS ReadSector(int bus, int drive, int sector, char* buffer);
-	static void ATA_Interrupt();
+	static void ATA_Interrupt(REGS* regs);
 };

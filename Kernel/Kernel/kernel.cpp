@@ -52,12 +52,12 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	/**/VBE::Init(vbeMode);
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 	/**/Debug::Print("%ux\n", VBE::mode.framebuffer);
-	
-	ATA::Init();
 
+	ATA::Init();
+	
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
 	Keyboard::Init();
-	
+
 	Task::Init();
 
 	Debug::color = 0xFF00FF00;
@@ -71,10 +71,10 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	//E1000* e1000 = new E1000(net_dev);
 	//KNet::intf = e1000;
 
-	Thread* mainThread = Task::CreateThread(OS::Main);
-	Task::InsertThread(mainThread);
-	Task::StartThreading();
-	return;
+	OS::Main();
+	//Thread* mainThread = Task::CreateThread(OS::Main);
+	//Task::InsertThread(mainThread);
+	//Task::StartThreading();
 
 	//ARP::Init();
 

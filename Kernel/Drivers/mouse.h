@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "HAL/idt.h"
 
 #define MOUSE_IRQ 12
 #define MOUSE_PORT0 0x60
@@ -25,5 +26,5 @@ private:
 	static void MouseWait(uint8 type);
 	static void MouseWrite(uint8 val);
 	static uint8 MouseRead();
-	static void _cdecl Mouse_ISR();
+	static void Mouse_ISR(REGS* regs);
 };

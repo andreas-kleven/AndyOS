@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "HAL/idt.h"
 
 #define TASK_SCHEDULE_IRQ 32
 
@@ -52,7 +53,7 @@ public:
 
 private:
 	static void Schedule();
-	static void Task_ISR();
+	static void Task_ISR(REGS* regs);
 
 	static void Idle();
 };

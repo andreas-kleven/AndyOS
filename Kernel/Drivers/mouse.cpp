@@ -37,8 +37,7 @@ STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 	x = 0;
 	y = 0;
 
-	IDT::SetISR(44, Mouse_ISR);
-	IDT::SetISR(33, IDT::EmptyISR);
+	IDT::InstallIRQ(44, (IRQ_HANDLER)Mouse_ISR);
 
 	MouseWait(1);
 	outb(MOUSE_PORT1, 0xA8);
@@ -121,10 +120,8 @@ uint8 Mouse::MouseRead()
 	return inb(MOUSE_PORT0);
 }
 
-void INTERRUPT Mouse::Mouse_ISR()
+void Mouse::Mouse_ISR(REGS* regs)
 {
-	_asm pushad
-
 	if (initialized)
 	{
 		switch (mouse_cycle)
@@ -178,8 +175,4 @@ void INTERRUPT Mouse::Mouse_ISR()
 			break;
 		}
 	}
-
-	PIC::InterruptDone(MOUSE_IRQ);
-	_asm popad
-	_asm iretd
 }

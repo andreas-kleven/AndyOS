@@ -47,5 +47,5 @@ private:
 	static uint8 ReadData(uint8 counter);
 	static void SendData(uint16 data, uint8 counter);
 
-	static void _cdecl PIT_ISR();
+	static void PIT_ISR(REGS* regs);
 };

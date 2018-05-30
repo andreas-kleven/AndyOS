@@ -32,5 +32,5 @@ public:
 	static STATUS Init(PCI_DEVICE* dev);
 
 private:
-	static void AC97_ISR();
+	static void AC97_ISR(REGS* regs);
 };

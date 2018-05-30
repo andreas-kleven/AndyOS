@@ -7,7 +7,7 @@ uint32 PIT::ticks;
 
 STATUS PIT::Init()
 {
-	IDT::SetISR(32, (IRQ_HANDLER)PIT_ISR);
+	IDT::InstallIRQ(32, (IRQ_HANDLER)PIT_ISR);
 	return Start();
 }
 
@@ -51,16 +51,7 @@ void PIT::SendData(uint16 data, uint8 counter)
 	outb(port, (uint8)data);
 }
 
-void INTERRUPT PIT::PIT_ISR()
+void PIT::PIT_ISR(REGS* regs)
 {
-	_asm pushad
 	ticks++;
-
-	_asm 
-	{
-		mov al, 0x20
-		out 0x20, al
-		popad
-		iretd
-	}
 }

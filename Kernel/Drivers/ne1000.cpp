@@ -131,17 +131,15 @@ void E1000::Poll()
 
 void E1000::EnableIRQ()
 {
-	IDT::SetISR(0x20 + irq, (IRQ_HANDLER)E1000_Interrupt);
+	IDT::InstallIRQ(0x20 + irq, (IRQ_HANDLER)E1000_Interrupt);
 
 	WriteCommand(REG_IMASK, 0x1F6DC);
 	WriteCommand(REG_IMASK, 0xff & ~4);
 	ReadCommand(0xc0);
 }
 
-void INTERRUPT E1000::E1000_Interrupt()
+void E1000::E1000_Interrupt(REGS* regs)
 {
-	_asm pushad
-
 	if (1)
 	{
 		uint32 status = global_e->ReadCommand(0xc0);
@@ -160,11 +158,6 @@ void INTERRUPT E1000::E1000_Interrupt()
 
 		//Debug::Print("IRQ %x | ", status);
 	}
-
-	PIC::InterruptDone(global_e->irq);
-
-	_asm popad
-	_asm iretd
 }
 
 

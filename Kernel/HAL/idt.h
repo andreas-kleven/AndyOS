@@ -13,7 +13,16 @@
 #define IDT_DESC_PRESENT	0x80	//10000000
 
 #define INTERRUPT __declspec (naked)
-typedef void(_cdecl *IRQ_HANDLER)(void);
+
+struct REGS
+{
+	uint32 gs, fs, es, ds;
+	uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
+	uint32 eip, cs, eflags;
+	uint32 user_stack, user_ss;
+};
+
+typedef void(*IRQ_HANDLER)(REGS*);
 
 struct IDT_DESCRIPTOR
 {
@@ -34,12 +43,17 @@ static class IDT
 {
 public:
 	static STATUS Init();
-	static STATUS SetISR(uint32 i, IRQ_HANDLER irq);
-	static IDT_DESCRIPTOR* GetIR(uint32 i);
-	static void _cdecl EmptyISR();
-	static void(_cdecl* _cdecl GetVect(int i)) ();
+	static STATUS InstallIRQ(uint32 i, IRQ_HANDLER irq);
+	static IRQ_HANDLER GetHandler(uint32 i);
 
 private:
 	static IDT_DESCRIPTOR idt[MAX_INTERRUPTS];
+	static IRQ_HANDLER handlers[MAX_INTERRUPTS];
 	static IDT_REG idt_reg;
+
+	static STATUS SetISR(uint32 i, void* irq);
+	static IDT_DESCRIPTOR* GetIR(uint32 i);
+	static void EmptyISR();
+	static void CommonIRQ();
+	static void CommonHandler(int i, REGS* regs);
 };

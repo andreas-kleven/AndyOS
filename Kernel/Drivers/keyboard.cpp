@@ -117,7 +117,7 @@ KEY_PACKET last_key;
 
 STATUS Keyboard::Init()
 {
-	IDT::SetISR(KEYBOARD_IRQ, Keyboard_ISR);
+	IDT::InstallIRQ(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
 	return STATUS_SUCCESS;
 }
 
@@ -311,10 +311,8 @@ uint8 scan;
 bool pressed;
 KEYCODE key;
 
-void INTERRUPT Keyboard::Keyboard_ISR()
+void Keyboard::Keyboard_ISR(REGS* regs)
 {
-	_asm pushad
-
 	if (inb(0x64) & 1)
 	{
 		scan = inb(0x60);
@@ -367,9 +365,4 @@ void INTERRUPT Keyboard::Keyboard_ISR()
 			extended = false;
 		}
 	}
-
-	PIC::InterruptDone(0);
-
-	_asm popad
-	_asm iretd
 }
