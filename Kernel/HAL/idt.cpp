@@ -89,6 +89,7 @@ void INTERRUPT IDT::CommonIRQ()
 	{
 		//Pop irq and eax
 		pop eax
+		and eax, 0xFF
 		sub esp, 48
 		push eax
 		add esp, 52
