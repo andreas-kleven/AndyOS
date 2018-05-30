@@ -85,6 +85,12 @@ void _Font()
 	while (1);
 }
 
+#include "API/api.h"
+void Syscall()
+{
+	api_test();
+}
+
 void OS::Main()
 {
 	FS::Init();
@@ -95,9 +101,12 @@ void OS::Main()
 	//mandelbrot.Run();
 
 	//GUI();
-	Game();
+	//Game();
 	//Audio();
-	_Font();
+	//_Font();
+
+	Syscall();
+	while (1);
 
 	PIT::Sleep(2000);
 	GUI();

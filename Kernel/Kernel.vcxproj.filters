@@ -201,12 +201,6 @@
     <ClCompile Include="Drivers\mouse.cpp">
       <Filter>Drivers</Filter>
     </ClCompile>
-    <ClCompile Include="Drivers\e1000.cpp">
-      <Filter>Drivers</Filter>
-    </ClCompile>
-    <ClCompile Include="Drivers\i825.cpp">
-      <Filter>Drivers</Filter>
-    </ClCompile>
     <ClCompile Include="Drivers\ne1000.cpp">
       <Filter>Drivers</Filter>
     </ClCompile>
@@ -227,6 +221,12 @@
     </ClCompile>
     <ClCompile Include="Boot\boot.cpp">
       <Filter>Boot</Filter>
+    </ClCompile>
+    <ClCompile Include="API\api.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="API\syscalls.cpp">
+      <Filter>API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -422,12 +422,6 @@
     <ClInclude Include="Drivers\ne1000.h">
       <Filter>Drivers</Filter>
     </ClInclude>
-    <ClInclude Include="Drivers\e1000.h">
-      <Filter>Drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="Drivers\i825.h">
-      <Filter>Drivers</Filter>
-    </ClInclude>
     <ClInclude Include="Drivers\ata.h">
       <Filter>Drivers</Filter>
     </ClInclude>
@@ -445,6 +439,12 @@
     </ClInclude>
     <ClInclude Include="Boot\multiboot.h">
       <Filter>Boot</Filter>
+    </ClInclude>
+    <ClInclude Include="API\api.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="API\syscalls.h">
+      <Filter>API</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\api.cpp" />
+    <ClCompile Include="API\syscalls.cpp" />
     <ClCompile Include="Boot\boot.cpp" />
     <ClCompile Include="Drawing\bmp.cpp" />
     <ClCompile Include="Drawing\drawing.cpp" />
@@ -27,8 +29,6 @@
     <ClCompile Include="Drawing\vbe.cpp" />
     <ClCompile Include="Drivers\ac97.cpp" />
     <ClCompile Include="Drivers\ata.cpp" />
-    <ClCompile Include="Drivers\e1000.cpp" />
-    <ClCompile Include="Drivers\i825.cpp" />
     <ClCompile Include="Drivers\keyboard.cpp" />
     <ClCompile Include="Drivers\mouse.cpp" />
     <ClCompile Include="Drivers\ne1000.cpp" />
@@ -82,6 +82,8 @@
     <ClCompile Include="Test\TextEdit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="API\api.h" />
+    <ClInclude Include="API\syscalls.h" />
     <ClInclude Include="Boot\multiboot.h" />
     <ClInclude Include="Drawing\bmp.h" />
     <ClInclude Include="Drawing\drawing.h" />
@@ -90,8 +92,6 @@
     <ClInclude Include="Drawing\vbe.h" />
     <ClInclude Include="Drivers\ac97.h" />
     <ClInclude Include="Drivers\ata.h" />
-    <ClInclude Include="Drivers\e1000.h" />
-    <ClInclude Include="Drivers\i825.h" />
     <ClInclude Include="Drivers\keyboard.h" />
     <ClInclude Include="Drivers\mouse.h" />
     <ClInclude Include="Drivers\ne1000.h" />

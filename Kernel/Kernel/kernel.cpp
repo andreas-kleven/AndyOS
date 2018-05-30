@@ -16,6 +16,7 @@
 #include "Drivers/keyboard.h"
 #include "Drivers/mouse.h"
 #include "Drivers/ac97.h"
+#include "API/syscalls.h"
 
 #include "Net/net.h"
 //#include "i825.h"
@@ -59,6 +60,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	Keyboard::Init();
 
 	Task::Init();
+	Syscalls::Init();
 
 	Debug::color = 0xFF00FF00;
 	PCI::Init();
