@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Boot">
-      <UniqueIdentifier>{a7e931fd-b8c2-46a9-a775-bc874e342501}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{a11b4cc8-60e9-4cfa-8ebe-9cb2cba21fd3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Kernel">
       <UniqueIdentifier>{5188153a-0584-4a7f-8001-b2010b0ce388}</UniqueIdentifier>
     </Filter>
@@ -16,29 +10,11 @@
     <Filter Include="Drivers">
       <UniqueIdentifier>{f1f2e4c0-c749-452c-8507-3c394f9d7fc9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Drivers\RTC">
-      <UniqueIdentifier>{ec4e6d2b-7c4b-4007-a971-258affe01fb3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drivers\Input">
-      <UniqueIdentifier>{a0db4128-a4cd-41e6-a963-67bb2a534e8d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="API">
       <UniqueIdentifier>{881724ea-7e51-4df9-9e83-75e2a6eab51e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Memory">
       <UniqueIdentifier>{7bb70645-2dd0-42b1-a337-3b81f815e028}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drivers\Disk">
-      <UniqueIdentifier>{d097fe32-4427-4068-ac55-baef64bfc151}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drivers\ATA">
-      <UniqueIdentifier>{7f7f2484-678a-44ba-ac58-fce665ea08e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drivers\PCI">
-      <UniqueIdentifier>{268bc1c8-f0e2-4aae-9811-603f6bf02f35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Drivers\Audio">
-      <UniqueIdentifier>{ba083bcd-e5fd-4d7b-bb92-0ebd8e7fc124}</UniqueIdentifier>
     </Filter>
     <Filter Include="Net">
       <UniqueIdentifier>{8c5fd9dd-6362-4c40-b3fa-d7eafb983704}</UniqueIdentifier>
@@ -46,148 +22,429 @@
     <Filter Include="Drawing">
       <UniqueIdentifier>{5f46cc3c-4386-472b-b6f5-04806d960536}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Drawing\File Formats">
-      <UniqueIdentifier>{24ef2580-cd77-46b1-be48-06c79ac44f1d}</UniqueIdentifier>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{374fdd80-19dc-4de9-af17-ff29100474f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FIle System">
+    <Filter Include="GUI\Controls">
+      <UniqueIdentifier>{96a96c41-cc9b-434e-8b11-f4adb33385cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{6ade3758-89c5-41db-abac-f0d42c6a7464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{3cd6e8b2-6408-4944-8bff-b642853d4895}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PCI">
+      <UniqueIdentifier>{8d2d59f7-a7ed-4f7e-82d7-b0e6b49329e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System">
       <UniqueIdentifier>{9466eb91-61af-413d-8693-baa2a31f948f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Boot">
+      <UniqueIdentifier>{a813c537-013a-4e38-a7b9-1d1bcffa0e01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Boot\boot.cpp" />
-    <ClCompile Include="Drawing\bmp.cpp" />
-    <ClCompile Include="Drawing\drawing.cpp" />
-    <ClCompile Include="Drawing\font.cpp" />
-    <ClCompile Include="Drawing\TextRenderer.cpp" />
-    <ClCompile Include="Drawing\vbe.cpp" />
-    <ClCompile Include="Drivers\ac97.cpp" />
-    <ClCompile Include="Drivers\ata.cpp" />
-    <ClCompile Include="Drivers\e1000.cpp" />
-    <ClCompile Include="Drivers\i825.cpp" />
-    <ClCompile Include="Drivers\keyboard.cpp" />
-    <ClCompile Include="Drivers\mouse.cpp" />
-    <ClCompile Include="Drivers\ne1000.cpp" />
-    <ClCompile Include="File System\disk.cpp" />
-    <ClCompile Include="File System\iso.cpp" />
-    <ClCompile Include="GUI\Controls\Button.cpp" />
-    <ClCompile Include="GUI\Controls\Canvas.cpp" />
-    <ClCompile Include="GUI\Controls\Control.cpp" />
-    <ClCompile Include="GUI\Controls\Label.cpp" />
-    <ClCompile Include="GUI\Controls\TextBox.cpp" />
-    <ClCompile Include="GUI\GUI.cpp" />
-    <ClCompile Include="GUI\Message.cpp" />
-    <ClCompile Include="GUI\Window.cpp" />
-    <ClCompile Include="HAL\cpu.cpp" />
-    <ClCompile Include="HAL\hal.cpp" />
-    <ClCompile Include="HAL\idt.cpp" />
-    <ClCompile Include="HAL\pic.cpp" />
-    <ClCompile Include="HAL\pit.cpp" />
-    <ClCompile Include="HAL\rtc.cpp" />
-    <ClCompile Include="Kernel\exceptions.cpp" />
-    <ClCompile Include="Kernel\kernel.cpp" />
-    <ClCompile Include="Kernel\panic.cpp" />
-    <ClCompile Include="Kernel\task.cpp" />
-    <ClCompile Include="Lib\debug.cpp" />
-    <ClCompile Include="Lib\KernelAPI.cpp" />
-    <ClCompile Include="Lib\math.cpp" />
-    <ClCompile Include="Lib\stdio.cpp" />
-    <ClCompile Include="Lib\string.cpp" />
-    <ClCompile Include="Memory\memory.cpp" />
-    <ClCompile Include="Net\arp.cpp" />
-    <ClCompile Include="Net\dhcp.cpp" />
-    <ClCompile Include="Net\dns.cpp" />
-    <ClCompile Include="Net\eth.cpp" />
-    <ClCompile Include="Net\http.cpp" />
-    <ClCompile Include="Net\icmp.cpp" />
-    <ClCompile Include="Net\ipv4.cpp" />
-    <ClCompile Include="Net\net.cpp" />
-    <ClCompile Include="Net\netinterface.cpp" />
-    <ClCompile Include="Net\tcp.cpp" />
-    <ClCompile Include="Net\tcpsession.cpp" />
-    <ClCompile Include="Net\tcpsocket.cpp" />
-    <ClCompile Include="Net\udp.cpp" />
-    <ClCompile Include="Net\udpsocket.cpp" />
-    <ClCompile Include="PCI\pci.cpp" />
-    <ClCompile Include="Test\Mandelbrot.cpp" />
-    <ClCompile Include="Test\TextEdit.cpp" />
-    <ClCompile Include="Memory\paging.cpp" />
-    <ClCompile Include="Memory\pmem.cpp" />
-    <ClCompile Include="Memory\vmem.cpp" />
-    <ClCompile Include="Kernel\os.cpp" />
-    <ClCompile Include="File System\filesys.cpp" />
+    <ClCompile Include="Net\arp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\bmp.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Controls\Button.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Controls\Canvas.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Controls\Control.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\cpu.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\debug.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\dhcp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\dns.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\drawing.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\eth.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Kernel\exceptions.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\font.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GUI.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\hal.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\http.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\icmp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\idt.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\ipv4.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Kernel\kernel.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\KernelAPI.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Controls\Label.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\Mandelbrot.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\math.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\memory.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Message.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\net.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\netinterface.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Kernel\os.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\paging.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Kernel\panic.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="PCI\pci.cpp">
+      <Filter>PCI</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\pic.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\pit.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\pmem.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\rtc.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\stdio.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\string.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Kernel\task.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\tcp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\tcpsession.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\tcpsocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Controls\TextBox.cpp">
+      <Filter>GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\TextEdit.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\TextRenderer.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\udp.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\udpsocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\vbe.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\vmem.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Window.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\keyboard.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\mouse.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\e1000.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\i825.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\ne1000.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\ac97.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\ata.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="File System\disk.cpp">
+      <Filter>File System</Filter>
+    </ClCompile>
+    <ClCompile Include="File System\filesys.cpp">
+      <Filter>File System</Filter>
+    </ClCompile>
+    <ClCompile Include="File System\iso.cpp">
+      <Filter>File System</Filter>
+    </ClCompile>
+    <ClCompile Include="Boot\boot.cpp">
+      <Filter>Boot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Boot\multiboot.h" />
-    <ClInclude Include="Drawing\bmp.h" />
-    <ClInclude Include="Drawing\drawing.h" />
-    <ClInclude Include="Drawing\font.h" />
-    <ClInclude Include="Drawing\TextRenderer.h" />
-    <ClInclude Include="Drawing\vbe.h" />
-    <ClInclude Include="Drivers\ac97.h" />
-    <ClInclude Include="Drivers\ata.h" />
-    <ClInclude Include="Drivers\e1000.h" />
-    <ClInclude Include="Drivers\i825.h" />
-    <ClInclude Include="Drivers\keyboard.h" />
-    <ClInclude Include="Drivers\mouse.h" />
-    <ClInclude Include="Drivers\ne1000.h" />
-    <ClInclude Include="File System\disk.h" />
-    <ClInclude Include="File System\iso.h" />
-    <ClInclude Include="GUI\Controls\Button.h" />
-    <ClInclude Include="GUI\Controls\Canvas.h" />
-    <ClInclude Include="GUI\Controls\Control.h" />
-    <ClInclude Include="GUI\Controls\Label.h" />
-    <ClInclude Include="GUI\Controls\TextBox.h" />
-    <ClInclude Include="GUI\GUI.h" />
-    <ClInclude Include="GUI\GUIApi.h" />
-    <ClInclude Include="GUI\Message.h" />
-    <ClInclude Include="GUI\Window.h" />
-    <ClInclude Include="HAL\cpu.h" />
-    <ClInclude Include="HAL\hal.h" />
-    <ClInclude Include="HAL\idt.h" />
-    <ClInclude Include="HAL\pic.h" />
-    <ClInclude Include="HAL\pit.h" />
-    <ClInclude Include="HAL\rtc.h" />
-    <ClInclude Include="Kernel\exceptions.h" />
-    <ClInclude Include="Kernel\kernel.h" />
-    <ClInclude Include="Kernel\panic.h" />
-    <ClInclude Include="Kernel\task.h" />
-    <ClInclude Include="Lib\ctype.h" />
-    <ClInclude Include="Lib\debug.h" />
-    <ClInclude Include="Lib\definitions.h" />
-    <ClInclude Include="Lib\globals.h" />
-    <ClInclude Include="Lib\KernelAPI.h" />
-    <ClInclude Include="Lib\limits.h" />
-    <ClInclude Include="Lib\List.h" />
-    <ClInclude Include="Lib\math.h" />
-    <ClInclude Include="Lib\stdarg.h" />
-    <ClInclude Include="Lib\stdio.h" />
-    <ClInclude Include="Lib\string.h" />
-    <ClInclude Include="Lib\System.h" />
-    <ClInclude Include="Memory\memory.h" />
-    <ClInclude Include="Net\address.h" />
-    <ClInclude Include="Net\arp.h" />
-    <ClInclude Include="Net\dhcp.h" />
-    <ClInclude Include="Net\dns.h" />
-    <ClInclude Include="Net\eth.h" />
-    <ClInclude Include="Net\http.h" />
-    <ClInclude Include="Net\icmp.h" />
-    <ClInclude Include="Net\ipv4.h" />
-    <ClInclude Include="Net\net.h" />
-    <ClInclude Include="Net\netinterface.h" />
-    <ClInclude Include="Net\netpacket.h" />
-    <ClInclude Include="Net\tcp.h" />
-    <ClInclude Include="Net\tcpsession.h" />
-    <ClInclude Include="Net\tcpsocket.h" />
-    <ClInclude Include="Net\tcptypes.h" />
-    <ClInclude Include="Net\udp.h" />
-    <ClInclude Include="Net\udpsocket.h" />
-    <ClInclude Include="PCI\pci.h" />
-    <ClInclude Include="Test\Mandelbrot.h" />
-    <ClInclude Include="Test\TextEdit.h" />
-    <ClInclude Include="Memory\paging.h" />
-    <ClInclude Include="Memory\pmem.h" />
-    <ClInclude Include="Memory\vmem.h" />
-    <ClInclude Include="Kernel\os.h" />
-    <ClInclude Include="File System\filesys.h" />
+    <ClInclude Include="Net\address.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\arp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\bmp.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Controls\Button.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Controls\Canvas.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Controls\Control.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\cpu.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ctype.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\debug.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\definitions.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\dhcp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\dns.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\drawing.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\eth.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernel\exceptions.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\font.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\globals.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\GUI.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\GUIApi.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\hal.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\http.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\icmp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\idt.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\ipv4.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernel\kernel.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\KernelAPI.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Controls\Label.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\limits.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\List.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\Mandelbrot.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\math.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\memory.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Message.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\net.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\netinterface.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\netpacket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernel\os.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\paging.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernel\panic.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="PCI\pci.h">
+      <Filter>PCI</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\pic.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\pit.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\pmem.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\rtc.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\stdarg.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\stdio.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\string.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\System.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernel\task.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\tcp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\tcpsession.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\tcpsocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\tcptypes.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Controls\TextBox.h">
+      <Filter>GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\TextEdit.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\TextRenderer.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\udp.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\udpsocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\vbe.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\vmem.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Window.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\mouse.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\keyboard.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\ne1000.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\e1000.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\i825.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\ata.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\ac97.h">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="File System\disk.h">
+      <Filter>File System</Filter>
+    </ClInclude>
+    <ClInclude Include="File System\filesys.h">
+      <Filter>File System</Filter>
+    </ClInclude>
+    <ClInclude Include="File System\iso.h">
+      <Filter>File System</Filter>
+    </ClInclude>
+    <ClInclude Include="Boot\multiboot.h">
+      <Filter>Boot</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
