@@ -84,7 +84,7 @@ public:
 	static STATUS Init();
 
 	static ISO_DIRECTORY* FindFile(char* filename);
-	static STATUS ReadFile(ISO_DIRECTORY* file, char*& buffer);
-	static STATUS ReadFile(char* name, char*& buffer);
+	static uint32 ReadFile(ISO_DIRECTORY* file, char*& buffer);
+	static uint32 ReadFile(char* name, char*& buffer);
 	static int ListFiles(char* path);
 };

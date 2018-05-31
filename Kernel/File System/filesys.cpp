@@ -7,7 +7,7 @@ STATUS FS::Init()
 	return STATUS_SUCCESS;
 }
 
-STATUS FS::ReadFile(char* name, char*& buffer)
+uint32 FS::ReadFile(char* name, char*& buffer)
 {
 	return ISO_FS::ReadFile(name, buffer);
 }

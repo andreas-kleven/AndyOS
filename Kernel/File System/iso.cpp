@@ -83,12 +83,15 @@ ISO_DIRECTORY* ISO_FS::FindFile(char* filename)
 	return 0;
 }
 
-STATUS ISO_FS::ReadFile(ISO_DIRECTORY* file, char*& buffer)
+uint32 ISO_FS::ReadFile(ISO_DIRECTORY* file, char*& buffer)
 {
-	return Disk::Read(file->locationLBA_LSB, buffer, file->filesize_LSB);
+	if (!Disk::Read(file->locationLBA_LSB, buffer, file->filesize_LSB))
+		return 0;
+
+	return file->filesize_LSB;
 }
 
-STATUS ISO_FS::ReadFile(char* name, char*& buffer)
+uint32 ISO_FS::ReadFile(char* name, char*& buffer)
 {
 	ISO_DIRECTORY* file = FindFile(name);
 
@@ -96,7 +99,10 @@ STATUS ISO_FS::ReadFile(char* name, char*& buffer)
 		return STATUS_FAILED;
 
 	Debug::Print("%s %i\n", name, file->filesize_LSB);
-	return Disk::Read(file->locationLBA_LSB, buffer, file->filesize_LSB);
+	if (!Disk::Read(file->locationLBA_LSB, buffer, file->filesize_LSB))
+		return 0;
+
+	return file->filesize_LSB;
 }
 
 int ISO_FS::ListFiles(char* path)

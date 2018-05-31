@@ -5,5 +5,5 @@ class FS
 {
 public:
 	static STATUS Init();
-	static STATUS ReadFile(char* name, char*& buffer);
+	static uint32 ReadFile(char* name, char*& buffer);
 };
