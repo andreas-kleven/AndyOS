@@ -1,4 +1,5 @@
 #include "HAL/hal.h"
+#include "gdt.h"
 #include "idt.h"
 #include "pic.h"
 #include "pit.h"
@@ -6,6 +7,9 @@
 STATUS HAL::Init()
 {
 	_asm cli
+
+	if (!GDT::Init())
+		return STATUS_FAILED;
 
 	if (!PIC::Init())
 		return STATUS_FAILED;
@@ -20,7 +24,6 @@ STATUS HAL::Init()
 
 	return STATUS_SUCCESS;
 }
-
 
 uint8 inb(uint16 port)
 {
@@ -60,7 +63,7 @@ uint32 inl(uint16 port)
 
 void outb(uint16 port, uint8 data)
 {
-	_asm 
+	_asm
 	{
 		mov		al, data
 		mov		dx, port
