@@ -14,6 +14,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DGame", "3DGame\3DGame.vcx
 		{4E773009-CB83-4B52-AFC6-DF744C94C9AF} = {4E773009-CB83-4B52-AFC6-DF744C94C9AF}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Programs", "Programs", "{FBDAD2F4-F728-4AC9-B45F-EFF2E2271A98}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,9 +72,22 @@ Global
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x64.Build.0 = Release|x64
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x86.ActiveCfg = Release|Win32
 		{A1C979E5-6F07-472D-98AB-4D2B72C9CA53}.Release|x86.Build.0 = Release|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Debug|x64.ActiveCfg = Debug|x64
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Debug|x64.Build.0 = Debug|x64
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Debug|x86.ActiveCfg = Debug|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Debug|x86.Build.0 = Debug|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Release|x64.ActiveCfg = Release|x64
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Release|x64.Build.0 = Release|x64
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Release|x86.ActiveCfg = Release|Win32
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F2550FC5-28B1-46AB-8D83-683CE8EE2E55} = {FBDAD2F4-F728-4AC9-B45F-EFF2E2271A98}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0E2C313-7ADB-4437-9593-A30C15F19353}
