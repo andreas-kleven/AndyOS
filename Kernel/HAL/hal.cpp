@@ -1,24 +1,19 @@
 #include "HAL/hal.h"
 #include "gdt.h"
-#include "idt.h"
+#include "tss.h"
 #include "pic.h"
+#include "idt.h"
 #include "pit.h"
 
 STATUS HAL::Init()
 {
 	_asm cli
 
-	if (!GDT::Init())
-		return STATUS_FAILED;
-
-	if (!PIC::Init())
-		return STATUS_FAILED;
-
-	if (!IDT::Init())
-		return STATUS_FAILED;
-
-	if (!PIT::Init())
-		return STATUS_FAILED;
+	if (!GDT::Init()) return STATUS_FAILED;
+	if (!TSS::Init(5, 0x9000)) return STATUS_FAILED;
+	if (!PIC::Init()) return STATUS_FAILED;
+	if (!IDT::Init()) return STATUS_FAILED;
+	if (!PIT::Init()) return STATUS_FAILED;
 
 	_asm sti
 

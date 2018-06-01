@@ -1,8 +1,6 @@
 #pragma once
 #include "definitions.h"
 
-#define KERNEL_CS 0x08
-
 #define MAX_INTERRUPTS 256
 
 #define IDT_DESC_BIT16		0x06	//00000110

@@ -1,7 +1,8 @@
 #include "idt.h"
+#include "hal.h"
 #include "string.h"
-#include "Kernel/exceptions.h"
 #include "pic.h"
+#include "debug.h"
 
 IDT_DESCRIPTOR IDT::idt[MAX_INTERRUPTS];
 IRQ_HANDLER IDT::handlers[MAX_INTERRUPTS];
@@ -10,6 +11,8 @@ IDT_REG IDT::idt_reg;
 /*push eax; push irq; mov eax, addr; jmp eax*/
 const char irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
 char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
+
+char fpustate[512];
 
 STATUS IDT::Init()
 {
@@ -103,11 +106,15 @@ void INTERRUPT IDT::CommonIRQ()
 		push fs
 		push gs
 
+		fxsave fpustate
+
 		//Call handler
 		push esp
 		sub esp, 4
 		call CommonHandler
 		add esp, 8
+
+		fxrstor fpustate
 
 		//Pop registers
 		pop gs
@@ -124,6 +131,8 @@ void INTERRUPT IDT::CommonIRQ()
 
 void IDT::CommonHandler(int i, REGS* regs)
 {
+	_asm fxsave fpustate
+
 	if (handlers[i])
 		handlers[i](regs);
 
