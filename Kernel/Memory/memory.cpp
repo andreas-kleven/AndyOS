@@ -1,5 +1,6 @@
 #include "Memory/memory.h"
 #include "paging.h"
+#include "Memory/paging.h"
 
 uint32 Memory::mem_size;
 uint32* Memory::mem_map;
@@ -19,7 +20,7 @@ STATUS Memory::Init(uint32 size, uint32* map)
 	return STATUS_SUCCESS;
 }
 
-void Memory::InitRegion(void * addr, uint32 size)
+void Memory::InitRegion(void* addr, uint32 size)
 {
 	int align = (uint32)addr / BLOCK_SIZE;
 	int num = size / BLOCK_SIZE;
@@ -53,7 +54,7 @@ void* Memory::AllocBlocks(uint32 size)
 	uint32 frame = FirstFreeNum(size);
 
 	if (frame == 0)
-		return (void*)0;
+		return 0;
 
 	for (int i = 0; i < size; i++)
 	{
@@ -102,7 +103,7 @@ uint32 Memory::FirstFree()
 	for (int i = 0; i < num_blocks; i++)
 		if (!GetBit(i))
 			return i;
-	
+
 	return 0;
 }
 

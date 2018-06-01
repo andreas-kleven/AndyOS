@@ -2,10 +2,12 @@
 #include "definitions.h"
 #include "paging.h"
 
+#define MEMORY_SIZE			0xFFFFFFFF //4 GB
+#define MEMORY_MAP_SIZE		0x20000
 #define BLOCK_SIZE			0x1000
 #define KERNEL_BASE_PHYS	0x100000
 #define KERNEL_BASE			0x100000
-#define KERNEL_SIZE			0x40000000
+#define KERNEL_SIZE			0x40000000 - KERNEL_BASE_PHYS
 #define USER_BASE			0xB0000000
 
 static class Memory
@@ -21,8 +23,6 @@ public:
 	static void DeInitRegion(void* addr, uint32 size);
 	static void* AllocBlocks(uint32 size);
 	static void FreeBlocks(void* addr, uint32 size);
-
-	//mem size, free, used
 
 private:
 	static uint32* mem_map;

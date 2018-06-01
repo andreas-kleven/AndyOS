@@ -1,5 +1,6 @@
 #pragma once
 #include "Memory/memory.h"
+#include "Memory/paging.h"
 #include "math.h"
 #include "string.h"
 #include "debug.h"
@@ -59,7 +60,11 @@ void* operator new[](unsigned size)
 		Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PTE_PRESENT | PTE_WRITABLE, blocks);
 
 		mem_ptr = ptr + size;
-		mem_left = BLOCK_SIZE - (size % BLOCK_SIZE);
+
+		if (size < BLOCK_SIZE)
+			mem_left = BLOCK_SIZE - (size % BLOCK_SIZE);
+		else
+			mem_left = 0;
 		return ptr;
 	}
 	else

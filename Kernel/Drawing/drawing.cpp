@@ -14,18 +14,12 @@ GC Drawing::gc_direct;
 
 STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 {
-	//Drawing::width = width;
-	//Drawing::height = height;
-	//Drawing::memsize = width * height * 4;
-
 	screenBuffer = framebuffer;
 
 	gc = GC(width, height);
 
 	gc_direct = gc;
 	gc_direct.framebuffer = framebuffer;
-
-	Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)framebuffer, (uint32)framebuffer, PDE_PRESENT | PDE_WRITABLE, gc_direct.memsize() / PAGE_SIZE);
 	return STATUS_SUCCESS;
 }
 

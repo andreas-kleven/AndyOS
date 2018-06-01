@@ -1,5 +1,7 @@
 #include "vbe.h"
 #include "Drawing/drawing.h"
+#include "Memory/memory.h"
+#include "Memory/paging.h"
 
 VBE_MODE_INFO VBE::mode;
 
@@ -19,5 +21,7 @@ STATUS VBE::Init(VBE_MODE_INFO* info)
 	bytes_per_pixel = mode.bpp / 8;
 	pixel_count = mode.width * mode.height;
 
+	Memory::DeInitRegion(mem_base, mem_size);
+	Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)mem_base, (uint32)mem_base, PTE_PRESENT | PTE_WRITABLE, mem_size / BLOCK_SIZE);
 	return STATUS_SUCCESS;
 }

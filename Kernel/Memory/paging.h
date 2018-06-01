@@ -106,7 +106,6 @@ public:
 
 	static PAGE_DIR* GetCurrentDir();
 
-	static bool AllocPage(void* virt);
 	static void SwitchDir(PAGE_DIR* dir);
 
 private:

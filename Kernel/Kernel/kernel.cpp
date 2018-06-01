@@ -31,9 +31,6 @@
 #include "task.h"
 #include "Kernel/os.h"
 
-#define MEMORY_SIZE 0xFFFFFFFF //4 GB
-#define MEMORY_MAP_SIZE 0x20000
-
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
 	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
@@ -52,7 +49,6 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	/**/VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo->vbe_mode_info;
 	/**/VBE::Init(vbeMode);
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
-	/**/Debug::Print("%ux\n", VBE::mode.framebuffer);
 
 	ATA::Init();
 	

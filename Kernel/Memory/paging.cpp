@@ -18,27 +18,34 @@ void Paging::Init(MULTIBOOT_INFO* bootinfo)
 	MULTIBOOT_INFO* info = 0;
 	memcpy(info, bootinfo, sizeof(MULTIBOOT_INFO));
 
-	PAGE_DIR* dir = (PAGE_DIR*)Memory::AllocBlocks(1);
-	memset(dir, 0, sizeof(PAGE_DIR));
+	//Page dir
+	current_dir = (PAGE_DIR*)Memory::AllocBlocks(1);
+	memset(current_dir, 0, sizeof(PAGE_DIR));
+
+	//Tables
+	PAGE_TABLE* tables = (PAGE_TABLE*)Memory::AllocBlocks(PAGE_DIR_LENGTH);
+	memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
+
+	for (int i = 0; i < PAGE_DIR_LENGTH; i++)
+	{
+		PAGE_TABLE* table = tables + i;
+		current_dir->entries[i].SetTable(table);
+	}
 
 	uint32 flags = PDE_PRESENT | PDE_WRITABLE;
 
-	//Map dir
-	MapPhysAddr(dir, (uint32)dir, (uint32)dir, flags);
+	//Map page dir and tables
+	MapPhysAddr(current_dir, (uint32)current_dir, (uint32)current_dir, flags);
+	MapPhysAddr(current_dir, (uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
 
-	//Identity map first 16 MB
-	MapPhysAddr(dir, 0, 0, flags, 0x1000);
-	MapPhysAddr(dir, 0, 0, flags, 0x100000000 / PAGE_SIZE);
+	//Identity map first 1 MB
+	MapPhysAddr(current_dir, 0, 0, flags, 0x100000 / BLOCK_SIZE);
 
-	//Map kernel to higher half
-	int blocks = (0x100000000 - KERNEL_BASE) / PAGE_SIZE;
-	//MapPhysAddr(dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, blocks);
-	MapPhysAddr(dir, KERNEL_BASE, KERNEL_BASE, flags, blocks);
+	//Map kernel
+	MapPhysAddr(current_dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, (KERNEL_SIZE + MEMORY_MAP_SIZE) / BLOCK_SIZE);
 
-	//Map framebuffer for debugging
-	//MapPhysAddr(dir, 0xE0000000, 0xE0000000, 3, 128 * 1024);
 
-	SwitchDir(dir);
+	SwitchDir(current_dir);
 	EnablePaging();
 
 	Kernel::HigherHalf(info);
@@ -50,6 +57,8 @@ bool Paging::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags)
 
 	if (dir_entry->value == 0)
 		CreatePageTable(dir, virt, flags);
+
+	dir_entry->SetFlag(flags);
 
 	PAGE_TABLE* table = dir_entry->GetTable();
 	PAGE_TABLE_ENTRY* table_entry = &table->entries[PAGE_TABLE_INDEX(virt)];
@@ -76,23 +85,6 @@ PAGE_DIR* Paging::GetCurrentDir()
 {
 	return current_dir;
 }
-
-bool Paging::AllocPage(void* virt)
-{
-	void* p = Memory::AllocBlocks(1);
-	if (!p)
-		return 0;
-
-	uint32 addr = (uint32)addr;
-	PAGE_DIR_ENTRY* dir_entry = &current_dir->entries[PAGE_DIR_INDEX(addr)];
-	PAGE_TABLE_ENTRY* table_entry = &dir_entry->GetTable()->entries[PAGE_TABLE_INDEX(addr)];
-
-	table_entry->SetFlag(PTE_PRESENT);
-	table_entry->SetAddr((uint32)addr);
-	return 1;
-}
-
-//FreePage{}
 
 bool Paging::CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags)
 {
