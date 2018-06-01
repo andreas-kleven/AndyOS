@@ -61,8 +61,6 @@
     <ClCompile Include="Lib\math.cpp" />
     <ClCompile Include="Lib\stdio.cpp" />
     <ClCompile Include="Lib\string.cpp" />
-    <ClCompile Include="Memory\memory.cpp" />
-    <ClCompile Include="Memory\paging.cpp" />
     <ClCompile Include="Memory\pmem.cpp" />
     <ClCompile Include="Memory\vmem.cpp" />
     <ClCompile Include="Net\arp.cpp" />
@@ -136,7 +134,6 @@
     <ClInclude Include="Lib\string.h" />
     <ClInclude Include="Lib\System.h" />
     <ClInclude Include="Memory\memory.h" />
-    <ClInclude Include="Memory\paging.h" />
     <ClInclude Include="Memory\pmem.h" />
     <ClInclude Include="Memory\vmem.h" />
     <ClInclude Include="Net\address.h" />

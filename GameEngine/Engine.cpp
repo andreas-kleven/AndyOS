@@ -91,7 +91,7 @@ void GEngine::StartGame(Game* game)
 		}
 
 		Debug::Print("Ticks: %i\n", ticks);
-		Debug::Print("Free %i\n", Memory::num_free);
+		Debug::Print("Free %i\n", PMem::num_free);
 
 		Debug::Print("Mouse: %i, %i\n", (int)Mouse::x, (int)Mouse::y);
 

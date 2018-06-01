@@ -1,6 +1,5 @@
 #pragma once
 #include "Memory/memory.h"
-#include "Memory/paging.h"
 #include "math.h"
 #include "string.h"
 #include "debug.h"
@@ -37,8 +36,8 @@ void* operator new(unsigned size)
 
 	int blocks = ceil(size / 4096.f);
 
-	void* addr = Memory::AllocBlocks(blocks);
-	Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)addr, (uint32)addr, PTE_PRESENT | PTE_WRITABLE, blocks);
+	void* addr = PMem::AllocBlocks(blocks);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)addr, (uint32)addr, PTE_PRESENT | PTE_WRITABLE, blocks);
 
 	return addr;
 }
@@ -56,8 +55,8 @@ void* operator new[](unsigned size)
 	{
 		int blocks = ceil(size / 4096.f);
 
-		uint8* ptr = (uint8*)Memory::AllocBlocks(blocks);
-		Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PTE_PRESENT | PTE_WRITABLE, blocks);
+		uint8* ptr = (uint8*)PMem::AllocBlocks(blocks);
+		VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PTE_PRESENT | PTE_WRITABLE, blocks);
 
 		mem_ptr = ptr + size;
 

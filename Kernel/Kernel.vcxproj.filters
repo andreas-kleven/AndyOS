@@ -120,9 +120,6 @@
     <ClCompile Include="Lib\math.cpp">
       <Filter>Lib</Filter>
     </ClCompile>
-    <ClCompile Include="Memory\memory.cpp">
-      <Filter>Memory</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Message.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
@@ -134,9 +131,6 @@
     </ClCompile>
     <ClCompile Include="Kernel\os.cpp">
       <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\paging.cpp">
-      <Filter>Memory</Filter>
     </ClCompile>
     <ClCompile Include="Kernel\panic.cpp">
       <Filter>Kernel</Filter>
@@ -352,9 +346,6 @@
     </ClInclude>
     <ClInclude Include="Kernel\os.h">
       <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\paging.h">
-      <Filter>Memory</Filter>
     </ClInclude>
     <ClInclude Include="Kernel\panic.h">
       <Filter>Kernel</Filter>

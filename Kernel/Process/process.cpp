@@ -2,7 +2,6 @@
 #include "File System/filesys.h"
 #include "HAL/hal.h"
 #include "Memory/memory.h"
-#include "Memory/paging.h"
 #include "string.h"
 #include "debug.h"
 
@@ -141,7 +140,7 @@ void Process::Create(char* filename)
 
 	IMAGE_SECTION_HEADER* textheader = 0;
 
-	uint32* ptr = (uint32*)Memory::AllocBlocks(dos_header->nblocks);
+	uint32* ptr = (uint32*)PMem::AllocBlocks(dos_header->nblocks);
 
 	for (int i = 0; i < ntheader->FileHeader.NumberOfSections; i++)
 	{
@@ -152,9 +151,9 @@ void Process::Create(char* filename)
 			textheader = sectionHeader;
 		}
 
-		uint32* _ptr = (uint32*)Memory::AllocBlocks(1);
+		uint32* _ptr = (uint32*)PMem::AllocBlocks(1);
 		memcpy(_ptr, image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
-		Paging::MapPhysAddr(Paging::GetCurrentDir(), (uint32)_ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), PDE_PRESENT | PDE_WRITABLE | PDE_USER);
+		VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)_ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), PDE_PRESENT | PDE_WRITABLE | PDE_USER);
 
 		Debug::Dump(sectionHeader->Name, 8, true);
 	}
@@ -172,14 +171,14 @@ void Process::Create(char* filename)
 	Debug::Dump((void*)absEntry, textheader->SizeOfRawData);
 
 
-	uint32 stack = (uint32)Memory::AllocBlocks(10);
+	uint32 stack = (uint32)PMem::AllocBlocks(10);
 	void* stackVirt =
 		(void*)(ntheader->OptionalHeader.ImageBase
 			+ ntheader->OptionalHeader.SizeOfImage + PAGE_SIZE);
 
-	Paging::MapPhysAddr(Paging::GetCurrentDir(), stack, (uint32)stackVirt, PDE_PRESENT | PDE_WRITABLE | PDE_USER, 10);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), stack, (uint32)stackVirt, PDE_PRESENT | PDE_WRITABLE | PDE_USER, 10);
 
-	PAGE_DIR* dir = Paging::GetCurrentDir();
+	PAGE_DIR* dir = VMem::GetCurrentDir();
 	//for (int i = 0; i < PAGE_DIR_LENGTH; i++)
 	//{
 	//	dir->entries[i].SetFlag(PDE_USER);

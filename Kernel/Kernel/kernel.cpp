@@ -34,10 +34,9 @@
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
 	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
-	Memory::Init(MEMORY_SIZE, (uint32*)mem_map);
-	Memory::InitRegion((uint32*)(mem_map + MEMORY_MAP_SIZE), MEMORY_SIZE - (mem_map + MEMORY_MAP_SIZE));
-	//Memory::InitRegion((uint32*)(KERNEL_BASE + KERNEL_SIZE), 0x100000000 - KERNEL_BASE - KERNEL_SIZE);
-	Paging::Init(bootinfo);
+	PMem::Init(MEMORY_SIZE, (uint32*)mem_map);
+	PMem::InitRegion((uint32*)(mem_map + MEMORY_MAP_SIZE), MEMORY_SIZE - (mem_map + MEMORY_MAP_SIZE));
+	VMem::Init(bootinfo);
 }
 
 void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
