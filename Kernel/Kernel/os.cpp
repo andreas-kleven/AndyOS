@@ -91,6 +91,12 @@ void Syscall()
 	api_test();
 }
 
+#include "Process/process.h"
+void Process()
+{
+	Process::Create("Test.exe");
+}
+
 void OS::Main()
 {
 	FS::Init();
@@ -104,8 +110,8 @@ void OS::Main()
 	//Game();
 	//Audio();
 	//_Font();
-
-	Syscall();
+	//Syscall();
+	Process();
 	while (1);
 
 	PIT::Sleep(2000);

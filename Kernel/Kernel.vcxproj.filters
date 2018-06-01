@@ -43,6 +43,9 @@
     <Filter Include="Boot">
       <UniqueIdentifier>{a813c537-013a-4e38-a7b9-1d1bcffa0e01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Process">
+      <UniqueIdentifier>{e5389691-1f25-4a6e-ab32-1293fa755fb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Net\arp.cpp">
@@ -227,6 +230,15 @@
     </ClCompile>
     <ClCompile Include="API\syscalls.cpp">
       <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\gdt.cpp">
+      <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Process\process.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="HAL\tss.cpp">
+      <Filter>HAL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,5 +458,19 @@
     <ClInclude Include="API\syscalls.h">
       <Filter>API</Filter>
     </ClInclude>
+    <ClInclude Include="HAL\gdt.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Process\process.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="HAL\tss.h">
+      <Filter>HAL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="HAL\gdt.asm">
+      <Filter>HAL</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

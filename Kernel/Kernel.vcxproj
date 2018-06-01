@@ -44,11 +44,13 @@
     <ClCompile Include="GUI\Message.cpp" />
     <ClCompile Include="GUI\Window.cpp" />
     <ClCompile Include="HAL\cpu.cpp" />
+    <ClCompile Include="HAL\gdt.cpp" />
     <ClCompile Include="HAL\hal.cpp" />
     <ClCompile Include="HAL\idt.cpp" />
     <ClCompile Include="HAL\pic.cpp" />
     <ClCompile Include="HAL\pit.cpp" />
     <ClCompile Include="HAL\rtc.cpp" />
+    <ClCompile Include="HAL\tss.cpp" />
     <ClCompile Include="Kernel\exceptions.cpp" />
     <ClCompile Include="Kernel\kernel.cpp" />
     <ClCompile Include="Kernel\os.cpp" />
@@ -78,6 +80,7 @@
     <ClCompile Include="Net\udp.cpp" />
     <ClCompile Include="Net\udpsocket.cpp" />
     <ClCompile Include="PCI\pci.cpp" />
+    <ClCompile Include="Process\process.cpp" />
     <ClCompile Include="Test\Mandelbrot.cpp" />
     <ClCompile Include="Test\TextEdit.cpp" />
   </ItemGroup>
@@ -108,11 +111,13 @@
     <ClInclude Include="GUI\Message.h" />
     <ClInclude Include="GUI\Window.h" />
     <ClInclude Include="HAL\cpu.h" />
+    <ClInclude Include="HAL\gdt.h" />
     <ClInclude Include="HAL\hal.h" />
     <ClInclude Include="HAL\idt.h" />
     <ClInclude Include="HAL\pic.h" />
     <ClInclude Include="HAL\pit.h" />
     <ClInclude Include="HAL\rtc.h" />
+    <ClInclude Include="HAL\tss.h" />
     <ClInclude Include="Kernel\exceptions.h" />
     <ClInclude Include="Kernel\kernel.h" />
     <ClInclude Include="Kernel\os.h" />
@@ -152,6 +157,7 @@
     <ClInclude Include="Net\udp.h" />
     <ClInclude Include="Net\udpsocket.h" />
     <ClInclude Include="PCI\pci.h" />
+    <ClInclude Include="Process\process.h" />
     <ClInclude Include="Test\Mandelbrot.h" />
     <ClInclude Include="Test\TextEdit.h" />
   </ItemGroup>
@@ -165,6 +171,13 @@
     <ProjectReference Include="..\GL\GL.vcxproj">
       <Project>{4e773009-cb83-4b52-afc6-df744c94c9af}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="HAL\gdt.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nasm.exe -f win32 -o "$(OutDir)_gdt.obj" HAL/gdt.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)_gdt.obj</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -203,6 +216,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -233,7 +247,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <SDLCheck>
       </SDLCheck>
       <PreprocessorDefinitions>ARCH_X86</PreprocessorDefinitions>
@@ -251,6 +264,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;$(SolutionDir)GL\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <BaseAddress>0x100000</BaseAddress>
@@ -272,6 +286,7 @@
     <PostBuildEvent>
       <Command>call "$(SolutionDir)build.bat"</Command>
     </PostBuildEvent>
+    <MASM />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -287,7 +302,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -316,5 +330,6 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>
