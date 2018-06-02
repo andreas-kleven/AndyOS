@@ -55,7 +55,6 @@
     <ClCompile Include="Kernel\kernel.cpp" />
     <ClCompile Include="Kernel\os.cpp" />
     <ClCompile Include="Kernel\panic.cpp" />
-    <ClCompile Include="Kernel\task.cpp" />
     <ClCompile Include="Lib\debug.cpp" />
     <ClCompile Include="Lib\KernelAPI.cpp" />
     <ClCompile Include="Lib\math.cpp" />
@@ -79,6 +78,8 @@
     <ClCompile Include="Net\udpsocket.cpp" />
     <ClCompile Include="PCI\pci.cpp" />
     <ClCompile Include="Process\process.cpp" />
+    <ClCompile Include="Process\scheduler.cpp" />
+    <ClCompile Include="Process\thread.cpp" />
     <ClCompile Include="Test\Mandelbrot.cpp" />
     <ClCompile Include="Test\TextEdit.cpp" />
   </ItemGroup>
@@ -120,7 +121,6 @@
     <ClInclude Include="Kernel\kernel.h" />
     <ClInclude Include="Kernel\os.h" />
     <ClInclude Include="Kernel\panic.h" />
-    <ClInclude Include="Kernel\task.h" />
     <ClInclude Include="Lib\ctype.h" />
     <ClInclude Include="Lib\debug.h" />
     <ClInclude Include="Lib\definitions.h" />
@@ -155,6 +155,8 @@
     <ClInclude Include="Net\udpsocket.h" />
     <ClInclude Include="PCI\pci.h" />
     <ClInclude Include="Process\process.h" />
+    <ClInclude Include="Process\scheduler.h" />
+    <ClInclude Include="Process\thread.h" />
     <ClInclude Include="Test\Mandelbrot.h" />
     <ClInclude Include="Test\TextEdit.h" />
   </ItemGroup>

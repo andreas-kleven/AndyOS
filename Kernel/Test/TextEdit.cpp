@@ -3,7 +3,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "Drivers/keyboard.h"
-#include "Kernel/task.h"
+#include "Process/scheduler.h"
 
 #include "Net/udpsocket.h"
 
@@ -93,7 +93,7 @@ namespace apps
 		{
 			socket = UDP::CreateSocket(1881);
 			rec_label = lbl3;
-			Task::InsertThread(Task::CreateThread(Receive));
+			Scheduler::InsertThread(Scheduler::CreateThread(Receive));
 			//Receive();
 		}
 

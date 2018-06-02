@@ -8,7 +8,7 @@
 #include "Net/dns.h"
 #include "Net/dhcp.h"
 #include "Net/http.h"
-#include "task.h"
+#include "Process/scheduler.h"
 #include "Drawing/font.h"
 #include "GUI/GUI.h"
 #include "System.h"
@@ -25,8 +25,8 @@ void GUI()
 {
 	gui::WindowManager::Init();
 
-	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
-	Task::InsertThread(Task::CreateThread(apps::RunTextEdit));
+	Scheduler::InsertThread(Scheduler::CreateThread(apps::RunTextEdit));
+	Scheduler::InsertThread(Scheduler::CreateThread(apps::RunTextEdit));
 
 	//Task::InsertThread(Task::CreateThread(gui::WindowManager::Start));
 	gui::WindowManager::Start();
@@ -92,14 +92,52 @@ void Syscall()
 }
 
 #include "Process/process.h"
-void Process()
+void _Process()
 {
 	Process::Create("Test.exe");
 }
 
+int busy;
+
+void T1()
+{
+	uint32 colors[] = {
+		COLOR_RED,
+		COLOR_BLUE,
+		COLOR_GREEN,
+		COLOR_CYAN,
+		COLOR_MAGENTA,
+		COLOR_YELLOW
+	};
+
+	int t = 0;
+
+	while (1)
+	{
+		Debug::color = colors[(PIT::ticks / 10) % 6];
+		_asm pause
+	}
+}
+
+void T2()
+{
+	while (1)
+	{
+		Debug::Print("%i", 2);
+	}
+}
+
 void OS::Main()
 {
-	FS::Init();
+	Thread* t1 = Scheduler::CreateThread(T1);
+	Thread* t2 = Scheduler::CreateThread(T2);
+
+	Scheduler::InsertThread(t1);
+	Scheduler::InsertThread(t2);
+
+	while (1);
+
+	//FS::Init();
 
 	//Net::Init();
 
@@ -111,7 +149,7 @@ void OS::Main()
 	//Audio();
 	//_Font();
 	//Syscall();
-	Process();
+	_Process();
 	while (1);
 
 	PIT::Sleep(2000);

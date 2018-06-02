@@ -31,29 +31,8 @@ struct TASK_REGS
 class Thread
 {
 public:
-	//TASK_REGS regs;
-	uint32 esp;
+	REGS regs;
 	Thread* next;
 
 	Thread();
-};
-
-static class Task
-{
-public:
-	static STATUS Init();
-
-	static Thread* CreateThread(void* main);
-	static void InsertThread(Thread* thread);
-
-	static void StartThreading();
-	static void RemoveThread(Thread* thread);
-
-	static void Exit(int exitcode);
-
-private:
-	static void Schedule();
-	static void Task_ISR(REGS* regs);
-
-	static void Idle();
 };

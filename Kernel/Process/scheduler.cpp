@@ -1,7 +1,6 @@
-#include "task.h"
+#include "scheduler.h"
 #include "HAL/hal.h"
 #include "Memory/memory.h"
-#include "Drawing/drawing.h"
 #include "debug.h"
 
 Thread* idle_thread;
@@ -11,7 +10,7 @@ Thread* last_thread;
 
 IRQ_HANDLER pit_isr;
 
-STATUS Task::Init()
+STATUS Scheduler::Init()
 {
 	first_thread = 0;
 	last_thread = 0;
@@ -24,42 +23,42 @@ STATUS Task::Init()
 	return STATUS_SUCCESS;
 }
 
-Thread* Task::CreateThread(void* main)
+Thread* Scheduler::CreateThread(void* main)
 {
 	Thread* thread = new Thread;
 	//TASK_REGS* regs = (TASK_REGS*)((uint8*)thread + sizeof(THREAD) - sizeof(TASK_REGS));
-	TASK_REGS* regs = (TASK_REGS*)thread->esp;
+	thread->regs.esp = uint32(new char[PAGE_SIZE] + 0x1000);
 
-	regs->flags = 0x202;
-	regs->eip = (uint32)main;
-	regs->ebp = 0;
-	regs->esp = 0;
-	regs->edi = 0;
-	regs->esi = 0;
-	regs->edx = 0;
-	regs->ecx = 0;
-	regs->ebx = 0;
-	regs->eax = 0;
+	thread->regs.eflags = 0x202;
+	thread->regs.eip = (uint32)main;
+	thread->regs.ebp = 0;
+	thread->regs.esp = 0;
+	thread->regs.edi = 0;
+	thread->regs.esi = 0;
+	thread->regs.edx = 0;
+	thread->regs.ecx = 0;
+	thread->regs.ebx = 0;
+	thread->regs.eax = 0;
 
 	//uint16* c = (uint16*)&regs->cs;
 	//_asm mov eax, c
 	//_asm mov [eax], cs
 	//
 	//Debug::Print("%x\n", *c);
-	regs->cs = 0x10;
+	thread->regs.cs = KERNEL_CS;
 
-	regs->user_stack = (uint32)thread->esp;
-	regs->user_ss = 0x23;
+	thread->regs.user_stack = (uint32)thread->regs.esp;
+	thread->regs.user_ss = KERNEL_SS;
 
-	regs->ds = 0x18;
-	regs->es = 0x18;
-	regs->fs = 0x18;
-	regs->gs = 0x18;
+	thread->regs.ds = 0x10;
+	thread->regs.es = 0x10;
+	thread->regs.fs = 0x10;
+	thread->regs.gs = 0x10;
 
 	return thread;
 }
 
-void Task::InsertThread(Thread* thread)
+void Scheduler::InsertThread(Thread* thread)
 {
 	if (first_thread)
 	{
@@ -76,29 +75,36 @@ void Task::InsertThread(Thread* thread)
 	}
 }
 
-void Task::StartThreading()
+void Scheduler::StartThreading()
 {
 	_asm cli
 	IDT::InstallIRQ(TASK_SCHEDULE_IRQ, (IRQ_HANDLER)Task_ISR);
 
+	uint32 stack = idle_thread->regs.esp;
+	uint32 flags = idle_thread->regs.eflags;
+	uint32 entry = idle_thread->regs.eip;
+
 	//Start idle thread
-	uint32 stack = idle_thread->esp;
 	_asm
 	{
-		mov esp, stack
+		mov ax, KERNEL_SS
+		mov ds, ax
+		mov es, ax
+		mov fs, ax
+		mov gs, ax
 
-		pop gs
-		pop fs
-		pop es
-		pop ds
-		popad
+		push KERNEL_SS
+		push[stack]
 
-		sti
+		push flags
+
+		push KERNEL_CS
+		push entry
 		iretd
 	}
 }
 
-void Task::RemoveThread(Thread* thread)
+void Scheduler::RemoveThread(Thread* thread)
 {
 	_asm cli
 
@@ -128,12 +134,12 @@ void Task::RemoveThread(Thread* thread)
 	_asm sti
 }
 
-void Task::Exit(int exitcode)
+void Scheduler::Exit(int exitcode)
 {
 	RemoveThread(current_thread);
 }
 
-void Task::Schedule()
+void Scheduler::Schedule()
 {
 	current_thread = current_thread->next;
 
@@ -141,54 +147,19 @@ void Task::Schedule()
 		current_thread = current_thread->next;
 }
 
-void Task::Task_ISR(REGS* regs)
+void Scheduler::Task_ISR(REGS* regs)
 {
-	_asm
-	{
-		//Push registers
-		pushad
-
-		push ds
-		push es
-		push fs
-		push gs
-
-		//Save esp
-		mov eax, [current_thread]
-		mov[eax], esp
-
-		//Schedule
-		call Schedule
-
-		//Set esp
-		mov eax, [current_thread]
-		mov esp, [eax]
-
-		//Pop registers
-		pop gs
-		pop fs
-		pop es
-		pop ds
-
-		popad
-
-		//Return
-		//sti
-		//iretd
-		jmp pit_isr
-	}
+	current_thread->regs = *regs;
+	Schedule();
+	*regs = current_thread->regs;
+	pit_isr(regs);
 }
 
-void _declspec (naked) Task::Idle()
+void _declspec (naked) Scheduler::Idle()
 {
 	while (1)
 	{
 		//Debug::Print("Idle");
 		_asm pause
 	}
-}
-
-Thread::Thread()
-{
-	esp = (uint32)(new char[PAGE_SIZE] + 0x1000 - sizeof(TASK_REGS));
 }

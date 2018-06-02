@@ -1,6 +1,5 @@
 #include "GUI.h"
 #include "Drawing/drawing.h"
-#include "Kernel/task.h"
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
 #include "HAL/hal.h"

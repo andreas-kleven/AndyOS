@@ -28,7 +28,7 @@
 //#include "dns.h"
 //#include "tcp.h"
 //#include "tcpsocket.h"
-#include "task.h"
+#include "Process/scheduler.h"
 #include "Kernel/os.h"
 
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
@@ -54,7 +54,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
 	Keyboard::Init();
 
-	Task::Init();
+	Scheduler::Init();
 	Syscalls::Init();
 
 	Debug::color = 0xFF00FF00;
@@ -68,10 +68,10 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	//E1000* e1000 = new E1000(net_dev);
 	//KNet::intf = e1000;
 
-	OS::Main();
-	//Thread* mainThread = Task::CreateThread(OS::Main);
-	//Task::InsertThread(mainThread);
-	//Task::StartThreading();
+	//OS::Main();
+	Thread* mainThread = Scheduler::CreateThread(OS::Main);
+	Scheduler::InsertThread(mainThread);
+	Scheduler::StartThreading();
 
 	//ARP::Init();
 

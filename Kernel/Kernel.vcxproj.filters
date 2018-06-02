@@ -156,9 +156,6 @@
     <ClCompile Include="Lib\string.cpp">
       <Filter>Lib</Filter>
     </ClCompile>
-    <ClCompile Include="Kernel\task.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="Net\tcp.cpp">
       <Filter>Net</Filter>
     </ClCompile>
@@ -233,6 +230,12 @@
     </ClCompile>
     <ClCompile Include="HAL\tss.cpp">
       <Filter>HAL</Filter>
+    </ClCompile>
+    <ClCompile Include="Process\thread.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="Process\scheduler.cpp">
+      <Filter>Process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -377,9 +380,6 @@
     <ClInclude Include="Lib\System.h">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="Kernel\task.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="Net\tcp.h">
       <Filter>Net</Filter>
     </ClInclude>
@@ -457,6 +457,12 @@
     </ClInclude>
     <ClInclude Include="HAL\tss.h">
       <Filter>HAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Process\thread.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Process\scheduler.h">
+      <Filter>Process</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
