@@ -104,20 +104,31 @@ typedef struct _IMAGE_SECTION_HEADER {
 	uint32 Characteristics;
 } IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
 
-void Test()
+PAGE_DIR* CreateAddressSpace()
 {
-	Debug::Print("Test\n");
+	PAGE_DIR* dir = new PAGE_DIR;
+	memset(dir, 0, sizeof(PAGE_DIR));
 
-	while (1);
-}
+	//Tables
+	PAGE_TABLE* tables = new PAGE_TABLE[PAGE_DIR_LENGTH];
+	memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
 
-typedef int func(void);
-func* f;
+	PAGE_DIR* current = VMem::GetCurrentDir();
 
-void ProcStub()
-{
-	int i = f();
-	while (1);
+	for (int i = 0; i < 256; i++)
+	{
+		dir->entries[i] = current->entries[i];
+	}
+
+	for (int i = 256; i < PAGE_DIR_LENGTH; i++)
+	{
+		PAGE_TABLE* table = tables + i;
+		dir->entries[i].SetTable(table);
+	}
+
+	//Map framebuffer
+	VMem::MapPhysAddr(dir, 0xE0000000, 0xE0000000, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 0x300);
+	return dir;
 }
 
 void Process::Create(char* filename)
@@ -140,7 +151,10 @@ void Process::Create(char* filename)
 
 	IMAGE_SECTION_HEADER* textheader = 0;
 
-	uint32* ptr = (uint32*)PMem::AllocBlocks(dos_header->nblocks);
+	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
+
+	PAGE_DIR* dir = CreateAddressSpace();
+	VMem::SwitchDir(dir);
 
 	for (int i = 0; i < ntheader->FileHeader.NumberOfSections; i++)
 	{
@@ -151,58 +165,30 @@ void Process::Create(char* filename)
 			textheader = sectionHeader;
 		}
 
-		uint32* _ptr = (uint32*)PMem::AllocBlocks(1);
-		memcpy(_ptr, image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
-		VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)_ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), PDE_PRESENT | PDE_WRITABLE | PDE_USER);
+		uint32* ptr = (uint32*)PMem::AllocBlocks(1);
+		VMem::MapPhysAddr(dir, (uint32)ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), flags);
+		memcpy((uint32*)(imagebase + sectionHeader->VirtualAddress), image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
 
+		Debug::Print("%ux\t", sectionHeader->VirtualAddress);
 		Debug::Dump(sectionHeader->Name, 8, true);
 	}
 
 	uint32 pointerToRawData = textheader->PointerToRawData;
 
-	Debug::Print("%ux\n", pointerToRawData);
-	Debug::Print("%ux\n", entry);
+	Debug::Print("Raw data: %ux\n", pointerToRawData);
+	Debug::Print("Entry: %ux\n", entry);
 
 	int absEntry = imagebase + entry;
 
-	Debug::Print("%ux\n", absEntry);
+	Debug::Print("Entry: %ux\n", absEntry);
+	Debug::Print("End: %ux\n", ntheader->OptionalHeader.ImageBase + ntheader->OptionalHeader.SizeOfImage);
 
+	uint32 stack = (uint32)PMem::AllocBlocks(1);
+	uint8* stackVirt = (uint8*)(ntheader->OptionalHeader.ImageBase + ntheader->OptionalHeader.SizeOfImage + PAGE_SIZE);
+	VMem::MapPhysAddr(dir, stack, (uint32)stackVirt - PAGE_SIZE, flags, 1);
 
-	Debug::Dump((void*)absEntry, textheader->SizeOfRawData);
-
-
-	uint32 stack = (uint32)PMem::AllocBlocks(10);
-	void* stackVirt =
-		(void*)(ntheader->OptionalHeader.ImageBase
-			+ ntheader->OptionalHeader.SizeOfImage + PAGE_SIZE);
-
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), stack, (uint32)stackVirt, PDE_PRESENT | PDE_WRITABLE | PDE_USER, 10);
-
-	PAGE_DIR* dir = VMem::GetCurrentDir();
-	//for (int i = 0; i < PAGE_DIR_LENGTH; i++)
-	//{
-	//	dir->entries[i].SetFlag(PDE_USER);
-	//
-	//	PAGE_TABLE* table = dir->entries[i].GetTable();
-	//
-	//	for (int j = 0; j < PAGE_TABLE_LENGTH; j++)
-	//	{
-	//		table->entries[j].SetFlag(PDE_USER);
-	//	}
-	//}
-
-	int a;
-	_asm
-	{
-		mov eax, [stackVirt];
-		mov[a], eax
-	}
-
-	Debug::Print("%ux\n", a);
-
-	TSS::SetStack(0x10, (uint16)stackVirt & 0xffff);
-
-	f = (func*)absEntry;
+	char* kstack = new char[BLOCK_SIZE];
+	TSS::SetStack(KERNEL_SS, (uint32)kstack + BLOCK_SIZE);
 
 	_asm
 	{
@@ -214,15 +200,15 @@ void Process::Create(char* filename)
 		mov gs, ax
 
 		push 0x23; SS, notice it uses same selector as above
-		push [stackVirt]; ESP
+		push[stackVirt]; ESP
 		//push esp
 
-		push 0x200
-		//pushfd; EFLAGS
-		//
-		//pop eax
-		//or eax, 0x200; enable IF in EFLAGS
-		//push eax
+		//push 0x200
+		pushfd; EFLAGS
+
+		pop eax
+		or eax, 0x200; enable IF in EFLAGS
+		push eax
 
 		push 0x1B; CS, user mode code selector is 0x18. With RPL 3 this is 0x1b
 		push absEntry

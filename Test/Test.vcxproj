@@ -87,8 +87,7 @@
       <RandomizedBaseAddress />
       <AdditionalDependencies />
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <BaseAddress>
-      </BaseAddress>
+      <BaseAddress>0x40000000</BaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

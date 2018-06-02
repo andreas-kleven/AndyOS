@@ -1,3 +1,5 @@
+#include "../Kernel/Lib/stdio.h"
+
 int main()
 {
 	int result = 0;
@@ -23,7 +25,7 @@ int main()
 	//char text[256];
 	//vprintf(text, "%i:%i:%i\n", hour, minute, second);
 
-	const char* text = "Hello\n";
+	const char* text = "Hello from user mode\n";
 
 	_asm
 	{
@@ -35,5 +37,6 @@ int main()
 		mov[result], eax
 	}
 
+	while (1);
 	return 2;
 }
