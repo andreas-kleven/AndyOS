@@ -39,7 +39,7 @@ void TSS::Flush() {
 	}
 }
 
-void TSS::SetStack(uint16 kernelSS, uint16 kernelESP) {
+void TSS::SetStack(uint32 kernelSS, uint32 kernelESP) {
 
 	tss.ss0 = kernelSS;
 	tss.esp0 = kernelESP;

@@ -37,6 +37,6 @@ static class TSS
 public:
 	static STATUS Init(uint32 gdt_index, uint32 kernelESP);
 	static void Flush();
-	static void SetStack(uint16 kernelSS, uint16 kernelESP);
+	static void SetStack(uint32 kernelSS, uint32 kernelESP);
 };
 

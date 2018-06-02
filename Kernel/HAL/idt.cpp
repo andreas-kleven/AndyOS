@@ -36,7 +36,11 @@ STATUS IDT::Init()
 		ptr[6] = (target_addr >> 16) & 0xFF;
 		ptr[7] = (target_addr >> 24) & 0xFF;
 
-		SetISR(i, ptr);
+		if (i == 0x80)
+			SetISR(i, ptr, IDT_DESC_RING3);
+		else
+			SetISR(i, ptr, 0);
+
 		handlers[i] = 0;
 	}
 
@@ -59,7 +63,7 @@ IRQ_HANDLER IDT::GetHandler(uint32 i)
 	return handlers[i];
 }
 
-STATUS IDT::SetISR(uint32 i, void* irq)
+STATUS IDT::SetISR(uint32 i, void* irq, int flags)
 {
 	if (i > MAX_INTERRUPTS || !irq)
 		return STATUS_FAILED;
@@ -69,7 +73,7 @@ STATUS IDT::SetISR(uint32 i, void* irq)
 	idt[i].low = uint16(uiBase & 0xffff);
 	idt[i].high = uint16((uiBase >> 16) & 0xffff);
 	idt[i].reserved = 0;
-	idt[i].flags = IDT_DESC_PRESENT | IDT_DESC_BIT32;
+	idt[i].flags = IDT_DESC_PRESENT | IDT_DESC_BIT32 | flags;
 	idt[i].sel = KERNEL_CS;
 
 	return STATUS_SUCCESS;
