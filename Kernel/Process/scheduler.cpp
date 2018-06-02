@@ -16,44 +16,49 @@ STATUS Scheduler::Init()
 	last_thread = 0;
 	current_thread = 0;
 
-	idle_thread = CreateThread(Idle);
+	idle_thread = CreateKernelThread(Idle);
 	InsertThread(idle_thread);
 
 	pit_isr = IDT::GetHandler(TASK_SCHEDULE_IRQ);
 	return STATUS_SUCCESS;
 }
 
-Thread* Scheduler::CreateThread(void* main)
+Thread* Scheduler::CreateKernelThread(void* main)
 {
 	Thread* thread = new Thread;
-	//TASK_REGS* regs = (TASK_REGS*)((uint8*)thread + sizeof(THREAD) - sizeof(TASK_REGS));
 	thread->regs.esp = uint32(new char[PAGE_SIZE] + 0x1000);
-
-	thread->regs.eflags = 0x202;
 	thread->regs.eip = (uint32)main;
-	thread->regs.ebp = 0;
-	thread->regs.esp = 0;
-	thread->regs.edi = 0;
-	thread->regs.esi = 0;
-	thread->regs.edx = 0;
-	thread->regs.ecx = 0;
-	thread->regs.ebx = 0;
-	thread->regs.eax = 0;
 
-	//uint16* c = (uint16*)&regs->cs;
-	//_asm mov eax, c
-	//_asm mov [eax], cs
-	//
-	//Debug::Print("%x\n", *c);
+	thread->regs.eflags = 0x200;
+
 	thread->regs.cs = KERNEL_CS;
+	thread->regs.ds = KERNEL_SS;
+	thread->regs.es = KERNEL_SS;
+	thread->regs.fs = KERNEL_SS;
+	thread->regs.gs = KERNEL_SS;
 
 	thread->regs.user_stack = (uint32)thread->regs.esp;
 	thread->regs.user_ss = KERNEL_SS;
 
-	thread->regs.ds = 0x10;
-	thread->regs.es = 0x10;
-	thread->regs.fs = 0x10;
-	thread->regs.gs = 0x10;
+	return thread;
+}
+
+Thread* Scheduler::CreateUserThread(void* main, void* stack)
+{
+	Thread* thread = new Thread;
+	thread->regs.esp = uint32(new char[PAGE_SIZE] + 0x1000);
+	thread->regs.eip = (uint32)main;
+
+	thread->regs.eflags = 0x200;
+
+	thread->regs.cs = KERNEL_CS;
+	thread->regs.ds = KERNEL_SS;
+	thread->regs.es = KERNEL_SS;
+	thread->regs.fs = KERNEL_SS;
+	thread->regs.gs = KERNEL_SS;
+
+	thread->regs.user_stack = (uint32)stack;
+	thread->regs.user_ss = USER_SS;
 
 	return thread;
 }
@@ -87,7 +92,7 @@ void Scheduler::StartThreading()
 	//Start idle thread
 	_asm
 	{
-		mov ax, KERNEL_SS
+		mov ax, KERNEL_DS
 		mov ds, ax
 		mov es, ax
 		mov fs, ax
@@ -152,6 +157,7 @@ void Scheduler::Task_ISR(REGS* regs)
 	current_thread->regs = *regs;
 	Schedule();
 	*regs = current_thread->regs;
+	TSS::SetStack(KERNEL_SS, current_thread->regs.esp);
 	pit_isr(regs);
 }
 

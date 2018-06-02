@@ -69,7 +69,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	//KNet::intf = e1000;
 
 	//OS::Main();
-	Thread* mainThread = Scheduler::CreateThread(OS::Main);
+	Thread* mainThread = Scheduler::CreateKernelThread(OS::Main);
 	Scheduler::InsertThread(mainThread);
 	Scheduler::StartThreading();
 

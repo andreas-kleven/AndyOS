@@ -8,7 +8,8 @@ static class Scheduler
 public:
 	static STATUS Init();
 
-	static Thread* CreateThread(void* main);
+	static Thread* CreateKernelThread(void* main);
+	static Thread* CreateUserThread(void* main, void* stack);
 	static void InsertThread(Thread* thread);
 
 	static void StartThreading();

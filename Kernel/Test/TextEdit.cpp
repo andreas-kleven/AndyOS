@@ -93,7 +93,7 @@ namespace apps
 		{
 			socket = UDP::CreateSocket(1881);
 			rec_label = lbl3;
-			Scheduler::InsertThread(Scheduler::CreateThread(Receive));
+			Scheduler::InsertThread(Scheduler::CreateKernelThread(Receive));
 			//Receive();
 		}
 

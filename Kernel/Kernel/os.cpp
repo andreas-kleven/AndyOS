@@ -25,8 +25,8 @@ void GUI()
 {
 	gui::WindowManager::Init();
 
-	Scheduler::InsertThread(Scheduler::CreateThread(apps::RunTextEdit));
-	Scheduler::InsertThread(Scheduler::CreateThread(apps::RunTextEdit));
+	Scheduler::InsertThread(Scheduler::CreateKernelThread(apps::RunTextEdit));
+	Scheduler::InsertThread(Scheduler::CreateKernelThread(apps::RunTextEdit));
 
 	//Task::InsertThread(Task::CreateThread(gui::WindowManager::Start));
 	gui::WindowManager::Start();
@@ -97,9 +97,23 @@ void _Process()
 	Process::Create("Test.exe");
 }
 
-int busy;
+int busy = 0;
 
 void T1()
+{
+	while (1)
+	{
+		if (busy == 0)
+		{
+			Debug::Print("1");
+			busy = 1;
+		}
+
+		_asm pause
+	}
+}
+
+void T2()
 {
 	uint32 colors[] = {
 		COLOR_RED,
@@ -114,28 +128,30 @@ void T1()
 
 	while (1)
 	{
-		Debug::color = colors[(PIT::ticks / 10) % 6];
+		if (busy == 1)
+		{
+			Debug::color = colors[(t++ / 10) % 6];
+			busy = 0;
+		}
 		_asm pause
-	}
-}
-
-void T2()
-{
-	while (1)
-	{
-		Debug::Print("%i", 2);
 	}
 }
 
 void OS::Main()
 {
-	Thread* t1 = Scheduler::CreateThread(T1);
-	Thread* t2 = Scheduler::CreateThread(T2);
+	uint32 stack = (uint32)PMem::AllocBlocks(1);
+	uint32 virtStack = (uint32)0x50000000;
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stack, (uint32)virtStack, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+
+	Thread* t1 = Scheduler::CreateKernelThread(T1);
+	Thread* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStack + BLOCK_SIZE));
 
 	Scheduler::InsertThread(t1);
 	Scheduler::InsertThread(t2);
 
-	while (1);
+	while (1)
+		_asm pause;
 
 	//FS::Init();
 
