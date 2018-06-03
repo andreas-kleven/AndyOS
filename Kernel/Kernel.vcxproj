@@ -263,7 +263,6 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;$(SolutionDir)GL\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
-      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <BaseAddress>0x100000</BaseAddress>

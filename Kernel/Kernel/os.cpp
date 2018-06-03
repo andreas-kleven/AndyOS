@@ -97,17 +97,24 @@ void _Process()
 	Process::Create("Test.exe");
 }
 
-void T1()
+void T2()
 {
+	const char* text = "1";
+
 	while (1)
 	{
-		Debug::bcolor = 0;
-		Debug::Print("1");
+		_asm
+		{
+			mov eax, 2
+			mov ebx, text
+			int 0x80
+		}
+
 		_asm pause
 	}
 }
 
-void T2()
+void T1()
 {
 	uint32 colors[] = {
 		COLOR_RED,
@@ -123,6 +130,7 @@ void T2()
 	while (1)
 	{
 		Debug::color = colors[(t++ / 10) % 6];
+		Debug::bcolor = 0;
 		_asm pause
 	}
 }

@@ -3,12 +3,13 @@
 #include "Memory/memory.h"
 #include "debug.h"
 
-Thread* idle_thread;
-Thread* current_thread;
 Thread* first_thread;
 Thread* last_thread;
+Thread* current_thread;
+Thread* idle_thread;
 
 uint32 id_counter = 0;
+uint32 tmp_stack;
 IRQ_HANDLER pit_isr;
 
 STATUS Scheduler::Init()
@@ -66,10 +67,6 @@ void Scheduler::InsertThread(Thread* thread)
 		last_thread = thread;
 		current_thread = thread;
 	}
-
-	Debug::color = 0xFFFF0000;
-	Debug::Print("\t%i\t%ux\t%ux\n", thread->id, thread->regs.cs, thread->regs.esp);
-	Debug::color = 0xFF00FF00;
 }
 
 void Scheduler::StartThreading()
@@ -77,7 +74,7 @@ void Scheduler::StartThreading()
 	_asm cli
 	IDT::SetISR(TASK_SCHEDULE_IRQ, (IRQ_HANDLER)Task_ISR, 0);
 
-	uint32 stack = idle_thread->regs.esp;
+	uint32 stack = idle_thread->stack;
 
 	//Start idle thread
 	_asm
@@ -131,20 +128,20 @@ void Scheduler::Exit(int exitcode)
 
 void Scheduler::Schedule()
 {
-	Debug::Print("\t%i\t%ux\t%ux\n", current_thread->id, current_thread->regs.cs, current_thread->regs.esp);
-	Debug::Dump(current_thread, 4 + sizeof(REGS));
+	//Save stack
+	current_thread->stack = tmp_stack;
+
+	//Schedule
 	current_thread = current_thread->next;
 
 	if (current_thread == idle_thread)
 		current_thread = current_thread->next;
 
-	Debug::Print("\t%i\t%ux\t%ux\n", current_thread->id, current_thread->regs.cs, current_thread->regs.esp);
-	Debug::Dump(current_thread, 4 + sizeof(REGS));
+	//Restore stack
+	tmp_stack = current_thread->stack;
 
 	PIC::InterruptDone(TASK_SCHEDULE_IRQ);
 }
-
-uint32 fpu_state;
 
 void INTERRUPT Scheduler::Task_ISR()
 {
@@ -161,20 +158,18 @@ void INTERRUPT Scheduler::Task_ISR()
 		push gs
 
 		//Save esp
-		mov eax, [current_thread]
-		mov[eax], esp
+		mov [tmp_stack], esp
 
 		//Schedule
 		call Schedule
 
 		//Call pit_isr
-		//push 0
-		//call pit_isr
-		//add esp, 4
+		push 0
+		call pit_isr
+		add esp, 4
 
 		//Load esp
-		mov eax, [current_thread]
-		mov esp, [eax]
+		mov esp, [tmp_stack]
 
 		//Load registers
 		pop gs
@@ -189,7 +184,7 @@ void INTERRUPT Scheduler::Task_ISR()
 	}
 }
 
-void _declspec (naked) Scheduler::Idle()
+void Scheduler::Idle()
 {
 	while (1)
 	{
