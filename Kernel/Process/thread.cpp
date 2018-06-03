@@ -1,5 +1,6 @@
 #include "thread.h"
 #include "Memory/memory.h"
+#include "string.h"
 
 Thread::Thread()
 {
@@ -11,4 +12,8 @@ Thread::Thread()
 	this->regs.ecx = 0;
 	this->regs.ebx = 0;
 	this->regs.eax = 0;
+	this->regs.user_stack = 0;
+	this->regs.user_ss = 0;
+
+	memset(this->fpu_state, 0, sizeof(this->fpu_state));
 }

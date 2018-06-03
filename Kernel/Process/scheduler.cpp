@@ -8,6 +8,7 @@ Thread* current_thread;
 Thread* first_thread;
 Thread* last_thread;
 
+uint32 id_counter = 0;
 IRQ_HANDLER pit_isr;
 
 STATUS Scheduler::Init()
@@ -25,38 +26,25 @@ STATUS Scheduler::Init()
 
 Thread* Scheduler::CreateKernelThread(void* main)
 {
-	Thread* thread = new Thread;
-	thread->regs.esp = uint32(new char[PAGE_SIZE] + 0x1000);
+	Thread* thread = (Thread*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(Thread));
+	thread->id = ++id_counter;
+
+	thread->stack = (uint32)&thread->regs;
+	thread->regs.esp = (uint32)&thread->regs;
 	thread->regs.eip = (uint32)main;
-
 	thread->regs.eflags = 0x200;
-
 	thread->regs.cs = KERNEL_CS;
 	thread->regs.ds = KERNEL_SS;
 	thread->regs.es = KERNEL_SS;
 	thread->regs.fs = KERNEL_SS;
 	thread->regs.gs = KERNEL_SS;
-
-	thread->regs.user_stack = (uint32)thread->regs.esp;
-	thread->regs.user_ss = KERNEL_SS;
 
 	return thread;
 }
 
 Thread* Scheduler::CreateUserThread(void* main, void* stack)
 {
-	Thread* thread = new Thread;
-	thread->regs.esp = uint32(new char[PAGE_SIZE] + 0x1000);
-	thread->regs.eip = (uint32)main;
-
-	thread->regs.eflags = 0x200;
-
-	thread->regs.cs = KERNEL_CS;
-	thread->regs.ds = KERNEL_SS;
-	thread->regs.es = KERNEL_SS;
-	thread->regs.fs = KERNEL_SS;
-	thread->regs.gs = KERNEL_SS;
-
+	Thread* thread = CreateKernelThread(main);
 	thread->regs.user_stack = (uint32)stack;
 	thread->regs.user_ss = USER_SS;
 
@@ -78,33 +66,30 @@ void Scheduler::InsertThread(Thread* thread)
 		last_thread = thread;
 		current_thread = thread;
 	}
+
+	Debug::color = 0xFFFF0000;
+	Debug::Print("\t%i\t%ux\t%ux\n", thread->id, thread->regs.cs, thread->regs.esp);
+	Debug::color = 0xFF00FF00;
 }
 
 void Scheduler::StartThreading()
 {
 	_asm cli
-	IDT::InstallIRQ(TASK_SCHEDULE_IRQ, (IRQ_HANDLER)Task_ISR);
+	IDT::SetISR(TASK_SCHEDULE_IRQ, (IRQ_HANDLER)Task_ISR, 0);
 
 	uint32 stack = idle_thread->regs.esp;
-	uint32 flags = idle_thread->regs.eflags;
-	uint32 entry = idle_thread->regs.eip;
 
 	//Start idle thread
 	_asm
 	{
-		mov ax, KERNEL_DS
-		mov ds, ax
-		mov es, ax
-		mov fs, ax
-		mov gs, ax
+		mov esp, stack
 
-		push KERNEL_SS
-		push[stack]
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
 
-		push flags
-
-		push KERNEL_CS
-		push entry
 		iretd
 	}
 }
@@ -146,19 +131,62 @@ void Scheduler::Exit(int exitcode)
 
 void Scheduler::Schedule()
 {
+	Debug::Print("\t%i\t%ux\t%ux\n", current_thread->id, current_thread->regs.cs, current_thread->regs.esp);
+	Debug::Dump(current_thread, 4 + sizeof(REGS));
 	current_thread = current_thread->next;
 
 	if (current_thread == idle_thread)
 		current_thread = current_thread->next;
+
+	Debug::Print("\t%i\t%ux\t%ux\n", current_thread->id, current_thread->regs.cs, current_thread->regs.esp);
+	Debug::Dump(current_thread, 4 + sizeof(REGS));
+
+	PIC::InterruptDone(TASK_SCHEDULE_IRQ);
 }
 
-void Scheduler::Task_ISR(REGS* regs)
+uint32 fpu_state;
+
+void INTERRUPT Scheduler::Task_ISR()
 {
-	current_thread->regs = *regs;
-	Schedule();
-	*regs = current_thread->regs;
-	TSS::SetStack(KERNEL_SS, current_thread->regs.esp);
-	pit_isr(regs);
+	_asm
+	{
+		cli
+
+		//Push registers
+		pushad
+
+		push ds
+		push es
+		push fs
+		push gs
+
+		//Save esp
+		mov eax, [current_thread]
+		mov[eax], esp
+
+		//Schedule
+		call Schedule
+
+		//Call pit_isr
+		//push 0
+		//call pit_isr
+		//add esp, 4
+
+		//Load esp
+		mov eax, [current_thread]
+		mov esp, [eax]
+
+		//Load registers
+		pop gs
+		pop fs
+		pop es
+		pop ds
+
+		popad
+
+		//Return
+		iretd
+	}
 }
 
 void _declspec (naked) Scheduler::Idle()

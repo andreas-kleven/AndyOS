@@ -49,20 +49,6 @@ STATUS IDT::Init()
 		return STATUS_SUCCESS;
 }
 
-STATUS IDT::InstallIRQ(uint32 i, IRQ_HANDLER handler)
-{
-	if (i > MAX_INTERRUPTS || !handler)
-		return STATUS_FAILED;
-
-	handlers[i] = handler;
-	return STATUS_SUCCESS;
-}
-
-IRQ_HANDLER IDT::GetHandler(uint32 i)
-{
-	return handlers[i];
-}
-
 STATUS IDT::SetISR(uint32 i, void* irq, int flags)
 {
 	if (i > MAX_INTERRUPTS || !irq)
@@ -77,6 +63,20 @@ STATUS IDT::SetISR(uint32 i, void* irq, int flags)
 	idt[i].sel = KERNEL_CS;
 
 	return STATUS_SUCCESS;
+}
+
+STATUS IDT::InstallIRQ(uint32 i, IRQ_HANDLER handler)
+{
+	if (i > MAX_INTERRUPTS || !handler)
+		return STATUS_FAILED;
+
+	handlers[i] = handler;
+	return STATUS_SUCCESS;
+}
+
+IRQ_HANDLER IDT::GetHandler(uint32 i)
+{
+	return handlers[i];
 }
 
 IDT_DESCRIPTOR* IDT::GetIR(uint32 i)
@@ -135,8 +135,6 @@ void INTERRUPT IDT::CommonIRQ()
 
 void IDT::CommonHandler(int i, REGS* regs)
 {
-	_asm fxsave fpustate
-
 	if (handlers[i])
 		handlers[i](regs);
 

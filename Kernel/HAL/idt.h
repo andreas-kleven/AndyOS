@@ -41,6 +41,7 @@ static class IDT
 {
 public:
 	static STATUS Init();
+	static STATUS SetISR(uint32 i, void* irq, int flags);
 	static STATUS InstallIRQ(uint32 i, IRQ_HANDLER irq);
 	static IRQ_HANDLER GetHandler(uint32 i);
 
@@ -49,7 +50,6 @@ private:
 	static IRQ_HANDLER handlers[MAX_INTERRUPTS];
 	static IDT_REG idt_reg;
 
-	static STATUS SetISR(uint32 i, void* irq, int flags);
 	static IDT_DESCRIPTOR* GetIR(uint32 i);
 	static void EmptyISR();
 	static void CommonIRQ();

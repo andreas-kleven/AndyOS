@@ -97,18 +97,12 @@ void _Process()
 	Process::Create("Test.exe");
 }
 
-int busy = 0;
-
 void T1()
 {
 	while (1)
 	{
-		if (busy == 0)
-		{
-			Debug::Print("1");
-			busy = 1;
-		}
-
+		Debug::bcolor = 0;
+		Debug::Print("1");
 		_asm pause
 	}
 }
@@ -128,11 +122,7 @@ void T2()
 
 	while (1)
 	{
-		if (busy == 1)
-		{
-			Debug::color = colors[(t++ / 10) % 6];
-			busy = 0;
-		}
+		Debug::color = colors[(t++ / 10) % 6];
 		_asm pause
 	}
 }
@@ -145,6 +135,7 @@ void OS::Main()
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 
 	Thread* t1 = Scheduler::CreateKernelThread(T1);
+	//Thread* t2 = Scheduler::CreateKernelThread(T2);
 	Thread* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStack + BLOCK_SIZE));
 
 	Scheduler::InsertThread(t1);
@@ -153,15 +144,15 @@ void OS::Main()
 	while (1)
 		_asm pause;
 
-	//FS::Init();
-
 	//Net::Init();
 
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
 	//mandelbrot.Run();
 
+	FS::Init();
+
 	//GUI();
-	//Game();
+	Game();
 	//Audio();
 	//_Font();
 	//Syscall();

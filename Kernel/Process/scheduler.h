@@ -19,7 +19,7 @@ public:
 
 private:
 	static void Schedule();
-	static void Task_ISR(REGS* regs);
+	static void Task_ISR();
 
 	static void Idle();
 };
