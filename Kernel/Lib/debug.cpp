@@ -41,7 +41,9 @@ void Debug::Putc(char c, bool escape)
 			break;
 
 		case '\t':
-			Print("    ");
+			Putc(' ');
+			while (x % 4)
+				Putc(' ');
 			break;
 
 		case '\b':
