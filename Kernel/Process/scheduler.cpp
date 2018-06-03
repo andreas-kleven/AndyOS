@@ -3,10 +3,10 @@
 #include "Memory/memory.h"
 #include "debug.h"
 
-Thread* first_thread;
-Thread* last_thread;
-Thread* current_thread;
-Thread* idle_thread;
+THREAD* first_thread;
+THREAD* last_thread;
+THREAD* current_thread;
+THREAD* idle_thread;
 
 uint32 id_counter = 0;
 uint32 tmp_stack;
@@ -25,9 +25,9 @@ STATUS Scheduler::Init()
 	return STATUS_SUCCESS;
 }
 
-Thread* Scheduler::CreateKernelThread(void* main)
+THREAD* Scheduler::CreateKernelThread(void* main)
 {
-	Thread* thread = (Thread*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(Thread));
+	THREAD* thread = (THREAD*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(THREAD));
 	thread->id = ++id_counter;
 
 	thread->stack = (uint32)&thread->regs;
@@ -43,9 +43,9 @@ Thread* Scheduler::CreateKernelThread(void* main)
 	return thread;
 }
 
-Thread* Scheduler::CreateUserThread(void* main, void* stack)
+THREAD* Scheduler::CreateUserThread(void* main, void* stack)
 {
-	Thread* thread = CreateKernelThread(main);
+	THREAD* thread = CreateKernelThread(main);
 
 	thread->regs.cs = USER_CS;
 	thread->regs.ds = USER_SS;
@@ -58,7 +58,7 @@ Thread* Scheduler::CreateUserThread(void* main, void* stack)
 	return thread;
 }
 
-void Scheduler::InsertThread(Thread* thread)
+void Scheduler::InsertThread(THREAD* thread)
 {
 	if (first_thread)
 	{
@@ -97,17 +97,17 @@ void Scheduler::StartThreading()
 	}
 }
 
-void Scheduler::RemoveThread(Thread* thread)
+void Scheduler::RemoveThread(THREAD* thread)
 {
 	_asm cli
 
 	if (!thread)
 		return;
 
-	Thread* t = first_thread;
+	THREAD* t = first_thread;
 	while (t)
 	{
-		Thread* next = t->next;
+		THREAD* next = t->next;
 
 		if (next == thread)
 		{

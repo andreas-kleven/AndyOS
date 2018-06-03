@@ -2,7 +2,7 @@
 #include "Memory/memory.h"
 #include "string.h"
 
-Thread::Thread()
+THREAD::THREAD()
 {
 	this->regs.ebp = 0;
 	this->regs.esp = 0;

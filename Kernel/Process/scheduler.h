@@ -7,12 +7,12 @@ static class Scheduler
 {
 public:
 	static STATUS Init();
-	static Thread* CreateKernelThread(void* main);
-	static Thread* CreateUserThread(void* main, void* stack);
-	static void InsertThread(Thread* thread);
+	static THREAD* CreateKernelThread(void* main);
+	static THREAD* CreateUserThread(void* main, void* stack);
+	static void InsertThread(THREAD* thread);
 
 	static void StartThreading();
-	static void RemoveThread(Thread* thread);
+	static void RemoveThread(THREAD* thread);
 
 	static void Exit(int exitcode);
 

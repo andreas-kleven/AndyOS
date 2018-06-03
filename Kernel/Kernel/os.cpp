@@ -141,9 +141,9 @@ void OS::Main()
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stack, (uint32)virtStack, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 
-	Thread* t1 = Scheduler::CreateKernelThread(T1);
+	THREAD* t1 = Scheduler::CreateKernelThread(T1);
 	//Thread* t2 = Scheduler::CreateKernelThread(T2);
-	Thread* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStack + BLOCK_SIZE));
+	THREAD* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStack + BLOCK_SIZE));
 
 	Scheduler::InsertThread(t1);
 	Scheduler::InsertThread(t2);

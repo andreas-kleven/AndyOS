@@ -6,7 +6,7 @@ struct PROCESS
 {
 	uint16 id;
 	PAGE_DIR* page_dir;
-	Thread* thread;
+	THREAD* thread;
 	PROCESS* next;
 };
 
