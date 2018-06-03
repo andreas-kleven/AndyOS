@@ -99,7 +99,7 @@ void _Process()
 
 void T2()
 {
-	const char* text = "1";
+	const char* text = "'";
 
 	while (1)
 	{
@@ -108,9 +108,8 @@ void T2()
 			mov eax, 2
 			mov ebx, text
 			int 0x80
+			pause
 		}
-
-		_asm pause
 	}
 }
 

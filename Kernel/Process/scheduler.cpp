@@ -46,6 +46,12 @@ Thread* Scheduler::CreateKernelThread(void* main)
 Thread* Scheduler::CreateUserThread(void* main, void* stack)
 {
 	Thread* thread = CreateKernelThread(main);
+
+	thread->regs.cs = USER_CS;
+	thread->regs.ds = USER_SS;
+	thread->regs.es = USER_SS;
+	thread->regs.fs = USER_SS;
+	thread->regs.gs = USER_SS;
 	thread->regs.user_stack = (uint32)stack;
 	thread->regs.user_ss = USER_SS;
 
