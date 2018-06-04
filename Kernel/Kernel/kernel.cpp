@@ -49,7 +49,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	/**/VBE::Init(vbeMode);
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 
-	Debug::Init();
+	Debug::Init(false);
 	Debug::color = 0xFF00FF00;
 
 	ATA::Init();

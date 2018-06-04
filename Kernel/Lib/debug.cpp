@@ -5,6 +5,8 @@
 #include "Drivers/serial.h"
 #include "math.h"
 
+bool serial;
+
 int Debug::x;
 int Debug::y;
 int Debug::x0;
@@ -12,9 +14,13 @@ int Debug::x0;
 uint32 Debug::color = 0xFFFFFFFF;
 uint32 Debug::bcolor = 0xFF000000;
 
-STATUS Debug::Init()
+STATUS Debug::Init(bool _serial)
 {
-	Serial::Init(COM_PORT1, 115200);
+	serial = _serial;
+
+	if (serial)
+		Serial::Init(COM_PORT1, 115200);
+
 	return STATUS_SUCCESS;
 }
 
@@ -87,10 +93,13 @@ void Debug::Putc(char c, bool escape)
 		y = 0;
 	}
 
-	Serial::Transmit(COM_PORT1, c);
+	if (serial)
+	{
+		Serial::Transmit(COM_PORT1, c);
 
-	if (c == '\n')
-		Serial::Transmit(COM_PORT1, '\r');
+		if (c == '\n')
+			Serial::Transmit(COM_PORT1, '\r');
+	}
 }
 
 void Debug::Clear(uint32 c)
