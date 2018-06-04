@@ -94,6 +94,12 @@ struct PAGE_DIR
 	PAGE_DIR_ENTRY entries[PAGE_DIR_LENGTH];
 };
 
+struct PAGE_DIR_LINK
+{
+	PAGE_DIR* page_dir;
+	PAGE_DIR_LINK* next;
+};
+
 static class VMem
 {
 public:
@@ -101,9 +107,11 @@ public:
 	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags);
 	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
-	static PAGE_DIR* GetCurrentDir();
-
 	static void SwitchDir(PAGE_DIR* dir);
+	static void Sync(PAGE_DIR* dir);
+
+	static PAGE_DIR* CreatePageDir();
+	static PAGE_DIR* GetCurrentDir();
 
 private:
 	static bool CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags);

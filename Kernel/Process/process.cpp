@@ -105,33 +105,6 @@ typedef struct _IMAGE_SECTION_HEADER {
 	uint32 Characteristics;
 } IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
 
-PAGE_DIR* CreateAddressSpace()
-{
-	PAGE_DIR* dir = new PAGE_DIR;
-	memset(dir, 0, sizeof(PAGE_DIR));
-
-	//Tables
-	PAGE_TABLE* tables = new PAGE_TABLE[PAGE_DIR_LENGTH];
-	memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
-
-	PAGE_DIR* current = VMem::GetCurrentDir();
-
-	for (int i = 0; i < 256; i++)
-	{
-		dir->entries[i] = current->entries[i];
-	}
-
-	for (int i = 256; i < PAGE_DIR_LENGTH; i++)
-	{
-		PAGE_TABLE* table = tables + i;
-		dir->entries[i].SetTable(table);
-	}
-
-	//Map framebuffer
-	VMem::MapPhysAddr(dir, 0xE0000000, 0xE0000000, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 0x300);
-	return dir;
-}
-
 PROCESS_INFO* Process::Create(char* filename)
 {
 	char* image;
@@ -154,7 +127,7 @@ PROCESS_INFO* Process::Create(char* filename)
 
 	_asm cli
 
-	PAGE_DIR* dir = CreateAddressSpace();
+	PAGE_DIR* dir = VMem::CreatePageDir();
 	VMem::SwitchDir(dir);
 
 	for (int i = 0; i < ntheader->FileHeader.NumberOfSections; i++)
@@ -227,6 +200,8 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
 		thread->procNext = proc->main_thread->procNext;
 		proc->main_thread->procNext = thread;
 	}
+
+	VMem::Sync(thread->page_dir);
 
 	Scheduler::InsertThread(thread);
 	return thread;

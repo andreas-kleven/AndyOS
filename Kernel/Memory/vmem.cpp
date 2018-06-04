@@ -11,7 +11,8 @@
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)
 #define PAGE_GET_PHYSICAL_ADDRESS(x) (*x & ~0xFFF)
 
-PAGE_DIR* current_dir;
+PAGE_DIR* current_dir = 0;
+PAGE_DIR_LINK* page_dirs = 0;
 
 void VMem::Init(MULTIBOOT_INFO* bootinfo)
 {
@@ -21,6 +22,11 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo)
 	//Page dir
 	PAGE_DIR* dir = (PAGE_DIR*)PMem::AllocBlocks(1);
 	memset(dir, 0, sizeof(PAGE_DIR));
+
+	//Page dir link
+	page_dirs = (PAGE_DIR_LINK*)PMem::AllocBlocks(1);
+	page_dirs->page_dir = dir;
+	page_dirs->next = 0;
 
 	//Tables
 	PAGE_TABLE* tables = (PAGE_TABLE*)PMem::AllocBlocks(PAGE_DIR_LENGTH);
@@ -36,6 +42,7 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo)
 
 	//Map page dir and tables
 	MapPhysAddr(dir, (uint32)dir, (uint32)dir, flags);
+	MapPhysAddr(dir, (uint32)page_dirs, (uint32)page_dirs, flags);
 	MapPhysAddr(dir, (uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
 
 	//Identity map first 1 MB
@@ -80,6 +87,77 @@ bool VMem::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, ui
 	return 1;
 }
 
+void VMem::SwitchDir(PAGE_DIR* dir)
+{
+	if (dir == current_dir)
+		return;
+
+	uint32 addr = (uint32)&dir->entries;
+	current_dir = dir;
+
+	_asm
+	{
+		mov	eax, [addr]
+		mov	cr3, eax
+	}
+}
+
+void VMem::Sync(PAGE_DIR* dir)
+{
+	PAGE_DIR_LINK* link = page_dirs;
+
+	while (link)
+	{
+		if (link->page_dir != dir)
+		{
+
+			for (int i = 0; i < 256; i++)
+			{
+				link->page_dir->entries[i] = dir->entries[i];
+			}
+		}
+
+		link = link->next;
+	}
+}
+
+PAGE_DIR* VMem::CreatePageDir()
+{
+	PAGE_DIR* dir = new PAGE_DIR;
+	memset(dir, 0, sizeof(PAGE_DIR));
+
+	//Tables
+	PAGE_TABLE* tables = new PAGE_TABLE[PAGE_DIR_LENGTH];
+	memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
+
+	PAGE_DIR* current = VMem::GetCurrentDir();
+
+	for (int i = 0; i < 256; i++)
+	{
+		dir->entries[i] = current->entries[i];
+	}
+
+	for (int i = 256; i < PAGE_DIR_LENGTH; i++)
+	{
+		PAGE_TABLE* table = tables + i;
+		dir->entries[i].SetTable(table);
+	}
+
+	//Map framebuffer
+	VMem::MapPhysAddr(dir, 0xE0000000, 0xE0000000, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 0x300); // TODO: Remove this
+
+	//Create and insert link
+	PAGE_DIR_LINK* link = new PAGE_DIR_LINK;
+	link->page_dir = dir;
+	link->next = page_dirs;
+	page_dirs = link;
+
+	//Synchronize changes with all directories
+	Sync(dir);
+
+	return dir;
+}
+
 PAGE_DIR* VMem::GetCurrentDir()
 {
 	return current_dir;
@@ -102,21 +180,6 @@ bool VMem::CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags)
 	dir_entry->SetTable(table);
 	MapPhysAddr(dir, (uint32)table, (uint32)table, flags);
 	return 1;
-}
-
-void VMem::SwitchDir(PAGE_DIR* dir)
-{
-	if (dir == current_dir)
-		return;
-
-	uint32 addr = (uint32)&dir->entries;
-	current_dir = dir;
-
-	_asm
-	{
-		mov	eax, [addr]
-		mov	cr3, eax
-	}
 }
 
 void VMem::EnablePaging()

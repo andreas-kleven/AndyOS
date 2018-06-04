@@ -169,7 +169,6 @@ void OS::Main()
 	uint32 virtStacks = (uint32)0x70000000;
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stacks, (uint32)virtStacks, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
-	COM();
 
 	uint32 stack = (uint32)PMem::AllocBlocks(1);
 	uint32 virtStack = (uint32)0x50000000;
@@ -199,6 +198,7 @@ void OS::Main()
 	//Audio();
 	//_Font();
 	//Syscall();
+	//COM();
 	_Process();
 	while (1);
 
