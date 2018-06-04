@@ -2,6 +2,7 @@
 #include "File System/filesys.h"
 #include "HAL/hal.h"
 #include "Memory/memory.h"
+#include "scheduler.h"
 #include "string.h"
 #include "debug.h"
 
@@ -131,20 +132,18 @@ PAGE_DIR* CreateAddressSpace()
 	return dir;
 }
 
-void Process::Create(char* filename)
+PROCESS_INFO* Process::Create(char* filename)
 {
 	char* image;
 	int size = FS::ReadFile(filename, image);
 
 	if (!size)
-		return;
-
-	Debug::Dump(image, 256);
+		return 0;
 
 	DOS_Header* dos_header = (DOS_Header*)image;
 	IMAGE_NT_HEADERS* ntheader = (IMAGE_NT_HEADERS*)(uint32(image) + dos_header->e_lfanew);
 
-	uint32 entry = ntheader->OptionalHeader.AddressOfEntryPoint;
+	uint32 entryAddress = ntheader->OptionalHeader.AddressOfEntryPoint;
 	uint32 imagebase = ntheader->OptionalHeader.ImageBase;
 	uint32 codebase = ntheader->OptionalHeader.BaseOfCode;
 	uint32 alignment = ntheader->OptionalHeader.FileAlignment;
@@ -152,6 +151,8 @@ void Process::Create(char* filename)
 	IMAGE_SECTION_HEADER* textheader = 0;
 
 	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
+
+	_asm cli
 
 	PAGE_DIR* dir = CreateAddressSpace();
 	VMem::SwitchDir(dir);
@@ -168,52 +169,81 @@ void Process::Create(char* filename)
 		uint32* ptr = (uint32*)PMem::AllocBlocks(1);
 		VMem::MapPhysAddr(dir, (uint32)ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), flags);
 		memcpy((uint32*)(imagebase + sectionHeader->VirtualAddress), image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
-
-		Debug::Print("%ux\t", sectionHeader->VirtualAddress);
-		Debug::Dump(sectionHeader->Name, 8, true);
 	}
 
 	uint32 pointerToRawData = textheader->PointerToRawData;
+	int entry = imagebase + entryAddress;
 
-	Debug::Print("Raw data: %ux\n", pointerToRawData);
-	Debug::Print("Entry: %ux\n", entry);
+	PROCESS_INFO* proc = new PROCESS_INFO(PROCESS_USER, dir);
+	Process::CreateThread(proc, (void*)entry);
 
-	int absEntry = imagebase + entry;
+	_asm sti
+	return proc;
+}
 
-	Debug::Print("Entry: %ux\n", absEntry);
-	Debug::Print("End: %ux\n", ntheader->OptionalHeader.ImageBase + ntheader->OptionalHeader.SizeOfImage);
+STATUS Process::Terminate(PROCESS_INFO* proc)
+{
+	return STATUS_FAILED;
+}
 
-	uint32 stack = (uint32)PMem::AllocBlocks(1);
-	uint8* stackVirt = (uint8*)(ntheader->OptionalHeader.ImageBase + ntheader->OptionalHeader.SizeOfImage + PAGE_SIZE);
-	VMem::MapPhysAddr(dir, stack, (uint32)stackVirt - PAGE_SIZE, flags, 1);
+STATUS Process::Kill(PROCESS_INFO* proc)
+{
+	return STATUS_FAILED;
+}
 
-	char* kstack = new char[BLOCK_SIZE];
-	TSS::SetStack(KERNEL_SS, (uint32)kstack + BLOCK_SIZE);
+THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
+{
+	THREAD* thread = 0;
 
-	_asm
+	//Create thread
+	switch (proc->flags)
 	{
-		cli
-		mov ax, USER_DS; user mode data selector is 0x20 (GDT entry 3).Also sets RPL to 3
-		mov ds, ax
-		mov es, ax
-		mov fs, ax
-		mov gs, ax
+	case PROCESS_KERNEL:
+		thread = Scheduler::CreateKernelThread(main);
+		break;
 
-		push USER_SS; SS, notice it uses same selector as above
-		push[stackVirt]; ESP
-		//push esp
+	case PROCESS_USER:
+		uint32 stackPhys = (uint32)PMem::AllocBlocks(1);
+		uint8* stack = (uint8*)(0x40000000 + BLOCK_SIZE * 100);
+		VMem::MapPhysAddr(proc->page_dir, stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
-		//push 0x200
-		pushfd; EFLAGS
-
-		pop eax
-		or eax, 0x200; enable IF in EFLAGS
-		push eax
-
-		push USER_CS; CS, user mode code selector is 0x18. With RPL 3 this is 0x1b
-		push absEntry
-		iretd
+		thread = Scheduler::CreateUserThread(main, stack + BLOCK_SIZE);
+		break;
 	}
 
-	return;
+	if (!thread)
+		return 0;
+
+	thread->page_dir = proc->page_dir;
+
+	//Insert into thread list
+	if (proc->main_thread == 0)
+	{
+		thread->procNext = thread;
+		proc->main_thread = thread;
+	}
+	else
+	{
+		thread->procNext = proc->main_thread->procNext;
+		proc->main_thread->procNext = thread;
+	}
+
+	Scheduler::InsertThread(thread);
+	return thread;
+}
+
+STATUS Process::RemoveThread(THREAD* thread)
+{
+	return STATUS_FAILED;
+}
+
+int procIdCounter = 0;
+
+PROCESS_INFO::PROCESS_INFO(PROCESS_FLAGS flags, PAGE_DIR* page_dir)
+{
+	this->id = ++procIdCounter;
+	this->flags = flags;
+	this->page_dir = page_dir;
+	this->next = 0;
+	this->main_thread = 0;
 }

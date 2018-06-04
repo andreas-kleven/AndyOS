@@ -14,6 +14,12 @@ int print(char* text)
 	return 1;
 }
 
+int debug_color(uint32 color)
+{
+	Debug::color = color;
+	return 1;
+}
+
 int _cdecl gettime(int& hour, int& minute, int& second)
 {
 	hour = RTC::Hour();
@@ -27,7 +33,8 @@ void* syscalls[] =
 	0,
 	&exit,
 	&print,
-	&gettime
+	&gettime,
+	&debug_color
 };
 
 STATUS Syscalls::Init()

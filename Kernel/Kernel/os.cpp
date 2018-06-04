@@ -95,9 +95,10 @@ void Syscall()
 void _Process()
 {
 	Process::Create("Test.exe");
+	Process::Create("_Test.exe");
 }
 
-void T2()
+void T1()
 {
 	const char* text = "'";
 
@@ -113,9 +114,10 @@ void T2()
 	}
 }
 
-void T1()
+void T2()
 {
-	uint32 colors[] = {
+	uint32 colors[] = 
+	{
 		COLOR_RED,
 		COLOR_BLUE,
 		COLOR_GREEN,
@@ -128,28 +130,39 @@ void T1()
 
 	while (1)
 	{
-		Debug::color = colors[(t++ / 10) % 6];
-		Debug::bcolor = 0;
-		_asm pause
+		//Debug::color = colors[(t++ / 10) % 6];
+		//Debug::bcolor = 0;
+
+		uint32 color = colors[(t++ / 10) % 6];
+
+		_asm
+		{
+			mov eax, 4
+			mov ebx, color
+			int 0x80
+			pause
+		}
 	}
 }
 
 void OS::Main()
 {
-	uint32 stack = (uint32)PMem::AllocBlocks(1);
-	uint32 virtStack = (uint32)0x50000000;
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stack, (uint32)virtStack, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+	uint32 stacks = (uint32)PMem::AllocBlocks(1);
+	uint32 virtStacks = (uint32)0x70000000;
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stacks, (uint32)virtStacks, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 
-	THREAD* t1 = Scheduler::CreateKernelThread(T1);
-	//Thread* t2 = Scheduler::CreateKernelThread(T2);
-	THREAD* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStack + BLOCK_SIZE));
+	//THREAD* t1 = Scheduler::CreateKernelThread(T1);
+	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
+	THREAD* t1 = Scheduler::CreateUserThread(T1, (void*)(virtStacks + BLOCK_SIZE));
+	THREAD* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStacks + BLOCK_SIZE * 2));
 
 	Scheduler::InsertThread(t1);
 	Scheduler::InsertThread(t2);
 
-	while (1)
-		_asm pause;
+	//while (1)
+	//	_asm pause;
 
 	//Net::Init();
 
@@ -159,7 +172,7 @@ void OS::Main()
 	FS::Init();
 
 	//GUI();
-	Game();
+	//Game();
 	//Audio();
 	//_Font();
 	//Syscall();

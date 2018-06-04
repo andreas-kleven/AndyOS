@@ -25,16 +25,19 @@ int main()
 	//char text[256];
 	//vprintf(text, "%i:%i:%i\n", hour, minute, second);
 
-	const char* text = "Hello from user mode\n";
-
-	_asm
+	while (1)
 	{
-		mov eax, 2
-		mov ebx, text
-		int 0x80
-		add esp, 4
+		const char* text = "_";
 
-		mov[result], eax
+		_asm
+		{
+			mov eax, 2
+			mov ebx, text
+			int 0x80
+			add esp, 4
+
+			mov[result], eax
+		}
 	}
 
 	while (1);

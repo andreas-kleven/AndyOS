@@ -30,30 +30,33 @@ THREAD* Scheduler::CreateKernelThread(void* main)
 	THREAD* thread = (THREAD*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(THREAD));
 	thread->id = ++id_counter;
 
-	thread->stack = (uint32)&thread->regs;
-	thread->regs.esp = (uint32)&thread->regs;
-	thread->regs.eip = (uint32)main;
-	thread->regs.eflags = 0x200;
-	thread->regs.cs = KERNEL_CS;
-	thread->regs.ds = KERNEL_SS;
-	thread->regs.es = KERNEL_SS;
-	thread->regs.fs = KERNEL_SS;
-	thread->regs.gs = KERNEL_SS;
+	thread->stack = (uint32)(thread - 1) - sizeof(REGS);
+	thread->regs = (REGS*)thread->stack;
+	thread->regs->esp = (uint32)&thread->regs;
+	thread->regs->eip = (uint32)main;
+	thread->regs->eflags = 0x200;
+	thread->regs->cs = KERNEL_CS;
+	thread->regs->ds = KERNEL_SS;
+	thread->regs->es = KERNEL_SS;
+	thread->regs->fs = KERNEL_SS;
+	thread->regs->gs = KERNEL_SS;
 
+	thread->page_dir = VMem::GetCurrentDir();
 	return thread;
 }
 
 THREAD* Scheduler::CreateUserThread(void* main, void* stack)
 {
 	THREAD* thread = CreateKernelThread(main);
+	thread->kernel_esp = thread->stack;
 
-	thread->regs.cs = USER_CS;
-	thread->regs.ds = USER_SS;
-	thread->regs.es = USER_SS;
-	thread->regs.fs = USER_SS;
-	thread->regs.gs = USER_SS;
-	thread->regs.user_stack = (uint32)stack;
-	thread->regs.user_ss = USER_SS;
+	thread->regs->cs = USER_CS;
+	thread->regs->ds = USER_SS;
+	thread->regs->es = USER_SS;
+	thread->regs->fs = USER_SS;
+	thread->regs->gs = USER_SS;
+	thread->regs->user_stack = (uint32)stack;
+	thread->regs->user_ss = USER_SS;
 
 	return thread;
 }
@@ -136,6 +139,7 @@ void Scheduler::Schedule()
 {
 	//Save stack
 	current_thread->stack = tmp_stack;
+	current_thread->regs = (REGS*)tmp_stack;
 
 	//Schedule
 	current_thread = current_thread->next;
@@ -145,6 +149,11 @@ void Scheduler::Schedule()
 
 	//Restore stack
 	tmp_stack = current_thread->stack;
+
+	VMem::SwitchDir(current_thread->page_dir);
+
+	if (current_thread->kernel_esp)
+		TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
 
 	PIC::InterruptDone(TASK_SCHEDULE_IRQ);
 }
@@ -164,7 +173,7 @@ void INTERRUPT Scheduler::Task_ISR()
 		push gs
 
 		//Save esp
-		mov [tmp_stack], esp
+		mov[tmp_stack], esp
 
 		//Schedule
 		call Schedule

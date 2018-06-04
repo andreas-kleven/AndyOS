@@ -19,8 +19,8 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo)
 	memcpy(info, bootinfo, sizeof(MULTIBOOT_INFO));
 
 	//Page dir
-	current_dir = (PAGE_DIR*)PMem::AllocBlocks(1);
-	memset(current_dir, 0, sizeof(PAGE_DIR));
+	PAGE_DIR* dir = (PAGE_DIR*)PMem::AllocBlocks(1);
+	memset(dir, 0, sizeof(PAGE_DIR));
 
 	//Tables
 	PAGE_TABLE* tables = (PAGE_TABLE*)PMem::AllocBlocks(PAGE_DIR_LENGTH);
@@ -29,22 +29,22 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo)
 	for (int i = 0; i < PAGE_DIR_LENGTH; i++)
 	{
 		PAGE_TABLE* table = tables + i;
-		current_dir->entries[i].SetTable(table);
+		dir->entries[i].SetTable(table);
 	}
 
 	uint32 flags = PDE_PRESENT | PDE_WRITABLE;
 
 	//Map page dir and tables
-	MapPhysAddr(current_dir, (uint32)current_dir, (uint32)current_dir, flags);
-	MapPhysAddr(current_dir, (uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
+	MapPhysAddr(dir, (uint32)dir, (uint32)dir, flags);
+	MapPhysAddr(dir, (uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
 
 	//Identity map first 1 MB
-	MapPhysAddr(current_dir, 0, 0, flags, 0x100000 / BLOCK_SIZE);
+	MapPhysAddr(dir, 0, 0, flags, 0x100000 / BLOCK_SIZE);
 
 	//Map kernel and memory map
-	MapPhysAddr(current_dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, (KERNEL_SIZE + MEMORY_MAP_SIZE) / BLOCK_SIZE);
+	MapPhysAddr(dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, (KERNEL_SIZE + MEMORY_MAP_SIZE) / BLOCK_SIZE);
 
-	SwitchDir(current_dir);
+	SwitchDir(dir);
 	EnablePaging();
 
 	Kernel::HigherHalf(info);
@@ -106,6 +106,9 @@ bool VMem::CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags)
 
 void VMem::SwitchDir(PAGE_DIR* dir)
 {
+	if (dir == current_dir)
+		return;
+
 	uint32 addr = (uint32)&dir->entries;
 	current_dir = dir;
 
