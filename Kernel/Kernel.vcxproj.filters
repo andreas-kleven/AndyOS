@@ -237,6 +237,9 @@
     <ClCompile Include="Process\scheduler.cpp">
       <Filter>Process</Filter>
     </ClCompile>
+    <ClCompile Include="Drivers\serial.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Net\address.h">
@@ -463,6 +466,9 @@
     </ClInclude>
     <ClInclude Include="Process\scheduler.h">
       <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\serial.h">
+      <Filter>Drivers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

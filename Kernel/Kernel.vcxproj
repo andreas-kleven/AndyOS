@@ -32,6 +32,7 @@
     <ClCompile Include="Drivers\keyboard.cpp" />
     <ClCompile Include="Drivers\mouse.cpp" />
     <ClCompile Include="Drivers\ne1000.cpp" />
+    <ClCompile Include="Drivers\serial.cpp" />
     <ClCompile Include="File System\disk.cpp" />
     <ClCompile Include="File System\filesys.cpp" />
     <ClCompile Include="File System\iso.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Drivers\keyboard.h" />
     <ClInclude Include="Drivers\mouse.h" />
     <ClInclude Include="Drivers\ne1000.h" />
+    <ClInclude Include="Drivers\serial.h" />
     <ClInclude Include="File System\disk.h" />
     <ClInclude Include="File System\filesys.h" />
     <ClInclude Include="File System\iso.h" />
