@@ -11,6 +11,7 @@ public:
 	static uint32 color;
 	static uint32 bcolor;
 
+	static STATUS Init();
 	static void Print(char* str, ...);
 	static void Putc(char c, bool escape = true);
 	static void Clear(uint32 c);

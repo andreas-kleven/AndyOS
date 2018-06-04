@@ -49,6 +49,9 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	/**/VBE::Init(vbeMode);
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 
+	Debug::Init();
+	Debug::color = 0xFF00FF00;
+
 	ATA::Init();
 
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
@@ -57,7 +60,6 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	Scheduler::Init();
 	Syscalls::Init();
 
-	Debug::color = 0xFF00FF00;
 	PCI::Init();
 	
 	PCI_DEVICE* net_dev = PCI::GetDevice(2, 0, 0);

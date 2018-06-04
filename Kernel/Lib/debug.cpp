@@ -2,6 +2,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "Drawing/drawing.h"
+#include "Drivers/serial.h"
 #include "math.h"
 
 int Debug::x;
@@ -10,6 +11,12 @@ int Debug::x0;
 
 uint32 Debug::color = 0xFFFFFFFF;
 uint32 Debug::bcolor = 0xFF000000;
+
+STATUS Debug::Init()
+{
+	Serial::Init(COM_PORT1, 115200);
+	return STATUS_SUCCESS;
+}
 
 void Debug::Print(char* str, ...)
 {
@@ -79,6 +86,11 @@ void Debug::Putc(char c, bool escape)
 		x = x0;
 		y = 0;
 	}
+
+	Serial::Transmit(COM_PORT1, c);
+
+	if (c == '\n')
+		Serial::Transmit(COM_PORT1, '\r');
 }
 
 void Debug::Clear(uint32 c)
