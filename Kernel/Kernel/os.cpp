@@ -12,7 +12,7 @@
 #include "Drawing/font.h"
 #include "GUI/GUI.h"
 #include "System.h"
-
+#include "Drivers/serial.h"
 #include "Test/Mandelbrot.h"
 #include "Test/TextEdit.h"
 
@@ -145,12 +145,35 @@ void T2()
 	}
 }
 
+void COM()
+{
+	if (!Serial::Init(COM_PORT1, 9600))
+		Debug::Print("Com init failed\n");
+
+	while (1)
+	{
+		KEY_PACKET key = Keyboard::GetLastKey();
+
+		if (key.key != KEY_INVALID)
+		{
+			char c = key.character;
+			Keyboard::DiscardLastKey();
+			Serial::Transmit(COM_PORT1, c);
+		}
+	}
+}
+
 void OS::Main()
 {
 	uint32 stacks = (uint32)PMem::AllocBlocks(1);
 	uint32 virtStacks = (uint32)0x70000000;
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stacks, (uint32)virtStacks, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+	COM();
+
+	uint32 stack = (uint32)PMem::AllocBlocks(1);
+	uint32 virtStack = (uint32)0x50000000;
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stack, (uint32)virtStack, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
 
 	//THREAD* t1 = Scheduler::CreateKernelThread(T1);

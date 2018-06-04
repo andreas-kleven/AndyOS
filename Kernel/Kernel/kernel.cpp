@@ -16,8 +16,8 @@
 #include "Drivers/keyboard.h"
 #include "Drivers/mouse.h"
 #include "Drivers/ac97.h"
+#include "Drivers/serial.h"
 #include "API/syscalls.h"
-
 #include "Net/net.h"
 //#include "i825.h"
 //#include "eth.h"
@@ -50,7 +50,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
 
 	ATA::Init();
-	
+
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
 	Keyboard::Init();
 
