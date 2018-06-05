@@ -145,10 +145,24 @@ void T2()
 	}
 }
 
+void COM_Receive()
+{
+	while (1)
+	{
+		char c = Serial::Receive(COM_PORT1);
+		Debug::Print("%c", c);
+	}
+}
+
 void COM()
 {
 	if (!Serial::Init(COM_PORT1, 9600))
-		Debug::Print("Com init failed\n");
+		Debug::Print("COM init failed\n");
+
+	Debug::Print("COM initialized\n");
+
+	THREAD* t = Scheduler::CreateKernelThread(COM_Receive);
+	Scheduler::InsertThread(t);
 
 	while (1)
 	{
@@ -165,6 +179,8 @@ void COM()
 
 void OS::Main()
 {
+	COM();
+
 	uint32 stacks = (uint32)PMem::AllocBlocks(1);
 	uint32 virtStacks = (uint32)0x70000000;
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stacks, (uint32)virtStacks, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
