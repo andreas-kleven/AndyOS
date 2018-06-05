@@ -12,7 +12,7 @@ STATUS PMem::Init(uint32 size, uint32* map)
 	mem_size = size;
 	mem_map = map;
 
-	num_blocks = mem_size / BLOCK_SIZE;
+	num_blocks = BYTES_TO_BLOCKS(mem_size);
 	num_free = num_blocks;
 
 	DeInitRegion(0, mem_size);
@@ -46,7 +46,6 @@ void PMem::DeInitRegion(void* addr, uint32 size)
 
 	SetBit(0);
 }
-
 
 void* PMem::AllocBlocks(uint32 size)
 {
@@ -114,13 +113,15 @@ uint32 PMem::FirstFreeNum(uint32 size)
 	if (size == 1)
 		return FirstFree();
 
-	for (int i = 1; i <= num_blocks - size; i++)
+	int i, j;
+
+	for (i = 1; i <= num_blocks - size; i++)
 	{
 		if (!GetBit(i))
 		{
 			bool found = true;
 
-			for (int j = 1; j < size; j++)
+			for (j = 1; j < size; j++)
 			{
 				if (GetBit(i + j))
 					found = false;
@@ -128,6 +129,8 @@ uint32 PMem::FirstFreeNum(uint32 size)
 
 			if (found)
 				return i;
+			else
+				i += j;
 		}
 	}
 

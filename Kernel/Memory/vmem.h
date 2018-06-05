@@ -53,6 +53,11 @@ struct PAGE_TABLE_ENTRY
 		value &= ~flag;
 	}
 
+	bool GetFlag(uint32 flag)
+	{
+		return value & flag;
+	}
+
 	void SetAddr(uint32 addr)
 	{
 		value = (value & ~PTE_FRAME) | addr;
@@ -71,6 +76,11 @@ struct PAGE_DIR_ENTRY
 	void UnsetFlag(uint32 flag)
 	{
 		value &= ~flag;
+	}
+
+	bool GetFlag(uint32 flag)
+	{
+		return value & flag;
 	}
 
 	void SetTable(PAGE_TABLE* table)
@@ -104,12 +114,19 @@ static class VMem
 {
 public:
 	static void Init(MULTIBOOT_INFO* bootinfo);
-	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags);
 	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
+
+	static void* MapFirstFree(PAGE_DIR* dir, uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end);
+	static void* KernelAlloc(PAGE_DIR* dir, uint32 blocks);
+	static void* UserAlloc(PAGE_DIR* dir, uint32 blocks);
+	static void* Alloc(PAGE_DIR* dir, uint32 flags, uint32 blocks, uint32 start, uint32 end);
+
+	static uint32 FirstFree(PAGE_DIR* dir, uint32 blocks, uint32 start, uint32 end);
 
 	static void SwitchDir(PAGE_DIR* dir);
 	static void Sync(PAGE_DIR* dir);
 
+	static PAGE_TABLE_ENTRY* GetTableEntry(PAGE_DIR* dir, uint32 virt);
 	static PAGE_DIR* CreatePageDir();
 	static PAGE_DIR* GetCurrentDir();
 

@@ -34,11 +34,8 @@ void* operator new(unsigned size)
 		return ptr;
 	}*/
 
-	int blocks = ceil(size / 4096.f);
-
-	void* addr = PMem::AllocBlocks(blocks);
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)addr, (uint32)addr, PTE_PRESENT | PTE_WRITABLE, blocks);
-
+	int blocks = BYTES_TO_BLOCKS(size);
+	void* addr = VMem::KernelAlloc(VMem::GetCurrentDir(), blocks);
 	return addr;
 }
 void operator delete(void* p)
@@ -53,11 +50,9 @@ void* operator new[](unsigned size)
 
 	if (size > mem_left)
 	{
-		int blocks = ceil(size / 4096.f);
+		int blocks = BYTES_TO_BLOCKS(size);
 
-		uint8* ptr = (uint8*)PMem::AllocBlocks(blocks);
-		VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)ptr, (uint32)ptr, PTE_PRESENT | PTE_WRITABLE, blocks);
-
+		uint8* ptr = (uint8*)VMem::KernelAlloc(VMem::GetCurrentDir(), blocks);
 		mem_ptr = ptr + size;
 
 		if (size < BLOCK_SIZE)

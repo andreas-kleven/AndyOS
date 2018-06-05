@@ -139,13 +139,19 @@ PROCESS_INFO* Process::Create(char* filename)
 			textheader = sectionHeader;
 		}
 
-		uint32* ptr = (uint32*)PMem::AllocBlocks(1);
-		VMem::MapPhysAddr(dir, (uint32)ptr, (uint32)(imagebase + sectionHeader->VirtualAddress), flags);
-		memcpy((uint32*)(imagebase + sectionHeader->VirtualAddress), image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
+		uint32 phys = (uint32)PMem::AllocBlocks(1);
+		uint32 virt = imagebase + sectionHeader->VirtualAddress;
+
+		VMem::MapPhysAddr(dir, phys, virt, flags, 1);
+
+		PAGE_TABLE_ENTRY* e = VMem::GetTableEntry(dir, virt);
+		memcpy((uint32*)virt, image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
 	}
 
 	uint32 pointerToRawData = textheader->PointerToRawData;
 	int entry = imagebase + entryAddress;
+
+	Debug::Print("Loaded image %ux\n", dir);
 
 	PROCESS_INFO* proc = new PROCESS_INFO(PROCESS_USER, dir);
 	Process::CreateThread(proc, (void*)entry);
@@ -177,7 +183,7 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
 
 	case PROCESS_USER:
 		uint32 stackPhys = (uint32)PMem::AllocBlocks(1);
-		uint8* stack = (uint8*)(0x40000000 + BLOCK_SIZE * 100);
+		uint8* stack = (uint8*)VMem::MapFirstFree(proc->page_dir, stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1, USER_BASE, USER_END);
 		VMem::MapPhysAddr(proc->page_dir, stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
 		thread = Scheduler::CreateUserThread(main, stack + BLOCK_SIZE);

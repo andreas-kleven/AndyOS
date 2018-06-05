@@ -44,5 +44,12 @@ static class VBE
 {
 public:
 	static VBE_MODE_INFO mode;
+
+	static uint32* mem_base;
+	static uint32* mem_max;
+	static uint32 mem_size;
+	static uint32 bytes_per_pixel;
+	static uint32 pixel_count;
+
 	static STATUS Init(VBE_MODE_INFO* info);
 };

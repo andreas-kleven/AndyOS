@@ -45,12 +45,12 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	HAL::Init();
 	Exceptions::Init();
 
+	Debug::Init(1);
+	Debug::color = 0xFF00FF00;
+
 	/**/VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo->vbe_mode_info;
 	/**/VBE::Init(vbeMode);
-	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mode.framebuffer);
-
-	Debug::Init(false);
-	Debug::color = 0xFF00FF00;
+	/**/Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
 	ATA::Init();
 
@@ -60,11 +60,10 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	Scheduler::Init();
 	Syscalls::Init();
 
-	PCI::Init();
-	
-	PCI_DEVICE* net_dev = PCI::GetDevice(2, 0, 0);
-
-	Debug::Print("Found network card\n");
+	//PCI::Init();
+	//
+	//PCI_DEVICE* net_dev = PCI::GetDevice(2, 0, 0);
+	//Debug::Print("Found network card\n");
 
 	//KNet::Init();
 	//E1000* e1000 = new E1000(net_dev);
