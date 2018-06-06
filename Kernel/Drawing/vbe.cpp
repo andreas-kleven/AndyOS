@@ -20,13 +20,10 @@ STATUS VBE::Init(VBE_MODE_INFO* info)
 	pixel_count = mode.width * mode.height;
 
 	//Map framebuffer
-	mem_base = (uint32*)VMem::MapFirstFree(
-		VMem::GetCurrentDir(),
+	mem_base = (uint32*)VMem::KernelMapFirstFree(
 		(uint32)mode.framebuffer,
 		PTE_PRESENT | PTE_WRITABLE,
-		BYTES_TO_BLOCKS(mem_size),
-		KERNEL_BASE,
-		KERNEL_END);
+		BYTES_TO_BLOCKS(mem_size));
 
 	mem_max = mem_base + mem_size;
 

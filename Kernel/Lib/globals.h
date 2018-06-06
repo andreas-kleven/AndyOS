@@ -35,7 +35,7 @@ void* operator new(unsigned size)
 	}*/
 
 	int blocks = BYTES_TO_BLOCKS(size);
-	void* addr = VMem::KernelAlloc(VMem::GetCurrentDir(), blocks);
+	void* addr = VMem::KernelAlloc(blocks);
 	return addr;
 }
 void operator delete(void* p)
@@ -52,7 +52,7 @@ void* operator new[](unsigned size)
 	{
 		int blocks = BYTES_TO_BLOCKS(size);
 
-		uint8* ptr = (uint8*)VMem::KernelAlloc(VMem::GetCurrentDir(), blocks);
+		uint8* ptr = (uint8*)VMem::KernelAlloc(blocks);
 		mem_ptr = ptr + size;
 
 		if (size < BLOCK_SIZE)

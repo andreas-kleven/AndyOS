@@ -183,7 +183,7 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
 
 	case PROCESS_USER:
 		uint32 stackPhys = (uint32)PMem::AllocBlocks(1);
-		uint8* stack = (uint8*)VMem::MapFirstFree(proc->page_dir, stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1, USER_BASE, USER_END);
+		uint8* stack = (uint8*)VMem::UserMapFirstFree(proc->page_dir, stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 		VMem::MapPhysAddr(proc->page_dir, stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
 		thread = Scheduler::CreateUserThread(main, stack + BLOCK_SIZE);
@@ -206,8 +206,6 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
 		thread->procNext = proc->main_thread->procNext;
 		proc->main_thread->procNext = thread;
 	}
-
-	VMem::Sync(thread->page_dir);
 
 	Scheduler::InsertThread(thread);
 	return thread;
