@@ -116,7 +116,7 @@ void T1()
 
 void T2()
 {
-	uint32 colors[] = 
+	uint32 colors[] =
 	{
 		COLOR_RED,
 		COLOR_BLUE,
@@ -179,25 +179,20 @@ void COM()
 
 void OS::Main()
 {
-	COM();
+	char* _s1 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
+	char* _s2 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
 
-	uint32 stacks = (uint32)PMem::AllocBlocks(1);
-	uint32 virtStacks = (uint32)0x70000000;
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stacks, (uint32)virtStacks, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
-
-	uint32 stack = (uint32)PMem::AllocBlocks(1);
-	uint32 virtStack = (uint32)0x50000000;
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)stack, (uint32)virtStack, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
 	//THREAD* t1 = Scheduler::CreateKernelThread(T1);
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
-	THREAD* t1 = Scheduler::CreateUserThread(T1, (void*)(virtStacks + BLOCK_SIZE));
-	THREAD* t2 = Scheduler::CreateUserThread(T2, (void*)(virtStacks + BLOCK_SIZE * 2));
+	THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
+	THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
 
 	Scheduler::InsertThread(t1);
 	Scheduler::InsertThread(t2);
+	//while (1);
 
 	//while (1)
 	//	_asm pause;

@@ -5,8 +5,8 @@
 
 THREAD* first_thread;
 THREAD* last_thread;
-THREAD* current_thread;
 THREAD* idle_thread;
+THREAD* Scheduler::current_thread;
 
 uint32 id_counter = 0;
 uint32 tmp_stack;
@@ -151,10 +151,7 @@ void Scheduler::Schedule()
 	tmp_stack = current_thread->stack;
 
 	VMem::SwitchDir(current_thread->page_dir);
-
-	if (current_thread->kernel_esp)
-		TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
-
+	TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
 	PIC::InterruptDone(TASK_SCHEDULE_IRQ);
 }
 
