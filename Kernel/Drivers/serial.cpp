@@ -1,5 +1,6 @@
 #include "serial.h"
 #include "HAL/hal.h"
+#include "debug.h"
 
 #define COM_REG_DATA			0
 #define COM_REG_INTERRUPT		1
@@ -33,11 +34,6 @@ STATUS Serial::Init(int port, int baud)
 	return STATUS_SUCCESS;
 }
 
-bool Serial::IsTransmitEmpty(int port)
-{
-	return inb(port + 5) & 0x20;
-}
-
 void Serial::Transmit(int port, char data)
 {
 	while (!IsTransmitEmpty(port));
@@ -48,4 +44,20 @@ void Serial::Transmit(int port, char* data, int length)
 {
 	while (length--)
 		Transmit(port, *data++);
+}
+
+char Serial::Receive(int port)
+{
+	while (SerialReceived(port) == 0);
+	return inb(port);
+}
+
+bool Serial::IsTransmitEmpty(int port)
+{
+	return inb(port + COM_REG_LINE_STATUS) & 0x20;
+}
+
+bool Serial::SerialReceived(int port)
+{
+	return inb(port + COM_REG_LINE_STATUS) & 1;
 }
