@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "HAL/hal.h"
 #include "Memory/memory.h"
+#include "string.h"
 #include "debug.h"
 
 THREAD* first_thread;
@@ -11,6 +12,8 @@ THREAD* Scheduler::current_thread;
 uint32 id_counter = 0;
 uint32 tmp_stack;
 IRQ_HANDLER pit_isr;
+
+__declspec(align(16)) uint8 fpu_state[512];
 
 STATUS Scheduler::Init()
 {
@@ -28,8 +31,23 @@ STATUS Scheduler::Init()
 THREAD* Scheduler::CreateKernelThread(void* main)
 {
 	THREAD* thread = (THREAD*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(THREAD));
-	thread->id = ++id_counter;
+	thread->regs->ebp = 0;
+	thread->regs->esp = 0;
+	thread->regs->edi = 0;
+	thread->regs->esi = 0;
+	thread->regs->edx = 0;
+	thread->regs->ecx = 0;
+	thread->regs->ebx = 0;
+	thread->regs->eax = 0;
+	thread->regs->user_stack = 0;
+	thread->regs->user_ss = 0;
+	thread->kernel_esp = 0;
+	thread->page_dir = 0;
+	thread->next = 0;
+	thread->procNext = 0;
 
+	thread->id = ++id_counter;
+	thread->state = THREAD_STATE_INITIALIZED;
 	thread->stack = (uint32)(thread - 1) - sizeof(REGS);
 	thread->regs = (REGS*)thread->stack;
 	thread->regs->esp = (uint32)&thread->regs;
@@ -42,6 +60,8 @@ THREAD* Scheduler::CreateKernelThread(void* main)
 	thread->regs->gs = KERNEL_SS;
 
 	thread->page_dir = VMem::GetCurrentDir();
+	thread->fpu_state = new uint8[512];
+
 	return thread;
 }
 
@@ -102,8 +122,6 @@ void Scheduler::StartThreading()
 
 void Scheduler::RemoveThread(THREAD* thread)
 {
-	_asm cli
-
 	if (!thread)
 		return;
 
@@ -120,14 +138,11 @@ void Scheduler::RemoveThread(THREAD* thread)
 				current_thread = t;
 
 			delete thread;
-			_asm sti
 			return;
 		}
 
 		t = next;
 	}
-
-	_asm sti
 }
 
 void Scheduler::Exit(int exitcode)
@@ -137,6 +152,9 @@ void Scheduler::Exit(int exitcode)
 
 void Scheduler::Schedule()
 {
+	_asm fxsave[fpu_state];
+	memcpy(current_thread->fpu_state, fpu_state, 512);
+
 	//Save stack
 	current_thread->stack = tmp_stack;
 	current_thread->regs = (REGS*)tmp_stack;
@@ -153,6 +171,15 @@ void Scheduler::Schedule()
 	VMem::SwitchDir(current_thread->page_dir);
 	TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
 	PIC::InterruptDone(TASK_SCHEDULE_IRQ);
+
+	//Restore fpu state
+	if (current_thread->state != THREAD_STATE_INITIALIZED)
+	{
+		memcpy(fpu_state, current_thread->fpu_state, 512);
+		_asm fxrstor[fpu_state];
+	}
+
+	current_thread->state = THREAD_STATE_RUNNING;
 }
 
 void INTERRUPT Scheduler::Task_ISR()

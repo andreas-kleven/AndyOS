@@ -45,6 +45,10 @@ void operator delete(void* p)
 
 void* operator new[](unsigned size)
 {
+	int blocks = BYTES_TO_BLOCKS(size);
+	void* addr = VMem::KernelAlloc(blocks);
+	return addr;
+
 	if (size == 0)
 		return 0;
 
