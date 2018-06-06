@@ -2,6 +2,12 @@
 #include "panic.h"
 #include "debug.h"
 
+#define PAGE_FAULT_PRESENT				(1 << 0)
+#define PAGE_FAULT_WRITE				(1 << 1)
+#define PAGE_FAULT_USER					(1 << 2)
+#define PAGE_FAULT_RESERVED_WRITE		(1 << 3)
+#define PAGE_FAULT_INSTRUCTION_FETCH	(1 << 4)
+
 STATUS Exceptions::Init()
 {
 	IDT::InstallIRQ(0, (IRQ_HANDLER)ISR0);
@@ -126,7 +132,17 @@ void Exceptions::ISR14(REGS* regs)
 		mov[faultAddr], eax
 	}
 
-	Panic::KernelPanic("Page fault", "ADDR: %ux    ERR: %ux    EFLAGS: %ux    CS: %ux    EIP: %ux", faultAddr, regs->eax, regs->eflags, regs->cs, regs->eip);
+	uint32 err = regs->eip;
+	regs = (REGS*)((uint32*)regs + 1);
+
+	char* msg1 = (err & PAGE_FAULT_PRESENT) ? "Page-protection violation  " : "None-present page  ";
+	char* msg2 = (err & PAGE_FAULT_WRITE) ? "Write  " : "Read  ";
+	char* msg3 = (err & PAGE_FAULT_USER) ? "User mode  " : "Kernel mode  ";
+	char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
+	char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
+
+	Panic::KernelPanic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s", 
+		faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);
 }
 
 void Exceptions::ISR15(REGS* regs)
