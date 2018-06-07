@@ -29,7 +29,7 @@ float log2(float val);
 float log10(float val);
 float logn(float val, float n);
 
-int rand();
+unsigned int rand();
 float frand();
 void srand(unsigned int seed);
 

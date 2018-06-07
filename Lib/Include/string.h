@@ -10,7 +10,7 @@ char* strncat(char* dest, const char* src, int n);
 void* memcpy(void* dest, void* src, unsigned int n);
 void memcpy_fast_128(void* dest, void* src, unsigned int count);
 
-extern "C" void* __cdecl memset(void*, int, int);
+extern "C" void* __cdecl memset(void* dest, int val, int n);
 #pragma intrinsic(memset)
 //void* memset(void *dest, unsigned char val, unsigned int n);
 void* memset16(void *dest, unsigned short val, unsigned int n);

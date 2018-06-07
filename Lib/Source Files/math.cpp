@@ -215,7 +215,7 @@ float logn(float val, float n)
 
 static unsigned long int next = 1;
 
-int rand()
+unsigned int rand()
 {
 	next = next * 1103515245 + 12345;
 	return (unsigned int)(next / 65536) % RAND_MAX;
