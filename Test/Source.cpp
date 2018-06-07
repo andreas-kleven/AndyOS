@@ -17,7 +17,7 @@ int main()
 
 	char buf[128];
 
-	uint32* framebuffer = (uint32*)alloc(0x300);
+	uint32* framebuffer = new uint32[1024 * 768];
 
 	while (1)
 	{

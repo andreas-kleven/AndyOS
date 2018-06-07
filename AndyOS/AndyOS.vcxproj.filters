@@ -7,6 +7,12 @@
     <ClInclude Include="API\api.h">
       <Filter>API</Filter>
     </ClInclude>
+    <ClInclude Include="Memory\globals.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\memory.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">
@@ -15,10 +21,16 @@
     <Filter Include="API">
       <UniqueIdentifier>{161406a1-b1bb-49aa-abf9-073670943ed5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{115c0b60-5f2a-4247-990b-6ada7ce2308e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\api.cpp">
       <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\globals.cpp">
+      <Filter>Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

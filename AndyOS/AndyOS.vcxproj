@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\api.cpp" />
+    <ClCompile Include="Memory\globals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="API\api.h" />
     <ClInclude Include="Include\AndyOS.h" />
+    <ClInclude Include="Memory\globals.h" />
+    <ClInclude Include="Memory\memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib\Lib.vcxproj">
