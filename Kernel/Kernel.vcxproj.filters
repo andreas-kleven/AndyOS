@@ -108,17 +108,11 @@
     <ClCompile Include="Kernel\kernel.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\KernelAPI.cpp">
-      <Filter>Lib</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Controls\Label.cpp">
       <Filter>GUI\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Test\Mandelbrot.cpp">
       <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\math.cpp">
-      <Filter>Lib</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Message.cpp">
       <Filter>GUI</Filter>
@@ -149,12 +143,6 @@
     </ClCompile>
     <ClCompile Include="HAL\rtc.cpp">
       <Filter>HAL</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\stdio.cpp">
-      <Filter>Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\string.cpp">
-      <Filter>Lib</Filter>
     </ClCompile>
     <ClCompile Include="Net\tcp.cpp">
       <Filter>Net</Filter>
@@ -216,9 +204,6 @@
     <ClCompile Include="Boot\boot.cpp">
       <Filter>Boot</Filter>
     </ClCompile>
-    <ClCompile Include="API\api.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
     <ClCompile Include="API\syscalls.cpp">
       <Filter>API</Filter>
     </ClCompile>
@@ -263,13 +248,7 @@
     <ClInclude Include="HAL\cpu.h">
       <Filter>HAL</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\ctype.h">
-      <Filter>Lib</Filter>
-    </ClInclude>
     <ClInclude Include="Lib\debug.h">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\definitions.h">
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Net\dhcp.h">
@@ -317,23 +296,14 @@
     <ClInclude Include="Kernel\kernel.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\KernelAPI.h">
-      <Filter>Lib</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Controls\Label.h">
       <Filter>GUI\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\limits.h">
-      <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Lib\List.h">
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Test\Mandelbrot.h">
       <Filter>Test</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\math.h">
-      <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Memory\memory.h">
       <Filter>Memory</Filter>
@@ -370,15 +340,6 @@
     </ClInclude>
     <ClInclude Include="HAL\rtc.h">
       <Filter>HAL</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\stdarg.h">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\stdio.h">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\string.h">
-      <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Lib\System.h">
       <Filter>Lib</Filter>
@@ -445,9 +406,6 @@
     </ClInclude>
     <ClInclude Include="Boot\multiboot.h">
       <Filter>Boot</Filter>
-    </ClInclude>
-    <ClInclude Include="API\api.h">
-      <Filter>API</Filter>
     </ClInclude>
     <ClInclude Include="API\syscalls.h">
       <Filter>API</Filter>

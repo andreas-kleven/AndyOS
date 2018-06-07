@@ -279,8 +279,6 @@ float atof(const char* s)
 	return rez * fact;
 }
 
-#include "debug.h"
-
 #define PRECISION 0.00001
 //Converts float to string
 char* ftoa(float f, unsigned base, char* buf)
@@ -321,7 +319,6 @@ char* ftoa(float f, unsigned base, char* buf)
 		}
 		else
 		{
-			Debug::color = 0xFFFF0000;
 			while (f > 0 + PRECISION || m >= 0)
 			{
 				if (abs(f) < PRECISION)
@@ -333,8 +330,6 @@ char* ftoa(float f, unsigned base, char* buf)
 					float weight = pow(10.0f, m);
 					digit = floor(f / weight);
 
-					//Debug::Print("(%i %i %i) ", m, digit, (int)(f * 1000000));
-
 					f -= (digit * weight);
 					*(buf++) = '0' + digit;
 				}
@@ -343,7 +338,6 @@ char* ftoa(float f, unsigned base, char* buf)
 					*(buf++) = '.';
 				m--;
 			}
-			Debug::color = 0xFF00FF00;
 
 			if (*(buf - 1) == '.')
 				*(--buf) = '\0';

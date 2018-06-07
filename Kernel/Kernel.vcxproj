@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="API\api.cpp" />
     <ClCompile Include="API\syscalls.cpp" />
     <ClCompile Include="Boot\boot.cpp" />
     <ClCompile Include="Drawing\bmp.cpp" />
@@ -57,10 +56,6 @@
     <ClCompile Include="Kernel\os.cpp" />
     <ClCompile Include="Kernel\panic.cpp" />
     <ClCompile Include="Lib\debug.cpp" />
-    <ClCompile Include="Lib\KernelAPI.cpp" />
-    <ClCompile Include="Lib\math.cpp" />
-    <ClCompile Include="Lib\stdio.cpp" />
-    <ClCompile Include="Lib\string.cpp" />
     <ClCompile Include="Memory\pmem.cpp" />
     <ClCompile Include="Memory\vmem.cpp" />
     <ClCompile Include="Net\arp.cpp" />
@@ -85,7 +80,6 @@
     <ClCompile Include="Test\TextEdit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="API\api.h" />
     <ClInclude Include="API\syscalls.h" />
     <ClInclude Include="Boot\multiboot.h" />
     <ClInclude Include="Drawing\bmp.h" />
@@ -123,17 +117,9 @@
     <ClInclude Include="Kernel\kernel.h" />
     <ClInclude Include="Kernel\os.h" />
     <ClInclude Include="Kernel\panic.h" />
-    <ClInclude Include="Lib\ctype.h" />
     <ClInclude Include="Lib\debug.h" />
-    <ClInclude Include="Lib\definitions.h" />
     <ClInclude Include="Lib\globals.h" />
-    <ClInclude Include="Lib\KernelAPI.h" />
-    <ClInclude Include="Lib\limits.h" />
     <ClInclude Include="Lib\List.h" />
-    <ClInclude Include="Lib\math.h" />
-    <ClInclude Include="Lib\stdarg.h" />
-    <ClInclude Include="Lib\stdio.h" />
-    <ClInclude Include="Lib\string.h" />
     <ClInclude Include="Lib\System.h" />
     <ClInclude Include="Memory\memory.h" />
     <ClInclude Include="Memory\pmem.h" />
@@ -171,6 +157,9 @@
     </ProjectReference>
     <ProjectReference Include="..\GL\GL.vcxproj">
       <Project>{4e773009-cb83-4b52-afc6-df744c94c9af}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.vcxproj">
+      <Project>{58d2c711-542b-4976-846e-a291c1172646}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -262,7 +251,7 @@
       <PrecompiledHeader />
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;$(SolutionDir)GL\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;$(SolutionDir)GL\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
     </ClCompile>

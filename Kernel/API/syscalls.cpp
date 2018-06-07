@@ -2,7 +2,9 @@
 #include "HAL/hal.h"
 #include "debug.h"
 
-int exit(int code)
+void* syscalls[MAX_SYSCALLS];
+
+int halt(int code)
 {
 	_asm cli
 	_asm hlt
@@ -14,13 +16,13 @@ int print(char* text)
 	return 1;
 }
 
-int debug_color(uint32 color)
+int color(uint32 color)
 {
 	Debug::color = color;
 	return 1;
 }
 
-int _cdecl gettime(int& hour, int& minute, int& second)
+int gettime(int& hour, int& minute, int& second)
 {
 	hour = RTC::Hour();
 	minute = RTC::Minute();
@@ -28,18 +30,23 @@ int _cdecl gettime(int& hour, int& minute, int& second)
 	return 1;
 }
 
-void* syscalls[] =
-{
-	0,
-	&exit,
-	&print,
-	&gettime,
-	&debug_color
-};
-
 STATUS Syscalls::Init()
 {
-	return IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR);
+	if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
+		return STATUS_FAILED;
+
+	InstallSyscall(SYSCALL_HALT, halt);
+	InstallSyscall(SYSCALL_PRINT, print);
+	InstallSyscall(SYSCALL_COLOR, color);
+	InstallSyscall(SYSCALL_GETTIME, gettime);
+}
+
+void Syscalls::InstallSyscall(int id, void* handler)
+{
+	if (id <= 0 || id >= MAX_SYSCALLS)
+		return;
+
+	syscalls[id] = handler;
 }
 
 void Syscalls::ISR(REGS* regs)

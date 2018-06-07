@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)GL\;$(SolutionDir)GameEngine\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GL\;$(SolutionDir)GameEngine\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>ARCH_X86</PreprocessorDefinitions>
       <MinimalRebuild />
@@ -136,6 +136,9 @@
   <ItemGroup>
     <ProjectReference Include="..\GameEngine\GameEngine.vcxproj">
       <Project>{9cf87b8e-7795-4a9b-beca-3a4a62a3109a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.vcxproj">
+      <Project>{58d2c711-542b-4976-846e-a291c1172646}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

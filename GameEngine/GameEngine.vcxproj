@@ -76,7 +76,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)GL\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GL\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ARCH_X86</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <MinimalRebuild />
@@ -179,6 +179,9 @@
   <ItemGroup>
     <ProjectReference Include="..\GL\GL.vcxproj">
       <Project>{4e773009-cb83-4b52-afc6-df744c94c9af}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.vcxproj">
+      <Project>{58d2c711-542b-4976-846e-a291c1172646}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

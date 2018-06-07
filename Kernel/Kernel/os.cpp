@@ -15,6 +15,7 @@
 #include "Drivers/serial.h"
 #include "Test/Mandelbrot.h"
 #include "Test/TextEdit.h"
+#include "API/syscalls.h"
 
 #include "debug.h"
 
@@ -85,17 +86,11 @@ void _Font()
 	while (1);
 }
 
-#include "API/api.h"
-void Syscall()
-{
-	api_test();
-}
-
 #include "Process/process.h"
 void _Process()
 {
 	Process::Create("Test.exe");
-	Process::Create("_Test.exe");
+	//Process::Create("_Test.exe");
 }
 
 void T1()
@@ -106,7 +101,7 @@ void T1()
 	{
 		_asm
 		{
-			mov eax, 2
+			mov eax, SYSCALL_PRINT
 			mov ebx, text
 			int 0x80
 			pause
@@ -137,7 +132,7 @@ void T2()
 
 		_asm
 		{
-			mov eax, 4
+			mov eax, SYSCALL_COLOR
 			mov ebx, color
 			int 0x80
 			pause
@@ -194,9 +189,6 @@ void OS::Main()
 	Scheduler::InsertThread(t2);
 	//while (1);
 
-	//while (1)
-	//	_asm pause;
-
 	//Net::Init();
 
 	//Mandelbrot mandelbrot(Drawing::gc_direct);
@@ -208,7 +200,6 @@ void OS::Main()
 	//Game();
 	//Audio();
 	//_Font();
-	//Syscall();
 	//COM();
 	_Process();
 	while (1);

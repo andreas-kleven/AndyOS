@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Include\AndyOS.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="API\api.h">
+      <Filter>API</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{272eaf35-57a0-4ba3-8e01-9d2b85822adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="API">
+      <UniqueIdentifier>{161406a1-b1bb-49aa-abf9-073670943ed5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="API\api.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{d283d21e-41f4-45a1-9638-fddaedc09c70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8934d165-d336-4f98-a337-3605da5ca2f9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\ctype.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\definitions.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\limits.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\math.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\stdarg.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\stdio.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\string.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\_null.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\crtdefs.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\float.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\size_t.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\stdint.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\va_list.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source Files\string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\stdio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
