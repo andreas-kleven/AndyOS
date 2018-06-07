@@ -94,6 +94,8 @@ void INTERRUPT IDT::CommonIRQ()
 {
 	_asm
 	{
+		cli
+
 		//Pop irq and eax
 		pop eax
 		and eax, 0xFF
