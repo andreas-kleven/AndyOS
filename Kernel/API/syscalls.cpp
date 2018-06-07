@@ -1,33 +1,54 @@
 #include "syscalls.h"
 #include "HAL/hal.h"
+#include "string.h"
 #include "debug.h"
+#include "Drawing/drawing.h"
+#include "Memory/memory.h"
+#include "Process/scheduler.h"
 
 void* syscalls[MAX_SYSCALLS];
 
-int halt(int code)
+void halt(int code)
 {
 	_asm cli
 	_asm hlt
 }
 
-int print(char* text)
+void print(char* text)
 {
 	Debug::Print(text);
-	return 1;
 }
 
-int color(uint32 color)
+void color(uint32 color)
 {
 	Debug::color = color;
-	return 1;
 }
 
-int gettime(int& hour, int& minute, int& second)
+void gettime(int& hour, int& minute, int& second)
 {
 	hour = RTC::Hour();
 	minute = RTC::Minute();
 	second = RTC::Second();
-	return 1;
+}
+
+void draw(uint32* framebuffer)
+{
+	memcpy(Drawing::gc_direct.framebuffer, framebuffer, Drawing::gc_direct.memsize());
+}
+
+void exit(int code)
+{
+
+}
+
+void* alloc(uint32 blocks)
+{
+	return VMem::UserAlloc(Scheduler::current_thread->page_dir, blocks);
+}
+
+void free(void* ptr, uint32 blocks)
+{
+
 }
 
 STATUS Syscalls::Init()
@@ -39,6 +60,10 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_PRINT, print);
 	InstallSyscall(SYSCALL_COLOR, color);
 	InstallSyscall(SYSCALL_GETTIME, gettime);
+	InstallSyscall(SYSCALL_DRAW, draw);
+	InstallSyscall(SYSCALL_EXIT, exit);
+	InstallSyscall(SYSCALL_ALLOC, alloc);
+	InstallSyscall(SYSCALL_FREE, free);
 }
 
 void Syscalls::InstallSyscall(int id, void* handler)
