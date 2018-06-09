@@ -185,3 +185,58 @@ int memcmp(const void* a, const void* b, unsigned int n)
 //	//return nullptr;
 //	return memset(dest, a, b);
 //}
+
+char* search(char* str, const char* delim)
+{
+	char c = *str++;
+
+	while (c)
+	{
+		const char* del = delim;
+		char d = *del++;
+
+		while (d)
+		{
+			if (c == d)
+				return str + 1;
+
+			d = *del++;
+		}
+
+		c = *++str;
+	}
+
+	return 0;
+}
+
+//Splits string
+char* strtok_r(char* str, const char* delim, char** saveptr)
+{
+	if (!str)
+		str = *saveptr;
+
+	if (*str == 0)
+		return 0;
+
+	char* end = search(str, delim);
+
+	if (!end)
+	{
+		*saveptr = 0;
+		return str;
+	}
+
+	if (end)
+	{
+		int len = end - str;
+		char* ret = new char[len];
+
+		memcpy(ret, str, len);
+		ret[len - 1] = 0;
+
+		*saveptr = end;
+		return ret;
+	}
+
+	return 0;
+}

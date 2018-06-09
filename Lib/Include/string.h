@@ -19,6 +19,9 @@ void* memset_fast_128(void* dest, unsigned int val, unsigned int n);
 
 int memcmp(const void* a, const void* b, unsigned int n);
 
+char* search(char* str, const char* delim);
+char* strtok_r(char* str, const char* delim, char** saveptr);
+
 class String
 {
 public:
