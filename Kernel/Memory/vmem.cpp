@@ -1,9 +1,7 @@
 #include "vmem.h"
 #include "memory.h"
-#include "pmem.h"
 #include "Kernel\kernel.h"
 #include "string.h"
-#include "debug.h"
 
 #define PAGE_DIR_INDEX(x) (((x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)
@@ -182,6 +180,10 @@ PAGE_TABLE_ENTRY* VMem::GetTableEntry(PAGE_DIR* dir, uint32 virt)
 void* VMem::Alloc(PAGE_DIR* dir, uint32 flags, uint32 blocks, uint32 start, uint32 end)
 {
 	uint32 virt = FirstFree(dir, blocks, start, end);
+	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+	MapPhysAddr(dir, phys, virt, flags, blocks);
+	return (void*)virt;
+
 	uint32 _virt = virt;
 
 	if (!virt)

@@ -52,6 +52,6 @@ private:
 
 	static IDT_DESCRIPTOR* GetIR(uint32 i);
 	static void EmptyISR();
-	static void CommonIRQ();
+	static void CommonISR();
 	static void CommonHandler(int i, REGS* regs);
 };

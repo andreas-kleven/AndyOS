@@ -307,7 +307,7 @@ void GEngine::DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color)
 		while (1);
 	}
 
-	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color.ToInt(), Drawing::gc_direct);
+	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color.ToInt(), Drawing::gc);
 }
 
 void GEngine::DebugBox(Game* game, Box& box, ColRGB& color)
@@ -481,11 +481,11 @@ void GEngine::Collision()
 						colPoint += m.Point / count;
 
 						Vector3 sc = WorldToScreen(active_game, m.Point);
-						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFFFF0000, Drawing::gc_direct);
+						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFFFF0000, Drawing::gc);
 					}
 
 					Vector3 sc = WorldToScreen(active_game, colPoint);
-					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFF0000FF, Drawing::gc_direct);
+					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFF0000FF, Drawing::gc);
 
 					Vector3 va;
 					Vector3 vb;
@@ -683,7 +683,7 @@ void GEngine::Collision()
 
 void GEngine::Render()
 {
-	Raytracer tracer(active_game, Drawing::gc_direct);
+	Raytracer tracer(active_game, Drawing::gc);
 	tracer.Render();
 	return;
 

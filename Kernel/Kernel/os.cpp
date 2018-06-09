@@ -39,14 +39,14 @@ void render()
 {
 	while (1)
 	{
-		Drawing::BitBlt(gameGC, 0, 0, gameGC.width, gameGC.height, Drawing::gc_direct, 0, 0);
+		Drawing::BitBlt(gameGC, 0, 0, gameGC.width, gameGC.height, Drawing::gc, 0, 0);
 	}
 }
 
 void Game()
 {
-	gameGC = Drawing::gc_direct;
-	//gameGC = GC(Drawing::gc_direct, 100, 100, 800, 600);
+	gameGC = Drawing::gc;
+	//gameGC = GC(Drawing::gc, 100, 100, 800, 600);
 
 	//gameGC = GC::CreateGraphics(500, 500);
 	//Task::InsertThread(Task::CreateThread(render));
@@ -90,7 +90,7 @@ void _Font()
 void _Process()
 {
 	Process::Create("Test.exe");
-	//Process::Create("_Test.exe");
+	Process::Create("_Test.exe");
 }
 
 void T1()
@@ -185,13 +185,13 @@ void OS::Main()
 	THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
 	THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
 
-	Scheduler::InsertThread(t1);
 	Scheduler::InsertThread(t2);
+	Scheduler::InsertThread(t1);
 	//while (1);
 
 	//Net::Init();
 
-	//Mandelbrot mandelbrot(Drawing::gc_direct);
+	//Mandelbrot mandelbrot(Drawing::gc);
 	//mandelbrot.Run();
 
 	FS::Init();

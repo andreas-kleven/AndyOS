@@ -5,8 +5,6 @@ STATUS PIC::Init()
 {
 	uint8 icw = 0;
 
-	_asm cli
-
 	icw = (icw & ~PIC_ICW1_MASK_INIT) | PIC_ICW1_INIT_YES;
 	icw = (icw & ~PIC_ICW1_MASK_IC4) | PIC_ICW1_IC4_EXPECT;
 

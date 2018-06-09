@@ -5,10 +5,15 @@
 
 int main()
 {
+	//while (1)
+	//{
+	//	print("T1");;
+	//}
+
 	int result = 0;
 
 	int hour = 0;
-	int minute = 0;
+	int minute = 0; 
 	int second = 0;
 
 	gettime(hour, minute, second);
@@ -30,7 +35,7 @@ int main()
 		}
 
 		//gettime(hour, minute, second);
-		//vprintf(buf, "%i:%i:%i\n", rand(), minute, second);
+		//vprintf(buf, "%ux:%i:%i\n", framebuffer, minute, second);
 		//print(buf);
 		draw(framebuffer);
 	}

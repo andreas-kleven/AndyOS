@@ -49,7 +49,7 @@ BMP::BMP(void* buffer)
 		p = _p + pitch;
 	}
 
-	Drawing::Draw();
+	Drawing::Draw(Drawing::gc);
 }
 
 BMP::BMP(void* buffer, int width, int height)

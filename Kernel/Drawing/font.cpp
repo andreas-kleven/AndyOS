@@ -54,7 +54,7 @@ Font::Font(char* name)
 	}
 
 	ReadHead();
-	Drawing::Clear(0, Drawing::gc_direct);
+	Drawing::Clear(0);
 
 	int w = 20;
 	int h = 40;
@@ -288,13 +288,13 @@ bool Font::Print(int index, int _posx, int _posy, float _scale)
 		TTF_POINT& p = points[i];
 		TTF_POINT& p1 = points[i + 1];
 
-		//Drawing::FillRect(lx * scale, ly * scale, 2, 2, 0xFFFFFF00, Drawing::gc_direct);
+		//Drawing::FillRect(lx * scale, ly * scale, 2, 2, 0xFFFFFF00);
 
 		Debug::color = 0xFFFFFFFF;
 		//Debug::Print("%i %f %f\n", i, p.x * scale + 512, p.y * scale + 384);
 		if (i == contour_ptr[c])
 		{
-			Drawing::DrawLine(p.x * scale + _posx, p.y * scale + _posy, fx * scale + _posx, fy * scale + _posy, 0xFFFF0000, Drawing::gc_direct);
+			Drawing::DrawLine(p.x * scale + _posx, p.y * scale + _posy, fx * scale + _posx, fy * scale + _posy, 0xFFFF0000);
 			c++;
 
 			fx = p1.x;
@@ -310,17 +310,17 @@ bool Font::Print(int index, int _posx, int _posy, float _scale)
 
 				Point ps[] = { a, b, c };
 
-				Drawing::DrawBezierQuad(ps, 3, Drawing::gc_direct);
+				Drawing::DrawBezierQuad(ps, 3);
 			}*/
 
-			Drawing::DrawLine(p1.x * scale + _posx, p1.y * scale + _posy, p.x * scale + _posx, p.y * scale + _posy, 0xFFFF0000, Drawing::gc_direct);
+			Drawing::DrawLine(p1.x * scale + _posx, p1.y * scale + _posy, p.x * scale + _posx, p.y * scale + _posy, 0xFFFF0000);
 		}
 
 		lx = p.x;
 		ly = p.y;
 	}
 
-	Drawing::DrawLine(points[total - 1].x * scale + _posx, points[total - 1].y * scale + _posy, fx * scale + _posx, fy * scale + _posy, 0xFFFF0000, Drawing::gc_direct);
+	Drawing::DrawLine(points[total - 1].x * scale + _posx, points[total - 1].y * scale + _posy, fx * scale + _posx, fy * scale + _posy, 0xFFFF0000);
 	return 1;
 }
 

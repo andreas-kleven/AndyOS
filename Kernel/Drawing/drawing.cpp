@@ -4,22 +4,13 @@
 #include "math.h"
 #include "debug.h"
 
-//int Drawing::width;
-//int Drawing::height;
-//int Drawing::memsize;
-
 uint32* screenBuffer;
 GC Drawing::gc;
-GC Drawing::gc_direct;
 
 STATUS Drawing::Init(int width, int height, uint32* framebuffer)
 {
 	screenBuffer = framebuffer;
-
-	gc = GC(width, height);
-
-	gc_direct = gc;
-	gc_direct.framebuffer = framebuffer;
+	gc = GC(width, height, framebuffer);
 	return STATUS_SUCCESS;
 }
 

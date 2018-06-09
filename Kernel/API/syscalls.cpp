@@ -33,7 +33,7 @@ void gettime(int& hour, int& minute, int& second)
 
 void draw(uint32* framebuffer)
 {
-	memcpy(Drawing::gc_direct.framebuffer, framebuffer, Drawing::gc_direct.memsize());
+	memcpy(Drawing::gc.framebuffer, framebuffer, Drawing::gc.memsize());
 }
 
 void exit(int code)

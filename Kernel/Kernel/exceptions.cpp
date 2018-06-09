@@ -141,7 +141,7 @@ void Exceptions::ISR14(REGS* regs)
 	char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
 	char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
 
-	Panic::KernelPanic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s", 
+	Panic::KernelPanic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s",
 		faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);
 }
 

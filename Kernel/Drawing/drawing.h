@@ -72,15 +72,18 @@ struct GC
 	GC()
 	{ }
 
-	GC(int width, int height)
+	GC(int width, int height, uint32* framebuffer)
 	{
 		this->x = 0;
 		this->y = 0;
 		this->width = width;
 		this->height = height;
 		this->stride = width;
-		this->framebuffer = new uint32[width * height];
+		this->framebuffer = framebuffer;
 	}
+
+	GC(int width, int height) : GC(width, height, new uint32[width * height])
+	{ }
 
 	GC(GC gc, int x, int y, int width, int height)
 	{
@@ -110,12 +113,7 @@ struct GC
 static class Drawing
 {
 public:
-	//static int width;
-	//static int height;
-	//static int memsize;
-
 	static GC gc;
-	static GC gc_direct;
 
 	static STATUS Init(int width, int height, uint32* framebuffer);
 
@@ -123,7 +121,7 @@ private:
 	static inline uint32 BlendAlpha(uint32 src, uint32 dst);
 
 public:
-	static void Draw(GC gc = gc);
+	static void Draw(GC gc);
 	static void Clear(uint32 c, GC gc = gc);
 
 	static void BitBlt(GC src, int x0, int y0, int w0, int h0, GC dst, int x1, int y1, bool alpha = 0);

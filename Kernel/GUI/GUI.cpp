@@ -136,7 +136,7 @@ namespace gui
 			PaintWindows();
 			PaintTaskbar();
 			PaintCursor();
-			Drawing::Draw();
+			Drawing::Draw(Drawing::gc);
 
 			int ticks = PIT::ticks;
 			int delta = ticks - lastTicks;

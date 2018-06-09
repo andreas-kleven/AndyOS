@@ -28,7 +28,7 @@ STATUS IDT::Init()
 		memcpy(ptr, (char*)irs_code, sizeof(irs_code));
 
 		//Set irq values
-		uint32 target_addr = (uint32)CommonIRQ;
+		uint32 target_addr = (uint32)CommonISR;
 
 		ptr[2] = i;
 		ptr[4] = target_addr & 0xFF;
@@ -90,7 +90,7 @@ void INTERRUPT IDT::EmptyISR()
 	_asm iretd
 }
 
-void INTERRUPT IDT::CommonIRQ()
+void INTERRUPT IDT::CommonISR()
 {
 	_asm
 	{
@@ -112,15 +112,11 @@ void INTERRUPT IDT::CommonIRQ()
 		push fs
 		push gs
 
-		fxsave fpustate
-
 		//Call handler
 		push esp
 		sub esp, 4
 		call CommonHandler
 		add esp, 8
-
-		fxrstor fpustate
 
 		//Pop registers
 		pop gs

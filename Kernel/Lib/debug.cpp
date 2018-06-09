@@ -40,6 +40,14 @@ void Debug::Print(char* str, ...)
 
 void Debug::Putc(char c, bool escape)
 {
+	if (serial)
+	{
+		Serial::Transmit(COM_PORT1, c);
+
+		if (c == '\n')
+			Serial::Transmit(COM_PORT1, '\r');
+	}
+
 	if (escape)
 	{
 		switch (c)
@@ -61,14 +69,12 @@ void Debug::Putc(char c, bool escape)
 
 		case '\b':
 			x = clamp(x - 1, 0, (int)(Drawing::gc.width / 8));
-			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor, Drawing::gc_direct);
-			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor, Drawing::gc);
+			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor);
 			break;
 
 		default:
 			char str[] = { c, '\0' };
-			Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc_direct);
-			Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc);
+			Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
 			x++;
 			break;
 		}
@@ -76,8 +82,7 @@ void Debug::Putc(char c, bool escape)
 	else
 	{
 		char str[] = { c, '\0' };
-		Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc_direct);
-		Drawing::DrawText(x * 8, y * 16, str, color, bcolor, Drawing::gc);
+		Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
 		x++;
 	}
 
@@ -91,14 +96,6 @@ void Debug::Putc(char c, bool escape)
 	{
 		x = x0;
 		y = 0;
-	}
-
-	if (serial)
-	{
-		Serial::Transmit(COM_PORT1, c);
-
-		if (c == '\n')
-			Serial::Transmit(COM_PORT1, '\r');
 	}
 }
 
