@@ -24,17 +24,16 @@ char* strcpy(char* dest, const char* src)
 
 unsigned int strlen(const char* str)
 {
-
 	unsigned int len = 0;
 	while (str[len++]);
-	return len;
+	return len - 1;
 }
 
 char* strcat(char* dest, const char* src)
 {
 	char* rdest = dest;
 
-	while (*dest) 
+	while (*dest)
 		dest++;
 
 	while (*dest++ = *src++);
@@ -198,12 +197,12 @@ char* search(char* str, const char* delim)
 		while (d)
 		{
 			if (c == d)
-				return str + 1;
+				return str;
 
 			d = *del++;
 		}
 
-		c = *++str;
+		c = *str++;
 	}
 
 	return 0;
@@ -214,6 +213,15 @@ char* strtok_r(char* str, const char* delim, char** saveptr)
 {
 	if (!str)
 		str = *saveptr;
+
+	//Remove delimiters characters at beginning
+loop:
+	const char* d = delim;
+	while (*d++ == *str)
+	{
+		str++;
+		goto loop;
+	}
 
 	if (*str == 0)
 		return 0;

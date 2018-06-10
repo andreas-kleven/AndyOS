@@ -28,7 +28,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 
 	bool sign = true;
 
-	for (int i = 0; i < strlen(nstr); i++)
+	for (int i = 0; i <= strlen(nstr); i++)
 	{
 		switch (nstr[i])
 		{
@@ -49,7 +49,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 				char str[64];
 				strcpy(str, (const char*)c);
 				strcpy(buf + retnum, str);
-				retnum += strlen(str) - 1;
+				retnum += strlen(str);
 				i++;		// go to next character
 				break;
 			}
@@ -61,7 +61,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 				char str[32] = { 0 };
 				itoa(c, 10, str, sign);
 				strcpy(buf + retnum, str);
-				retnum += strlen(str) - 1;
+				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
 				break;
@@ -74,7 +74,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 				char str[32] = { 0 };
 				itoa(c, 16, str, sign);
 				strcpy(buf + retnum, str);
-				retnum += strlen(str) - 1;
+				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
 				break;
@@ -87,7 +87,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 				char str[32] = { 0 };
 				ftoa(c, 10, str);
 				strcpy(buf + retnum, str);
-				retnum += strlen(str) - 1;
+				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
 				break;

@@ -351,7 +351,7 @@ void Drawing::DrawImage(int x, int y, int w, int h, BMP* bmp, GC gc)
 
 void Drawing::DrawText(int x, int y, char* c, uint32 col, GC gc)
 {
-	for (int index = 0; index < strlen(c) - 1; index++)
+	for (int index = 0; index < strlen(c); index++)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -366,7 +366,7 @@ void Drawing::DrawText(int x, int y, char* c, uint32 col, GC gc)
 
 void Drawing::DrawText(int x, int y, char* c, uint32 col, uint32 bg, GC gc)
 {
-	for (int index = 0; index < strlen(c) - 1; index++)
+	for (int index = 0; index < strlen(c); index++)
 	{
 		for (int i = 0; i < 16; i++)
 		{

@@ -54,7 +54,7 @@ bool DNS::Decode(DNS_Packet* dns, UDP_Packet* udp)
 
 void DNS::Query(NetInterface* intf, char* name)
 {
-	int dom_len = strlen(name) + 1;
+	int dom_len = strlen(name);
 	uint8* data = new uint8[sizeof(DNS_Header) + dom_len + 4];
 
 	DNS_Header* dns = (DNS_Header*)data;

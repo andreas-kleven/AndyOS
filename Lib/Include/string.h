@@ -34,9 +34,8 @@ public:
 	String(char* str)
 	{
 		int length = strlen(str);
-		buffer = new char[length];
-		buffer[0] = 0;
-		memcpy(buffer, str, length);
+		buffer = new char[length + 1];
+		memcpy(buffer, str, length + 1);
 	}
 
 	~String()
@@ -44,7 +43,7 @@ public:
 		delete[] buffer;
 	}
 
-	inline int Length() { return strlen(buffer) - 1; }
+	inline int Length() { return strlen(buffer); }
 
 	inline char* ToChar()
 	{
