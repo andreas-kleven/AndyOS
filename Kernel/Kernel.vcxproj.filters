@@ -216,9 +216,6 @@
     <ClCompile Include="Drivers\serial.cpp">
       <Filter>Drivers</Filter>
     </ClCompile>
-    <ClCompile Include="FS\disk.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
     <ClCompile Include="FS\iso.cpp">
       <Filter>FS</Filter>
     </ClCompile>
@@ -228,6 +225,10 @@
     <ClCompile Include="FS\vfs.cpp">
       <Filter>FS</Filter>
     </ClCompile>
+    <ClCompile Include="Drivers\device.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="FS\filesystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Net\address.h">
@@ -422,9 +423,6 @@
     <ClInclude Include="Drivers\serial.h">
       <Filter>Drivers</Filter>
     </ClInclude>
-    <ClInclude Include="FS\disk.h">
-      <Filter>FS</Filter>
-    </ClInclude>
     <ClInclude Include="FS\filesystem.h">
       <Filter>FS</Filter>
     </ClInclude>
@@ -436,6 +434,9 @@
     </ClInclude>
     <ClInclude Include="FS\vfs.h">
       <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\device.h">
+      <Filter>Drivers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

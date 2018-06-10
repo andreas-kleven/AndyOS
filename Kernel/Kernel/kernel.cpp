@@ -37,7 +37,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	VBE::Init(vbeMode);
 	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
-	ATA::Init();
+	DeviceManager::Init();
 	VFS::Init();
 
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);

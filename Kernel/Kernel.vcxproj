@@ -28,11 +28,12 @@
     <ClCompile Include="Drawing\vbe.cpp" />
     <ClCompile Include="Drivers\ac97.cpp" />
     <ClCompile Include="Drivers\ata.cpp" />
+    <ClCompile Include="Drivers\device.cpp" />
     <ClCompile Include="Drivers\keyboard.cpp" />
     <ClCompile Include="Drivers\mouse.cpp" />
     <ClCompile Include="Drivers\ne1000.cpp" />
     <ClCompile Include="Drivers\serial.cpp" />
-    <ClCompile Include="FS\disk.cpp" />
+    <ClCompile Include="FS\filesystem.cpp" />
     <ClCompile Include="FS\vfs.cpp" />
     <ClCompile Include="FS\iso.cpp" />
     <ClCompile Include="FS\path.cpp" />
@@ -90,11 +91,11 @@
     <ClInclude Include="Drawing\vbe.h" />
     <ClInclude Include="Drivers\ac97.h" />
     <ClInclude Include="Drivers\ata.h" />
+    <ClInclude Include="Drivers\device.h" />
     <ClInclude Include="Drivers\keyboard.h" />
     <ClInclude Include="Drivers\mouse.h" />
     <ClInclude Include="Drivers\ne1000.h" />
     <ClInclude Include="Drivers\serial.h" />
-    <ClInclude Include="FS\disk.h" />
     <ClInclude Include="FS\vfs.h" />
     <ClInclude Include="FS\filesystem.h" />
     <ClInclude Include="FS\iso.h" />

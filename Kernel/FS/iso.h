@@ -82,14 +82,10 @@ struct ISO_DIRECTORY
 class ISO_FS : public IFileSystem
 {
 public:
-	static ISO_FS* instance;
-
-	static STATUS Init();
-
 	ISO_PRIMARYDESC* desc;
 	ISO_DIRECTORY* root;
 
-	ISO_FS();
+	ISO_FS(BlockDevice* dev);
 
 	ISO_DIRECTORY* FindDirectory(char* path, bool isDir);
 	bool GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* dir);

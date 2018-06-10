@@ -1,6 +1,5 @@
 #include "iso.h"
 #include "string.h"
-#include "disk.h"
 #include "debug.h"
 
 #define FILE_FLAG_HIDDEN			(1 << 0)
@@ -10,25 +9,18 @@
 #define FILE_FLAG_EXTENDED_OWNER	(1 << 4)
 #define FILE_FLAG_NOT_FINAL			(1 << 7)
 
-ISO_FS* ISO_FS::instance;
-
-STATUS ISO_FS::Init()
-{
-	instance = new ISO_FS();
-	return STATUS_SUCCESS;
-}
-
-ISO_FS::ISO_FS()
+ISO_FS::ISO_FS(BlockDevice* dev)
+	: IFileSystem(dev)
 {
 	char* buf;
-	if (!Disk::Read(0x10, buf, 0x1000))
+	if (!device->Read(0x10 * ISO_SECTOR_SIZE, buf, 0x1000))
 		return;
 
 	desc = (ISO_PRIMARYDESC*)buf;
 
 	ISO_TABLE_ENTRY* table = (ISO_TABLE_ENTRY*)desc->rootDirectoryEntry;
 
-	if (!Disk::Read(table->locationLBA, buf, ISO_SECTOR_SIZE * 2))
+	if (!device->Read(table->locationLBA * ISO_SECTOR_SIZE, buf, ISO_SECTOR_SIZE * 2))
 		return;
 
 	root = (ISO_DIRECTORY*)buf;
@@ -65,7 +57,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
 				{
 					if (next)
 					{
-						Disk::Read(dir->locationLBA_LSB, buffer, dir->filesize_LSB);
+						device->Read(dir->locationLBA_LSB * ISO_SECTOR_SIZE, buffer, dir->filesize_LSB);
 						start = (ISO_DIRECTORY*)buffer;
 						dir = start;
 
@@ -124,7 +116,7 @@ bool ISO_FS::GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file)
 	strcpy(file->path, path);
 
 	file->size = iso_dir->filesize_LSB;
-	file->location = iso_dir->locationLBA_LSB;
+	file->location = iso_dir->locationLBA_LSB * ISO_SECTOR_SIZE;
 	file->attributes = iso_dir->attrib;
 
 	return 1;
@@ -132,7 +124,7 @@ bool ISO_FS::GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file)
 
 bool ISO_FS::ReadFile(FILE_INFO* file, char*& buffer)
 {
-	if (!Disk::Read(file->location, buffer, file->size))
+	if (!device->Read(file->location, buffer, file->size))
 		return 0;
 
 	return 1;

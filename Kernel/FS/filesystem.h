@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "../Drivers/device.h"
 
 struct DIRECTORY_INFO
 {
@@ -20,6 +21,11 @@ struct FILE_INFO
 class IFileSystem
 {
 public:
+	BlockDevice * device;
+	IFileSystem* next;
+
+	IFileSystem(BlockDevice* dev);
+
 	virtual bool GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* dir) { return 0; }
 	virtual bool GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file) { return 0; }
 	virtual bool ReadFile(FILE_INFO* file, char*& buffer) { return 0; }
