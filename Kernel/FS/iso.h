@@ -82,7 +82,7 @@ struct ISO_DIRECTORY
 class ISO_FS : public IFileSystem
 {
 public:
-	ISO_PRIMARYDESC* desc;
+	ISO_PRIMARYDESC * desc;
 	ISO_DIRECTORY* root;
 
 	ISO_FS(BlockDevice* dev);
@@ -92,4 +92,11 @@ public:
 	bool GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file);
 	bool ReadFile(FILE_INFO* file, char*& buffer);
 	bool WriteFile(FILE_INFO* file, void* data, uint32 length);
+	bool Count(char* path, bool recursive, int& file_count, int& dir_count);
+	bool List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count);
+
+private:
+	void GetName(ISO_DIRECTORY* dir, char* buf);
+	bool ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file);
+	bool ParseDirectory(ISO_DIRECTORY* iso_dir, char* path, DIRECTORY_INFO* dir);
 };

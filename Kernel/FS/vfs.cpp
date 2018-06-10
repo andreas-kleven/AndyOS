@@ -29,21 +29,29 @@ STATUS VFS::Init()
 
 uint32 VFS::ReadFile(char* path, char*& buffer)
 {
-	char letter = Path::GetDriveLetter(path);
-
-	if (!letter)
-		return 0;
+	//char letter = Path::GetDriveLetter(path);
+	//
+	//if (!letter)
+	//	return 0;
 
 	IFileSystem* fs = primary_fs;
 	FILE_INFO file;
 
 	if (!fs) return 0;
-	if (!fs->GetFile(0, path + 3, &file)) return 0;
+	if (!fs->GetFile(0, path, &file)) return 0;
 
 	if (fs->ReadFile(&file, buffer))
 		return file.size;
 
 	return 0;
+}
+
+bool VFS::List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count)
+{
+	file_count = 0;
+	dir_count = 0;
+
+	return primary_fs->List(path, files, dirs, file_count, dir_count);
 }
 
 IFileSystem* VFS::GetDrive(char* id)

@@ -30,4 +30,6 @@ public:
 	virtual bool GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file) { return 0; }
 	virtual bool ReadFile(FILE_INFO* file, char*& buffer) { return 0; }
 	virtual bool WriteFile(FILE_INFO* file, void* data, uint32 length) { return 0; }
+	virtual bool Count(char* path, bool recursive, int& file_count, int& dir_count) { return 0; }
+	virtual bool List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count) { return 0; }
 };
