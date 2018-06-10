@@ -1,6 +1,8 @@
 #include "definitions.h"
 #include "multiboot.h"
 #include "Kernel/kernel.h"
+#include "Lib/globals.h"
+#include "crtdefs.h"
 
 __declspec(align(16)) char _kernel_stack[8096];
 

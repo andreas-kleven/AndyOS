@@ -7,7 +7,7 @@ Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
 	char* buffer;
 
-	STATUS status = FS::ReadFile(filename, buffer);
+	STATUS status = VFS::ReadFile(filename, buffer);
 
 	if (status)
 	{

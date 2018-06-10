@@ -14,7 +14,7 @@ Thing::Thing()
 	Model3D* model = ModelLoader::LoadModel("cylinder.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
-	if (!FS::ReadFile("earth.bmp", img_buf))
+	if (!VFS::ReadFile("earth.bmp", img_buf))
 	{
 		Debug::Print("bmp not found");
 		while (1);

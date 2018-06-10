@@ -37,14 +37,14 @@
     <Filter Include="PCI">
       <UniqueIdentifier>{8d2d59f7-a7ed-4f7e-82d7-b0e6b49329e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File System">
-      <UniqueIdentifier>{9466eb91-61af-413d-8693-baa2a31f948f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Boot">
       <UniqueIdentifier>{a813c537-013a-4e38-a7b9-1d1bcffa0e01}</UniqueIdentifier>
     </Filter>
     <Filter Include="Process">
       <UniqueIdentifier>{e5389691-1f25-4a6e-ab32-1293fa755fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FS">
+      <UniqueIdentifier>{9466eb91-61af-413d-8693-baa2a31f948f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -192,15 +192,6 @@
     <ClCompile Include="Drivers\ata.cpp">
       <Filter>Drivers</Filter>
     </ClCompile>
-    <ClCompile Include="File System\disk.cpp">
-      <Filter>File System</Filter>
-    </ClCompile>
-    <ClCompile Include="File System\filesys.cpp">
-      <Filter>File System</Filter>
-    </ClCompile>
-    <ClCompile Include="File System\iso.cpp">
-      <Filter>File System</Filter>
-    </ClCompile>
     <ClCompile Include="Boot\boot.cpp">
       <Filter>Boot</Filter>
     </ClCompile>
@@ -224,6 +215,18 @@
     </ClCompile>
     <ClCompile Include="Drivers\serial.cpp">
       <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="FS\disk.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="FS\iso.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="FS\path.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="FS\vfs.cpp">
+      <Filter>FS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -395,15 +398,6 @@
     <ClInclude Include="Drivers\ac97.h">
       <Filter>Drivers</Filter>
     </ClInclude>
-    <ClInclude Include="File System\disk.h">
-      <Filter>File System</Filter>
-    </ClInclude>
-    <ClInclude Include="File System\filesys.h">
-      <Filter>File System</Filter>
-    </ClInclude>
-    <ClInclude Include="File System\iso.h">
-      <Filter>File System</Filter>
-    </ClInclude>
     <ClInclude Include="Boot\multiboot.h">
       <Filter>Boot</Filter>
     </ClInclude>
@@ -427,6 +421,21 @@
     </ClInclude>
     <ClInclude Include="Drivers\serial.h">
       <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="FS\disk.h">
+      <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="FS\filesystem.h">
+      <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="FS\iso.h">
+      <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="FS\path.h">
+      <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="FS\vfs.h">
+      <Filter>FS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

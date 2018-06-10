@@ -1,5 +1,5 @@
 #include "process.h"
-#include "File System/filesys.h"
+#include "FS/vfs.h"
 #include "HAL/hal.h"
 #include "Memory/memory.h"
 #include "scheduler.h"
@@ -108,7 +108,7 @@ typedef struct _IMAGE_SECTION_HEADER {
 PROCESS_INFO* Process::Create(char* filename)
 {
 	char* image;
-	int size = FS::ReadFile(filename, image);
+	int size = VFS::ReadFile(filename, image);
 
 	if (!size)
 		return 0;

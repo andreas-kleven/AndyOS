@@ -1,6 +1,6 @@
 #include "font.h"
 #include "string.h"
-#include "File System/filesys.h"
+#include "FS/vfs.h"
 #include "Drawing/drawing.h"
 #include "HAL/hal.h"
 #include "debug.h"
@@ -25,7 +25,7 @@ Font::Font(char* name)
 	strcat(path, name);
 	strcat(path, ".ttf");
 
-	if (!FS::ReadFile(path, data))
+	if (!VFS::ReadFile(path, data))
 	{
 		Debug::Print("Font not found \"%s\"\n", path);
 		return;

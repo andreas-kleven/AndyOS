@@ -16,7 +16,7 @@ MyBox::MyBox()
 
 	if (!img_buf)
 	{
-		if (!FS::ReadFile("img.bmp", img_buf))
+		if (!VFS::ReadFile("img.bmp", img_buf))
 		{
 			Debug::Print("bmp not found");
 			while (1);

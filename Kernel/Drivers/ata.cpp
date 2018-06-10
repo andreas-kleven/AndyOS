@@ -16,7 +16,6 @@ STATUS ATA::Read(int bus, int drive, int sector, char*& buffer, int length)
 		return STATUS_FAILED;
 
 	int sectors = (length - 1) / ATA_SECTOR_SIZE + 1;
-	sectors;
 	buffer = new char[length];
 
 	for (int i = 0; i < sectors; i++)

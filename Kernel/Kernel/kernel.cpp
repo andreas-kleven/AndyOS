@@ -1,6 +1,5 @@
 #include "kernel.h"
 #include "os.h"
-#include "Lib/globals.h"
 #include "API/syscalls.h"
 #include "Boot/multiboot.h"
 #include "Drawing/vbe.h"
@@ -13,6 +12,7 @@
 #include "HAL/cpu.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
+#include "FS/vfs.h"
 #include "debug.h"
 
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
@@ -38,6 +38,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
 	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
 	ATA::Init();
+	VFS::Init();
 
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
 	Keyboard::Init();

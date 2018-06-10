@@ -16,6 +16,7 @@
 #include "Test/Mandelbrot.h"
 #include "Test/TextEdit.h"
 #include "API/syscalls.h"
+#include "FS/iso.h"
 
 #include "debug.h"
 
@@ -89,8 +90,8 @@ void _Font()
 #include "Process/process.h"
 void _Process()
 {
-	Process::Create("Test.exe");
-	Process::Create("_Test.exe");
+	Process::Create("C:/Test.exe");
+	Process::Create("C:/_Test.exe");
 }
 
 void T1()
@@ -172,6 +173,24 @@ void COM()
 	}
 }
 
+void File()
+{
+	char* buf;
+	int size = VFS::ReadFile("C:/files/bunny.obj", buf);
+
+	if (size)
+	{
+		for (int i = 0; i < size; i++)
+			Debug::Print("%c", buf[i]);
+	}
+	else
+	{
+		Debug::Print("File not found");
+	}
+
+	while (1);
+}
+
 void OS::Main()
 {
 	char* _s1 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
@@ -179,6 +198,7 @@ void OS::Main()
 
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+	//File();
 
 	//THREAD* t1 = Scheduler::CreateKernelThread(T1);
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
@@ -193,8 +213,6 @@ void OS::Main()
 
 	//Mandelbrot mandelbrot(Drawing::gc);
 	//mandelbrot.Run();
-
-	FS::Init();
 
 	//GUI();
 	//Game();

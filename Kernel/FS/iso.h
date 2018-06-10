@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "filesystem.h"
 
 #define ISO_SECTOR_SIZE 2048
 
@@ -57,7 +58,7 @@ struct ISO_TABLE_ENTRY
 	uint8 attrib;
 	uint32 locationLBA;
 	uint16 parentDir;
-	char* name;
+	char name;
 };
 
 struct ISO_DIRECTORY
@@ -75,16 +76,24 @@ struct ISO_DIRECTORY
 	uint16 volSeqNum_LSB;
 	uint16 volSeqNum_MSB;
 	uint8 idLength;
-	char* identifier;
+	char identifier;
 };
 
-class ISO_FS
+class ISO_FS : public IFileSystem
 {
 public:
+	static ISO_FS* instance;
+
 	static STATUS Init();
 
-	static ISO_DIRECTORY* FindFile(char* filename);
-	static uint32 ReadFile(ISO_DIRECTORY* file, char*& buffer);
-	static uint32 ReadFile(char* name, char*& buffer);
-	static int ListFiles(char* path);
+	ISO_PRIMARYDESC* desc;
+	ISO_DIRECTORY* root;
+
+	ISO_FS();
+
+	ISO_DIRECTORY* FindDirectory(char* path, bool isDir);
+	bool GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* dir);
+	bool GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file);
+	bool ReadFile(FILE_INFO* file, char*& buffer);
+	bool WriteFile(FILE_INFO* file, void* data, uint32 length);
 };
