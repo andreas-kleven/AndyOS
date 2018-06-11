@@ -14,14 +14,6 @@
 //    INTERFACE DEFINITIONS / ENUMERATIONS / SIMPLE TYPEDEFS
 //============================================================================
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	int _fltused = 0;
-#ifdef __cplusplus
-}
-#endif
-
 #if defined (_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif

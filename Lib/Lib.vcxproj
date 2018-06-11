@@ -34,6 +34,7 @@
     <ClInclude Include="Include\_null.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="crtdefs.cpp" />
     <ClCompile Include="Source Files\math.cpp" />
     <ClCompile Include="Source Files\stdio.cpp" />
     <ClCompile Include="Source Files\string.cpp" />
