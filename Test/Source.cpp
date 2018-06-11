@@ -13,7 +13,7 @@ int main()
 	int result = 0;
 
 	int hour = 0;
-	int minute = 0; 
+	int minute = 0;
 	int second = 0;
 
 	gettime(hour, minute, second);

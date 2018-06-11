@@ -16,6 +16,7 @@
 #include "Test/Mandelbrot.h"
 #include "Test/TextEdit.h"
 #include "API/syscalls.h"
+#include "syscall_list.h"
 #include "FS/iso.h"
 
 #include "debug.h"
@@ -230,31 +231,38 @@ void HandleCommand(char* cmd)
 	}
 	else if (strcmp(arg1, "cd") == 0)
 	{
-		if (strcmp(arg2, "..") == 0)
+		if (arg2)
 		{
-			int length = strlen(terminal_path) - 1;
-
-			if (length > 0)
+			if (strcmp(arg2, "..") == 0)
 			{
-				while (terminal_path[--length] != '/')
-					terminal_path[length] = 0;
+				int length = strlen(terminal_path) - 1;
+
+				if (length > 0)
+				{
+					while (terminal_path[--length] != '/')
+						terminal_path[length] = 0;
+				}
+			}
+			else
+			{
+				int arg2_len = strlen(arg2);
+
+				if (arg2_len > 0 && arg2[0] != '/')
+				{
+					strcpy(terminal_path + strlen(terminal_path), arg2);
+
+					int length = strlen(terminal_path);
+					if (terminal_path[length - 1] != '/')
+					{
+						terminal_path[length] = '/';
+						terminal_path[length + 1] = 0;
+					}
+				}
 			}
 		}
 		else
 		{
-			int arg2_len = strlen(arg2);
-
-			if (arg2_len > 0 && arg2[0] != '/')
-			{
-				strcpy(terminal_path + strlen(terminal_path), arg2);
-
-				int length = strlen(terminal_path);
-				if (terminal_path[length - 1] != '/')
-				{
-					terminal_path[length] = '/';
-					terminal_path[length + 1] = 0;
-				}
-			}
+			Debug::Print("%s\n", terminal_path);
 		}
 	}
 	else if (strcmp(arg1, "read") == 0)
@@ -275,6 +283,18 @@ void HandleCommand(char* cmd)
 		{
 			Debug::Putc(buf[i]);
 		}
+	}
+	else if (strcmp(arg1, "open") == 0)
+	{
+		Process::Create(arg2);
+	}
+	else if (strcmp(arg1, "gui") == 0)
+	{
+		Process::Create("winman.exe");
+	}
+	else if (strcmp(arg1, "color") == 0)
+	{
+		Debug::color = (0xFF << 24) | strtol(arg2, 0, 16);
 	}
 	else
 	{
@@ -339,8 +359,11 @@ void Terminal()
 
 void OS::Main()
 {
+	Process::Create("winman.exe");
+	while(1);
+
+	Terminal();
 	//File();
-	//Terminal();
 
 	char* _s1 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
 	char* _s2 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
@@ -353,7 +376,7 @@ void OS::Main()
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
 	THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
 	THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
-	
+
 	Scheduler::InsertThread(t2);
 	Scheduler::InsertThread(t1);
 	//while (1);

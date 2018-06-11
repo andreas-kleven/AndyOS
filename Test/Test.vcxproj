@@ -78,11 +78,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>
       </SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>$(SolutionDir)Lib\Include\;$(SolutionDir)AndyOS\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MinimalRebuild />
+      <ExceptionHandling />
+      <SmallerTypeCheck />
     </ClCompile>
     <Link>
       <SubSystem>Native</SubSystem>
