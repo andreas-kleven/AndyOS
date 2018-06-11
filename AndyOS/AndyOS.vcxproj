@@ -20,10 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\api.cpp" />
+    <ClCompile Include="Drawing\bmp.cpp" />
+    <ClCompile Include="Drawing\color.cpp" />
+    <ClCompile Include="Drawing\drawing.cpp" />
     <ClCompile Include="Memory\globals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="API\api.h" />
+    <ClInclude Include="Drawing\bmp.h" />
+    <ClInclude Include="Drawing\color.h" />
+    <ClInclude Include="Drawing\drawing.h" />
+    <ClInclude Include="Drawing\font.h" />
     <ClInclude Include="Include\AndyOS.h" />
     <ClInclude Include="List\queue.h" />
     <ClInclude Include="Memory\globals.h" />
@@ -105,7 +112,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Include\;$(SolutionDir)Lib\Include\;$(SolutionDir)Kernel\;$(SolutionDir)Kernel\Lib\;$(SolutionDir)Kernel\API\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Include\;$(SolutionDir)Kernel\Include\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>

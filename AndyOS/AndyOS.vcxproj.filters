@@ -16,6 +16,18 @@
     <ClInclude Include="List\queue.h">
       <Filter>List</Filter>
     </ClInclude>
+    <ClInclude Include="Drawing\bmp.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\drawing.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\font.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\color.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">
@@ -30,6 +42,9 @@
     <Filter Include="List">
       <UniqueIdentifier>{bba9c77d-4e91-485c-8ae1-786c2bc9fb0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawing">
+      <UniqueIdentifier>{5aa9d234-dcc2-400d-a024-152526071699}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\api.cpp">
@@ -37,6 +52,15 @@
     </ClCompile>
     <ClCompile Include="Memory\globals.cpp">
       <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\bmp.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\drawing.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\color.cpp">
+      <Filter>Drawing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
