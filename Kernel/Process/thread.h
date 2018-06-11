@@ -27,6 +27,4 @@ struct THREAD
 	THREAD* procNext = 0;
 	uint8* fpu_state = 0;
 	uint32 sleep_until = 0;
-
-	void Sleep(uint32 until);
 };

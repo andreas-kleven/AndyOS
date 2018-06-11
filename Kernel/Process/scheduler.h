@@ -16,7 +16,8 @@ public:
 	static void StartThreading();
 	static void RemoveThread(THREAD* thread);
 
-	static void Exit(int exitcode);
+	static void SleepThread(uint32 until, THREAD* thread = current_thread);
+	static void ExitThread(int code, THREAD* thread = current_thread);
 
 private:
 	static void Schedule();

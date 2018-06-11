@@ -38,12 +38,13 @@ void draw(uint32* framebuffer)
 
 void exit(int code)
 {
-
+	Scheduler::ExitThread(code);
 }
 
 void sleep(uint32 ticks)
 {
-	Scheduler::current_thread->Sleep(PIT::ticks + ticks);
+	Scheduler::SleepThread(PIT::ticks + ticks);
+
 }
 
 void* alloc(uint32 blocks)

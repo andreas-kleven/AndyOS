@@ -145,9 +145,22 @@ void Scheduler::RemoveThread(THREAD* thread)
 	}
 }
 
-void Scheduler::Exit(int exitcode)
+void Scheduler::SleepThread(uint32 until, THREAD* thread)
 {
-	RemoveThread(current_thread);
+	if (thread->state != THREAD_STATE_TERMINATED)
+	{
+		thread->state = THREAD_STATE_BLOCKING;
+		thread->sleep_until = until;
+
+		//Switch thread
+		if (thread == current_thread)
+			_asm int TASK_SCHEDULE_IRQ
+	}
+}
+
+void Scheduler::ExitThread(int code, THREAD* thread)
+{
+	RemoveThread(thread);
 }
 
 void Scheduler::Schedule()
@@ -182,9 +195,6 @@ void Scheduler::Schedule()
 		if (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED)
 			break;
 	}
-
-	if (current_thread == idle_thread)
-		current_thread = current_thread->next;
 
 	//Restore stack
 	tmp_stack = current_thread->stack;
