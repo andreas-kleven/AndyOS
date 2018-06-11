@@ -139,15 +139,18 @@ PROCESS_INFO* Process::Create(char* filename)
 			textheader = sectionHeader;
 		}
 
-		uint32 blocks = BYTES_TO_BLOCKS(sectionHeader->SizeOfRawData);
+		if (sectionHeader->SizeOfRawData > 0)
+		{
+			uint32 blocks = BYTES_TO_BLOCKS(sectionHeader->SizeOfRawData);
 
-		uint32 phys = (uint32)PMem::AllocBlocks(blocks);
-		uint32 virt = imagebase + sectionHeader->VirtualAddress;
+			uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+			uint32 virt = imagebase + sectionHeader->VirtualAddress;
 
-		VMem::MapPhysAddr(dir, phys, virt, flags, blocks);
+			VMem::MapPhysAddr(dir, phys, virt, flags, blocks);
 
-		PAGE_TABLE_ENTRY* e = VMem::GetTableEntry(dir, virt);
-		memcpy((uint32*)virt, image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
+			PAGE_TABLE_ENTRY* e = VMem::GetTableEntry(dir, virt);
+			memcpy((uint32*)virt, image + sectionHeader->PointerToRawData, sectionHeader->SizeOfRawData);
+		}
 	}
 
 	uint32 pointerToRawData = textheader->PointerToRawData;
