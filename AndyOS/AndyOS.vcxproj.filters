@@ -13,6 +13,9 @@
     <ClInclude Include="Memory\memory.h">
       <Filter>Memory</Filter>
     </ClInclude>
+    <ClInclude Include="List\queue.h">
+      <Filter>List</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">
@@ -23,6 +26,9 @@
     </Filter>
     <Filter Include="Memory">
       <UniqueIdentifier>{115c0b60-5f2a-4247-990b-6ada7ce2308e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="List">
+      <UniqueIdentifier>{bba9c77d-4e91-485c-8ae1-786c2bc9fb0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

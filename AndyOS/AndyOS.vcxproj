@@ -25,6 +25,7 @@
   <ItemGroup>
     <ClInclude Include="API\api.h" />
     <ClInclude Include="Include\AndyOS.h" />
+    <ClInclude Include="List\queue.h" />
     <ClInclude Include="Memory\globals.h" />
     <ClInclude Include="Memory\memory.h" />
   </ItemGroup>
