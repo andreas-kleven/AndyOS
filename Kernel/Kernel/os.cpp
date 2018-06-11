@@ -90,8 +90,8 @@ void _Font()
 #include "Process/process.h"
 void _Process()
 {
-	Process::Create("C:/Test.exe");
-	Process::Create("C:/_Test.exe");
+	Process::Create("Test.exe");
+	Process::Create("_Test.exe");
 }
 
 void T1()
@@ -137,6 +137,10 @@ void T2()
 			mov ebx, color
 			int 0x80
 			pause
+
+			mov eax, SYSCALL_SLEEP
+			mov ebx, 10
+			int 0x80
 		}
 	}
 }
@@ -336,7 +340,7 @@ void Terminal()
 void OS::Main()
 {
 	//File();
-	Terminal();
+	//Terminal();
 
 	char* _s1 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
 	char* _s2 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
@@ -349,7 +353,7 @@ void OS::Main()
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
 	THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
 	THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
-
+	
 	Scheduler::InsertThread(t2);
 	Scheduler::InsertThread(t1);
 	//while (1);

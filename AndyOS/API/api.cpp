@@ -48,6 +48,11 @@ void exit(int code)
 	CALL1(SYSCALL_EXIT, code);
 }
 
+void sleep(uint32 ticks)
+{
+	CALL1(SYSCALL_SLEEP, ticks);
+}
+
 uint32* alloc(uint32 blocks)
 {
 	CALL1(SYSCALL_ALLOC, blocks);

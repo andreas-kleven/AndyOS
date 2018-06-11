@@ -11,6 +11,7 @@
 #define SYSCALL_GETTIME	4
 #define SYSCALL_DRAW	5
 #define SYSCALL_EXIT	6
+#define SYSCALL_SLEEP	7
 #define SYSCALL_ALLOC	0x10
 #define SYSCALL_FREE	0x11
 

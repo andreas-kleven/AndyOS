@@ -159,8 +159,29 @@ void Scheduler::Schedule()
 	current_thread->stack = tmp_stack;
 	current_thread->regs = (REGS*)tmp_stack;
 
+	if (current_thread->state == THREAD_STATE_RUNNING)
+		current_thread->state = THREAD_STATE_READY;
+
 	//Schedule
-	current_thread = current_thread->next;
+	THREAD* first = current_thread;
+
+	while (current_thread->next != first)
+	{
+		current_thread = current_thread->next;
+
+		//Waiting
+		if (current_thread->state == THREAD_STATE_BLOCKING)
+		{
+			if (PIT::ticks >= current_thread->sleep_until)
+			{
+				current_thread->sleep_until = 0;
+				current_thread->state = THREAD_STATE_READY;
+			}
+		}
+
+		if (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED)
+			break;
+	}
 
 	if (current_thread == idle_thread)
 		current_thread = current_thread->next;

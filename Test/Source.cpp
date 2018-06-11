@@ -31,13 +31,15 @@ int main()
 			uint8 r = rand() / 0xFF;
 			uint8 g = rand() / 0xFF;
 			uint8 b = rand() / 0xFF;
-			framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+			//framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
 		}
 
-		//gettime(hour, minute, second);
-		//vprintf(buf, "%ux:%i:%i\n", framebuffer, minute, second);
-		//print(buf);
-		draw(framebuffer);
+		gettime(hour, minute, second);
+		vprintf(buf, "%i:%i:%i\n", hour, minute, second);
+		print(buf);
+
+		sleep(1000);
+		//draw(framebuffer);
 	}
 
 	while (1);

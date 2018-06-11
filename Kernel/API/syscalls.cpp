@@ -41,6 +41,11 @@ void exit(int code)
 
 }
 
+void sleep(uint32 ticks)
+{
+	Scheduler::current_thread->Sleep(PIT::ticks + ticks);
+}
+
 void* alloc(uint32 blocks)
 {
 	return VMem::UserAlloc(Scheduler::current_thread->page_dir, blocks);
@@ -62,6 +67,7 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_GETTIME, gettime);
 	InstallSyscall(SYSCALL_DRAW, draw);
 	InstallSyscall(SYSCALL_EXIT, exit);
+	InstallSyscall(SYSCALL_SLEEP, sleep);
 	InstallSyscall(SYSCALL_ALLOC, alloc);
 	InstallSyscall(SYSCALL_FREE, free);
 }

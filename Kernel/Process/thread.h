@@ -10,7 +10,7 @@ enum THREAD_STATE
 	THREAD_STATE_INITIALIZED,
 	THREAD_STATE_READY,
 	THREAD_STATE_RUNNING,
-	THREAD_STATE_STANDBY,
+	THREAD_STATE_BLOCKING,
 	THREAD_STATE_TERMINATED
 
 };
@@ -18,12 +18,15 @@ enum THREAD_STATE
 struct THREAD
 {
 	uint32 stack;
-	REGS* regs;
-	uint32 kernel_esp;
-	PAGE_DIR* page_dir;
-	uint32 id;
+	REGS* regs = 0;
+	uint32 kernel_esp = 0;
+	PAGE_DIR* page_dir = 0;
+	uint32 id = 0;
 	THREAD_STATE state;
-	THREAD* next;
-	THREAD* procNext;
-	uint8* fpu_state;
+	THREAD* next = 0;
+	THREAD* procNext = 0;
+	uint8* fpu_state = 0;
+	uint32 sleep_until = 0;
+
+	void Sleep(uint32 until);
 };
