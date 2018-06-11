@@ -1,5 +1,5 @@
 #include "api.h"
-#include "syscalls.h"
+#include "syscall_list.h"
 #include "stdarg.h"
 
 #define CALL0(id)	_asm mov eax, id \
@@ -51,6 +51,21 @@ void exit(int code)
 void sleep(uint32 ticks)
 {
 	CALL1(SYSCALL_SLEEP, ticks);
+}
+
+uint32 ticks()
+{
+	CALL0(SYSCALL_TICKS);
+}
+
+void get_mouse_pos(int& x, int& y)
+{
+	CALL2(SYSCALL_GET_MOUSE_POS, x, y);
+}
+
+void get_mouse_buttons(bool& left, bool& right, bool& middle)
+{
+	CALL3(SYSCALL_GET_MOUSE_BUTTONS, left, right, middle);
 }
 
 uint32* alloc(uint32 blocks)

@@ -46,6 +46,9 @@
     <Filter Include="FS">
       <UniqueIdentifier>{9466eb91-61af-413d-8693-baa2a31f948f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{27903d7f-7ce5-4c96-8af9-6360503c90e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Net\arp.cpp">
@@ -228,7 +231,9 @@
     <ClCompile Include="Drivers\device.cpp">
       <Filter>Drivers</Filter>
     </ClCompile>
-    <ClCompile Include="FS\filesystem.cpp" />
+    <ClCompile Include="FS\filesystem.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Net\address.h">
@@ -437,6 +442,9 @@
     </ClInclude>
     <ClInclude Include="Drivers\device.h">
       <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\syscall_list.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,10 @@
 #include "syscalls.h"
+#include "syscall_list.h"
 #include "HAL/hal.h"
 #include "string.h"
 #include "debug.h"
-#include "Drawing/drawing.h"
+#include "Drawing/vbe.h"
+#include "Drivers/mouse.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
 
@@ -33,7 +35,7 @@ void gettime(int& hour, int& minute, int& second)
 
 void draw(uint32* framebuffer)
 {
-	memcpy(Drawing::gc.framebuffer, framebuffer, Drawing::gc.memsize());
+	memcpy(VBE::mem_base, framebuffer, VBE::mem_size);
 }
 
 void exit(int code)
@@ -44,7 +46,24 @@ void exit(int code)
 void sleep(uint32 ticks)
 {
 	Scheduler::SleepThread(PIT::ticks + ticks);
+}
 
+uint32 ticks()
+{
+	return PIT::ticks;
+}
+
+void get_mouse_pos(int& x, int& y)
+{
+	x = Mouse::x;
+	y = Mouse::y;
+}
+
+void get_mouse_buttons(bool& left, bool& right, bool& middle)
+{
+	left = Mouse::mouse_L;
+	right = Mouse::mouse_R;
+	middle = Mouse::mouse_M;
 }
 
 void* alloc(uint32 blocks)
@@ -69,6 +88,9 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_DRAW, draw);
 	InstallSyscall(SYSCALL_EXIT, exit);
 	InstallSyscall(SYSCALL_SLEEP, sleep);
+	InstallSyscall(SYSCALL_TICKS, ticks);
+	InstallSyscall(SYSCALL_GET_MOUSE_POS, get_mouse_pos);
+	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, get_mouse_buttons);
 	InstallSyscall(SYSCALL_ALLOC, alloc);
 	InstallSyscall(SYSCALL_FREE, free);
 }

@@ -117,6 +117,7 @@
     <ClInclude Include="HAL\pit.h" />
     <ClInclude Include="HAL\rtc.h" />
     <ClInclude Include="HAL\tss.h" />
+    <ClInclude Include="Include\syscall_list.h" />
     <ClInclude Include="Kernel\exceptions.h" />
     <ClInclude Include="Kernel\kernel.h" />
     <ClInclude Include="Kernel\os.h" />
@@ -255,7 +256,7 @@
       <PrecompiledHeader />
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Lib\;$(SolutionDir)GL\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Include\;$(ProjectDir)Lib\;$(SolutionDir)GL\;$(SolutionDir)Lib\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>
       </CompileAsWinRT>
     </ClCompile>
