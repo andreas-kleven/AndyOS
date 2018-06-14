@@ -17,9 +17,12 @@ uint32 w;
 uint32 h;
 
 uint8 mouse_cycle;
-int8 mouse_byte[4];
+uint8 mouse_byte[4];
 
 bool initialized;
+
+int sx;
+int sy;
 
 float deltaX;
 float deltaY;
@@ -147,8 +150,18 @@ void Mouse::Mouse_ISR(REGS* regs)
 				break;
 			}
 
-			deltaX = mouse_byte[1] * sensitivity;
-			deltaY = mouse_byte[2] * sensitivity;
+			sx = mouse_byte[1];
+ 			sy = mouse_byte[2];
+
+			//Sign
+			if (mouse_byte[0] & 0x10)
+				sx |= 0xFFFFFF00;
+
+			if (mouse_byte[0] & 0x20)
+				sy |= 0xFFFFFF00;
+
+			deltaX = sx * sensitivity;
+			deltaY = sy * sensitivity;
 
 			//float scaleX = abs(deltaX) / 20 + 1;
 			//float scaleY = abs(deltaY) / 20 + 1;
