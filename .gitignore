@@ -1,6 +1,7 @@
 Root/
 *.iso
 *.a
+*.lnk
 
 .vscode/
 Build/
