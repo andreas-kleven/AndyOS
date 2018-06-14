@@ -2,6 +2,7 @@
 #include "memory.h"
 #include "Kernel/kernel.h"
 #include "string.h"
+#include "../Drawing/vbe.h"
 
 #define PAGE_DIR_INDEX(x) (((x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)
@@ -12,8 +13,9 @@ PAGE_DIR* main_dir;
 
 void VMem::Init(MULTIBOOT_INFO* bootinfo)
 {
-	MULTIBOOT_INFO* info = 0;
-	memcpy(info, bootinfo, sizeof(MULTIBOOT_INFO));
+	MULTIBOOT_INFO info = *bootinfo;
+	VBE_MODE_INFO vbe_info = *(VBE_MODE_INFO*)bootinfo->vbe_mode_info;
+	info.vbe_mode_info = (uint32)&vbe_info;
 
 	//Page dir
 	main_dir = (PAGE_DIR*)PMem::AllocBlocks(1);

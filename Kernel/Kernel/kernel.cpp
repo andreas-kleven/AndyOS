@@ -31,9 +31,9 @@ void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 	VMem::Init(bootinfo);
 }
 
-void Kernel::HigherHalf(MULTIBOOT_INFO* bootinfo)
+void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)
 {
-	VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo->vbe_mode_info;
+	VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo.vbe_mode_info;
 	VBE::Init(vbeMode);
 	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
