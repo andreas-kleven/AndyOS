@@ -1,7 +1,6 @@
 #include "vbe.h"
 #include "Drawing/drawing.h"
 #include "Memory/memory.h"
-#include "debug.h"
 
 VBE_MODE_INFO VBE::mode;
 

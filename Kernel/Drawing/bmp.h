@@ -14,7 +14,7 @@ struct BMP_HEADER
 	uint16 planes;
 	uint16 bpp;
 	uint32 compression;
-};
+} __attribute__((packed));
 
 struct BMP
 {
@@ -29,4 +29,4 @@ struct BMP
 
 	BMP(void* buffer);
 	BMP(void* buffer, int width, int height);
-};
+} __attribute__((packed));

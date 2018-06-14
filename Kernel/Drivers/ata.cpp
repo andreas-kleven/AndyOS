@@ -3,7 +3,7 @@
 #include "HAL/hal.h"
 #include "../FS/iso.h"
 #include "string.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 ATADevice::ATADevice(int bus, int drive)
 {
@@ -68,7 +68,7 @@ bool ATADevice::ReadSector(int location, int size, char* buffer)
 	outb(bus + ATA_LBA_HIGH, (ATA_SECTOR_SIZE >> 8));
 	outb(bus + ATA_LBA_COMMAND, 0xA0);
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x80)  _asm pause;
+	while (inb(bus + ATA_LBA_STATUS) & 0x80) asm volatile("pause");
 
 	read_cmd[9] = 1;
 	read_cmd[2] = (uint8)(sector >> 24);
@@ -79,7 +79,7 @@ bool ATADevice::ReadSector(int location, int size, char* buffer)
 	for (int i = 0; i < 12; i += 2)
 		outw(bus + ATA_DATA, (uint16)((read_cmd[i + 1] << 8) | read_cmd[i]));
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x80) _asm pause;
+	while (inb(bus + ATA_LBA_STATUS) & 0x80) asm volatile("pause");
 
 	int read_size = (inb(bus + ATA_LBA_HIGH) << 8) | inb(bus + ATA_LBA_MID);
 
@@ -90,7 +90,7 @@ bool ATADevice::ReadSector(int location, int size, char* buffer)
 		buffer[i + 1] = w >> 8;
 	}
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x88) _asm pause;
+	while (inb(bus + ATA_LBA_STATUS) & 0x88) asm volatile("pause");
 
 	return STATUS_SUCCESS;
 }

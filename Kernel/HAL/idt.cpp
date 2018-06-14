@@ -2,14 +2,13 @@
 #include "hal.h"
 #include "string.h"
 #include "pic.h"
-#include "debug.h"
 
 IDT_DESCRIPTOR IDT::idt[MAX_INTERRUPTS];
 IRQ_HANDLER IDT::handlers[MAX_INTERRUPTS];
 IDT_REG IDT::idt_reg;
 
 /*push eax; push irq; mov eax, addr; jmp eax*/
-const char irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
+const uint8 irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
 char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
 
 char fpustate[512];
@@ -37,24 +36,23 @@ STATUS IDT::Init()
 		ptr[7] = (target_addr >> 24) & 0xFF;
 
 		if (i == 0x80)
-			SetISR(i, ptr, IDT_DESC_RING3);
+			SetISR(i, (ISR)ptr, IDT_DESC_RING3);
 		else
-			SetISR(i, ptr, 0);
+			SetISR(i, (ISR)ptr, 0);
 
 		handlers[i] = 0;
 	}
 
-	_asm lidt[idt_reg]
-
-		return STATUS_SUCCESS;
+	asm volatile("lidt (%0)" :: "r" (&idt_reg));
+	return STATUS_SUCCESS;
 }
 
-STATUS IDT::SetISR(uint32 i, void* irq, int flags)
+STATUS IDT::SetISR(uint32 i, ISR isr, int flags)
 {
-	if (i > MAX_INTERRUPTS || !irq)
+	if (i > MAX_INTERRUPTS || !isr)
 		return STATUS_FAILED;
 
-	uint32 uiBase = (uint32)irq;
+	uint32 uiBase = (uint32)isr;
 
 	idt[i].low = uint16(uiBase & 0xffff);
 	idt[i].high = uint16((uiBase >> 16) & 0xffff);
@@ -86,49 +84,41 @@ IDT_DESCRIPTOR* IDT::GetIR(uint32 i)
 
 void INTERRUPT IDT::EmptyISR()
 {
+	asm volatile("pusha");
 	PIC::InterruptDone(0);
-	_asm iretd
+	asm volatile("popa\n"
+		"iret");
 }
 
 void INTERRUPT IDT::CommonISR()
 {
-	_asm
-	{
-		cli
+	asm volatile(
+		"cli\n"
+		"pop %%eax\n"
+		"and $0xFF, %%eax\n"
+		"sub $48, %%esp\n"
+		"push %%eax\n"
+		"add $52, %%esp\n"
+		"pop %%eax\n"
+		
+		"pusha\n"
+		"push %%ds\n"
+		"push %%es\n"
+		"push %%fs\n"
+		"push %%gs\n"
 
-		//Pop irq and eax
-		pop eax
-		and eax, 0xFF
-		sub esp, 48
-		push eax
-		add esp, 52
-		pop eax
+		"push %%esp\n"
+		"sub $4, %%esp\n"
+		"call %P0\n"
+		"add $8, %%esp\n"
 
-		//Push registers
-		pushad
+		"pop %%gs\n"
+		"pop %%fs\n"
+		"pop %%es\n"
+		"pop %%ds\n"
+		"popa\n"
 
-		push ds
-		push es
-		push fs
-		push gs
-
-		//Call handler
-		push esp
-		sub esp, 4
-		call CommonHandler
-		add esp, 8
-
-		//Pop registers
-		pop gs
-		pop fs
-		pop es
-		pop ds
-
-		popad
-
-		//Return
-		iretd
-	}
+		"iret" :: "i" (CommonHandler));
 }
 
 void IDT::CommonHandler(int i, REGS* regs)

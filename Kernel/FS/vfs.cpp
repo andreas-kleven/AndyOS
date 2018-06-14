@@ -2,7 +2,7 @@
 #include "string.h"
 #include "path.h"
 #include "iso.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 IFileSystem* VFS::first_fs;
 IFileSystem* primary_fs;

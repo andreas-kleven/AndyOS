@@ -3,7 +3,7 @@
 #include "FS/vfs.h"
 #include "Drawing/drawing.h"
 #include "HAL/hal.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define BTOLW(x) ((x >> 8) | (x << 8))
 #define BTOLD(x) (((x >> 24) & 0xFF) | ((x << 8) & 0xFF0000) | ((x >> 8) & 0xFF00) | ((x << 24) & 0xFF000000))

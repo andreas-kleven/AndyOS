@@ -1,6 +1,6 @@
 #pragma once
 #include "definitions.h"
-#include "Boot\multiboot.h"
+#include "Boot/multiboot.h"
 
 #define PAGE_SIZE		0x1000
 
@@ -62,7 +62,7 @@ struct PAGE_TABLE_ENTRY
 	{
 		value = (value & ~PTE_FRAME) | addr;
 	}
-};
+} __attribute__((packed));
 
 struct PAGE_DIR_ENTRY
 {
@@ -92,19 +92,19 @@ struct PAGE_DIR_ENTRY
 	{
 		return (PAGE_TABLE*)(value & PDE_FRAME);
 	}
-};
+} __attribute__((packed));
 
 struct PAGE_TABLE
 {
 	PAGE_TABLE_ENTRY entries[PAGE_TABLE_LENGTH];
-};
+} __attribute__((packed));
 
 struct PAGE_DIR
 {
 	PAGE_DIR_ENTRY entries[PAGE_DIR_LENGTH];
-};
+} __attribute__((packed));
 
-static class VMem
+class VMem
 {
 public:
 	static void Init(MULTIBOOT_INFO* bootinfo);

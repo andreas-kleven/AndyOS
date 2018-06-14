@@ -4,7 +4,7 @@
 #include "Memory/memory.h"
 #include "scheduler.h"
 #include "string.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define IMAGE_NUMBEROF_DIRECTORY_ENTRIES 16
 #define IMAGE_SIZEOF_SHORT_NAME 8
@@ -31,12 +31,12 @@ struct DOS_Header
 	uint16 oem_info;
 	uint16 reserved2[10];
 	uint32  e_lfanew; // Offset to the 'PE\0\0' signature relative to the beginning of the file
-};
+} __attribute__((packed));
 
 typedef struct _IMAGE_DATA_DIRECTORY {
 	uint32 VirtualAddress;
 	uint32 Size;
-} IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;
+} __attribute__((packed)) IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;
 
 typedef struct _IMAGE_OPTIONAL_HEADER {
 	uint16                 Magic;
@@ -70,7 +70,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 	uint32                LoaderFlags;
 	uint32                NumberOfRvaAndSizes;
 	IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
-} IMAGE_OPTIONAL_HEADER, *PIMAGE_OPTIONAL_HEADER;
+} __attribute__((packed)) IMAGE_OPTIONAL_HEADER, *PIMAGE_OPTIONAL_HEADER;
 
 typedef struct _IMAGE_FILE_HEADER {
 	uint16  Machine;
@@ -80,14 +80,14 @@ typedef struct _IMAGE_FILE_HEADER {
 	uint32 NumberOfSymbols;
 	uint16  SizeOfOptionalHeader;
 	uint16  Characteristics;
-} IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;
+} __attribute__((packed)) IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;
 
 
 struct IMAGE_NT_HEADERS {
 	uint32                 Signature;
 	IMAGE_FILE_HEADER     FileHeader;
 	IMAGE_OPTIONAL_HEADER OptionalHeader;
-};
+} __attribute__((packed));
 
 typedef struct _IMAGE_SECTION_HEADER {
 	uint8  Name[IMAGE_SIZEOF_SHORT_NAME];
@@ -103,7 +103,7 @@ typedef struct _IMAGE_SECTION_HEADER {
 	uint16  NumberOfRelocations;
 	uint16  NumberOfLinenumbers;
 	uint32 Characteristics;
-} IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
+} __attribute__((packed)) IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
 
 PROCESS_INFO* Process::Create(char* filename)
 {
@@ -125,7 +125,7 @@ PROCESS_INFO* Process::Create(char* filename)
 
 	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
 
-	_asm cli
+	asm volatile("cli");
 
 	PAGE_DIR* dir = VMem::CreatePageDir();
 	VMem::SwitchDir(dir);
@@ -159,9 +159,9 @@ PROCESS_INFO* Process::Create(char* filename)
 	Debug::Print("Loaded image %ux\n", dir);
 
 	PROCESS_INFO* proc = new PROCESS_INFO(PROCESS_USER, dir);
-	Process::CreateThread(proc, (void*)entry);
+	Process::CreateThread(proc, (void(*)())entry);
 
-	_asm sti
+	asm volatile("sti");
 	return proc;
 }
 
@@ -175,7 +175,7 @@ STATUS Process::Kill(PROCESS_INFO* proc)
 	return STATUS_FAILED;
 }
 
-THREAD* Process::CreateThread(PROCESS_INFO* proc, void* main)
+THREAD* Process::CreateThread(PROCESS_INFO* proc, void(*main)())
 {
 	THREAD* thread = 0;
 

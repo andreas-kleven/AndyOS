@@ -13,7 +13,7 @@
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
 #include "FS/vfs.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
@@ -24,7 +24,7 @@ void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 	HAL::Init();
 	Exceptions::Init();
 	Syscalls::Init();
-
+	
 	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
 	PMem::Init(MEMORY_SIZE, (uint32*)mem_map);
 	PMem::InitRegion((uint32*)0x30000000, 0xD0000000);

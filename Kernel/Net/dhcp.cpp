@@ -1,5 +1,5 @@
 #include "dhcp.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define TYPE_DISCOVER	1
 #define TYPE_OFFER		2

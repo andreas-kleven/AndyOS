@@ -1,6 +1,6 @@
 #include "dns.h"
 #include "udpsocket.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 IPv4Address DNS::dns_server;
 DNS_TABLE_ENTRY DNS::dns_cache[DNS_CACHE_SIZE];

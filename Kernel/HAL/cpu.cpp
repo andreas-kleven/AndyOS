@@ -13,41 +13,25 @@ STATUS CPU::Init()
 
 STATUS CPU::EnableFPU()
 {
-	_asm
-	{
-		_emit 0x0F //mov eax, cr4
-		_emit 0x20
-		_emit 0xE0
-
-		or eax, 0x200
-
-		_emit 0x0F //mov cr4, eax
-		_emit 0x22
-		_emit 0xE0
-	}
+	asm volatile(
+		"mov %cr4, %eax\n"
+		"or $0x200, %eax\n"
+		"mov %eax, %cr4");
 
 	return STATUS_SUCCESS;
 }
 
 STATUS CPU::EnableSSE()
 {
-	_asm
-	{
-		mov eax, cr0
-		and ax, 0xFFFB
-		or ax, 0x2
-		mov cr0, eax
+	asm volatile(
+		"mov %cr0, %eax\n"
+		"and $0xFFFB, %ax\n"
+		"or $0x2, %ax\n"
+		"mov %eax, %cr0\n"
 
-		_emit 0x0F //mov eax, cr4
-		_emit 0x20
-		_emit 0xE0
-
-		or ax, 3 << 9
-
-		_emit 0x0F //mov cr4, eax
-		_emit 0x22
-		_emit 0xE0
-	}
+		"mov %cr4, %eax\n"
+		"or $0x600, %eax\n"
+		"mov %eax, %cr4");
 
 	return STATUS_SUCCESS;
 }

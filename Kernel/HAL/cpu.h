@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
 
-static class CPU
+class CPU
 {
 public:
 	static STATUS Init();

@@ -1,6 +1,6 @@
 #include "icmp.h"
 #include "net.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 void ICMP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
 {

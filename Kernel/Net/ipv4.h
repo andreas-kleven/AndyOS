@@ -35,7 +35,7 @@ struct IPv4_PSEUDO_HEADER
 	uint16 length;
 };
 
-static class IPv4
+class IPv4
 {
 public:
 	static void Send(NetInterface* intf, NetPacket* pkt);

@@ -6,7 +6,7 @@
 #define MOUSE_PORT0 0x60
 #define MOUSE_PORT1 0x64
 
-static class Mouse
+class Mouse
 {
 public:
 	static float x;

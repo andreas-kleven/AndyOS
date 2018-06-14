@@ -13,7 +13,7 @@ struct E1000_RX_DESC
 	uint8 status;
 	uint8 errors;
 	uint16 special;
-};
+} __attribute__((packed));
 
 struct E1000_TX_DESC
 {
@@ -24,7 +24,7 @@ struct E1000_TX_DESC
 	uint8 status;
 	uint8 css;
 	uint16 special;
-};
+} __attribute__((packed));
 
 class E1000 : public NetInterface
 {
@@ -65,7 +65,7 @@ private:
 	uint32 ReadEEPROM(uint8 addr);
 
 	void WriteCommand(uint16 p_address, uint32 p_value);
-	uint32 E1000::ReadCommand(uint16 p_address);
+	uint32 ReadCommand(uint16 p_address);
 
 	void ReadMac();
 };

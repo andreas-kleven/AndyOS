@@ -1,7 +1,7 @@
 #pragma once
 #include "Boot/multiboot.h"
 
-static class Kernel
+class Kernel
 {
 public:
 	static void Setup(MULTIBOOT_INFO* bootinfo);

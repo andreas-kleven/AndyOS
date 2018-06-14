@@ -62,7 +62,7 @@ void* memcpy(void* dest, void* src, unsigned int n)
 	return dest;
 }
 
-void memcpy_fast_128(void* dest, void* src, unsigned int n)
+/*void memcpy_fast_128(void* dest, void* src, unsigned int n)
 {
 	if (n % 128 != 0)
 		return;
@@ -100,10 +100,9 @@ void memcpy_fast_128(void* dest, void* src, unsigned int n)
 
 		jnz loop_copy;
 	}
-}
+}*/
 
-#pragma function(memset)
-void* __cdecl memset(void* dest, int val, int n)
+void* memset(void* dest, int val, int n)
 {
 	unsigned char *temp = (unsigned char *)dest;
 	for (; n != 0; n--, temp[n] = val);
@@ -124,7 +123,7 @@ void* memset32(void *dest, unsigned int val, unsigned int n)
 	return dest;
 }
 
-void* memset_fast_128(void* dest, unsigned int val, unsigned int n)
+/*void* memset_fast_128(void* dest, unsigned int val, unsigned int n)
 {
 	if (n % 128 != 0)
 		return 0;
@@ -162,7 +161,7 @@ void* memset_fast_128(void* dest, unsigned int val, unsigned int n)
 	}
 
 	return (unsigned char*)dest + n;
-}
+}*/
 
 int memcmp(const void* a, const void* b, unsigned int n)
 {

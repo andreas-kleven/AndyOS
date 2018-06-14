@@ -1,8 +1,8 @@
 #include "syscalls.h"
-#include "syscall_list.h"
+#include "Include/syscall_list.h"
 #include "HAL/hal.h"
 #include "string.h"
-#include "debug.h"
+#include "Lib/debug.h"
 #include "Drawing/vbe.h"
 #include "Drivers/mouse.h"
 #include "Memory/memory.h"
@@ -12,8 +12,9 @@ void* syscalls[MAX_SYSCALLS];
 
 void halt(int code)
 {
-	_asm cli
-	_asm hlt
+	asm volatile(
+		"cli\n"
+		"hlt");
 }
 
 void print(char* text)
@@ -81,26 +82,26 @@ STATUS Syscalls::Init()
 	if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
 		return STATUS_FAILED;
 
-	InstallSyscall(SYSCALL_HALT, halt);
-	InstallSyscall(SYSCALL_PRINT, print);
-	InstallSyscall(SYSCALL_COLOR, color);
-	InstallSyscall(SYSCALL_GETTIME, gettime);
-	InstallSyscall(SYSCALL_DRAW, draw);
-	InstallSyscall(SYSCALL_EXIT, exit);
-	InstallSyscall(SYSCALL_SLEEP, sleep);
-	InstallSyscall(SYSCALL_TICKS, ticks);
-	InstallSyscall(SYSCALL_GET_MOUSE_POS, get_mouse_pos);
-	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, get_mouse_buttons);
-	InstallSyscall(SYSCALL_ALLOC, alloc);
-	InstallSyscall(SYSCALL_FREE, free);
+	InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
+	InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);
+	InstallSyscall(SYSCALL_COLOR, (SYSCALL_HANDLER)color);
+	InstallSyscall(SYSCALL_GETTIME, (SYSCALL_HANDLER)gettime);
+	InstallSyscall(SYSCALL_DRAW, (SYSCALL_HANDLER)draw);
+	InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)exit);
+	InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sleep);
+	InstallSyscall(SYSCALL_TICKS, (SYSCALL_HANDLER)ticks);
+	InstallSyscall(SYSCALL_GET_MOUSE_POS, (SYSCALL_HANDLER)get_mouse_pos);
+	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, (SYSCALL_HANDLER)get_mouse_buttons);
+	InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
+	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 }
 
-void Syscalls::InstallSyscall(int id, void* handler)
+void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)
 {
 	if (id <= 0 || id >= MAX_SYSCALLS)
 		return;
 
-	syscalls[id] = handler;
+	syscalls[id] = (void*)handler;
 }
 
 void Syscalls::ISR(REGS* regs)
@@ -113,25 +114,21 @@ void Syscalls::ISR(REGS* regs)
 	if (!location)
 		return;
 
-	int p1 = regs->edi;
-	int p2 = regs->esi;
-	int p3 = regs->edx;
-	int p4 = regs->ecx;
-	int p5 = regs->ebx;
+	uint32 ret;
 
-	uint32 result;
+	asm volatile (
+		"push %1\n"
+		"push %2\n"
+		"push %3\n"
+		"push %4\n"
+		"push %5\n"
+		"call *%6\n"
+		"pop %%ebx\n"
+		"pop %%ebx\n"
+		"pop %%ebx\n"
+		"pop %%ebx\n"
+		"pop %%ebx\n"
+		: "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
 
-	_asm
-	{
-		push p1
-		push p2
-		push p3
-		push p4
-		push p5
-		call location
-		mov[result], eax
-		add esp, 40
-	}
-
-	regs->eax = result;
+	regs->eax = ret;
 }

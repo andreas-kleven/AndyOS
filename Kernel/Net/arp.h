@@ -27,7 +27,7 @@ struct ARP_TABLE_ENTRY
 	IPv4Address ip;
 };
 
-static class ARP
+class ARP
 {
 public:
 	static STATUS Init();
@@ -39,7 +39,7 @@ public:
 	static void SendRequest(NetInterface* intf, IPv4Address tip);
 
 	static void AddEntry(MacAddress mac, IPv4Address ip);
-	static MacAddress ARP::LookupMac(IPv4Address ip);
+	static MacAddress LookupMac(IPv4Address ip);
 
 private:
 	static ARP_TABLE_ENTRY arp_cache[];

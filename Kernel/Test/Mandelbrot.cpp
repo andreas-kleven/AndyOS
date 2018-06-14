@@ -1,5 +1,5 @@
 #include "Mandelbrot.h"
-#include "debug.h"
+#include "Lib/debug.h"
 #include "Drawing/drawing.h"
 #include "math.h"
 #include "HAL/hal.h"

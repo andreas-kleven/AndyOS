@@ -2,7 +2,7 @@
 #include "HAL/hal.h"
 #include "Net/net.h"
 #include "Net/eth.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define REG_CTRL 		0x0000
 #define REG_EEPROM 		0x0014

@@ -1,8 +1,6 @@
 #include "pit.h"
 #include "HAL/hal.h"
 
-#include "debug.h"
-
 uint32 PIT::ticks;
 
 STATUS PIT::Init()
@@ -14,7 +12,7 @@ STATUS PIT::Init()
 void PIT::Sleep(uint32 time)
 {
 	uint32 end = ticks + time;
-	while (ticks < end) _asm pause;
+	while (ticks < end) asm volatile("pause");
 }
 
 STATUS PIT::Start()

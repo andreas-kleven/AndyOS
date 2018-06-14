@@ -44,7 +44,7 @@ public:
 	}
 };
 
-static class DeviceManager
+class DeviceManager
 {
 public:
 	static Device* first_device;

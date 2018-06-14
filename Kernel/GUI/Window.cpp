@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "debug.h"
+#include "Lib/debug.h"
 #include "HAL/hal.h"
 
 #include "Controls/Label.h"
@@ -43,7 +43,7 @@ namespace gui
 
 	void Window::Close()
 	{
-		if (child_count == 0)
+		/*if (child_count == 0)
 			return;
 
 		Control* ctrl = first_child;
@@ -60,7 +60,7 @@ namespace gui
 		first_child = 0;
 		last_child = 0;
 
-		delete &msg_queue;
+		delete &msg_queue;*/
 	}
 
 	void Window::PaintWindow()
@@ -130,7 +130,7 @@ namespace gui
 
 	Control* Window::CreateControl(CONTROL_TYPE type, char* name, int x, int y, int width, int height, int id)
 	{
-		Control* ctrl;
+		/*Control* ctrl;
 
 		switch (type)
 		{
@@ -155,7 +155,7 @@ namespace gui
 			case CONTROL_TYPE_CHECKBOX:
 			break;*/
 
-		case CONTROL_TYPE_CANVAS:
+		/*case CONTROL_TYPE_CANVAS:
 			ctrl = new Canvas();
 			break;
 
@@ -196,7 +196,7 @@ namespace gui
 		}
 
 		child_count++;
-		return ctrl;
+		return ctrl;*/
 	}
 
 	Control* Window::GetControlAt(int x, int y)
@@ -224,7 +224,7 @@ namespace gui
 	{
 		WND_MSG msg;
 		while (!msg_queue.Pop(msg))
-			_asm pause
+			asm("pause");
 
 		return msg;
 	}

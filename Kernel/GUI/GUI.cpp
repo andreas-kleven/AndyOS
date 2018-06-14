@@ -4,7 +4,7 @@
 #include "Drivers/keyboard.h"
 #include "HAL/hal.h"
 #include "stdio.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 namespace gui
 {

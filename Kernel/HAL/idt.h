@@ -10,7 +10,7 @@
 #define IDT_DESC_RING3		0x60	//01100000
 #define IDT_DESC_PRESENT	0x80	//10000000
 
-#define INTERRUPT __declspec (naked)
+#define INTERRUPT __attribute__((naked))
 
 struct REGS
 {
@@ -18,8 +18,9 @@ struct REGS
 	uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
 	uint32 eip, cs, eflags;
 	uint32 user_stack, user_ss;
-};
+} __attribute__((packed));
 
+typedef void(*ISR)();
 typedef void(*IRQ_HANDLER)(REGS*);
 
 struct IDT_DESCRIPTOR
@@ -29,19 +30,19 @@ struct IDT_DESCRIPTOR
 	uint8 reserved;
 	uint8 flags;
 	uint16 high;
-};
+} __attribute__((packed));
 
 struct IDT_REG
 {
 	uint16 limit;
 	uint32 base;
-};
+} __attribute__((packed));
 
-static class IDT
+class IDT
 {
 public:
 	static STATUS Init();
-	static STATUS SetISR(uint32 i, void* irq, int flags);
+	static STATUS SetISR(uint32 i, ISR isr, int flags);
 	static STATUS InstallIRQ(uint32 i, IRQ_HANDLER irq);
 	static IRQ_HANDLER GetHandler(uint32 i);
 

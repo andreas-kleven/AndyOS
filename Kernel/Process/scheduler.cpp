@@ -2,7 +2,7 @@
 #include "HAL/hal.h"
 #include "Memory/memory.h"
 #include "string.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 THREAD* first_thread;
 THREAD* last_thread;
@@ -13,7 +13,7 @@ uint32 id_counter = 0;
 uint32 tmp_stack;
 IRQ_HANDLER pit_isr;
 
-__declspec(align(16)) uint8 fpu_state[512];
+uint8 __attribute__((aligned(16))) fpu_state[512];
 
 STATUS Scheduler::Init()
 {
@@ -28,7 +28,7 @@ STATUS Scheduler::Init()
 	return STATUS_SUCCESS;
 }
 
-THREAD* Scheduler::CreateKernelThread(void* main)
+THREAD* Scheduler::CreateKernelThread(void(*main)())
 {
 	THREAD* thread = (THREAD*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(THREAD));
 	thread->regs->ebp = 0;
@@ -65,7 +65,7 @@ THREAD* Scheduler::CreateKernelThread(void* main)
 	return thread;
 }
 
-THREAD* Scheduler::CreateUserThread(void* main, void* stack)
+THREAD* Scheduler::CreateUserThread(void(*main)(), void* stack)
 {
 	THREAD* thread = CreateKernelThread(main);
 	thread->kernel_esp = thread->stack;
@@ -100,24 +100,17 @@ void Scheduler::InsertThread(THREAD* thread)
 
 void Scheduler::StartThreading()
 {
-	_asm cli
-	IDT::SetISR(TASK_SCHEDULE_IRQ, (IRQ_HANDLER)Task_ISR, 0);
+	asm volatile("cli");
+	IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);
 
-	uint32 stack = idle_thread->stack;
-
-	//Start idle thread
-	_asm
-	{
-		mov esp, stack
-
-		pop gs
-		pop fs
-		pop es
-		pop ds
-		popad
-
-		iretd
-	}
+	asm volatile(
+		"mov %0, %%esp\n"
+		"pop %%gs\n"
+		"pop %%fs\n"
+		"pop %%es\n"
+		"pop %%ds\n"
+		"popa\n"
+		"iret" :: "r" (idle_thread->stack));
 }
 
 void Scheduler::RemoveThread(THREAD* thread)
@@ -154,7 +147,7 @@ void Scheduler::SleepThread(uint32 until, THREAD* thread)
 
 		//Switch thread
 		if (thread == current_thread)
-			_asm int TASK_SCHEDULE_IRQ
+			asm volatile("int %0" :: "N" (TASK_SCHEDULE_IRQ));
 	}
 }
 
@@ -165,7 +158,10 @@ void Scheduler::ExitThread(int code, THREAD* thread)
 
 void Scheduler::Schedule()
 {
-	_asm fxsave[fpu_state];
+	//Call original isr
+	pit_isr(0);
+
+	asm volatile("fxsave (%0)" :: "m" (fpu_state));
 	memcpy(current_thread->fpu_state, fpu_state, 512);
 
 	//Save stack
@@ -181,6 +177,9 @@ void Scheduler::Schedule()
 	while (current_thread->next != first)
 	{
 		current_thread = current_thread->next;
+
+		if (current_thread == idle_thread)
+			current_thread = current_thread->next;
 
 		//Waiting
 		if (current_thread->state == THREAD_STATE_BLOCKING)
@@ -207,7 +206,7 @@ void Scheduler::Schedule()
 	if (current_thread->state != THREAD_STATE_INITIALIZED)
 	{
 		memcpy(fpu_state, current_thread->fpu_state, 512);
-		_asm fxrstor[fpu_state];
+		asm volatile("fxrstor (%0)" : "=m" (fpu_state));
 	}
 
 	current_thread->state = THREAD_STATE_RUNNING;
@@ -215,43 +214,32 @@ void Scheduler::Schedule()
 
 void INTERRUPT Scheduler::Task_ISR()
 {
-	_asm
-	{
-		cli
+	asm volatile(
+		"cli\n"
 
-		//Push registers
-		pushad
+		//Save registers
+		"pusha\n"
+		"push %%ds\n"
+		"push %%es\n"
+		"push %%fs\n"
+		"push %%gs\n"
 
-		push ds
-		push es
-		push fs
-		push gs
-
-		//Save esp
-		mov[tmp_stack], esp
+		"mov %%esp, %0\n"
 
 		//Schedule
-		call Schedule
-
-		//Call pit_isr
-		push 0
-		call pit_isr
-		add esp, 4
-
-		//Load esp
-		mov esp, [tmp_stack]
+		"call %P1\n"
 
 		//Load registers
-		pop gs
-		pop fs
-		pop es
-		pop ds
+		"mov %2, %%esp\n"
 
-		popad
+		"pop %%gs\n"
+		"pop %%fs\n"
+		"pop %%es\n"
+		"pop %%ds\n"
+		"popa\n"
 
-		//Return
-		iretd
-	}
+		"iret"
+		: "=m" (tmp_stack) : "i" (&Schedule), "m" (tmp_stack));
 }
 
 void Scheduler::Idle()
@@ -259,6 +247,6 @@ void Scheduler::Idle()
 	while (1)
 	{
 		//Debug::Print("Idle");
-		_asm pause
+		asm volatile("pause");
 	}
 }

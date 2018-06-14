@@ -38,9 +38,9 @@ struct VBE_MODE_INFO
 	uint32 off_screen_mem_off;
 	uint16 off_screen_mem_size;   // size of memory in the framebuffer but not being displayed on the gc
 	uint8 reserved1[206];
-};
+} __attribute__((packed));
 
-static class VBE
+class VBE
 {
 public:
 	static VBE_MODE_INFO mode;

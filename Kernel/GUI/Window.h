@@ -1,5 +1,5 @@
 #pragma once
-#include "Controls\Control.h"
+#include "Controls/Control.h"
 
 #define GUI_WINDOW_BORDER_WIDTH		1
 #define GUI_TITLEBAR_HEIGHT			28

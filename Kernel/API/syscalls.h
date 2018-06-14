@@ -2,11 +2,13 @@
 #include "definitions.h"
 #include "HAL/idt.h"
 
-static class Syscalls
+typedef void(*SYSCALL_HANDLER)();
+
+class Syscalls
 {
 public:
 	static STATUS Init();
-	static void InstallSyscall(int id, void* handler);
+	static void InstallSyscall(int id, SYSCALL_HANDLER);
 
 private:
 	static void ISR(REGS* regs);

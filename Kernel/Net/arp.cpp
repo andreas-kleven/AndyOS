@@ -1,6 +1,6 @@
 #include "arp.h"
 #include "net.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 ARP_TABLE_ENTRY ARP::arp_cache[ARP_CACHE_SIZE];
 
@@ -22,7 +22,8 @@ void ARP::Receive(NetInterface* intf, NetPacket* pkt)
 	if (!Decode(&header, pkt))
 		return;
 
-	if (header.recv_ip != intf->GetIP())
+	IPv4Address intf_addr = intf->GetIP();
+	if (header.recv_ip != intf_addr)
 		return;
 
 	switch (header.op)

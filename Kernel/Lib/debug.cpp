@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "Lib/debug.h"
 #include "string.h"
 #include "stdio.h"
 #include "Drawing/drawing.h"

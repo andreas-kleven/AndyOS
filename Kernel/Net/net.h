@@ -9,7 +9,7 @@ uint16 ntohs(uint16 val);
 uint32 htonl(uint32 val);
 uint32 ntohl(uint32 val);
 
-static class Net
+class Net
 {
 public:
 	static NetInterface* intf;

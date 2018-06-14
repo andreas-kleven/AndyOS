@@ -110,7 +110,7 @@ struct GC
 	}
 };
 
-static class Drawing
+class Drawing
 {
 public:
 	static GC gc;

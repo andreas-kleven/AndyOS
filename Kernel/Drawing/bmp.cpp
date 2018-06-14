@@ -1,6 +1,5 @@
 #include "bmp.h"
 #include "string.h"
-#include "debug.h"
 #include "Drawing/drawing.h"
 
 BMP::BMP(void* buffer)

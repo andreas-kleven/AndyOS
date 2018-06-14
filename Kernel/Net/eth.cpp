@@ -1,5 +1,5 @@
 #include "eth.h"
-#include "debug.h"
+#include "Lib/debug.h"
 #include "ipv4.h"
 #include "arp.h"
 #include "string.h"

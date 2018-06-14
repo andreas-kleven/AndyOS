@@ -2,7 +2,7 @@
 #include "definitions.h"
 #include "HAL/hal.h"
 
-static class Exceptions
+class Exceptions
 {
 public:
 	static STATUS Init();

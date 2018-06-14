@@ -8,7 +8,7 @@
 #define COM_PORT3 0x2E8
 #define COM_PORT4 0x2E8
 
-static class Serial
+class Serial
 {
 public:
 	static STATUS Init(int port, int baud);

@@ -21,7 +21,7 @@ struct EthPacket
 	uint16 header_length;
 };
 
-static class Eth
+class Eth
 {
 public:
 	static void Send(NetInterface* intf, NetPacket* pkt);

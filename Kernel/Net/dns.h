@@ -37,7 +37,7 @@ struct DNS_TABLE_ENTRY
 	IPv4Address addr;
 };
 
-static class DNS
+class DNS
 {
 public:
 	static STATUS Init();

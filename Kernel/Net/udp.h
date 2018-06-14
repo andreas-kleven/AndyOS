@@ -21,7 +21,7 @@ struct UDP_Packet
 	uint8* data;
 };
 
-static class UDP
+class UDP
 {
 public:
 	static STATUS Init();

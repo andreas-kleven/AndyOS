@@ -2,7 +2,7 @@
 #include "eth.h"
 #include "arp.h"
 #include "dns.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 uint16 htons(uint16 val)
 {

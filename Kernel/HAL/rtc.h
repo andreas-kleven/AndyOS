@@ -1,6 +1,6 @@
 #pragma once
 
-static class RTC
+class RTC
 {
 public:
 	static int Second();

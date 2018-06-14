@@ -1,6 +1,6 @@
 #pragma once
 
-static class Path
+class Path
 {
 public:
 	static char GetDriveLetter(char* path);

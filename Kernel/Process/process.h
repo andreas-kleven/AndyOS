@@ -19,13 +19,13 @@ struct PROCESS_INFO
 	PROCESS_INFO(PROCESS_FLAGS flags, PAGE_DIR* page_dir);
 };
 
-static class Process
+class Process
 {
 public:
 	static PROCESS_INFO* Create(char* filename);
 	static STATUS Terminate(PROCESS_INFO* proc);
 	static STATUS Kill(PROCESS_INFO* proc);
-	static THREAD* CreateThread(PROCESS_INFO* proc, void* main);
+	static THREAD* CreateThread(PROCESS_INFO* proc, void(*main)());
 	static STATUS RemoveThread(THREAD* thread);
 };
 

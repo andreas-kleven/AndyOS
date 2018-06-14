@@ -82,7 +82,7 @@ STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 
 	initialized = 1;
 
-	_asm int 44
+	asm volatile("int $44");
 
 	return STATUS_SUCCESS;
 }

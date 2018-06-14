@@ -23,7 +23,7 @@ void outb(uint16 port, uint8 data);
 void outw(uint16 port, uint16 data);
 void outl(uint16 port, uint32 data);
 
-static class HAL
+class HAL
 {
 public:
 	static STATUS Init();

@@ -2,27 +2,11 @@
 #include "multiboot.h"
 #include "Kernel/kernel.h"
 #include "Lib/globals.h"
-#include "crtdefs.h"
 
-__declspec(align(16)) char _kernel_stack[8096];
+char __attribute__((aligned(16))) kernel_stack[8096];
 
-void Entry(MULTIBOOT_HEADER* header)
+extern "C" void kernel_main(uint32 magic, MULTIBOOT_INFO* bootinfo)
 {
-	uint32 magic;
-	MULTIBOOT_INFO* bootinfo;
-
-	__asm
-	{
-		mov magic, eax
-		mov bootinfo, ebx
-	}
-
-	if (magic == MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		_asm lea esp, WORD ptr[_kernel_stack + 8096];
-		Kernel::Setup(bootinfo);
-	}
-
-	_asm cli
-	_asm hlt
+	asm volatile("mov %0, %%esp" :: "r" (&kernel_stack));
+	Kernel::Setup(bootinfo);
 }

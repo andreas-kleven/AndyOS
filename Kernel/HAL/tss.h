@@ -30,9 +30,9 @@ struct TSS_ENTRY
 	uint32 ldt;
 	uint16 trap;
 	uint16 iomap_base;
-};
+} __attribute__((packed));
 
-static class TSS
+class TSS
 {
 public:
 	static STATUS Init(uint32 gdt_index, uint32 kernelESP);

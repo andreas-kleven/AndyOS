@@ -1,6 +1,6 @@
 #include "iso.h"
 #include "string.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define FILE_FLAG_HIDDEN			(1 << 0)
 #define FILE_FLAG_DIRECTORY			(1 << 1)

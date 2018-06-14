@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
 
-static class Debug
+class Debug
 {
 public:
 	static int x;

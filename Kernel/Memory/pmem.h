@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
 
-static class PMem
+class PMem
 {
 public:
 	static uint32 num_blocks;

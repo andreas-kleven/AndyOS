@@ -3,14 +3,14 @@
 #include "process.h"
 #include "thread.h"
 
-static class Scheduler
+class Scheduler
 {
 public:
 	static THREAD* current_thread;
 
 	static STATUS Init();
-	static THREAD* CreateKernelThread(void* main);
-	static THREAD* CreateUserThread(void* main, void* stack);
+	static THREAD* CreateKernelThread(void(*main)());
+	static THREAD* CreateUserThread(void(*main)(), void* stack);
 	static void InsertThread(THREAD* thread);
 
 	static void StartThreading();

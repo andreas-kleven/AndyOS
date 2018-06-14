@@ -2,7 +2,6 @@
 #include "Memory/memory.h"
 #include "string.h"
 #include "math.h"
-#include "debug.h"
 
 uint32* screenBuffer;
 GC Drawing::gc;

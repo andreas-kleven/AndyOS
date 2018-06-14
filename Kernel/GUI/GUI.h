@@ -32,7 +32,7 @@ namespace gui
 		int start_y;
 	};
 
-	static class WindowManager
+	class WindowManager
 	{
 	public:
 		static STATUS Init();

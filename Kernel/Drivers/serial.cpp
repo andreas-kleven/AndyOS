@@ -1,6 +1,6 @@
 #include "serial.h"
 #include "HAL/hal.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define COM_REG_DATA			0
 #define COM_REG_INTERRUPT		1

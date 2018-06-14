@@ -54,7 +54,7 @@
 #define		PIC_OCW3_MASK_ESMM		0x40	//01000000
 #define		PIC_OCW3_MASK_D7		0x80	//10000000
 
-static class PIC
+class PIC
 {
 public:
 	static STATUS Init();

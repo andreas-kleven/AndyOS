@@ -1,6 +1,6 @@
 #include "exceptions.h"
 #include "panic.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 #define PAGE_FAULT_PRESENT				(1 << 0)
 #define PAGE_FAULT_WRITE				(1 << 1)
@@ -126,20 +126,18 @@ void Exceptions::ISR14(REGS* regs)
 {
 	static int faultAddr = 0;
 
-	_asm
-	{
-		mov eax, cr2
-		mov[faultAddr], eax
-	}
+	asm("mov %%cr2, %%eax\n"
+		"mov %%eax, (%0)"
+		: "=m" (faultAddr));
 
 	uint32 err = regs->eip;
 	regs = (REGS*)((uint32*)regs + 1);
 
-	char* msg1 = (err & PAGE_FAULT_PRESENT) ? "Page-protection violation  " : "None-present page  ";
-	char* msg2 = (err & PAGE_FAULT_WRITE) ? "Write  " : "Read  ";
-	char* msg3 = (err & PAGE_FAULT_USER) ? "User mode  " : "Kernel mode  ";
-	char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
-	char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
+	const char* msg1 = (err & PAGE_FAULT_PRESENT) ? "Page-protection violation  " : "None-present page  ";
+	const char* msg2 = (err & PAGE_FAULT_WRITE) ? "Write  " : "Read  ";
+	const char* msg3 = (err & PAGE_FAULT_USER) ? "User mode  " : "Kernel mode  ";
+	const char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
+	const char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
 
 	Panic::KernelPanic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s",
 		faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);

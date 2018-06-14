@@ -5,7 +5,7 @@
 
 #define MAX_SESSIONS 32
 
-static class TCP
+class TCP
 {
 public:
 	static TcpSession* sessions[MAX_SESSIONS];

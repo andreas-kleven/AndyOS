@@ -69,10 +69,10 @@ enum KEYCODE
 	KEY_BAR,
 	KEY_PLUS,
 	KEY_BACKSLASH,
-	KEY_Å,
+	KEY__1,
 	KEY_CARET,
-	KEY_Ø,
-	KEY_Æ,
+	KEY__2,
+	KEY__3,
 	KEY_LESS,
 	KEY_QUOTE,
 	KEY_COMMA,
@@ -116,7 +116,7 @@ struct KEY_PACKET
 	bool numlock;
 };
 
-static class Keyboard
+class Keyboard
 {
 public:
 	static bool ctrl;

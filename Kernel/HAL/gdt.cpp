@@ -1,6 +1,5 @@
 #include "gdt.h"
 #include "string.h"
-#include "debug.h"
 
 // Each define here is for a specific flag in the descriptor.
 // Refer to the intel documentation for a description of what each one does.
@@ -63,8 +62,8 @@ STATUS GDT::Init()
 	if (!SetDescriptor(3, 0, 0xFFFFFFFF, GDT_CODE_PL3)) return STATUS_FAILED;
 	if (!SetDescriptor(4, 0, 0xFFFFFFFF, GDT_DATA_PL3)) return STATUS_FAILED;
 
-	_asm lgdt[gp]
-		gdt_flush();
+	asm volatile("lgdt (%0)" :: "r" (&gp));
+	gdt_flush();
 
 	return STATUS_SUCCESS;
 }

@@ -7,7 +7,7 @@
 
 void Panic::KernelPanic(char* err, char* msg, ...)
 {
-	_asm cli
+	asm volatile("cli");
 
 	char buffer[256];
 	memset(buffer, 0, 256);
@@ -27,6 +27,7 @@ void Panic::KernelPanic(char* err, char* msg, ...)
 	//vprintf(buffer, "Thread id: %i    Page dir: %ux", Scheduler::current_thread->id, VMem::GetCurrentDir());
 	//Drawing::DrawText(0, line++ * 16, buffer, 0xFFFF0000, 0xFF000000);
 
-	_asm cli
-	_asm hlt
+	asm volatile(
+		"cli\n"
+		"hlt");
 }

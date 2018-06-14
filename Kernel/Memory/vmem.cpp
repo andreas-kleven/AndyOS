@@ -1,6 +1,6 @@
 #include "vmem.h"
 #include "memory.h"
-#include "Kernel\kernel.h"
+#include "Kernel/kernel.h"
 #include "string.h"
 
 #define PAGE_DIR_INDEX(x) (((x) >> 22) & 0x3FF)
@@ -67,7 +67,7 @@ bool VMem::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, ui
 		phys += PAGE_SIZE;
 		virt += PAGE_SIZE;
 
-		_asm invlpg[virt]
+		asm volatile("invlpg (%0)" :: "r" (virt));
 	}
 
 	return 1;
@@ -133,11 +133,10 @@ void VMem::SwitchDir(PAGE_DIR* dir)
 
 	current_dir = dir;
 
-	_asm
-	{
-		mov	eax, [dir]
-		mov	cr3, eax
-	}
+	asm volatile(
+		"mov (%0), %%eax\n"
+		"mov %%eax, %%cr3" 
+		:: "r" (&dir));
 }
 
 PAGE_DIR* VMem::CreatePageDir()
@@ -239,10 +238,8 @@ bool VMem::CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags)
 
 void VMem::EnablePaging()
 {
-	_asm
-	{
-		mov	eax, cr0
-		or eax, 0x80000000
-		mov	cr0, eax
-	}
+	asm volatile(
+		"mov %cr0, %eax\n"
+		"or $0x80000000, %eax\n"
+		"mov %eax, %cr0");
 }

@@ -3,7 +3,7 @@
 #include "dhcp.h"
 #include "dns.h"
 #include "udpsocket.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 UdpSocket** sockets;
 

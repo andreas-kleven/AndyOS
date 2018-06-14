@@ -15,29 +15,17 @@ float pow(float x, int n)
 	for (int i = 0; i > n; i--)
 		y /= x;
 	return y;
-
-	/*if (n == 0)
-		return 1;
-
-	if (n > 0)
-	{
-		return pow(x, n - 1);
-	}
-	else
-	{
-		return 1 / pow(x, -n);
-	}*/
 }
 
 float sqrt(float square)
 {
 	float root;
-	_asm
-	{
-		fld[square]
-		fsqrt
-		fstp[root]
-	}
+
+	asm("fld (%1)\n"
+		"fsqrt\n"
+		"fstp (%0)"
+		: "=r" (root) : "r" (square));
+
 	return root;
 }
 
@@ -45,40 +33,30 @@ float sqrt(float square)
 float sin(float x)
 {
 	float val;
-	_asm
-	{
-		fld[x]
-		fsin
-		fstp[val]
-	}
+
+	asm("fld (%1)\n"
+		"fsin\n"
+		"fstp (%0)"
+		: "=r" (val) : "r" (x));
+
 	return val;
 }
 
 float cos(float x)
 {
 	float val;
-	_asm
-	{
-		fld[x]
-		fcos
-		fstp[val]
-	}
+
+	asm("fld (%1)\n"
+		"fcos\n"
+		"fstp (%0)"
+		: "=r" (val) : "r" (x));
+
 	return val;
 }
 
 float tan(float x)
 {
 	return sin(x) / cos(x);
-
-	float val;
-	_asm
-	{
-		fld[x]
-		fsincos
-		; fdivrp st1, st0
-		fstp[val]
-	}
-	return val;
 }
 
 float asin(float x)
@@ -149,67 +127,67 @@ int round(float val)
 float log(float val)
 {
 	float ret;
-	_asm
-	{
-		fld1
-		fld[val]
-		fyl2x
 
-		fldl2e
-		fdiv
-		fstp[ret]
-	}
+	asm("fld1\n"
+		"fld (%1)\n"
+		"fyl2x\n"
+
+		"fldl2e\n"
+		"fdivp\n"
+		"fstp (%0)"
+		: "=r" (ret) : "r" (val));
+
 	return ret;
 }
 
 float log2(float val)
 {
 	float ret;
-	_asm
-	{
-		fld1
-		fld[val]
-		fyl2x
-		fstp[ret]
-	}
+
+	asm("fld1\n"
+		"fld (%1)\n"
+		"fyl2x\n"
+		"fstp (%0)"
+		: "=r" (ret) : "r" (val));
+
 	return ret;
 }
 
 float log10(float val)
 {
 	float ret;
-	_asm
-	{
-		fld1
-		fld[val]
-		fyl2x
 
-		fldl2t
-		fdiv
-		fstp[ret]
-	}
+	asm("fld1\n"
+		"fld (%1)\n"
+		"fyl2x\n"
+
+		"fldl2t\n"
+		"fdivp\n"
+		"fstp (%0)"
+		: "=r" (ret) : "r" (val));
+
 	return ret;
 }
 
 float logn(float val, float n)
 {
 	float ret;
-	_asm
-	{
-		fld1
-		fld[val]
-		fyl2x
 
-		fld1
-		fld[n]
-		fyl2x
+	asm("fld1\n"
+		"fld (%1)\n"
+		"fyl2x\n"
 
-		fdiv
-		fstp[ret]
+		"fld1\n"
+		"fld (%2)\n"
+		"fyl2x\n"
 
-		fdecstp
-		fdecstp
-	}
+		"fdivp\n"
+		"fstp (%0)\n"
+
+		"fdecstp\n"
+		"fdecstp\n"
+		: "=r" (ret) : "r" (val), "r" (n));
+
 	return ret;
 }
 

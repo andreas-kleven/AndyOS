@@ -25,7 +25,7 @@ struct ICMP_Packet
 	uint32 data_length;
 };
 
-static class ICMP
+class ICMP
 {
 public:
 	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);

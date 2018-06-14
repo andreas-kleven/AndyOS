@@ -30,7 +30,7 @@ int UdpSocket::Receive(uint8*& buffer, IPv4Address& addr)
 
 	while (pkt_length == 0)
 	{
-		_asm pause;
+		asm volatile("pause");
 	}
 
 	buffer = new uint8[UDP_MAX_PACKET_SIZE];

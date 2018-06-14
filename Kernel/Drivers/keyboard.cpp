@@ -2,7 +2,7 @@
 #include "HAL/hal.h"
 #include "string.h"
 #include "ctype.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 const KEYCODE scancodes[] =
 {
@@ -32,7 +32,7 @@ const KEYCODE scancodes[] =
 	KEY_I,
 	KEY_O,
 	KEY_P,
-	KEY_Å,
+	KEY__1,
 	KEY_CARET,
 	KEY_RETURN,
 	KEY_LCTRL,
@@ -45,8 +45,8 @@ const KEYCODE scancodes[] =
 	KEY_J,
 	KEY_K,
 	KEY_L,
-	KEY_Ø,
-	KEY_Æ,
+	KEY__2,
+	KEY__3,
 	KEY_BAR,
 	KEY_LSHIFT,
 	KEY_QUOTE,
@@ -197,7 +197,7 @@ void Keyboard::DecodeAscii(KEY_PACKET& packet)
 				key = '#';
 				break;
 			case KEY_D4:
-				key = '¤';
+				key = 'Â¤';
 				break;
 			case KEY_D5:
 				key = '%';
@@ -228,7 +228,7 @@ void Keyboard::DecodeAscii(KEY_PACKET& packet)
 			switch (key)
 			{
 			case KEY_BAR:
-				key = '§';
+				key = 'Â§';
 				break;
 			case KEY_PLUS:
 				key = '?';

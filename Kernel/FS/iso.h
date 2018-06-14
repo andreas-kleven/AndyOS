@@ -13,7 +13,7 @@ struct ISO_DATE
 	uint8 minute;
 	uint8 second;
 	uint8 offset;
-};
+} __attribute__((packed));
 
 struct ISO_PRIMARYDESC
 {
@@ -50,7 +50,7 @@ struct ISO_PRIMARYDESC
 	char unused4;
 	char applicationUsed[512];
 	char reserved[653];
-};
+} __attribute__((packed));
 
 struct ISO_TABLE_ENTRY
 {
@@ -59,7 +59,7 @@ struct ISO_TABLE_ENTRY
 	uint32 locationLBA;
 	uint16 parentDir;
 	char name;
-};
+} __attribute__((packed));
 
 struct ISO_DIRECTORY
 {
@@ -77,7 +77,7 @@ struct ISO_DIRECTORY
 	uint16 volSeqNum_MSB;
 	uint8 idLength;
 	char identifier;
-};
+} __attribute__((packed));
 
 class ISO_FS : public IFileSystem
 {

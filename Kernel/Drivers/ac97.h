@@ -10,7 +10,7 @@ struct AC97_BUFFER_ENTRY
 	uint32 reserved : 14;
 	uint32 bup : 1;
 	uint32 ioc : 1;
-};
+} __attribute__((packed));
 
 struct AC97_DEVICE
 {
@@ -22,9 +22,9 @@ struct AC97_DEVICE
 	uint8 lvi;
 	AC97_BUFFER_ENTRY* bdl;
 	uint8** buffers;
-};
+} __attribute__((packed));
 
-static class AC97
+class AC97
 {
 public:
 	static AC97_DEVICE device;

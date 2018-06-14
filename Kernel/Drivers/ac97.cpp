@@ -1,6 +1,6 @@
 #include "ac97.h"
 #include "HAL/hal.h"
-#include "debug.h"
+#include "Lib/debug.h"
 #include "string.h"
 #include "math.h"
 

@@ -31,12 +31,10 @@ STATUS TSS::Init(uint32 gdt_index, uint32 kernelESP)
 
 void TSS::Flush() {
 
-	_asm
-	{
-		cli
-		mov ax, 0x2B
-		ltr ax
-	}
+	asm volatile (
+		"cli\n"
+		"movw $0x2B, %ax\n"
+		"ltr %ax");
 }
 
 void TSS::SetStack(uint32 kernelSS, uint32 kernelESP) {

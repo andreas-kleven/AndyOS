@@ -25,7 +25,7 @@ typedef struct MULTIBOOT_HEADER
 	uint32 width;
 	uint32 height;
 	uint32 depth;
-} MULTIBOOT_HEADER_T;
+} __attribute__((packed)) MULTIBOOT_HEADER_T;
 
 
 /* The symbol table for a.out. */
@@ -35,7 +35,7 @@ typedef struct AOUT_SYMBOL_TABLE
 	uint32 strsize;
 	uint32 addr;
 	uint32 reserved;
-} AOUT_SYMBOL_TABLE_T;
+} __attribute__((packed)) AOUT_SYMBOL_TABLE_T;
 
 /* The section header table for ELF. */
 typedef struct ELF_SECTION_HEADER_TABLE
@@ -44,7 +44,7 @@ typedef struct ELF_SECTION_HEADER_TABLE
 	uint32 size;
 	uint32 addr;
 	uint32 shndx;
-} ELF_SECTION_HEADER_TABLE_T;
+} __attribute__((packed)) ELF_SECTION_HEADER_TABLE_T;
 
 /* The Multiboot information. */
 typedef struct MULTIBOOT_INFO
@@ -74,7 +74,7 @@ typedef struct MULTIBOOT_INFO
 	uint32 vbe_interface_seg;
 	uint32 vbe_interface_off;
 	uint32 vbe_interface_len;
-} MULTIBOOT_INFO_T;
+} __attribute__((packed)) MULTIBOOT_INFO_T;
 
 /* The module structure. */
 typedef struct MODULE
@@ -83,7 +83,7 @@ typedef struct MODULE
 	uint32 mod_end;
 	uint32 string;
 	uint32 reserved;
-} MODULE_T;
+} __attribute__((packed)) MODULE_T;
 
 /* The memory map. Be careful that the offset 0 is base_addr_low
 but no size. */
@@ -95,4 +95,4 @@ typedef struct MEMORY_MAP
 	uint32 length_low;
 	uint32 length_high;
 	uint32 type;
-} MEMORY_MAP_T;
+} __attribute__((packed)) MEMORY_MAP_T;

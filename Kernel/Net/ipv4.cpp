@@ -5,7 +5,7 @@
 #include "icmp.h"
 #include "udp.h"
 #include "tcp.h"
-#include "debug.h"
+#include "Lib/debug.h"
 
 void IPv4::Send(NetInterface* intf, NetPacket* pkt)
 {
@@ -68,7 +68,8 @@ void IPv4::Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt)
 	if (!Decode(&header, pkt))
 		return;
 
-	if (header.dst != intf->GetIP() && header.dst != Net::BroadcastIPv4)
+	IPv4Address intf_addr = intf->GetIP();
+	if (header.dst != intf_addr && header.dst != Net::BroadcastIPv4)
 		return;
 
 	ARP::AddEntry(eth->header->src, header.src);

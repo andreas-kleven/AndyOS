@@ -92,7 +92,7 @@ struct PCI_CONFIG_SPACE
 	uint8 interruptPIN;
 	uint8 minGrant;
 	uint8 maxLatency;
-};
+} __attribute__((packed));
 
 struct PCI_DEVICE
 {
@@ -104,7 +104,7 @@ struct PCI_DEVICE
 	PCI_CONFIG_SPACE configSpace;
 };
 
-static class PCI
+class PCI
 {
 public:
 	static STATUS Init();

@@ -9,7 +9,7 @@ struct DHCP_Header
 
 };
 
-static class DHCP
+class DHCP
 {
 public:
 	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);

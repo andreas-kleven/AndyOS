@@ -8,7 +8,7 @@ struct TTF_HEADER
 	uint16 search_range;
 	uint16 entry_selector;
 	uint16 range_shift;
-};
+} __attribute__((packed));
 
 struct TTF_HEAD_DATA
 {
@@ -29,7 +29,7 @@ struct TTF_HEAD_DATA
 	uint16 font_dir_hint;
 	uint16 index_to_loc;
 	uint16 glyph_format;
-};
+} __attribute__((packed));
 
 struct TTF_TABLE
 {
@@ -37,7 +37,7 @@ struct TTF_TABLE
 	uint32 checksum;
 	uint32 offset;
 	uint32 length;
-};
+} __attribute__((packed));
 
 struct TTF_GLYPH
 {
@@ -46,14 +46,14 @@ struct TTF_GLYPH
 	int16 miny;
 	int16 maxx;
 	int16 maxy;
-};
+} __attribute__((packed));
 
 struct TTF_POINT
 {
 	uint8 flags;
 	int16 x;
 	int16 y;
-};
+} __attribute__((packed));
 
 class Font
 {
