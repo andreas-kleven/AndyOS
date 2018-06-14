@@ -31,48 +31,37 @@ void T1()
 
 	while (1)
 	{
-		/*_asm
-		{
-			mov eax, SYSCALL_PRINT
-			mov ebx, text
-			int 0x80
-			pause
-		}*/
+		asm("mov %0, %%eax\n"
+			"mov %1, %%ebx\n"
+			"int $0x80\n" 
+			"pause"
+			:: "c" (SYSCALL_PRINT), "d" (text));
 	}
 }
 
 void T2()
 {
-	/*uint32 colors[] =
+	uint32 colors[] =
 	{
-		COLOR_RED,
-		COLOR_BLUE,
-		COLOR_GREEN,
-		COLOR_CYAN,
-		COLOR_MAGENTA,
-		COLOR_YELLOW
-	};*/
+		0xFFFF0000,
+		0xFF00FF00,
+		0xFF0000FF,
+		0xFF00FFFF,
+		0xFFFF00FF,
+		0xFFFFFF00
+	};
 
 	int t = 0;
 
 	while (1)
 	{
-		//Debug::color = colors[(t++ / 10) % 6];
-		//Debug::bcolor = 0;
+		uint32 color = colors[(t++ / 10) % 6];
 
-		//uint32 color = colors[(t++ / 10) % 6];
-
-		/*_asm
-		{
-			mov eax, SYSCALL_COLOR
-			mov ebx, color
-			int 0x80
-			pause
-
-			mov eax, SYSCALL_SLEEP
-			mov ebx, 10
-			int 0x80
-		}*/
+		asm("mov %0, %%eax\n"
+			"mov %1, %%ebx\n"
+			"int $0x80\n" 
+			"pause"
+			:: "c" (SYSCALL_COLOR), "d" (color));
 	}
 }
 
@@ -298,16 +287,15 @@ void OS::Main()
 
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-	//File();
 
 	//THREAD* t1 = Scheduler::CreateKernelThread(T1);
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);
 	THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
 	THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
 
-	Scheduler::InsertThread(t2);
 	Scheduler::InsertThread(t1);
-	//while (1);
+	Scheduler::InsertThread(t2);
+	while (1);
 
 	//Net::Init();
 
