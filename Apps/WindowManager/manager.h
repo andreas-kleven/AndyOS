@@ -24,7 +24,7 @@ struct WINDOW_DRAG_INFO
 	int start_y;
 };
 
-static class WindowManager
+class WindowManager
 {
 public:
 	static void Start();

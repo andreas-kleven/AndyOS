@@ -2,7 +2,7 @@
 #include "../API/api.h"
 #include "globals.h"
 
-void* operator new(unsigned size)
+void* operator new(long unsigned size)
 {
 	if (!size)
 		return 0;
@@ -14,12 +14,12 @@ void operator delete(void* p)
 
 }
 
-void operator delete(void * p, unsigned size)
+void operator delete(void * p, long unsigned size)
 {
 
 }
 
-void* operator new[](unsigned size)
+void* operator new[](long unsigned size)
 {
 	return alloc(BYTES_TO_BLOCKS(size));
 }

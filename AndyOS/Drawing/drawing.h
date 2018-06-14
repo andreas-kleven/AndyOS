@@ -100,7 +100,7 @@ struct GC
 	}
 };
 
-static class Drawing
+class Drawing
 {
 public:
 	static void Init();
