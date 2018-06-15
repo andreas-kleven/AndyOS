@@ -29,7 +29,7 @@ class WindowManager
 public:
 	static void Start();
 
-	//static Window* CreateWindow(char* title);
+	static Window* CreateWindow(char* title);
 	static void CloseWindow(Window* wnd);
 
 private:

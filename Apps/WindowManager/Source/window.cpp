@@ -14,30 +14,19 @@ Window::Window()
 	state = WINDOW_STATE_NORMAL;
 	focused = 0;
 
-	gc = GC(bounds.width, bounds.height);
-
 	bounds.x = 20;
 	bounds.y = 20;
-	bounds.width = gc.width / 2;
-	bounds.height = gc.height / 2;
+	bounds.width = 400;
+	bounds.height = 300;
+
+	gc = GC(bounds.width, bounds.height);
 
 	int cw = gc.width - GUI_WINDOW_BORDER_WIDTH * 2;
 	int ch = gc.height - GUI_TITLEBAR_HEIGHT - GUI_WINDOW_BORDER_WIDTH;
 	gc_content = GC(gc, GUI_WINDOW_BORDER_WIDTH, GUI_TITLEBAR_HEIGHT, cw, ch);
 }
 
-
 void Window::Paint()
-{
-	
-}
-
-void Window::Close()
-{
-	
-}
-
-void Window::PaintWindow()
 {
 	Color _titlebar = focused ? color_background : Color::White;
 	Color _border = focused ? color_background : Color::Black;
@@ -50,6 +39,10 @@ void Window::PaintWindow()
 	Drawing::DrawRect(0, 0, bounds.width, bounds.height, GUI_WINDOW_BORDER_WIDTH, _border, gc); //Window border
 }
 
+void Window::Close()
+{
+	
+}
 
 void Window::SetFocus(bool focus)
 {

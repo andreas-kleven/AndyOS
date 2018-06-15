@@ -37,21 +37,20 @@ static Window* first_window;
 static Window* last_window;
 
 static Window* focused_window;
+static Window* hover_window;
 
-static int cursor_x = 0;
-static int cursor_y = 0;
+static int cursor_x;
+static int cursor_y;
 
-static bool mouse_click_L = 0;
-static bool mouse_click_R = 0;
-static bool mouse_click_M = 0;
+static bool mouse_click_L;
+static bool mouse_click_R;
+static bool mouse_click_M;
 static bool window_drag = 0;
 
 static MOUSE_CLICK_INFO mouse_click_L_info;
 static MOUSE_CLICK_INFO mouse_click_R_info;
 static MOUSE_CLICK_INFO mouse_click_M_info;
 static WINDOW_DRAG_INFO window_drag_info;
-
-static Window* hover_window = 0;
 
 void WindowManager::Start()
 {
@@ -63,14 +62,23 @@ void WindowManager::Start()
 	col_taskbar = Color(0.2, 0.3, 0.5);
 	col_desktop_bg = Color(0.5, 0.5, 0.5);
 
+	bmp_background = 0;
+	window_count = 0;
+	first_window = 0;
+	last_window = 0;
+	focused_window = 0;
+	hover_window = 0;
+
+	CreateWindow("Title");
+	CreateWindow("Window");
+
 	UpdateLoop();
 }
 
-/*Window* WindowManager::CreateWindow(char* title)
+Window* WindowManager::CreateWindow(char* title)
 {
 	Window* window = new Window();
 	window->title = title;
-
 	window->next = 0;
 	window->previous = 0;
 
@@ -78,17 +86,16 @@ void WindowManager::Start()
 	{
 		window->previous = last_window;
 		last_window->next = window;
-		last_window = window;
 	}
 	else
 	{
 		first_window = window;
-		last_window = window;
 	}
 
+	last_window = window;
 	window_count++;
 	return window;
-}*/
+}
 
 void WindowManager::CloseWindow(Window* wnd)
 {
@@ -180,6 +187,7 @@ void WindowManager::PaintCursor()
 	Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, gc, cursor_x, cursor_y, 1);
 }
 
+bool a;
 
 void WindowManager::HandleMouseInput()
 {
@@ -209,7 +217,7 @@ void WindowManager::HandleMouseInput()
 
 			if (wnd)
 			{
-				if (wnd->id != focused_window->id)
+				if (focused_window == 0 || wnd->id != focused_window->id)
 					SetFocusedWindow(wnd);
 
 			}
