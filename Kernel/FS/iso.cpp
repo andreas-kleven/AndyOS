@@ -224,6 +224,8 @@ void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file)
 {
 	file->name = new char[iso_dir->idLength];
+	file->path = new char[strlen(path) + 1];
+
 	GetName(iso_dir, file->name);
 	strcpy(file->path, path);
 

@@ -12,7 +12,7 @@
 PROCESS_INFO* Process::Create(char* filename)
 {
 	char* image;
-	int size = VFS::ReadFile("winman", image);
+	int size = VFS::ReadFile(filename, image);
 
 	if (!size)
 	{
@@ -51,7 +51,7 @@ PROCESS_INFO* Process::Create(char* filename)
 	memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
 
 	Debug::Print("Loaded image %ux\n", dir);
-
+	
 	PROCESS_INFO* proc = new PROCESS_INFO(PROCESS_USER, dir);
 	Process::CreateThread(proc, (void(*)())header->e_entry);
 
