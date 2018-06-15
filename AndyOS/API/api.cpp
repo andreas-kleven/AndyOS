@@ -30,7 +30,7 @@ void color(uint32 color)
 
 void gettime(int& hour, int& minute, int& second)
 {
-	Call(SYSCALL_GETTIME, hour, minute, second);
+	Call(SYSCALL_GETTIME, (int)&hour, (int)&minute, (int)&second);
 }
 
 void draw(uint32* framebuffer)
