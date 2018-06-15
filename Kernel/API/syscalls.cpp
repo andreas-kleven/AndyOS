@@ -10,7 +10,7 @@
 
 void* syscalls[MAX_SYSCALLS];
 
-void halt(int code)
+void halt()
 {
 	asm volatile(
 		"cli\n"

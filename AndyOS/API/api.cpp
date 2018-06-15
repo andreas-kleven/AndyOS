@@ -2,78 +2,73 @@
 #include "syscall_list.h"
 #include "stdarg.h"
 
-#define CALL0(id)	asm volatile("mov (%0), %%eax" :: "d" (int(id))); \
-					asm volatile("int %0" :: "N" (SYSCALL_IRQ));
+int Call(int id, int arg0 = 0, int arg1 = 0, int arg2 = 0)
+{
+	int ret;
 
-#define CALL1(id, arg0)	asm volatile("mov (%0), %%ebx" :: "d" ((int(arg0)))); \
-						CALL0(id);
+	asm("int %1\n" 
+		"mov %%eax, %0"
+		: "=m" (ret) : "N" (SYSCALL_IRQ), "a" (id), "b" (arg0), "c" (arg1), "d" (arg2));
 
-#define CALL2(id, arg0, arg1)	asm volatile("mov (%0), %%ecx" :: "d" ((int(arg1)))); \
-								CALL1(id, arg0);
-
-#define CALL3(id, arg0, arg1, arg2)		asm volatile("mov (%0), %%edx" :: "d" ((int(arg2)))); \
-										CALL2(id, arg1, arg2);
+	return ret;
+}
 
 void halt()
 {
-	CALL0(SYSCALL_HALT);
+	Call(SYSCALL_HALT);
 }
 
 void print(const char* msg)
 {
-	CALL1(SYSCALL_PRINT, msg);
+	Call(SYSCALL_PRINT, (int)msg, 0, 0);
 }
 
-void print(uint32 color)
+void color(uint32 color)
 {
-	CALL1(SYSCALL_COLOR, color);
+	Call(SYSCALL_COLOR, (int)color);
 }
 
 void gettime(int& hour, int& minute, int& second)
 {
-	CALL3(SYSCALL_GETTIME, hour, minute, second);
+	Call(SYSCALL_GETTIME, hour, minute, second);
 }
 
 void draw(uint32* framebuffer)
 {
-	CALL1(SYSCALL_DRAW, framebuffer);
+	Call(SYSCALL_DRAW, (int)framebuffer);
 }
 
 void exit(int code)
 {
-	CALL1(SYSCALL_EXIT, code);
+	Call(SYSCALL_EXIT, code);
 }
 
 void sleep(uint32 ticks)
 {
-	CALL1(SYSCALL_SLEEP, ticks);
+	Call(SYSCALL_SLEEP, ticks);
 }
 
 uint32 ticks()
 {
-	CALL0(SYSCALL_TICKS);
+	return Call(SYSCALL_TICKS);
 }
 
 void get_mouse_pos(int& x, int& y)
 {
-	CALL2(SYSCALL_GET_MOUSE_POS, x, y);
+	Call(SYSCALL_GET_MOUSE_POS, (int)&x, (int)&y);
 }
 
 void get_mouse_buttons(bool& left, bool& right, bool& middle)
 {
-	CALL3(SYSCALL_GET_MOUSE_BUTTONS, left, right, middle);
+	Call(SYSCALL_GET_MOUSE_BUTTONS, (int)&left, (int)&right, (int)&middle);
 }
 
 uint32* alloc(uint32 blocks)
 {
-	CALL1(SYSCALL_ALLOC, blocks);
-	
-	uint32* ret;
-	asm volatile("mov %%eax, %0" : "=m" (ret));
-	return ret;
+	return (uint32*)Call(SYSCALL_ALLOC, blocks);
 }
 
-void free(void* _ptr, uint32 blocks)
+void free(void* ptr, uint32 blocks)
 {
-	CALL2(SYSCALL_ALLOC, _ptr, blocks);
+	Call(SYSCALL_ALLOC, (int)ptr, blocks);
 }
