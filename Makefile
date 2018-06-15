@@ -41,6 +41,7 @@ all: libs kernel apps
 
 iso: all
 	cp $(LIBS)/andyos.bin $(BOOT_DIR)/andyos.bin
+	cp $(LIBS)/winman $(ISO_DIR)/winman
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 .PHONY: clean
