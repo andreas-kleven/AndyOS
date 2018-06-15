@@ -22,7 +22,10 @@ CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exception
 LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
 LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions -lgcc
 
+APP_LDFLAGS := $(LDFLAGS) $(LIBS)/andyos.a $(LIBS)/libc.a -T $(MAKE_DIR)/Apps/link.ld
+
 export MAKE_DIR CC CPPFLAGS LDFLAGS LIBS INC_SRCH_PATH
+export APP_LDFLAGS
 
 create_dir:
 	mkdir -p $(LIBS)
@@ -33,6 +36,7 @@ libs: create_dir
 
 apps: libs
 	$(MAKE) -C Apps/WindowManager
+	$(MAKE) -C Apps/Test
 
 kernel: libs
 	$(MAKE) -C Kernel
@@ -42,6 +46,7 @@ all: libs kernel apps
 iso: all
 	cp $(LIBS)/andyos.bin $(BOOT_DIR)/andyos.bin
 	cp $(LIBS)/winman $(ISO_DIR)/winman
+	cp $(LIBS)/test $(ISO_DIR)/test
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 .PHONY: clean
@@ -50,4 +55,5 @@ clean:
 	$(MAKE) -C Lib clean
 	$(MAKE) -C AndyOS clean
 	$(MAKE) -C Apps/WindowManager clean
+	$(MAKE) -C Apps/Test clean
 	rm -f $(BOOT_DIR)/andyos.bin
