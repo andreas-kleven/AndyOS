@@ -206,7 +206,10 @@ void* VMem::MapFirstFree(PAGE_DIR* dir, uint32 phys, uint32 flags, uint32 blocks
 		return 0;
 
 	if (MapPhysAddr(dir, phys, (uint32)virt, flags, blocks))
+	{
+		PMem::DeInitRegion((void*)phys, blocks * BLOCK_SIZE);
 		return (void*)virt;
+	}
 
 	return 0;
 }

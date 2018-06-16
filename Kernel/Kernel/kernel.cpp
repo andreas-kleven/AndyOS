@@ -33,7 +33,7 @@ void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 	Syscalls::Init();
 	
 	PMem::Init(mem_size, (uint32*)kernel_end);
-	PMem::InitRegion((uint32*)kernel_end, mem_end - kernel_end);
+	PMem::InitRegion((uint32*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
 	VMem::Init(bootinfo, kernel_end);
 }
 
