@@ -102,6 +102,8 @@ STATUS ATADevice::Init()
 
 	DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
 	DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
+	DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER));
+	DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE));
 	return STATUS_SUCCESS;
 }
 

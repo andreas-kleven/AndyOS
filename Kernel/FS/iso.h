@@ -15,42 +15,14 @@ struct ISO_DATE
 	uint8 offset;
 } __attribute__((packed));
 
-struct ISO_PRIMARYDESC
+enum ISO_VOLUME_DESC_TYPE : uint8
 {
-	char type;
-	char identifier[5];
-	char version;
-	char unused;
-	char systemIdentifier[32];
-	char volumeIdentifier[32];
-	char unused2[8];
-	char volumeSpaceSize[8];
-	char unused3[32];
-	int volumeSetSize;
-	int volumeSequenceNumber;
-	int logicalBlockSize;
-	char pathTableSize[8];
-	int locationLPathTable;
-	int locationOptionalLPathTable;
-	int locationMPathTable;
-	int locationOptionalMPathTable;
-	char rootDirectoryEntry[34];
-	char volumeSetID[128];
-	char publisherID[128];
-	char dataPreparerID[128];
-	char applicationID[128];
-	char copyrightFileID[38];
-	char abstractFileID[36];
-	char BibliographicFileID[37];
-	char volumeCreationDateTime[17];
-	char volumeModificationDateTime[17];
-	char volumeExpirationDateTime[17];
-	char volumeEffectiveDateTime[17];
-	char fileStructureVersion;
-	char unused4;
-	char applicationUsed[512];
-	char reserved[653];
-} __attribute__((packed));
+	BOOT_RECORD = 0,
+	PRIMARY = 1,
+	SUPPLEMENTARY = 2,
+	PARTITION = 2,
+	TERMINATOR = 255
+};
 
 struct ISO_TABLE_ENTRY
 {
@@ -79,10 +51,59 @@ struct ISO_DIRECTORY
 	char identifier;
 } __attribute__((packed));
 
+struct ISO_VOLUME_DESC
+{
+	ISO_VOLUME_DESC_TYPE type;
+	char identifier[5];
+	uint8 version;
+};
+
+struct ISO_PRIMARY_DESC
+{
+	ISO_VOLUME_DESC_TYPE type;
+	char identifier[5];
+	uint8 version;
+	char unused1;
+	char systemIdentifier[32];
+	char volumeIdentifier[32];
+	char unused2[8];
+	uint32 volumeSpaceSize_LSB;
+	uint32 volumeSpaceSize_MSB;
+	char unused3[32];
+	uint16 volumeSetSize_LSB;
+	uint16 volumeSetSize_MSB;
+	uint16 volumeSequenceNumber_LSB;
+	uint16 volumeSequenceNumber_MSB;
+	uint16 logicalBlockSize_LSB;
+	uint16 logicalBlockSize_MSB;
+	uint32 pathTableSize_LSB;
+	uint32 pathTableSize_MSB;
+	uint32 locationLPathTable;
+	uint32 locationOptionalLPathTable;
+	uint32 locationMPathTable;
+	uint32 locationOptionalMPathTable;
+	ISO_DIRECTORY rootDirectory;
+	char volumeSetID[128];
+	char publisherID[128];
+	char dataPreparerID[128];
+	char applicationID[128];
+	char copyrightFileID[38];
+	char abstractFileID[36];
+	char BibliographicFileID[37];
+	char volumeCreationDateTime[17];
+	char volumeModificationDateTime[17];
+	char volumeExpirationDateTime[17];
+	char volumeEffectiveDateTime[17];
+	uint8 fileStructureVersion;
+	char unused4;
+	char applicationUsed[512];
+	char reserved[653];
+} __attribute__((packed));
+
 class ISO_FS : public IFileSystem
 {
 public:
-	ISO_PRIMARYDESC * desc;
+	ISO_PRIMARY_DESC* desc;
 	ISO_DIRECTORY* root;
 
 	ISO_FS(BlockDevice* dev);

@@ -9,6 +9,9 @@ IFileSystem* primary_fs;
 
 STATUS VFS::Init()
 {
+	first_fs = 0;
+	primary_fs = 0;
+
 	Device* dev = DeviceManager::first_device;
 
 	while (dev)
@@ -22,7 +25,7 @@ STATUS VFS::Init()
 		dev = dev->next;
 	}
 
-	primary_fs = GetDrive("hda");
+	primary_fs = GetDrive("hdc");
 
 	return STATUS_SUCCESS;
 }
@@ -50,6 +53,9 @@ bool VFS::List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_c
 {
 	file_count = 0;
 	dir_count = 0;
+
+	if (!primary_fs)
+		return 0;
 
 	return primary_fs->List(path, files, dirs, file_count, dir_count);
 }

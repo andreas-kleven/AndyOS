@@ -16,11 +16,11 @@ ISO_FS::ISO_FS(BlockDevice* dev)
 	if (!device->Read(0x10 * ISO_SECTOR_SIZE, buf, 0x1000))
 		return;
 
-	desc = (ISO_PRIMARYDESC*)buf;
+	desc = (ISO_PRIMARY_DESC*)buf;
 
-	ISO_TABLE_ENTRY* table = (ISO_TABLE_ENTRY*)desc->rootDirectoryEntry;
+	ISO_DIRECTORY* table = &desc->rootDirectory;
 
-	if (!device->Read(table->locationLBA * ISO_SECTOR_SIZE, buf, ISO_SECTOR_SIZE * 2))
+	if (!device->Read(table->locationLBA_LSB * ISO_SECTOR_SIZE, buf, table->filesize_LSB))
 		return;
 
 	root = (ISO_DIRECTORY*)buf;
@@ -223,7 +223,7 @@ void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 
 bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file)
 {
-	file->name = new char[iso_dir->idLength];
+	file->name = new char[iso_dir->idLength + 1];
 	file->path = new char[strlen(path) + 1];
 
 	GetName(iso_dir, file->name);
@@ -238,7 +238,9 @@ bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file)
 
 bool ISO_FS::ParseDirectory(ISO_DIRECTORY* iso_dir, char* path, DIRECTORY_INFO* dir)
 {
-	dir->name = new char[iso_dir->idLength];
+	dir->name = new char[iso_dir->idLength + 1];
+	dir->path = new char[strlen(path) + 1];
+
 	GetName(iso_dir, dir->name);
 	strcpy(dir->path, path);
 
