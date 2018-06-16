@@ -31,6 +31,7 @@ STATUS Scheduler::Init()
 THREAD* Scheduler::CreateKernelThread(void(*main)())
 {
 	THREAD* thread = (THREAD*)((uint32)(new char[BLOCK_SIZE]) + BLOCK_SIZE - sizeof(THREAD));
+	thread->regs = (REGS*)((uint32)thread - sizeof(REGS));
 	thread->regs->ebp = 0;
 	thread->regs->esp = 0;
 	thread->regs->edi = 0;

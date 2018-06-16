@@ -15,20 +15,26 @@
 #include "FS/vfs.h"
 #include "Lib/debug.h"
 
+extern int __KERNEL_START, __KERNEL_END;
+
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
 	Debug::Init(1);
 	Debug::color = 0xFF00FF00;
+
+    uint32 kernel_start = (uint32)&__KERNEL_START;
+    uint32 kernel_end = (uint32)&__KERNEL_END;
+	uint32 mem_end = bootinfo->mem_upper * 0x400;
+	uint32 mem_size = mem_end;
 
 	CPU::Init();
 	HAL::Init();
 	Exceptions::Init();
 	Syscalls::Init();
 	
-	uint32 mem_map = KERNEL_BASE_PHYS + KERNEL_SIZE;
-	PMem::Init(MEMORY_SIZE, (uint32*)mem_map);
-	PMem::InitRegion((uint32*)0x30000000, 0xD0000000);
-	VMem::Init(bootinfo);
+	PMem::Init(mem_size, (uint32*)kernel_end);
+	PMem::InitRegion((uint32*)kernel_end, mem_end - kernel_end);
+	VMem::Init(bootinfo, kernel_end);
 }
 
 void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)

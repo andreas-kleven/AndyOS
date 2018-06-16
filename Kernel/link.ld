@@ -2,7 +2,7 @@ ENTRY(_start)
 SECTIONS
 {
 	. = 16M;
-	kernel_base = .;
+	__KERNEL_START = .;
 
 	.multiboot BLOCK(4K) : ALIGN(4K)
 	{
@@ -29,5 +29,5 @@ SECTIONS
 		*(.bss)
 	}
 
-	kernel_end = .; 
+	__KERNEL_END = .; 
 }

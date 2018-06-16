@@ -2,6 +2,7 @@
 #include "memory.h"
 #include "Kernel/kernel.h"
 #include "string.h"
+#include "Lib/debug.h"
 #include "../Drawing/vbe.h"
 
 #define PAGE_DIR_INDEX(x) (((x) >> 22) & 0x3FF)
@@ -11,7 +12,7 @@
 PAGE_DIR* current_dir = 0;
 PAGE_DIR* main_dir;
 
-void VMem::Init(MULTIBOOT_INFO* bootinfo)
+void VMem::Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end)
 {
 	MULTIBOOT_INFO info = *bootinfo;
 	VBE_MODE_INFO vbe_info = *(VBE_MODE_INFO*)bootinfo->vbe_mode_info;
@@ -38,11 +39,8 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo)
 	MapPhysAddr(main_dir, (uint32)main_dir, (uint32)main_dir, flags, 1);
 	MapPhysAddr(main_dir, (uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
 
-	//Identity map first 1 MB
-	MapPhysAddr(main_dir, 0, 0, flags, 0x100000 / BLOCK_SIZE);
-
 	//Map kernel and memory map
-	MapPhysAddr(main_dir, KERNEL_BASE_PHYS, KERNEL_BASE, flags, BYTES_TO_BLOCKS(KERNEL_SIZE + MEMORY_MAP_SIZE));
+	MapPhysAddr(main_dir, KERNEL_BASE, KERNEL_BASE, flags, BYTES_TO_BLOCKS(kernel_end - KERNEL_BASE + MEMORY_MAP_SIZE));
 
 	SwitchDir(main_dir);
 	EnablePaging();
@@ -77,13 +75,7 @@ bool VMem::MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, ui
 
 void* VMem::KernelAlloc(uint32 blocks)
 {
-	//TODO: Don't identity map
-	uint32 virt = FirstFree(main_dir, blocks, KERNEL_BASE, KERNEL_END);
-
-	if (!MapPhysAddr(main_dir, virt, virt, PTE_PRESENT | PTE_WRITABLE, blocks))
-		return 0;
-
-	return (void*)virt;
+	return Alloc(main_dir, PTE_PRESENT | PTE_WRITABLE | PTE_USER, blocks, KERNEL_BASE, KERNEL_END);
 }
 
 void* VMem::UserAlloc(PAGE_DIR* dir, uint32 blocks)

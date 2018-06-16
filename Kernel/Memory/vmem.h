@@ -107,7 +107,7 @@ struct PAGE_DIR
 class VMem
 {
 public:
-	static void Init(MULTIBOOT_INFO* bootinfo);
+	static void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end);
 	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
 	static void* KernelAlloc(uint32 blocks);
