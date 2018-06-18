@@ -9,6 +9,7 @@ $(TARGET): $(OBJS)
 	$(AR) cr $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 .PHONY: clean
