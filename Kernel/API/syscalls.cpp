@@ -69,7 +69,8 @@ void get_mouse_buttons(bool& left, bool& right, bool& middle)
 
 void* alloc(uint32 blocks)
 {
-	return VMem::UserAlloc(Scheduler::current_thread->page_dir, blocks);
+	VMem::SwitchDir(Scheduler::current_thread->page_dir);
+	return VMem::UserAlloc(blocks);
 }
 
 void free(void* ptr, uint32 blocks)

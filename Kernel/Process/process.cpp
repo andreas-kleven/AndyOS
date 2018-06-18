@@ -38,16 +38,15 @@ PROCESS_INFO* Process::Create(char* filename)
 
 	PAGE_DIR* dir = VMem::CreatePageDir();
 	VMem::SwitchDir(dir);
-	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
 
+	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
 	uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz);
 
 	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
 	uint32 virt = pheader->p_vaddr;
 
-	VMem::MapPhysAddr(dir, phys, virt, flags, blocks);
+	VMem::MapPhysAddr(phys, virt, flags, blocks);
 
-	PAGE_TABLE_ENTRY* e = VMem::GetTableEntry(dir, virt);
 	memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
 
 	Debug::Print("Loaded image %ux\n", dir);
@@ -81,12 +80,12 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void(*main)())
 		break;
 
 	case PROCESS_USER:
+		VMem::SwitchDir(proc->page_dir);
+
 		uint32 stackPhys = (uint32)PMem::AllocBlocks(1);
-		uint8* stack = (uint8*)VMem::UserMapFirstFree(proc->page_dir, stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-		VMem::MapPhysAddr(proc->page_dir, stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+		uint8* stack = (uint8*)VMem::UserMapFirstFree(stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
-		Debug::Print("stack: %ux\t%ux\n", stackPhys, stack);
-
+		VMem::MapPhysAddr(stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 		thread = Scheduler::CreateUserThread(main, stack);
 		break;
 	}

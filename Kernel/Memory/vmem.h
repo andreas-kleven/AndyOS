@@ -37,94 +37,89 @@ enum PAGE_DIR_FLAG
 	PDE_FRAME = 0x7FFFF000
 };
 
-struct PAGE_TABLE;
-
-struct PAGE_TABLE_ENTRY
-{
-	uint32 value = 0;
-
-	void SetFlag(uint32 flag)
-	{
-		value |= flag;
-	}
-
-	void UnsetFlag(uint32 flag)
-	{
-		value &= ~flag;
-	}
-
-	bool GetFlag(uint32 flag)
-	{
-		return value & flag;
-	}
-
-	void SetAddr(uint32 addr)
-	{
-		value = (value & ~PTE_FRAME) | addr;
-	}
-} __attribute__((packed));
-
-struct PAGE_DIR_ENTRY
-{
-	uint32 value = 0;
-
-	void SetFlag(uint32 flag)
-	{
-		value |= flag;
-	}
-
-	void UnsetFlag(uint32 flag)
-	{
-		value &= ~flag;
-	}
-
-	bool GetFlag(uint32 flag)
-	{
-		return value & flag;
-	}
-
-	void SetTable(PAGE_TABLE* table)
-	{
-		value = (value & ~PDE_FRAME) | (uint32)table;
-	}
-
-	PAGE_TABLE* GetTable()
-	{
-		return (PAGE_TABLE*)(value & PDE_FRAME);
-	}
-} __attribute__((packed));
-
 struct PAGE_TABLE
 {
-	PAGE_TABLE_ENTRY entries[PAGE_TABLE_LENGTH];
+	uint32 values[PAGE_TABLE_LENGTH];
+
+	void SetFlag(uint32 index, uint32 flag)
+	{
+		values[index] |= flag;
+	}
+
+	void UnsetFlag(uint32 index, uint32 flag)
+	{
+		values[index] &= ~flag;
+	}
+
+	uint32 GetFlags(uint32 index)
+	{
+		return values[index] & ~PTE_FRAME;
+	}
+
+	void SetAddr(uint32 index, uint32 addr)
+	{
+		values[index] = (values[index] & ~PTE_FRAME) | addr;
+	}
+
+	uint32 GetAddr(uint32 index)
+	{
+		return values[index] & PTE_FRAME;
+	}
 } __attribute__((packed));
 
 struct PAGE_DIR
 {
-	PAGE_DIR_ENTRY entries[PAGE_DIR_LENGTH];
+	uint32 values[PAGE_DIR_LENGTH];
+
+	void SetFlag(uint32 index, uint32 flag)
+	{
+		values[index] |= flag;
+	}
+
+	void UnsetFlag(uint32 index, uint32 flag)
+	{
+		values[index] &= ~flag;
+	}
+
+	bool GetFlag(uint32 index, uint32 flag)
+	{
+		return values[index] & flag;
+	}
+
+	void SetTable(uint32 index, PAGE_TABLE* table)
+	{
+		values[index] = (values[index] & ~PDE_FRAME) | (uint32)table;
+	}
+
+	PAGE_TABLE* GetTable(uint32 index)
+	{
+		return (PAGE_TABLE*)(values[index] & PDE_FRAME);
+	}
 } __attribute__((packed));
 
 class VMem
 {
 public:
 	static void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end);
-	static bool MapPhysAddr(PAGE_DIR* dir, uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
+	static bool MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
 	static void* KernelAlloc(uint32 blocks);
-	static void* UserAlloc(PAGE_DIR* dir, uint32 blocks);
+	static void* UserAlloc(uint32 blocks);
 	static void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
-	static void* UserMapFirstFree(PAGE_DIR* dir, uint32 phys, uint32 flags, uint32 blocks);
+	static void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
 
-	static uint32 FirstFree(PAGE_DIR* dir, uint32 blocks, uint32 start, uint32 end);
+	static uint32 FirstFree(uint32 blocks, uint32 start, uint32 end);
 
 	static void SwitchDir(PAGE_DIR* dir);
 	static PAGE_DIR* CreatePageDir();
 	static PAGE_DIR* GetCurrentDir();
-	static PAGE_TABLE_ENTRY* GetTableEntry(PAGE_DIR* dir, uint32 virt);
+
+	static uint32 GetAddress(uint32 virt);
+	static uint32 GetFlags(uint32 virt);
 
 private:
-	static void* Alloc(PAGE_DIR* dir, uint32 flags, uint32 blocks, uint32 start, uint32 end);
-	static void* MapFirstFree(PAGE_DIR* dir, uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end);
-	static bool CreatePageTable(PAGE_DIR* dir, uint32 virt, uint32 flags);
+	static void* Alloc(uint32 flags, uint32 blocks, uint32 start, uint32 end);
+	static void* MapFirstFree(uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end);
+	static bool CreatePageTable(uint32 virt, uint32 flags);
 	static void EnablePaging();
 };
