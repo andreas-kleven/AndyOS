@@ -17,61 +17,43 @@ float pow(float x, int n)
 	return y;
 }
 
-float sqrt(float square)
+float sqrt(float val)
 {
-	float root;
-
-	asm("fld (%1)\n"
-		"fsqrt\n"
-		"fstp (%0)"
-		: "=r" (root) : "r" (square));
-
-	return root;
+	asm("fsqrt" : "+t" (val));
+    return val;
 }
 
 
-float sin(float x)
+float sin(float val)
 {
-	float val;
-
-	asm("fld (%1)\n"
-		"fsin\n"
-		"fstp (%0)"
-		: "=r" (val) : "r" (x));
-
-	return val;
+	asm("fsin" : "+t" (val));
+    return val;
 }
 
-float cos(float x)
+float cos(float val)
 {
-	float val;
-
-	asm("fld (%1)\n"
-		"fcos\n"
-		"fstp (%0)"
-		: "=r" (val) : "r" (x));
-
-	return val;
+	asm("fcos" : "+t" (val));
+    return val;
 }
 
-float tan(float x)
+float tan(float val)
 {
-	return sin(x) / cos(x);
+	return sin(val) / cos(val);
 }
 
-float asin(float x)
+float asin(float val)
 {
-	return atan2(x, sqrt((1.0 + x) * (1.0 - x)));
+	return atan2(val, sqrt((1.0 + val) * (1.0 - val)));
 }
 
-float acos(float x)
+float acos(float val)
 {
-	return atan2(sqrt((1.0 + x) * (1.0 - x)), x);
+	return atan2(sqrt((1.0 + val) * (1.0 - val)), val);
 }
 
-float atan(float x)
+float atan(float val)
 {
-	return atan2(x, 1);
+	return atan2(val, 1);
 }
 
 float atan2(float y, float x)
@@ -123,72 +105,29 @@ int round(float val)
 	return (int)(val + 0.5);
 }
 
-
 float log(float val)
 {
-	float ret;
-
-	asm("fld1\n"
-		"fld (%1)\n"
-		"fyl2x\n"
-
-		"fldl2e\n"
-		"fdivp\n"
-		"fstp (%0)"
-		: "=r" (ret) : "r" (val));
-
-	return ret;
+	//https://sites.google.com/site/akohlmey/news-and-announcements/twolinesofcode40faster
+	double result;
+    __asm__ __volatile__ ("fldln2\nfxch\nfyl2x" 
+                      : "=t" (result) 
+                      : "0" (val) : "st(1)");
+    return result;
 }
 
 float log2(float val)
 {
-	float ret;
-
-	asm("fld1\n"
-		"fld (%1)\n"
-		"fyl2x\n"
-		"fstp (%0)"
-		: "=r" (ret) : "r" (val));
-
-	return ret;
+	return log(val) / log(2);
 }
 
 float log10(float val)
 {
-	float ret;
-
-	asm("fld1\n"
-		"fld (%1)\n"
-		"fyl2x\n"
-
-		"fldl2t\n"
-		"fdivp\n"
-		"fstp (%0)"
-		: "=r" (ret) : "r" (val));
-
-	return ret;
+	return log(val) / log(10);
 }
 
 float logn(float val, float n)
 {
-	float ret;
-
-	asm("fld1\n"
-		"fld (%1)\n"
-		"fyl2x\n"
-
-		"fld1\n"
-		"fld (%2)\n"
-		"fyl2x\n"
-
-		"fdivp\n"
-		"fstp (%0)\n"
-
-		"fdecstp\n"
-		"fdecstp\n"
-		: "=r" (ret) : "r" (val), "r" (n));
-
-	return ret;
+	return log(val) / log(n);
 }
 
 static unsigned long int next = 1;

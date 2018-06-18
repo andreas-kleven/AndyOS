@@ -11,13 +11,13 @@ float fact(float number);
 float pow(float x, int n);
 float sqrt(float square);
 
-float sin(float x);
-float cos(float x);
-float tan(float x);
+float sin(float val);
+float cos(float val);
+float tan(float val);
 
-float asin(float x);
-float acos(float x);
-float atan(float x);
+float asin(float val);
+float acos(float val);
+float atan(float val);
 float atan2(float y, float x);
 
 int floor(float val);
