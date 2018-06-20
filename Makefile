@@ -1,5 +1,5 @@
 MAKE_DIR = $(CURDIR)
-CC := /mnt/c/Tools/cross/bin/i686-elf-gcc
+CC := i686-elf-gcc
 AR := ar
 
 #ISO
@@ -17,10 +17,10 @@ INC_SRCH_PATH += -I$(MAKE_DIR)/AndyOS/Include
 LIB_SRCH_PATH := -L$(LIBS)
 
 CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH) -w
-CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions -lgcc
+CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 
 LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
-LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions -lgcc
+LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 
 APP_LDFLAGS := $(LDFLAGS) $(LIBS)/andyos.a $(LIBS)/libc.a -T $(MAKE_DIR)/Apps/link.ld
 
@@ -57,3 +57,4 @@ clean:
 	$(MAKE) -C Apps/WindowManager clean
 	$(MAKE) -C Apps/Test clean
 	rm -f $(BOOT_DIR)/andyos.bin
+	rm -f $(LIBS)/*
