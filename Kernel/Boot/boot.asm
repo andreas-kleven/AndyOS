@@ -10,6 +10,8 @@ MULTIBOOT_HEADER_MAGIC   equ  0x1BADB002
 MULTIBOOT_HEADER_FLAGS   equ  MB_ALIGN | MB_MEMINFO | MB_VIDINFO
 CHECKSUM                 equ  -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 
+STACK_SIZE equ 0x4000 	;16k
+
 section .multiboot
 
 multiboot_header:
@@ -32,9 +34,7 @@ section .text
 extern kernel_main
 
 _start:
-	;mov	esp, KERNEL_STACK	;Setup the stack
-	;push	0					;Reset EFLAGS
-	;popf
+	mov	esp, stack + STACK_SIZE
 	
 	push	ebx					;Multiboot info 
 	push	eax					;Magic
@@ -42,3 +42,7 @@ _start:
 
 	cli
 	hlt
+
+section .bss
+align 32
+stack: resb STACK_SIZE
