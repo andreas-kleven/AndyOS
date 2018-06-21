@@ -1,5 +1,5 @@
 #pragma once
-#include "AndyOS.h"
+#include <Drawing.h>
 #include "message.h"
 
 #define GUI_WINDOW_BORDER_WIDTH		1

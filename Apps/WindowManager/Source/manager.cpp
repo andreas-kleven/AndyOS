@@ -1,4 +1,5 @@
-#include "AndyOS.h"
+#include <AndyOS.h>
+#include <Drawing.h>
 #include "manager.h"
 #include "window.h"
 #include "message.h"

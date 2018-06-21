@@ -9,10 +9,10 @@ ISO_NAME :=  $(MAKE_DIR)/AndyOS.iso
 
 LIBS := $(MAKE_DIR)/Build
 
-INC_SRCH_PATH := -I.
+INC_SRCH_PATH := -isystem$(MAKE_DIR)/AndyOS/Include
+INC_SRCH_PATH += -I.
 INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
 INC_SRCH_PATH += -I$(MAKE_DIR)/Lib/Include
-INC_SRCH_PATH += -I$(MAKE_DIR)/AndyOS/Include
 INC_SRCH_PATH += -I$(MAKE_DIR)/Apps
 INC_SRCH_PATH += -I$(MAKE_DIR)/Apps/Include
 
