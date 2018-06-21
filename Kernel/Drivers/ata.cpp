@@ -100,10 +100,11 @@ STATUS ATADevice::Init()
 	IDT::InstallIRQ(0x2E, (IRQ_HANDLER)ATA_Interrupt);
 	IDT::InstallIRQ(0x2F, (IRQ_HANDLER)ATA_Interrupt);
 
-	DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
-	DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
+	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
+	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
 	DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER));
-	DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE));
+	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE));
+
 	return STATUS_SUCCESS;
 }
 

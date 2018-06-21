@@ -31,6 +31,9 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
 	ISO_DIRECTORY* start = root;
 	ISO_DIRECTORY* dir = start;
 
+	if (!dir)
+		return 0;
+
 	char* saveptr;
 	char* part = strtok_r(path, "/", &saveptr);
 	char* next = strtok_r(0, "/", &saveptr);
@@ -40,7 +43,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
 
 	char* buffer;
 
-	while (part && dir->length)
+	while (part && dir && dir->length)
 	{
 		char name[32];
 		GetName(dir, name);
