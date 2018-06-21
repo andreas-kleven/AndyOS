@@ -1,5 +1,4 @@
-#ifndef LIMITS_H
-#define LIMITS_H
+#pragma once
 
 #define FLT_RADIX     2
 #define FLT_ROUNDS    1
@@ -143,7 +142,7 @@
 
 #define	CHARCLASS_NAME_MAX	14	/* max # bytes in a char class name */
 #define	NL_ARGMAX	9	/* max value of "digit" in calls to the	*/
-/* NLS printf() and scanf() */
+/* NLS debug_print() and scanf() */
 #define	NL_LANGMAX	14	/* max # of bytes in a LANG name */
 #define	NL_MSGMAX	32767	/* max message number */
 #define	NL_NMAX		1	/* max # bytes in N-to-1 mapping characters */
@@ -230,5 +229,3 @@ extern long _sysconf(int);	/* System Private interface to sysconf() */
 extern long _sysconf(int);	/* System Private interface to sysconf() */
 #define	PTHREAD_STACK_MIN	_sysconf(_SC_THREAD_STACK_MIN)
 #endif	/* defined(__EXTENSIONS__) || (_POSIX_C_SOURCE >= 199506L) */
-
-#endif

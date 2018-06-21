@@ -1,7 +1,8 @@
 #include "string.h"
 #include "definitions.h"
+#include "ctype.h"
 
-unsigned int strcmp(const char* str1, const char* str2)
+int strcmp(const char* str1, const char* str2)
 {
 	if (!str1 || !str2)
 		return str1 != str2;
@@ -16,6 +17,15 @@ unsigned int strcmp(const char* str1, const char* str2)
 		res = 1;
 
 	return res;
+}
+
+int strcicmp(char const *a, char const *b)
+{
+    for (;; a++, b++) {
+        int d = tolower(*a) - tolower(*b);
+        if (d != 0 || !*a)
+            return d;
+    }
 }
 
 char* strcpy(char* dest, const char* src)
@@ -52,6 +62,20 @@ char* strncat(char * dest, const char* src, int n)
 	while (n-- && (*dest++ = *src++));
 	*rdest = 0;
 	return rdest;
+}
+
+void stoupper(char* s)
+{
+    for(; *s; s++)
+        if(('a' <= *s) && (*s <= 'z'))
+            *s = 'A' + (*s - 'a');
+}
+
+void stolower(char* s)
+{
+    for(; *s; s++)
+        if(('A' <= *s) && (*s <= 'Z'))
+            *s = 'a' + (*s - 'A');
 }
 
 void* memcpy(void* dest, void* src, unsigned int n)
