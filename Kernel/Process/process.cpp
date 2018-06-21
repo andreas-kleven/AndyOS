@@ -82,11 +82,11 @@ THREAD* Process::CreateThread(PROCESS_INFO* proc, void(*main)())
 	case PROCESS_USER:
 		VMem::SwitchDir(proc->page_dir);
 
-		uint32 stackPhys = (uint32)PMem::AllocBlocks(1);
-		uint8* stack = (uint8*)VMem::UserMapFirstFree(stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+		uint32 stackPhys = (uint32)PMem::AllocBlocks(2);
+		uint8* stack = (uint8*)VMem::UserMapFirstFree(stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
 
-		VMem::MapPhysAddr(stackPhys, (uint32)stack, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-		thread = Scheduler::CreateUserThread(main, stack);
+		thread = Scheduler::CreateUserThread(main, stack + BLOCK_SIZE);
+		Debug::Print("Stack: %ux\n", stack + BLOCK_SIZE);
 		break;
 	}
 
