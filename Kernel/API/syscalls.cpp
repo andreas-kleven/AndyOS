@@ -5,8 +5,10 @@
 #include "Lib/debug.h"
 #include "Drawing/vbe.h"
 #include "Drivers/mouse.h"
+#include "Drivers/keyboard.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
+#include "FS/vfs.h"
 
 void* syscalls[MAX_SYSCALLS];
 
@@ -49,7 +51,7 @@ void sleep(uint32 ticks)
 	Scheduler::SleepThread(PIT::ticks + ticks);
 }
 
-uint32 ticks()
+uint32 get_ticks()
 {
 	return PIT::ticks;
 }
@@ -67,6 +69,11 @@ void get_mouse_buttons(bool& left, bool& right, bool& middle)
 	middle = Mouse::mouse_M;
 }
 
+bool get_key_down(KEYCODE key)
+{
+	return Keyboard::GetKeyDown(key);
+}
+
 void* alloc(uint32 blocks)
 {
 	VMem::SwitchDir(Scheduler::current_thread->page_dir);
@@ -76,6 +83,16 @@ void* alloc(uint32 blocks)
 void free(void* ptr, uint32 blocks)
 {
 
+}
+
+uint32 read_file(char** buffer, char* filename)
+{
+	return VFS::ReadFile(filename, *buffer);
+}
+
+void debug_reset()
+{
+	Debug::Clear(0xFF000000);
 }
 
 STATUS Syscalls::Init()
@@ -90,11 +107,14 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_DRAW, (SYSCALL_HANDLER)draw);
 	InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)exit);
 	InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sleep);
-	InstallSyscall(SYSCALL_TICKS, (SYSCALL_HANDLER)ticks);
+	InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)get_ticks);
 	InstallSyscall(SYSCALL_GET_MOUSE_POS, (SYSCALL_HANDLER)get_mouse_pos);
 	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, (SYSCALL_HANDLER)get_mouse_buttons);
+	InstallSyscall(SYSCALL_GET_KEY_DOWN, (SYSCALL_HANDLER)get_key_down);
 	InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
+	InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
+	InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
 }
 
 void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)
