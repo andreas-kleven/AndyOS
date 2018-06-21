@@ -1,5 +1,4 @@
 #pragma once
-#include "Kernel/exceptions.h"
 
 template <class T>
 struct Node
@@ -87,8 +86,8 @@ void List<T>::Add(T value)
 template<class T>
 inline void List<T>::Insert(T value, int index)
 {
-	if (index > count)
-		OS::ThrowException("Index out of range exception", "List::Insert");
+	//if (index > count)
+	//	OS::ThrowException("Index out of range exception", "List::Insert");
 
 	if (index == count)
 		return Add(value);
@@ -110,8 +109,8 @@ inline void List<T>::Insert(T value, int index)
 template<class T>
 inline void List<T>::RemoveAt(int index)
 {
-	if (index >= count)
-		OS::ThrowException("Index out of range exception", "List::RemoveAt");
+	//if (index >= count)
+	//	OS::ThrowException("Index out of range exception", "List::RemoveAt");
 
 	if (index == 0)
 	{
@@ -142,7 +141,7 @@ inline void List<T>::RemoveAt(int index)
 template<class T>
 inline void List<T>::Remove(T rem)
 {
-	OS::ThrowException("Not tested exception", "List::Remove");
+	//OS::ThrowException("Not tested exception", "List::Remove");
 	Node<T>* node = root;
 
 	for (int i = 0; i < count; i++)
@@ -198,8 +197,8 @@ inline void List<T>::Clear()
 template<class T>
 inline T& List<T>::operator[](int index)
 {
-	if (index >= count)
-		Exceptions::ThrowException("Index out of range exception", "List::operator[]");
+	//if (index >= count)
+	//	Exceptions::ThrowException("Index out of range exception", "List::operator[]");
 
 	Node<T>* node = NodeAt(index);
 	return node->value;

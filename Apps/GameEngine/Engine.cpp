@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include "math.h"
-#include "../GL/GL.h"
-#include "System.h"
+#include "GL.h"
 #include "MeshComponent.h"
 #include "Collision.h"
 #include "Rigidbody.h"
@@ -11,7 +10,6 @@
 #include "Raytracer.h"
 #include "stdio.h"
 #include "ctype.h"
-#include "debug.h"
 
 int p1 = 0;
 float p2 = 0;
@@ -40,7 +38,7 @@ void GEngine::StartGame(Game* game)
 {
 	active_game = game;
 
-	startTicks = PIT::ticks;
+	startTicks = get_ticks();
 
 	Camera* cam = active_game->GetActiveCamera();
 
@@ -49,8 +47,11 @@ void GEngine::StartGame(Game* game)
 
 	char buf[256];
 
-	last_mouse_pos = Vector3(Mouse::x, Mouse::y, 0);
-	ticks = PIT::ticks;
+	int mouse_x, mouse_y;
+	get_mouse_pos(mouse_x, mouse_y);
+	last_mouse_pos = Vector3(mouse_x, mouse_y, 0);
+
+	ticks = get_ticks();
 
 	GL::MatrixMode(GL_PROJECTION);
 	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10));
@@ -80,37 +81,33 @@ void GEngine::StartGame(Game* game)
 
 	while (1)
 	{
-		Debug::x = 0;
-		Debug::y = 0;
-
-		if (PIT::ticks != ticks && totalFrames > 0)
+		debug_reset();
+		
+		if (get_ticks() != ticks && totalFrames > 0)
 		{
-			Debug::Print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (PIT::ticks - ticks), PIT::ticks - ticks, (ticks - startTicks) / totalFrames);
+			debug_print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames);
 			char buf[20];
-			//Debug::Print("AVG: %i\n", frames * 1000 / PIT::ticks);
+			//debug_print("AVG: %i\n", frames * 1000 / get_ticks());
 		}
 
-		Debug::Print("Ticks: %i\n", ticks);
-		Debug::Print("Free %i\n", PMem::num_free);
+		debug_print("Ticks: %i\n", ticks);
 
-		Debug::Print("Mouse: %i, %i\n", (int)Mouse::x, (int)Mouse::y);
-
-		Debug::Print("Cam: %s\n", cam->transform.ToString(buf));
-		Debug::Print("P1: %s\n", thing->transform.ToString(buf));
+		debug_print("Cam: %s\n", cam->transform.ToString(buf));
+		debug_print("P1: %s\n", thing->transform.ToString(buf));
 
 		if (thing->rigidbody)
 		{
 			Vector3 vel = thing->rigidbody->velocity;
-			Debug::Print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
+			debug_print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
 		}
 
-		if (Keyboard::GetKeyDown(KEY_TAB))
+		if (get_key_down(KEY_TAB))
 		{
 			GL::MatrixMode(GL_PROJECTION);
 			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * GL::gc_out.width, 1080 * GL::gc_out.height, 90, 1, 10));
 		}
 
-		if (Keyboard::GetKeyDown(KEY_ESCAPE))
+		if (get_key_down(KEY_ESCAPE))
 			break;
 
 		Update();
@@ -123,10 +120,10 @@ void GEngine::StartGame(Game* game)
 
 void GEngine::Update()
 {
-	deltaTime = (PIT::ticks - ticks) / 1000.f;
-	ticks = PIT::ticks;
+	deltaTime = (get_ticks() - ticks) / 1000.f;
+	ticks = get_ticks();
 
-	if (Mouse::x == GL::m_width)
+	/*if (Mouse::x == GL::m_width)
 	{
 		last_mouse_pos.x = 1;
 		Mouse::x = 1;
@@ -146,76 +143,82 @@ void GEngine::Update()
 	{
 		last_mouse_pos.y = GL::m_height - 1;
 		Mouse::y = GL::m_height - 1;
-	}
+	}*/
 
-	Vector3 mouse_pos(Mouse::x, Mouse::y, 0);
+	int mouse_x, mouse_y;
+	get_mouse_pos(mouse_x, mouse_y);
+	Vector3 mouse_pos = Vector3(mouse_x, mouse_y, 0);
+
+	bool mouse_r, mouse_l, mouse_m;
+	get_mouse_buttons(mouse_l, mouse_r, mouse_m);
+
 	Vector3 mouse_delta = mouse_pos - last_mouse_pos;
 	Vector3 mouse_axis = mouse_delta * deltaTime;
 	last_mouse_pos = mouse_pos;
 
+	//float sign = Keyboard::shift ? -1 : 1;.
+	float sign = 1;
 
-	float sign = Keyboard::shift ? -1 : 1;
-
-	if (Keyboard::GetKeyDown(KEY_LCTRL))
+	if (get_key_down(KEY_LCTRL))
 	{
 		sign *= 0.2;
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D1))
+	if (get_key_down(KEY_D1))
 	{
 		p1 += sign * deltaTime * 2000;
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D2))
+	if (get_key_down(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D3))
+	if (get_key_down(KEY_D3))
 	{
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D4))
+	if (get_key_down(KEY_D4))
 	{
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
 		active_game->objects[0]->transform.Translate(Vector3(1, 0, 0) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D5))
+	if (get_key_down(KEY_D5))
 	{
 		active_game->objects[0]->transform.Translate(Vector3(0, 1, 0) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_D6))
+	if (get_key_down(KEY_D6))
 	{
 		active_game->objects[0]->transform.Translate(Vector3(0, 0, 1) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 
-	if (Keyboard::GetKeyDown(KEY_D0))
+	if (get_key_down(KEY_D0))
 	{
 		active_game->objects[1]->rigidbody->angularVelocity += Vector3(0, 0, 1) * M_PI * deltaTime * sign;
 	}
 
 	Camera* cam = active_game->GetActiveCamera();
 
-	if (Keyboard::GetKeyDown(KEY_F))
+	if (get_key_down(KEY_F))
 	{
 		active_game->objects[0]->transform.Rotate(Vector3(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
 	}
-	if (Keyboard::GetKeyDown(KEY_G))
+	if (get_key_down(KEY_G))
 	{
 		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
 
-	if (Mouse::mouse_R)
+	if (mouse_r)
 	{
 		LightSource* light = active_game->lights[0];
 		light->transform.Translate(Vector3(mouse_delta.x, -mouse_delta.y, 0) * 0.1f);
@@ -227,20 +230,20 @@ void GEngine::Update()
 
 	float speed = 10;
 
-	if (Keyboard::GetKeyDown(KEY_LSHIFT))
+	if (get_key_down(KEY_LSHIFT))
 		speed /= 4;
 
-	if (Keyboard::GetKeyDown(KEY_D))
+	if (get_key_down(KEY_D))
 		cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime);
-	if (Keyboard::GetKeyDown(KEY_A))
+	if (get_key_down(KEY_A))
 		cam->transform.Translate(-cam->transform.GetRightVector() * speed * deltaTime);
-	if (Keyboard::GetKeyDown(KEY_W))
+	if (get_key_down(KEY_W))
 		cam->transform.Translate(cam->transform.GetForwardVector() * speed * deltaTime);
-	if (Keyboard::GetKeyDown(KEY_S))
+	if (get_key_down(KEY_S))
 		cam->transform.Translate(-cam->transform.GetForwardVector() * speed * deltaTime);
-	if (Keyboard::GetKeyDown(KEY_E))
+	if (get_key_down(KEY_E))
 		cam->transform.Translate(cam->transform.GetUpVector() * speed * deltaTime);
-	if (Keyboard::GetKeyDown(KEY_Q))
+	if (get_key_down(KEY_Q))
 		cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime);
 
 	for (int i = 0; i < active_game->objects.Count(); i++)
@@ -286,14 +289,14 @@ Vector3 GEngine::WorldToScreen(Game* game, Vector3& point)
 
 	//if (isnan(screen.x) || isnan(screen.y))
 	//{
-	//	Debug::Print("%f\t%f\t%f\n", p.x, p.y, p.w);
+	//	debug_print("%f\t%f\t%f\n", p.x, p.y, p.w);
 	//}
 
 	return screen;
 }
 
 
-void GEngine::DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color)
+void GEngine::DebugLine(Game* game, Vector3 start, Vector3 end, Color& color)
 {
 	Vector3 lpstart = WorldToScreen(game, start);
 	Vector3 lpend = WorldToScreen(game, end);
@@ -302,15 +305,15 @@ void GEngine::DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color)
 	if (isnan(total))
 	{
 		return;
-		Debug::Print("%f\t%f\t%i\t%i\t%i\n", lpstart.x, lpstart.y, (int)start.x, (int)start.y, (int)start.z);
-		Debug::Print("%f\t%f\t%i\t%i\t%i\n", lpstart.y, lpstart.y, (int)end.x, (int)end.y, (int)end.z);
+		debug_print("%f\t%f\t%i\t%i\t%i\n", lpstart.x, lpstart.y, (int)start.x, (int)start.y, (int)start.z);
+		debug_print("%f\t%f\t%i\t%i\t%i\n", lpstart.y, lpstart.y, (int)end.x, (int)end.y, (int)end.z);
 		while (1);
 	}
 
-	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color.ToInt(), Drawing::gc);
+	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color, _gc);
 }
 
-void GEngine::DebugBox(Game* game, Box& box, ColRGB& color)
+void GEngine::DebugBox(Game* game, Box& box, Color& color)
 {
 	Vector3 maxx = Vector3(box.max.x, box.min.y, box.min.z);
 	Vector3 maxy = Vector3(box.min.x, box.max.y, box.min.z);
@@ -341,15 +344,15 @@ void PrintMatrix(Matrix3 M)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		Debug::Print("[");
+		debug_print("[");
 		for (int j = 0; j < 3; j++)
 		{
-			Debug::Print("%f", M[i * 3 + j]);
+			debug_print("%f", M[i * 3 + j]);
 
 			if (j < 2)
-				Debug::Print("\t");
+				debug_print("\t");
 		}
-		Debug::Print("]\n");
+		debug_print("]\n");
 	}
 }
 
@@ -357,15 +360,15 @@ void PrintMatrix4(Matrix4 M)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		Debug::Print("[");
+		debug_print("[");
 		for (int j = 0; j < 3; j++)
 		{
-			Debug::Print("%f", M[i * 4 + j]);
+			debug_print("%f", M[i * 4 + j]);
 
 			if (j < 3)
-				Debug::Print("\t");
+				debug_print("\t");
 		}
-		Debug::Print("]\n");
+		debug_print("]\n");
 	}
 }
 
@@ -438,7 +441,7 @@ void GEngine::Collision()
 		}
 	}
 
-	Debug::Print("Energy: %f\n", energy);
+	debug_print("Energy: %f\n", energy);
 
 	for (int i = 0; i < all.Count(); i++)
 	{
@@ -461,8 +464,6 @@ void GEngine::Collision()
 
 				if (test.TestIntersection(*a, *b, &mtv, man, count))
 				{
-					//Debug::color = 0xFFFFFFFF;
-
 					//a->velocity = Vector3(0, 0, 0);
 
 					a->parent->transform.position += mtv * b->mass / (a->mass + b->mass);
@@ -481,11 +482,11 @@ void GEngine::Collision()
 						colPoint += m.Point / count;
 
 						Vector3 sc = WorldToScreen(active_game, m.Point);
-						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFFFF0000, Drawing::gc);
+						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Red, _gc);
 					}
 
 					Vector3 sc = WorldToScreen(active_game, colPoint);
-					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, 0xFF0000FF, Drawing::gc);
+					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue, _gc);
 
 					Vector3 va;
 					Vector3 vb;
@@ -536,7 +537,7 @@ void GEngine::Collision()
 						Matrix3 MRA = rota.ToMatrix3();
 						Matrix3 MRB = rotb.ToMatrix3();
 						//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
-						//Debug::Print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
+						//debug_print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 						//Matrix3 MatR2 = Matrix3::CreateRotation(b->parent->transform.rotation.ToEuler());
 
 						Matrix3 invbA = IbodyA.Inverse();
@@ -581,9 +582,9 @@ void GEngine::Collision()
 						float J = N / (t1 + t2 + t3 + t4);
 						Vector3 force = n * J;
 
-						Debug::Print("N %f\n", N);
-						Debug::Print("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
-						Debug::Print("Acc %f\n", force.y / a->mass);
+						debug_print("N %f\n", N);
+						debug_print("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
+						debug_print("Acc %f\n", force.y / a->mass);
 						//PIT::Sleep(100000);
 						//PIT::Sleep(100);
 
@@ -615,7 +616,7 @@ void GEngine::Collision()
 							a->angularVelocity -= waf;
 							b->angularVelocity += wbf;
 
-							DebugLine(active_game, colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, ColRGB(COLOR_GREEN));
+							DebugLine(active_game, colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, Color::Green);
 
 							//a->angularVelocity.x = 0;
 							//a->angularVelocity.y = 0;
@@ -623,7 +624,7 @@ void GEngine::Collision()
 							//b->angularVelocity.x = 0;
 							//b->angularVelocity.y = 0;
 
-							DebugLine(active_game, colPoint, colPoint + force * sqrt(force.Magnitude()) * 10, ColRGB(COLOR_RED));
+							DebugLine(active_game, colPoint, colPoint + force * sqrt(force.Magnitude()) * 10, Color::Red);
 							//PIT::Sleep(1000);
 
 
@@ -633,11 +634,11 @@ void GEngine::Collision()
 							Vector3 ffa = FrictionForce(a, -n, vr, (a->bEnabledGravity ? Vector3(0, -9.8, 0) * a->mass : Vector3()));
 							Vector3 ffb = FrictionForce(b, n, vr, (b->bEnabledGravity ? Vector3(0, -9.8, 0) * b->mass : Vector3()));
 
-							DebugLine(active_game, colPoint, colPoint + ffa * 10, ColRGB(0xFFFFFF00));
+							DebugLine(active_game, colPoint, colPoint + ffa * 10, Color::Yellow);
 
 							a->AddImpulse(ffa * deltaTime);
 							b->AddImpulse(ffb * deltaTime);
-							PIT::Sleep(10);
+							sleep(10);
 						}
 					}
 				}
@@ -683,9 +684,10 @@ void GEngine::Collision()
 
 void GEngine::Render()
 {
-	Raytracer tracer(active_game, Drawing::gc);
-	tracer.Render();
-	return;
+	//Raytracer tracer(active_game, _gc);
+	//tracer.Render();
+	//draw(_gc.framebuffer);
+	//return;
 
 	Camera* cam = active_game->GetActiveCamera();
 	Matrix4 V = Matrix4::CreateView(
@@ -715,10 +717,10 @@ void GEngine::Render()
 				return;
 
 			GameObject* parent = mesh->parent;
-			Transform* trans = &parent->GetWorldTransform();
-			Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
-			Matrix4 R = trans->rotation.ToMatrix();
-			Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
+			Transform trans = parent->GetWorldTransform();
+			Matrix4 T = Matrix4::CreateTranslation(trans.position.ToVector4());
+			Matrix4 R = trans.rotation.ToMatrix();
+			Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
 
 			for (int v = 0; v < mesh->model->vertices.Count(); v++)
 				model->vertex_buffer[v].worldNormal = R * model->vertex_buffer[v].normal;
@@ -733,4 +735,5 @@ void GEngine::Render()
 	}
 
 	GL::SwapBuffers();
+	draw(_gc.framebuffer);
 }

@@ -55,10 +55,10 @@ Color Color::operator*(float f)
 	return Color(r * f, g * f, b * f);
 }
 
-Color Color::operator*=(float f)
+Color& Color::operator*=(float f)
 {
 	r = r * f;
 	g = g * f;
 	b = b * f;
-	return *(this);
+	return *this;
 }

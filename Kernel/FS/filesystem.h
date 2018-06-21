@@ -1,6 +1,6 @@
 #pragma once
 #include "definitions.h"
-#include "../Drivers/device.h"
+#include "Drivers/device.h"
 
 struct DIRECTORY_INFO
 {

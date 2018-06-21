@@ -1,6 +1,6 @@
 #include "BoxCollider.h"
 #include "GameObject.h"
-#include "../GL/Matrix3.h"
+#include "GL.h"
 
 BoxCollider::BoxCollider()
 {
@@ -45,7 +45,7 @@ Vector3 SupportFunction(Vector3 axis, Transform trans)
 
 //return a vector perpendicular to a and
 //parallel to (and in the direction of) b
-inline Vector3 cross_aba(const Vector3 &a, const Vector3 &b)
+Vector3 cross_aba(const Vector3 &a, const Vector3 &b)
 {
 	return Vector3::Cross(Vector3::Cross(a, b), a);
 }

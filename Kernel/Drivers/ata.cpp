@@ -1,7 +1,7 @@
 #include "ata.h"
 #include "math.h"
 #include "HAL/hal.h"
-#include "../FS/iso.h"
+#include "FS/iso.h"
 #include "string.h"
 #include "Lib/debug.h"
 

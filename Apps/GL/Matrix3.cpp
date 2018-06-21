@@ -21,7 +21,7 @@ Matrix3::Matrix3(float elements[])
 	}
 }
 
-Matrix3 Matrix3::Inverse()
+Matrix3 Matrix3::Inverse() const
 {
 	double det = elems[0] * (elems[4] * elems[8] - elems[7] * elems[5]) -
 		elems[1] * (elems[3] * elems[8] - elems[5] * elems[6]) +
@@ -45,7 +45,7 @@ Matrix3 Matrix3::Inverse()
 	return minv;
 }
 
-Matrix3 Matrix3::Transpose()
+Matrix3 Matrix3::Transpose() const
 {
 	Matrix3 mat;
 	mat.elems[0] = elems[0];
@@ -89,7 +89,7 @@ Matrix3 Matrix3::CreateRotation(Vector3 rot)
 	return X * Y * Z;
 }
 
-inline Matrix3 operator+(const Matrix3& lhs, const Matrix3& rhs)
+Matrix3 operator+(const Matrix3& lhs, const Matrix3& rhs)
 {
 	Matrix3 ret = lhs;
 
@@ -101,7 +101,7 @@ inline Matrix3 operator+(const Matrix3& lhs, const Matrix3& rhs)
 	return ret;
 }
 
-inline Matrix3 operator-(const Matrix3& lhs, const Matrix3& rhs)
+Matrix3 operator-(const Matrix3& lhs, const Matrix3& rhs)
 {
 	Matrix3 ret = lhs;
 
@@ -113,14 +113,14 @@ inline Matrix3 operator-(const Matrix3& lhs, const Matrix3& rhs)
 	return ret;
 }
 
-inline Matrix3 operator*(const Matrix3& lhs, const Matrix3& rhs)
+Matrix3 operator*(const Matrix3& lhs, const Matrix3& rhs)
 {
 	Matrix3 ret = lhs;
 	ret *= rhs;
 	return ret;
 }
 
-inline Matrix3 operator*(const Matrix3& lhs, const float& rhs)
+Matrix3 operator*(const Matrix3& lhs, const float& rhs)
 {
 	Matrix3 ret = lhs;
 
@@ -132,7 +132,7 @@ inline Matrix3 operator*(const Matrix3& lhs, const float& rhs)
 	return ret;
 }
 
-inline Vector3 operator*(const Matrix3& mat, const Vector3& vec)
+Vector3 operator*(const Matrix3& mat, const Vector3& vec)
 {
 	float nx = mat.elems[0] * vec.x + mat.elems[1] * vec.y + mat.elems[2] * vec.z;
 	float ny = mat.elems[3] * vec.x + mat.elems[4] * vec.y + mat.elems[5] * vec.z;

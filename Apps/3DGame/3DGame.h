@@ -1,5 +1,5 @@
 #pragma once
-#include "../GameEngine/Engine.h"
+#include "GEngine.h"
 
 class MyGame : public Game
 {

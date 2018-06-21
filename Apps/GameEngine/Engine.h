@@ -5,9 +5,7 @@
 #include "Game.h"
 #include "MeshComponent.h"
 #include "Box.h"
-#include "List.h"
-#include "Drawing/drawing.h"
-#include "../GL/GL.h"
+#include "GL.h"
 
 class GEngine
 {
@@ -20,8 +18,8 @@ public:
 	void StartGame(Game* game);
 
 	static Vector3 WorldToScreen(Game* game, Vector3& point);
-	static void DebugLine(Game* game, Vector3& start, Vector3& end, ColRGB& color);
-	static void DebugBox(Game* game, Box& box, ColRGB& color);
+	static void DebugLine(Game* game, Vector3 start, Vector3 end, Color& color);
+	static void DebugBox(Game* game, Box& box, Color& color);
 
 private:
 	List<Component*> all_components;

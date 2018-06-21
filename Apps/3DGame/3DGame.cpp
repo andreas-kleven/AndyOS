@@ -1,16 +1,11 @@
 #include "3DGame.h"
-#include "System.h"
+#include "GEngine.h"
 #include "MyBox.h"
-#include "MeshComponent.h"
-#include "Model3D.h"
-#include "DirectionalLight.h"
-#include "PointLight.h"
 #include "Thing.h"
 #include "MySphere.h"
-#include "BoxCollider.h"
 #include "limits.h"
 
-#include "../GL/GL.h"
+#include "GL.h"
 
 void CreateCornell(Game* game)
 {
@@ -39,14 +34,14 @@ void CreateCornell(Game* game)
 	walls[5]->transform.position = Vector3(0, 0, 1);
 	walls[5]->transform.rotation = Quaternion::FromEuler(Vector3(-M_PI_2, 0, 0));
 
-	ColRGB colors[] =
+	Color colors[] =
 	{
-		ColRGB(1, 1, 1),
-		ColRGB(1, 1, 1),
-		ColRGB(1, 0, 0),
-		ColRGB(0, 1, 0),
-		ColRGB(1, 1, 1),
-		ColRGB(1, 1, 1)
+		Color(1, 1, 1),
+		Color(1, 1, 1),
+		Color(1, 0, 0),
+		Color(0, 1, 0),
+		Color(1, 1, 1),
+		Color(1, 1, 1)
 	};
 
 	for (int i = 0; i < 6; i++)

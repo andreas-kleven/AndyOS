@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include "Box.h"
 #include "KDTree.h"
-#include "../GL/Vertex.h"
+#include "GL.h"
 
 class MeshComponent : public Component
 {

@@ -18,6 +18,7 @@
 #include "FS/iso.h"
 #include "Lib/debug.h"
 #include "Process/process.h"
+#include "Drawing/drawing.h"
 
 void _Process()
 {
@@ -196,11 +197,18 @@ void HandleCommand(char* cmd)
 		char* buf;
 		uint32 size = VFS::ReadFile(path, buf);
 
-		Debug::Dump(buf, size);
-
-		for (int i = 0; i < size; i++)
+		if (size == 0)
 		{
-			Debug::Putc(buf[i]);
+			Debug::Print("File not found\n");
+		}
+		else
+		{
+			Debug::Dump(buf, size);
+
+			for (int i = 0; i < size; i++)
+			{
+				Debug::Putc(buf[i]);
+			}
 		}
 	}
 	else if (strcmp(arg1, "open") == 0)
@@ -209,11 +217,21 @@ void HandleCommand(char* cmd)
 	}
 	else if (strcmp(arg1, "gui") == 0)
 	{
-		Process::Create("winman.exe");
+		Process::Create("winman");
 	}
 	else if (strcmp(arg1, "color") == 0)
 	{
 		Debug::color = (0xFF << 24) | strtol(arg2, 0, 16);
+	}
+	else if (strcmp(arg1, "clear") == 0)
+	{
+		Debug::Clear(Debug::color);
+		Drawing::Clear(0xFF000000, Drawing::gc);
+	}
+	else if (strcmp(arg1, "sqrt") == 0)
+	{
+		float f = atof(arg2);
+		Debug::Print("%f\t%f\n", f, tan(f));
 	}
 	else
 	{
@@ -230,31 +248,34 @@ void GetCommand(char* buf)
 	{
 		KEY_PACKET pack = Keyboard::GetLastKey();
 
-		if (pack.key != KEY_INVALID && pack.pressed)
+		if (pack.key != KEY_INVALID)
 		{
 			Keyboard::DiscardLastKey();
 
-			if (pack.key == KEY_RETURN)
+			if(pack.pressed)
 			{
-				return;
-			}
-			else if (pack.key == KEY_BACK)
-			{
-				buf[index] = 0;
-
-				if (index > 0)
+				if (pack.key == KEY_RETURN)
 				{
-					index--;
-					Debug::Putc('\b');
+					return;
 				}
-			}
-			else
-			{
-				if (pack.character)
+				else if (pack.key == KEY_BACK)
 				{
-					buf[index++] = pack.character;
 					buf[index] = 0;
-					Debug::Putc(pack.character);
+
+					if (index > 0)
+					{
+						index--;
+						Debug::Putc('\b');
+					}
+				}
+				else
+				{
+					if (pack.character)
+					{
+						buf[index++] = pack.character;
+						buf[index] = 0;
+						Debug::Putc(pack.character);
+					}
 				}
 			}
 		}
@@ -278,15 +299,21 @@ void Terminal()
 
 void OS::Main()
 {
-	//Process::Create("winman.exe");
+	Process::Create("1game");
+
+	while(1)
+	{
+		asm("int %0" :: "N" (TASK_SCHEDULE_IRQ));
+	}
+
 	Terminal();
 	//File();
 
-	char* _s1 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
-	char* _s2 = (char*)VMem::UserAlloc(VMem::GetCurrentDir(), 1);
+	char* _s1 = (char*)VMem::UserAlloc(1);
+	char* _s2 = (char*)VMem::UserAlloc(1);
 
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-	VMem::MapPhysAddr(VMem::GetCurrentDir(), (uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+	VMem::MapPhysAddr((uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
+	VMem::MapPhysAddr((uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
 
 	//THREAD* t1 = Scheduler::CreateKernelThread(T1);
 	//THREAD* t2 = Scheduler::CreateKernelThread(T2);

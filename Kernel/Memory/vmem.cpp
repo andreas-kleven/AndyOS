@@ -3,7 +3,7 @@
 #include "Kernel/kernel.h"
 #include "string.h"
 #include "Lib/debug.h"
-#include "../Drawing/vbe.h"
+#include "Drawing/vbe.h"
 
 #define PAGE_DIR_INDEX(x) 	(((x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)

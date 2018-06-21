@@ -48,7 +48,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
 		char name[32];
 		GetName(dir, name);
 
-		if (strcmp(name, part) == 0)
+		if (strcicmp(name, part) == 0)
 		{
 			if (dir->flags & FILE_FLAG_DIRECTORY)
 			{

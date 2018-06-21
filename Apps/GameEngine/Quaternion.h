@@ -1,7 +1,5 @@
 #pragma once
-#include "Matrix4.h"
-#include "Matrix3.h"
-#include "Vector3.h"
+#include "GL.h"
 
 struct Quaternion
 {
@@ -21,7 +19,7 @@ public:
 		this->w = w;
 	}
 
-	Quaternion(Vector3 v, float w)
+	Quaternion(const Vector3& v, float w)
 	{
 		this->x = v.x;
 		this->y = v.y;
@@ -29,7 +27,7 @@ public:
 		this->w = w;
 	}
 
-	void Rotate(Vector3 axis, float ang)
+	void Rotate(const Vector3& axis, float ang)
 	{
 		Quaternion local;
 		float ang2 = ang * 0.5;
@@ -43,7 +41,7 @@ public:
 		this->operator*=(local);
 	}
 
-	float Magnitude()
+	float Magnitude() const
 	{
 		return sqrt(x*x + y * y + z * z + w * w);
 	}
@@ -57,7 +55,7 @@ public:
 		w * inv;
 	}
 
-	Quaternion Normalized()
+	Quaternion Normalized() const
 	{
 		Quaternion q = *this;
 		float inv = 1 / Magnitude();
@@ -68,7 +66,7 @@ public:
 		return q;
 	}
 
-	Matrix4 ToMatrix()
+	Matrix4 ToMatrix() const
 	{
 		//Normalize();
 		Matrix4 mat;
@@ -99,7 +97,7 @@ public:
 		return mat;
 	}
 
-	Matrix3 ToMatrix3()
+	Matrix3 ToMatrix3() const
 	{
 		//Normalize();
 		Matrix3 mat;
@@ -130,7 +128,7 @@ public:
 		return mat;
 	}
 
-	Vector3 ToEuler()
+	Vector3 ToEuler() const
 	{
 		Vector3 euler;
 
@@ -173,29 +171,29 @@ public:
 		}
 	}
 
-	bool operator==(const Quaternion& quat)
+	bool operator==(const Quaternion& quat) const
 	{
 		return x == quat.x && y == quat.y && z == quat.z && w == quat.w;
 	}
 
-	Quaternion& operator-()
+	Quaternion operator-() const
 	{
 		return Quaternion(-x, -y, -z, w);
 	}
 
-	Quaternion& operator*(const float f)
+	Quaternion operator*(const float f) const
 	{
 		return Quaternion(x * f, y * f, z * f, w * f).Normalized();
 	}
 
-	Quaternion& operator*(const Quaternion& quat)
+	Quaternion operator*(const Quaternion& quat) const
 	{
 		Quaternion q = *this;
 		q *= quat;
 		return q;
 	}
 
-	Vector3& operator*(Vector3& vec)
+	Vector3 operator*(const Vector3& vec) const
 	{
 		Vector3 qv = Vector3(x, y, z);
 		Vector3 t = Vector3::Cross(qv, vec) * 2;
@@ -218,5 +216,5 @@ public:
 
 	static Quaternion FromEuler(const Vector3& euler);
 	static Quaternion FromAxisAngle(const Vector3& axis, float ang);
-	static Quaternion LookAt(Vector3& from, Vector3& to);
+	static Quaternion LookAt(const Vector3& from, const Vector3& to);
 };

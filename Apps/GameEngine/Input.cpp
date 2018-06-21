@@ -2,7 +2,7 @@
 
 bool Input::GetKey(KEYCODE key)
 {
-	return Keyboard::GetKeyDown(key);
+	return get_key_down(key);
 }
 
 float Input::GetAxis(int axis)

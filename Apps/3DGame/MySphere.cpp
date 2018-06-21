@@ -1,11 +1,5 @@
 #include "MySphere.h"
-#include "MeshComponent.h"
-#include "SphereCollider.h"
-#include "BoxCollider.h"
-#include "Model3D.h"
-#include "ModelLoader.h"
-#include "Engine.h"
-#include "debug.h"
+#include "GEngine.h"
 
 MySphere::MySphere()
 {

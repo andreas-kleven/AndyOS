@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "GEngine.h"
 
 class Thing : public GameObject
 {

@@ -1,7 +1,6 @@
 #include "Canvas.h"
 #include "GUI/Window.h"
 #include "Drawing/drawing.h"
-#include "debug.h"
 
 namespace gui
 {

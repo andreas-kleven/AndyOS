@@ -6,7 +6,7 @@ Vertex::Vertex()
 	this->tex_v = 0;
 }
 
-Vertex::Vertex(float x, float y, float z, ColRGB col, Vector4 normal) : Vertex()
+Vertex::Vertex(float x, float y, float z, Color col, Vector4 normal) : Vertex()
 {
 	this->pos.x = x;
 	this->pos.y = y;

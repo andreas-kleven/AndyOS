@@ -252,35 +252,35 @@ Matrix4 Matrix4::CreateOrthographicProjection(float left, float right, float top
 }
 
 
-inline Matrix4 operator+(const Matrix4& lhs, const Matrix4& rhs)
+Matrix4 operator+(const Matrix4& lhs, const Matrix4& rhs)
 {
 	Matrix4 newMatrix = Matrix4(lhs);
 	newMatrix += rhs;
 	return newMatrix;
 }
 
-inline Matrix4 operator-(const Matrix4& lhs, const Matrix4& rhs)
+Matrix4 operator-(const Matrix4& lhs, const Matrix4& rhs)
 {
 	Matrix4 newMatrix = Matrix4(lhs);
 	newMatrix -= rhs;
 	return newMatrix;
 }
 
-inline Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs)
+Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs)
 {
 	Matrix4 newMatrix = Matrix4(lhs);
 	newMatrix *= rhs;
 	return newMatrix;
 }
 
-inline Matrix4 operator*(const Matrix4& lhs, const float& rhs)
+Matrix4 operator*(const Matrix4& lhs, const float& rhs)
 {
 	Matrix4 newMatrix = Matrix4(lhs);
 	newMatrix *= rhs;
 	return newMatrix;
 }
 
-inline Vector4 operator*(const Matrix4& mat, const Vector4& vec)
+Vector4 operator*(const Matrix4& mat, const Vector4& vec)
 {
 	float nx = mat.elems[0] * vec.x + mat.elems[1] * vec.y + mat.elems[2] * vec.z + mat.elems[3] * vec.w;
 	float ny = mat.elems[4] * vec.x + mat.elems[5] * vec.y + mat.elems[6] * vec.z + mat.elems[7] * vec.w;

@@ -1,12 +1,11 @@
 #pragma once
+#include "AndyOS.h"
 #include "definitions.h"
-#include "System.h"
 #include "Vertex.h"
 #include "Vector3.h"
 #include "Matrix3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
-#include "Color.h"
 
 #define GL_MAX_TEXTURES			1024
 #define GL_MAX_LIGHTSOURCES		4
@@ -19,7 +18,7 @@ enum GLMatrixMode
 	GL_PROJECTION
 };
 
-static class GL
+class GL
 {
 public:
 	static GC gc_buf;
@@ -52,11 +51,11 @@ public:
 	//static void LightingFunction()
 
 	static void Draw(Vertex* verts, int count);
-	static void Clear(uint32 color);
+	static void Clear(Color color);
 	static void SwapBuffers();
 
 private:
 	static Matrix4& SelectedMatrix();
 
-	static ColRGB(*LightingFunction)(int x, int y, int z, const Vector4& normal);
+	static Color(*LightingFunction)(int x, int y, int z, const Vector4& normal);
 };

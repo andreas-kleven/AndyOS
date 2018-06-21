@@ -9,10 +9,12 @@ ISO_NAME :=  $(MAKE_DIR)/AndyOS.iso
 
 LIBS := $(MAKE_DIR)/Build
 
-INC_SRCH_PATH := -I. 
+INC_SRCH_PATH := -I.
 INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
 INC_SRCH_PATH += -I$(MAKE_DIR)/Lib/Include
 INC_SRCH_PATH += -I$(MAKE_DIR)/AndyOS/Include
+INC_SRCH_PATH += -I$(MAKE_DIR)/Apps
+INC_SRCH_PATH += -I$(MAKE_DIR)/Apps/Include
 
 LIB_SRCH_PATH := -L$(LIBS)
 
@@ -37,6 +39,9 @@ libs: create_dir
 apps: libs
 	$(MAKE) -C Apps/WindowManager
 	$(MAKE) -C Apps/Test
+	$(MAKE) -C Apps/GL
+	$(MAKE) -C Apps/GameEngine
+	$(MAKE) -C Apps/3DGame
 
 kernel: libs
 	$(MAKE) -C Kernel
@@ -47,6 +52,7 @@ iso: all
 	cp $(LIBS)/andyos.bin $(BOOT_DIR)/andyos.bin
 	cp $(LIBS)/winman $(ISO_DIR)/winman
 	cp $(LIBS)/test $(ISO_DIR)/test
+	cp $(LIBS)/game $(ISO_DIR)/1game
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 .PHONY: clean
@@ -56,5 +62,8 @@ clean:
 	$(MAKE) -C AndyOS clean
 	$(MAKE) -C Apps/WindowManager clean
 	$(MAKE) -C Apps/Test clean
+	$(MAKE) -C Apps/GL clean
+	$(MAKE) -C Apps/GameEngine clean
+	$(MAKE) -C Apps/3DGame clean
 	rm -f $(BOOT_DIR)/andyos.bin
 	rm -f $(LIBS)/*

@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "System.h"
 
 GameObject::GameObject()
 {

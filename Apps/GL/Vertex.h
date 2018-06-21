@@ -1,16 +1,15 @@
 #pragma once
+#include "AndyOS.h"
 #include "Matrix4.h"
 #include "Vector4.h"
-#include "Color.h"
 
 struct Vertex
 {
-public:
 	Vector4 pos;
 	Vector4 tmpPos;
 
-	ColRGB color;
-	ColRGB builtColor;
+	Color color;
+	Color builtColor;
 
 	Vector4 normal;
 	Vector4 worldNormal;
@@ -19,7 +18,7 @@ public:
 	float tex_v;
 
 	Vertex();
-	Vertex(float x, float y, float z, ColRGB col, Vector4 normal);
+	Vertex(float x, float y, float z, Color col, Vector4 normal);
 
 	void MulMatrix(const Matrix4& mat);
 };

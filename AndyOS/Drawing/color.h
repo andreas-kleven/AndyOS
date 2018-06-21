@@ -16,7 +16,7 @@ struct Color
 
 	Color operator+(Color c);
 	Color operator*(float f);
-	Color operator*=(float f);
+	Color& operator*=(float f);
 
 	static Color Red;
 	static Color Green;

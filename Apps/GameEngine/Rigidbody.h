@@ -1,5 +1,5 @@
 #pragma once
-#include "../GL/Matrix3.h"
+#include "GL.h"
 #include "Component.h"
 #include "Collider.h"
 

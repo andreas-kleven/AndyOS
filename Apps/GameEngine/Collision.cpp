@@ -1,7 +1,6 @@
 #include "Collision.h"
 #include "GameObject.h"
 #include "math.h"
-#include "debug.h"
 
 #define EPSILON 0.00001f
 #define DEPSILON 0.05f
@@ -117,7 +116,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 	if (Vector3::Dot(la, o1.parent->GetWorldPosition() - o2.parent->GetWorldPosition()) < 0)
 		lowest = -lowest;
 
-	Debug::Print("%f\n", lowest);
+	debug_print("%f\n", lowest);
 	*mtv = la * lowest;
 
 	col = CollisionPoint(o1, o2, count);
@@ -227,15 +226,10 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 
 			closest_Point(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1], colisionPoint1, colisionPoint2);
 
-			int c = Debug::color;
-			Debug::color = 0xFFFF0000;
-
 			Vector3 po = (colisionPoint2 - colisionPoint1);
-			//Debug::Print("%f\t%f\t%f\n", po.x, po.y, po.z);
-			Debug::Print("%f\n", colisionPoint1.Magnitude() * 10000);
+			//debug_print("%f\t%f\t%f\n", po.x, po.y, po.z);
+			debug_print("%f\n", colisionPoint1.Magnitude() * 10000);
 			//PIT::Sleep(1000);
-
-			Debug::color = c;
 
 			if ((colisionPoint2 - colisionPoint1).Magnitude() < 0.1f)
 			{

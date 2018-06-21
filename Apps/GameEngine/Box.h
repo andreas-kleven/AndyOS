@@ -1,5 +1,5 @@
 #pragma once
-#include "../GL/Vector3.h"
+#include "GL.h"
 
 struct Box
 {
@@ -48,7 +48,7 @@ struct Box
 
 	int LongestAxis()
 	{
-		Vector3& size = max - min;
+		Vector3 size = max - min;
 
 		if (size.x > size.z)
 		{
@@ -76,7 +76,7 @@ struct Box
 	}
 
 	//https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
-	bool RayIntersection(Vector3& rayOrigin, Vector3& rayDir, float& t)
+	bool RayIntersection(const Vector3& rayOrigin, const Vector3& rayDir, float& t)
 	{
 		Vector3 dirfrac;
 		dirfrac.x = 1.0f / rayDir.x;

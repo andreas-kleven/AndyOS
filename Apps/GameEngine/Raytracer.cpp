@@ -1,10 +1,7 @@
 #include "Raytracer.h"
-#include "Engine.h"
-#include "System.h"
-#include "Vector3.h"
+#include "GEngine.h"
+#include "GL.h"
 #include "limits.h"
-#include "debug.h"
-#include "../GL/GL.h"
 
 Game* game;
 GC gc;
@@ -157,7 +154,7 @@ bool TraceNode(
 	if (!node)
 		return false;
 
-	Transform& trans = mesh->parent->GetWorldTransform();
+	Transform trans = mesh->parent->GetWorldTransform();
 
 	Matrix4 invT = Matrix4::CreateTranslation(-trans.position.ToVector4());
 	Matrix4 invR = (-trans.rotation).ToMatrix();
@@ -225,7 +222,7 @@ bool Trace(
 	for (int i = 0; i < game->objects.Count(); i++)
 	{
 		GameObject* obj = game->objects[i];
-		Transform& transform = obj->GetWorldTransform();
+		Transform transform = obj->GetWorldTransform();
 
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
@@ -285,7 +282,7 @@ bool TracePhoton(
 	}
 
 	photon.surfaceNormal = N;
-	photon.color = triangle->Color(u, v);
+	photon.color = triangle->ColorAt(u, v);
 
 	float Pa = 0.8;
 	float Pr = 0.2;
@@ -315,10 +312,10 @@ bool TracePhoton(
 	}
 }
 
-ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
+Color TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 {
 	if (maxRays < 1)
-		return ColRGB(0.5, 0.5, 0.5);
+		return Color(0.5, 0.5, 0.5);
 
 	Vector3 hit;
 	MeshComponent* mesh;
@@ -326,7 +323,7 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 	float u, v;
 
 	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
-		return ColRGB(0.5, 0.5, 0.5);
+		return Color(0.5, 0.5, 0.5);
 
 	Vector3 N = triangle->WorldNormal(u, v);
 	Shader& shader = mesh->shader;
@@ -339,8 +336,8 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 		if (outside)
 			bias = -bias;
 
-		ColRGB refraction;
-		ColRGB reflection;
+		Color refraction;
+		Color reflection;
 
 		float kr = Fresnel(rayDir, N, shader.ior);
 
@@ -358,7 +355,7 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 		return reflection * kr + refraction * (1 - kr);
 	}
 
-	ColRGB color;
+	Color color;
 
 	for (int i = 0; i < currentNumPhotons; i++)
 	{
@@ -376,7 +373,7 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 		}
 	}
 
-	for (int i = 0; i < currentNumCausticsPhotons; i++)
+	/*for (int i = 0; i < currentNumCausticsPhotons; i++)
 	{
 		Photon& p = causticsMap[i];
 		float sqDist = (p.position - hit).MagnitudeSquared();
@@ -390,9 +387,9 @@ ColRGB TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
 			color.g += p.color.g * weight;
 			color.b += p.color.b * weight;
 		}
-	}
+	}*/
 
-	return color * resolution + ColRGB(0.05, 0.05, 0.05);
+	return color * resolution + Color(0.05, 0.05, 0.05);
 }
 
 void EmitPhotons()
@@ -450,11 +447,11 @@ void CalculateVertices()
 	for (int i = 0; i < game->objects.Count(); i++)
 	{
 		GameObject* obj = game->objects[i];
-		Transform* trans = &obj->GetWorldTransform();
+		Transform trans = obj->GetWorldTransform();
 
-		Matrix4 T = Matrix4::CreateTranslation(trans->position.ToVector4());
-		Matrix4 R = trans->rotation.ToMatrix();
-		Matrix4 S = Matrix4::CreateScale(trans->scale.ToVector4());
+		Matrix4 T = Matrix4::CreateTranslation(trans.position.ToVector4());
+		Matrix4 R = trans.rotation.ToMatrix();
+		Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
 		Matrix4 M = T * R * S;
 
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
@@ -479,13 +476,16 @@ void Raytracer::Render()
 {
 	Camera* cam = game->GetActiveCamera();
 
+	int curMouseX, curMouseY;
+	get_mouse_pos(curMouseX, curMouseY);
+
 	//Resolution
 	const int maxResolution = 16;
-	Transform& camTransform = cam->GetWorldTransform();
+	Transform camTransform = cam->GetWorldTransform();
 
 	if (camTransform.position == prevCamTransform.position
 		&& camTransform.rotation == prevCamTransform.rotation
-		&& (int)Mouse::x == mouseX && (int)Mouse::y == mouseY)
+		&& curMouseX == mouseX && curMouseY == mouseY)
 	{
 		if (resolution > 1)
 			resolution /= 2;
@@ -499,8 +499,8 @@ void Raytracer::Render()
 	currentNumCausticsPhotons = 0;
 
 	prevCamTransform = camTransform;
-	mouseX = Mouse::x;
-	mouseY = Mouse::y;
+	mouseX = curMouseX;
+	mouseY = curMouseY;
 
 	//Perspective
 	const float fov = 53;
@@ -510,25 +510,25 @@ void Raytracer::Render()
 	//Calculate global vertex positions
 	CalculateVertices();
 
-	int emitTime = PIT::ticks;
+	int emitTime = get_ticks();
 	EmitPhotons();
 
-	int renderTime = PIT::ticks;
+	int renderTime = get_ticks();
 
 	for (int y = 0; y < gc.height; y += resolution)
 	{
 		for (int x = 0; x < gc.width; x += resolution)
 		{
-			//Stop on input
+			/*//Stop on input
 			if (resolution < maxResolution)
 			{
-				if (Keyboard::GetLastKey().key != KEY_INVALID || (int)Mouse::x != mouseX || (int)Mouse::y != mouseY)
+				if (Keyboard::GetLastKey().key != KEY_INVALID || curMouseX != mouseX || curMouseY != mouseY)
 				{
 					Keyboard::DiscardLastKey();
 					resolution = maxResolution;
 					return;
 				}
-			}
+			}*/
 
 			float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
 			float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
@@ -536,21 +536,21 @@ void Raytracer::Render()
 			Vector3 rayOrigin = cam->GetWorldPosition();
 			Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
 
-			ColRGB color = TraceColor(rayOrigin, rayDir);
-			Drawing::FillRect(x, y, resolution, resolution, color.ToInt(), gc);
+			Color color = TraceColor(rayOrigin, rayDir);
+			Drawing::FillRect(x, y, resolution, resolution, color, gc);
 		}
 	}
 
-	int finishTime = PIT::ticks;
+	int finishTime = get_ticks();
 
-	Debug::y = gc.height / 16 - 4;
-	Debug::Print("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
+	//Debug::y = gc.height / 16 - 4;
+	debug_print("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
 	return;
 
 	for (int i = 0; i < currentNumPhotons; i++)
 	{
 		Photon& photon = photonMap[i];
 		Vector3 p = GEngine::WorldToScreen(game, photon.position);
-		Drawing::SetPixel(p.x, p.y, photon.color.ToInt(), gc);
+		Drawing::SetPixel(p.x, p.y, photon.color, gc);
 	}
 }

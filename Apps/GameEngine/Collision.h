@@ -24,7 +24,7 @@ public:
 	Rigidbody* Bod2;
 };
 
-static class Collision
+class Collision
 {
 public:
 	float point_depth = 0;

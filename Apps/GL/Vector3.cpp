@@ -1,6 +1,6 @@
 #include "Vector3.h"
 #include "Vector4.h"
-#include "System.h"
+#include "AndyOS.h"
 
 Vector3 Vector3::right = Vector3(1, 0, 0);
 Vector3 Vector3::up = Vector3(0, 1, 0);
@@ -20,12 +20,12 @@ Vector3::Vector3(float x, float y, float z)
 	this->z = z;
 }
 
-Vector3 Vector3::EulerAngles()
+Vector3 Vector3::EulerAngles() const
 {
 	return Vector3(-cos(x) * sin(y), sin(x), cos(x) * cos(y));
 }
 
-Vector4 Vector3::ToVector4(float w)
+Vector4 Vector3::ToVector4(float w) const
 {
 	return Vector4(x, y, z, w);
 }
@@ -44,7 +44,10 @@ float& Vector3::operator[](int axis)
 		return z;
 
 	default:
-		Exceptions::ThrowException("Index out of range exception", "Vector3::operator[]");
+		//Exceptions::ThrowException("Index out of range exception", "Vector3::operator[]");
+		print("Index out of range exception");
+		print("Vector3::operator[]");
+		halt();
 		break;
 	}
 }
@@ -61,7 +64,7 @@ Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
 		a.x * b.y - a.y * b.x);
 }
 
-/*inline Vector3 operator*(const gl::Matrix& mat, const Vector3& vec)
+/*Vector3 operator*(const gl::Matrix& mat, const Vector3& vec)
 {
 	float nx = mat.elems[0] * vec.x + mat.elems[1] * vec.y + mat.elems[2] * vec.z + mat.elems[3];
 	float ny = mat.elems[4] * vec.x + mat.elems[5] * vec.y + mat.elems[6] * vec.z + mat.elems[7];

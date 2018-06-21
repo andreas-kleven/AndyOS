@@ -1,7 +1,6 @@
 #include "KDTree.h"
-#include "Engine.h"
+#include "GEngine.h"
 #include "limits.h"
-#include "debug.h"
 
 void SortTriangles(Triangle* arr[], int axis, int left, int right) {
 	int i = left, j = right;
@@ -126,7 +125,7 @@ KDTree::~KDTree()
 
 void KDTree::Build(Model3D* model)
 {
-	Debug::Print("Building k-d tree. %i triangles\n", model->triangles.Count());
+	debug_print("Building k-d tree. %i triangles\n", model->triangles.Count());
 
 	Triangle** tris = new Triangle*[model->triangles.Count()];
 

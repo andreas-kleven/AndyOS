@@ -1,5 +1,4 @@
 #include "Rasterizer.h"
-#include "System.h"
 #include "GL.h"
 #include "math.h"
 

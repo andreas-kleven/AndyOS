@@ -1,15 +1,15 @@
 #include "ModelLoader.h"
+#include "AndyOS.h"
 #include "Obj.h"
 #include "A3D.h"
-#include "debug.h"
 
 Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
 	char* buffer;
 
-	STATUS status = VFS::ReadFile(filename, buffer);
+	uint32 size = read_file(&buffer, filename);
 
-	if (status)
+	if (size)
 	{
 		switch (format)
 		{
@@ -25,7 +25,7 @@ Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 	}
 	else
 	{
-		Debug::Print("ERROR");
+		debug_print("File not found '%s'\n", filename);
 		while (1);
 	}
 

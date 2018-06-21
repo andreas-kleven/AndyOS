@@ -1,5 +1,5 @@
 #pragma once
-#include "../API/api.h"
+#include "API/api.h"
 #include "globals.h"
 
 void* operator new(long unsigned size)

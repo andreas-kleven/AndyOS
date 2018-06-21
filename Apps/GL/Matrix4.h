@@ -20,7 +20,7 @@ struct Matrix4
 	static Matrix4 CreatePerspectiveProjection(float width, float height, float fov, float nearPlane, float farPlane);
 	static Matrix4 CreateOrthographicProjection(float left, float right, float top, float bottom, float farPlane, float nearPlane);
 
-	inline Matrix4& operator+=(const Matrix4& rhs)
+	Matrix4& operator+=(const Matrix4& rhs)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -29,7 +29,7 @@ struct Matrix4
 		return *this;
 	}
 
-	inline Matrix4& operator-=(const Matrix4& rhs)
+	Matrix4& operator-=(const Matrix4& rhs)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -38,7 +38,7 @@ struct Matrix4
 		return *this;
 	}
 
-	inline Matrix4& operator*=(const Matrix4& rhs)
+	Matrix4& operator*=(const Matrix4& rhs)
 	{
 		float m_copy[16];
 		memcpy(m_copy, elems, sizeof(elems));
@@ -65,12 +65,12 @@ struct Matrix4
 		return *this;
 	}
 
-	inline float& operator[](const int index)
+	float& operator[](const int index)
 	{
 		return elems[index];
 	}
 
-	inline Matrix4& operator*=(const float& rhs)
+	Matrix4& operator*=(const float& rhs)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -80,9 +80,9 @@ struct Matrix4
 	}
 };
 
-extern inline Matrix4 operator+(const Matrix4& lhs, const Matrix4& rhs);
-extern inline Matrix4 operator-(const Matrix4& lhs, const Matrix4& rhs);
-extern inline Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
-extern inline Matrix4 operator*(const Matrix4& lhs, const float& rhs);
+Matrix4 operator+(const Matrix4& lhs, const Matrix4& rhs);
+Matrix4 operator-(const Matrix4& lhs, const Matrix4& rhs);
+Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
+Matrix4 operator*(const Matrix4& lhs, const float& rhs);
 
-extern inline Vector4 operator*(const Matrix4& mat, const Vector4& vec);
+Vector4 operator*(const Matrix4& mat, const Vector4& vec);

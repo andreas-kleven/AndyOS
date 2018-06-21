@@ -9,11 +9,10 @@ struct Matrix3
 	Matrix3();
 	Matrix3(float elements[]);
 
-	Matrix3 Inverse();
+	Matrix3 Inverse() const;
+	Matrix3 Transpose() const;
 
-	Matrix3 Transpose();
-
-	inline Matrix3& operator+=(const Matrix3& rhs)
+	Matrix3& operator+=(const Matrix3& rhs)
 	{
 		for (int i = 0; i < 9; i++)
 		{
@@ -22,7 +21,7 @@ struct Matrix3
 		return *this;
 	}
 
-	inline Matrix3& operator-=(const Matrix3& rhs)
+	Matrix3& operator-=(const Matrix3& rhs)
 	{
 		for (int i = 0; i < 9; i++)
 		{
@@ -31,7 +30,7 @@ struct Matrix3
 		return *this;
 	}
 
-	inline Matrix3& operator*=(const Matrix3& rhs)
+	Matrix3& operator*=(const Matrix3& rhs)
 	{
 		float m_copy[9];
 		memcpy(m_copy, elems, sizeof(elems));
@@ -50,12 +49,12 @@ struct Matrix3
 		return *this;
 	}
 
-	inline float& operator[](const int index)
+	float& operator[](const int index)
 	{
 		return elems[index];
 	}
 
-	inline Matrix3& operator*=(const float& rhs)
+	Matrix3& operator*=(const float& rhs)
 	{
 		for (int i = 0; i < 9; i++)
 		{
@@ -67,9 +66,9 @@ struct Matrix3
 	static Matrix3 CreateRotation(Vector3 rot);
 };
 
-extern inline Matrix3 operator+(const Matrix3& lhs, const Matrix3& rhs);
-extern inline Matrix3 operator-(const Matrix3& lhs, const Matrix3& rhs);
-extern inline Matrix3 operator*(const Matrix3& lhs, const Matrix3& rhs);
-extern inline Matrix3 operator*(const Matrix3& lhs, const float& rhs);
+Matrix3 operator+(const Matrix3& lhs, const Matrix3& rhs);
+Matrix3 operator-(const Matrix3& lhs, const Matrix3& rhs);
+Matrix3 operator*(const Matrix3& lhs, const Matrix3& rhs);
+Matrix3 operator*(const Matrix3& lhs, const float& rhs);
 
-extern inline Vector3 operator*(const Matrix3& mat, const Vector3& vec);
+Vector3 operator*(const Matrix3& mat, const Vector3& vec);

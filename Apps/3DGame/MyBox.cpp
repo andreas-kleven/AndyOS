@@ -1,24 +1,18 @@
 #include "MyBox.h"
-#include "MeshComponent.h"
-#include "SphereCollider.h"
-#include "BoxCollider.h"
-#include "Rigidbody.h"
-#include "Model3D.h"
-#include "ModelLoader.h"
-#include "debug.h"
+#include "GEngine.h"
 
 char* img_buf = 0;
 BMP* bmp = 0;
 
 MyBox::MyBox()
 {
-	Model3D* model = ModelLoader::LoadModel("plane.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("1plane.a3d", Format3D::FORMAT_A3D);
 
 	if (!img_buf)
 	{
-		if (!VFS::ReadFile("img.bmp", img_buf))
+		if (!read_file(&img_buf, "img.bmp"))
 		{
-			Debug::Print("bmp not found");
+			debug_print("bmp not found");
 			while (1);
 		}
 		bmp = new BMP(img_buf);

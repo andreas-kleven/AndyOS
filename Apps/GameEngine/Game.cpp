@@ -1,6 +1,5 @@
 #include "Game.h"
-#include "Engine.h"
-#include "debug.h"
+#include "GEngine.h"
 
 Game::Game()
 {
@@ -39,7 +38,7 @@ GameObject* Game::GetObject(String name)
 {
 	for (int i = 0; i < objects.Count(); i++)
 	{
-		Debug::Print(objects[i]->GetName().ToChar());
+		debug_print(objects[i]->GetName().ToChar());
 
 		GameObject* obj = objects[i];
 		if (obj->GetName() == name)

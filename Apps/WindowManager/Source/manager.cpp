@@ -198,7 +198,7 @@ void WindowManager::HandleMouseInput()
 	get_mouse_buttons(left, right, middle);
 	get_mouse_pos(cursor_x, cursor_y);
 
-	int time = ticks();
+	int time = get_ticks();
 
 	Window* wnd = GetWindowAtCursor();
 

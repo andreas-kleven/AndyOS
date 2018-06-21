@@ -1,7 +1,7 @@
 #pragma once
+#include "AndyOS.h"
 #include "definitions.h"
 #include "Game.h"
-#include "Drawing/drawing.h"
 
 class Raytracer
 {
@@ -15,5 +15,5 @@ struct Photon
 	Vector3 position;
 	Vector3 direction;
 	Vector3 surfaceNormal;
-	ColRGB color;
+	Color color;
 };

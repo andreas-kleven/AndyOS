@@ -1,5 +1,5 @@
 #include "GL.h"
-#include "System.h"
+#include "AndyOS.h"
 #include "Rasterizer.h"
 #include "string.h"
 
@@ -164,7 +164,7 @@ void GL::Draw(Vertex* verts, int count)
 	}
 }
 
-void GL::Clear(uint32 color)
+void GL::Clear(Color color)
 {
 	Drawing::Clear(color, gc_buf);
 

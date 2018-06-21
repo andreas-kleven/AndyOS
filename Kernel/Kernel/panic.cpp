@@ -1,9 +1,9 @@
 #include "panic.h"
 #include "string.h"
 #include "stdio.h"
-#include "Drawing/drawing.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
+#include "Lib/debug.h"
 
 void Panic::KernelPanic(char* err, char* msg, ...)
 {
@@ -19,13 +19,11 @@ void Panic::KernelPanic(char* err, char* msg, ...)
 
 	int line = 0;
 
-	Drawing::DrawText(0, line++ * 16, err, 0xFFFF0000, 0xFF000000);
+	Debug::Clear(0xFF000000);
+	Debug::color = 0xFFFF0000;
 
-	if (msg)
-		Drawing::DrawText(0, line++ * 16, buffer, 0xFFFF0000, 0xFF000000);
-
-	//vprintf(buffer, "Thread id: %i    Page dir: %ux", Scheduler::current_thread->id, VMem::GetCurrentDir());
-	//Drawing::DrawText(0, line++ * 16, buffer, 0xFFFF0000, 0xFF000000);
+	Debug::Print("%s\n", err);
+	Debug::Print("%s\n", buffer);
 
 	asm volatile(
 		"cli\n"

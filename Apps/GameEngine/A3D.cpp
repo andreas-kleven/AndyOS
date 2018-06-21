@@ -1,6 +1,4 @@
 #include "A3D.h"
-#include "System.h"
-#include "Vertex.h"
 
 struct RAW_VERTEX
 {
@@ -28,7 +26,7 @@ A3D::A3D(char* buffer)
 	{
 		RAW_VERTEX raw = *vertex++;
 
-		ColRGB col(1, 1, 1);
+		Color col(1, 1, 1);
 		Vector4 norm = Vector4(raw.norm_x, raw.norm_y, raw.norm_z, 1);
 		Vertex vert(raw.pos_x, raw.pos_y, raw.pos_z, col, norm);
 		vert.tex_u = raw.tex_u;

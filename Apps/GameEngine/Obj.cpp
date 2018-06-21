@@ -1,5 +1,5 @@
 #include "Obj.h"
-#include "List.h"
+#include "AndyOS.h"
 #include "stdio.h"
 
 using namespace std;
@@ -17,7 +17,7 @@ void Obj::ReadFile(char* file)
 	List<String> lines;
 	text.Split(lines, '\n');
 
-	Debug::Print("--START\n");
+	debug_print("--START\n");
 
 	for (int i = 0; i < lines.Count(); i++)
 	{
@@ -46,8 +46,8 @@ void Obj::ReadFile(char* file)
 		}
 		else if (args[0] == "f")
 		{
-			if (args.Count() == 5)
-				Exceptions::ThrowException("Quad exception", "Obj file");
+			//if (args.Count() == 5)
+			//	Exceptions::ThrowException("Quad exception", "Obj file");
 
 			Face face;
 			for (int i = 0; i < 3; i++)
@@ -68,7 +68,7 @@ void Obj::ReadFile(char* file)
 		}
 	}
 
-	Debug::Print("--END\n");*/
+	debug_print("--END\n");*/
 }
 
 void Obj::CreateVertices()
@@ -93,7 +93,7 @@ void Obj::CreateVertices()
 			vert.tex_u = uv.x;
 			vert.tex_v = uv.y;
 
-			vert.color = ColRGB(1, 1, 1);
+			vert.color = Color(1, 1, 1);
 
 			vertices[i * 3 + j] = vert;
 		}

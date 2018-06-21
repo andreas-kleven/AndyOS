@@ -1,8 +1,7 @@
 #pragma once
-#include "System.h"
-#include "../GL/Vector3.h"
+#include "GL.h"
 
-static class Input
+class Input
 {
 public:
 	static bool GetKey(KEYCODE key);

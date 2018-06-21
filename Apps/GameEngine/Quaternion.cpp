@@ -43,7 +43,7 @@ Quaternion Quaternion::FromAxisAngle(const Vector3& axis, float ang)
 }
 
 //https://stackoverflow.com/questions/12435671/quaternion-lookat-function
-Quaternion Quaternion::LookAt(Vector3& from, Vector3& to)
+Quaternion Quaternion::LookAt(const Vector3& from, const Vector3& to)
 {
 	Vector3 forwardVector = (to - from).Normalized();
 

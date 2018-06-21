@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "../GL/Vector3.h"
+#include "GL.h"
 
 class Collider
 {
@@ -14,8 +14,8 @@ public:
 
 	void(*OnCollision)();
 
-	inline bool IsSphere() { return bIsSphere; }
-	inline bool IsBox() { return bIsBox; }
+	bool IsSphere() { return bIsSphere; }
+	bool IsBox() { return bIsBox; }
 
 	virtual Vector3 GetFaceDir(int i) 
 	{

@@ -1,11 +1,5 @@
 #include "Thing.h"
-#include "MeshComponent.h"
-#include "SphereCollider.h"
-#include "BoxCollider.h"
-#include "Model3D.h"
-#include "ModelLoader.h"
-#include "Engine.h"
-#include "debug.h"
+#include "GEngine.h"
 
 Rigidbody* phys;
 
@@ -14,9 +8,9 @@ Thing::Thing()
 	Model3D* model = ModelLoader::LoadModel("cylinder.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
-	if (!VFS::ReadFile("earth.bmp", img_buf))
+	if (!read_file(&img_buf, "earth.bmp"))
 	{
-		Debug::Print("bmp not found");
+		debug_print("bmp not found");
 		while (1);
 	}
 	BMP* bmp = new BMP(img_buf);
@@ -26,7 +20,7 @@ Thing::Thing()
 
 	for (int i = 0; i < mesh->model->vertices.Count(); i++)
 	{
-		mesh->model->vertex_buffer[i].color = COLOR_RED;
+		mesh->model->vertex_buffer[i].color = Color::Red;
 	}
 
 	//mesh->texId = GL::AddTexture(bmp);
@@ -55,37 +49,37 @@ void Thing::Update(float delta)
 
 	float speed = 20;
 
-	if (Keyboard::GetKeyDown(KEY_SPACE))
+	if (get_key_down(KEY_SPACE))
 	{
 		phys->AddImpulse(Vector3(0, speed * delta, 0));
 	}
 
-	if (Keyboard::GetKeyDown(KEY_L))
+	if (get_key_down(KEY_L))
 	{
 		phys->AddImpulse(Vector3(speed, 0, 0) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_J))
+	if (get_key_down(KEY_J))
 	{
 		phys->AddImpulse(Vector3(-speed, 0, 0) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_I))
+	if (get_key_down(KEY_I))
 	{
 		phys->AddImpulse(Vector3(0, 0, speed) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_K))
+	if (get_key_down(KEY_K))
 	{
 		phys->AddImpulse(Vector3(0, 0, -speed) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_O))
+	if (get_key_down(KEY_O))
 	{
 		phys->AddImpulse(Vector3(0, speed + 9.8, 0) * delta);
 	}
 
-	if (Keyboard::GetKeyDown(KEY_U))
+	if (get_key_down(KEY_U))
 	{
 		phys->AddImpulse(Vector3(0, -speed, 0) * delta);
 	}

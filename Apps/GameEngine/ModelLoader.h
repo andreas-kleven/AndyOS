@@ -7,7 +7,7 @@ enum Format3D
 	FORMAT_A3D
 };
 
-static class ModelLoader
+class ModelLoader
 {
 public:
 	static Model3D* LoadModel(char* filename, Format3D format);

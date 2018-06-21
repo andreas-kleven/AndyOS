@@ -1,5 +1,5 @@
 #pragma once
-#include "../GL/Vector3.h"
+#include "GL.h"
 #include "Quaternion.h"
 
 struct Transform

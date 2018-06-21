@@ -1,8 +1,7 @@
 #pragma once
-#include "List.h"
+#include "AndyOS.h"
 #include "Box.h"
-#include "../GL/GL.h"
-#include "../GL/Vertex.h"
+#include "GL.h"
 
 struct Triangle
 {
@@ -39,11 +38,11 @@ struct Triangle
 		return (v0->pos + v1->pos + v2->pos).ToVector3() / 3;
 	}
 
-	ColRGB Color(float u, float v)
+	Color ColorAt(float u, float v)
 	{
 		float w = (1 - u - v);
 
-		ColRGB color;
+		Color color;
 		color.r = ((v0->color.r * w) + (v1->color.r * u) + (v2->color.r * v));
 		color.g = ((v0->color.g * w) + (v1->color.g * u) + (v2->color.g * v));
 		color.b = ((v0->color.b * w) + (v1->color.b * u) + (v2->color.b * v));
@@ -75,7 +74,7 @@ struct Triangle
 		if (index == 2)
 			return v2;
 
-		Exceptions::ThrowException("Index out of range exception", "Vertex index must be in the range 0-2");
+		//Exceptions::ThrowException("Index out of range exception", "Vertex index must be in the range 0-2");
 	}
 
 	Vertex*& operator[](int index)
