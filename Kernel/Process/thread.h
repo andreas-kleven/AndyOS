@@ -15,16 +15,19 @@ enum THREAD_STATE
 
 };
 
+struct PROCESS;
+
 struct THREAD
 {
 	uint32 stack;
-	REGS* regs = 0;
-	uint32 kernel_esp = 0;
-	PAGE_DIR* page_dir = 0;
-	uint32 id = 0;
+	REGS* regs;
+	uint32 kernel_esp;
+	PAGE_DIR* page_dir;
+	uint32 id;
 	THREAD_STATE state;
-	THREAD* next = 0;
-	THREAD* procNext = 0;
-	uint8* fpu_state = 0;
-	uint32 sleep_until = 0;
+	THREAD* next;
+	THREAD* procNext;
+	PROCESS* process;
+	uint8* fpu_state;
+	uint32 sleep_until;
 };

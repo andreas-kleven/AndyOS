@@ -22,8 +22,8 @@
 
 void _Process()
 {
-	Process::Create("Test.exe");
-	Process::Create("_Test.exe");
+	ProcessManager::Load("Test.exe");
+	ProcessManager::Load("_Test.exe");
 }
 
 void T1()
@@ -213,11 +213,11 @@ void HandleCommand(char* cmd)
 	}
 	else if (strcmp(arg1, "open") == 0)
 	{
-		Process::Create(arg2);
+		ProcessManager::Load(arg2);
 	}
 	else if (strcmp(arg1, "gui") == 0)
 	{
-		Process::Create("winman");
+		ProcessManager::Load("winman");
 	}
 	else if (strcmp(arg1, "color") == 0)
 	{
@@ -299,12 +299,39 @@ void Terminal()
 
 void OS::Main()
 {
-	Process::Create("1game");
+	ProcessManager::Load("1test");
+	ProcessManager::Load("1test");
+
+	while (1)
+	{
+		PROCESS* proc = ProcessManager::GetProcess(2);
+
+		while (proc)
+		{
+			if (!proc->messages.IsEmpty())
+			{
+				MESSAGE* msg = proc->messages.Get();
+
+				if (msg)
+				{
+					asm("cli");
+					VMem::SwitchDir(proc->page_dir);
+					//ProcessManager::CreateThread(proc, (void(*)())proc->signal_handler);
+					proc->signal_handler(msg->signo);
+					asm("sti");
+				}
+			}
+
+			proc = proc->next;
+		}
+	}
+
+	/*ProcessManager::Load("1game");
 
 	while(1)
 	{
 		asm("int %0" :: "N" (TASK_SCHEDULE_IRQ));
-	}
+	}*/
 
 	Terminal();
 	//File();

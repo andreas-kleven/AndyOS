@@ -30,14 +30,19 @@ void color(uint32 color)
 	Call(SYSCALL_COLOR, (int)color);
 }
 
+void draw(uint32* framebuffer)
+{
+	Call(SYSCALL_DRAW, (int)framebuffer);
+}
+
 void gettime(int& hour, int& minute, int& second)
 {
 	Call(SYSCALL_GETTIME, (int)&hour, (int)&minute, (int)&second);
 }
 
-void draw(uint32* framebuffer)
+uint32 get_ticks()
 {
-	Call(SYSCALL_DRAW, (int)framebuffer);
+	return Call(SYSCALL_GET_TICKS);
 }
 
 void exit(int code)
@@ -48,11 +53,6 @@ void exit(int code)
 void sleep(uint32 ticks)
 {
 	Call(SYSCALL_SLEEP, ticks);
-}
-
-uint32 get_ticks()
-{
-	return Call(SYSCALL_GET_TICKS);
 }
 
 void get_mouse_pos(int& x, int& y)
@@ -83,6 +83,16 @@ void free(void* ptr, uint32 blocks)
 int read_file(char** buffer, char* filename)
 {
     return Call(SYSCALL_READ_FILE, (int)buffer, (int)filename);
+}
+
+int set_signal(void(*handler)(int))
+{
+	return Call(SYSCALL_SET_SIGNAL, (int)handler);
+}
+
+void send_signal(int proc_id, int signo)
+{
+	Call(SYSCALL_SEND_SIGNAL, proc_id, signo);
 }
 
 //TODO: remove

@@ -3,12 +3,26 @@
 #include "string.h"
 #include "math.h"
 
+void sig_handler(int signo)
+{
+	debug_print("SIGNAL %i\n", signo);
+}
+
 int main()
 {
-	//while (1)
-	//{
-	//	print("T1");;
-	//}
+	set_signal(sig_handler);
+	sleep(1000);
+
+	send_signal(2, 121);
+
+	while(get_ticks() != -1)
+	{
+		while(!get_key_down(KEY_SPACE));
+		send_signal(2, 1337);
+		while(get_key_down(KEY_SPACE));
+	}
+
+	sleep(1000000);
 
 	int result = 0;
 
@@ -31,15 +45,15 @@ int main()
 			uint8 r = rand() / 0xFF;
 			uint8 g = rand() / 0xFF;
 			uint8 b = rand() / 0xFF;
-			//framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+			framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
 		}
 
 		gettime(hour, minute, second);
 		vprintf(buf, "%i:%i:%i\n", hour, minute, second);
 		print(buf);
 
-		sleep(1000);
-		//draw(framebuffer);
+		sleep(100);
+		draw(framebuffer);
 	}
 
 	while (1);

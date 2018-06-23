@@ -8,6 +8,7 @@
 #include "Drivers/keyboard.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
+#include "Process/process.h"
 #include "FS/vfs.h"
 
 void* syscalls[MAX_SYSCALLS];
@@ -95,6 +96,26 @@ void debug_reset()
 	Debug::Clear(0xFF000000);
 }
 
+int set_signal(SIGNAL_HANDLER handler)
+{
+	Scheduler::current_thread->process->signal_handler = handler;
+	return 1;
+}
+
+void send_signal(int proc_id, int signo)
+{
+	PROCESS* proc = ProcessManager::GetProcess(proc_id);
+
+	if (proc)
+	{
+		MESSAGE msg;
+		msg.type = MESSAGE_TYPE_SIGNAL;
+		msg.signo = signo;
+
+		proc->messages.Add(msg);
+	}
+}
+
 STATUS Syscalls::Init()
 {
 	if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
@@ -115,6 +136,8 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 	InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
 	InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
+	InstallSyscall(SYSCALL_SET_SIGNAL, (SYSCALL_HANDLER)set_signal);
+	InstallSyscall(SYSCALL_SEND_SIGNAL, (SYSCALL_HANDLER)send_signal);
 }
 
 void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)
