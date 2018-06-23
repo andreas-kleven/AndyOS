@@ -1,19 +1,7 @@
 #include "api.h"
-#include "syscall_list.h"
 #include "stdarg.h"
 #include "string.h"
 #include "stdio.h"
-
-int Call(int id, int arg0 = 0, int arg1 = 0, int arg2 = 0)
-{
-	int ret;
-
-	asm("int %1\n" 
-		"mov %%eax, %0"
-		: "=m" (ret) : "N" (SYSCALL_IRQ), "a" (id), "b" (arg0), "c" (arg1), "d" (arg2));
-
-	return ret;
-}
 
 void halt()
 {
@@ -83,16 +71,6 @@ void free(void* ptr, uint32 blocks)
 int read_file(char** buffer, char* filename)
 {
     return Call(SYSCALL_READ_FILE, (int)buffer, (int)filename);
-}
-
-int set_signal(void(*handler)(int))
-{
-	return Call(SYSCALL_SET_SIGNAL, (int)handler);
-}
-
-void send_signal(int proc_id, int signo)
-{
-	Call(SYSCALL_SEND_SIGNAL, proc_id, signo);
 }
 
 //TODO: remove

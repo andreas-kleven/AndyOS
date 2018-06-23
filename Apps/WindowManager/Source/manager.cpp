@@ -1,5 +1,5 @@
 #include <AndyOS.h>
-#include <Drawing.h>
+#include <sys/drawing.h>
 #include "manager.h"
 #include "window.h"
 #include "message.h"

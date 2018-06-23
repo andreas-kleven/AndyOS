@@ -1,4 +1,5 @@
 #pragma once
+#include "syscalls.h"
 #include "definitions.h"
 #include "keycodes.h"
 
@@ -21,9 +22,6 @@ uint32* alloc(uint32 blocks);
 void free(void* ptr, uint32 blocks);
 
 int read_file(char** buffer, char* filename);
-
-int set_signal(void(*handler)(int signo));
-void send_signal(int proc_id, int signo);
 
 void debug_reset();
 void debug_print(char* str, ...);

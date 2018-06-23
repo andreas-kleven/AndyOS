@@ -1,5 +1,5 @@
 #pragma once
-#include <Drawing.h>
+#include <sys/drawing.h>
 #include "message.h"
 
 #define GUI_WINDOW_BORDER_WIDTH		1

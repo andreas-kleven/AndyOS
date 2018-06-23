@@ -1,4 +1,5 @@
 #include <AndyOS.h>
+#include <sys/msg.h>
 #include "stdio.h"
 #include "string.h"
 #include "math.h"
