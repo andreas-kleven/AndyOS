@@ -10,4 +10,4 @@
 #define USER_BASE			0x40000000
 #define USER_END			0xFFFFFFFF
 
-#define BYTES_TO_BLOCKS(x)	(1 + (((x) - 1) / BLOCK_SIZE))
+#define BYTES_TO_BLOCKS(x)	((1 + (((x) - 1) / BLOCK_SIZE)) * ((x) != 0))
