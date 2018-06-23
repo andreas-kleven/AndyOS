@@ -6,7 +6,7 @@
 #define PROC_MAX_MESSAGES 32
 
 typedef void SIGNAL_HANDLER(int signo);
-typedef void MESSAGE_HANDLER(int type, char* buf, int size);
+typedef void MESSAGE_HANDLER(int id, int type, char* buf, int size);
 
 enum PROCESS_FLAGS
 {
@@ -17,15 +17,43 @@ enum PROCESS_FLAGS
 enum MESSAGE_TYPE
 {
 	MESSAGE_TYPE_SIGNAL,
-	MESSAGE_TYPE_MESSAGE
+	MESSAGE_TYPE_MESSAGE,
+	MESSAGE_TYPE_RESPONSE
 };
 
 struct MESSAGE
 {
 	MESSAGE_TYPE type;
+	int id;
 	int param;
 	int size;
 	char* data;
+
+	MESSAGE()
+	{
+		id = 0;
+		param = 0;
+		size = 0;
+		data = 0;
+	}
+
+	MESSAGE(MESSAGE_TYPE type, int id, int param, int size, char* data)
+	{
+		this->type = type;
+		this->id = id;
+		this->param = param;
+		this->size = size;
+		this->data = data;
+	}
+
+	MESSAGE(MESSAGE_TYPE type, int id, int param, int size)
+	{
+		this->type = type;
+		this->id = id;
+		this->param = param;
+		this->size = size;
+		this->data = new char[size];
+	}
 };
 
 struct PROCESS

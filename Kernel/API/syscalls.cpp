@@ -11,7 +11,33 @@
 #include "Process/process.h"
 #include "FS/vfs.h"
 
-void* syscalls[MAX_SYSCALLS];
+struct TMP_MSG
+{
+	int id;
+	THREAD* thread;
+	TMP_MSG* next;
+
+	bool received;
+	MESSAGE response;
+
+	TMP_MSG()
+	{
+		received = false;
+	}
+};
+
+struct USER_MESSAGE
+{
+    int id;
+    int type;
+    int size;
+    char* data;
+};
+
+static void* syscalls[MAX_SYSCALLS];
+static int msg_id = 0;
+
+static TMP_MSG* first_msg = 0;
 
 void halt()
 {
@@ -109,10 +135,7 @@ void send_signal(int proc_id, int signo)
 
 	if (proc)
 	{
-		MESSAGE msg;
-		msg.type = MESSAGE_TYPE_SIGNAL;
-		msg.param = signo;
-
+		MESSAGE msg(MESSAGE_TYPE_SIGNAL, ++msg_id, signo, 0);
 		proc->messages.Add(msg);
 	}
 }
@@ -123,22 +146,82 @@ int set_message(MESSAGE_HANDLER handler)
 	return 1;
 }
 
-void send_message(int proc_id, int type, char* buf, int size)
+int send_message(int proc_id, int type, char* buf, int size, bool async)
 {
 	PROCESS* proc = ProcessManager::GetProcess(proc_id);
+	int id = ++msg_id;
 
 	if (proc)
 	{
-		MESSAGE msg;
-		msg.type = MESSAGE_TYPE_MESSAGE;
-		msg.param = type;
-		msg.size = size;
+		MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, type, size);
 
 		msg.data = new char[size];
 		memcpy(msg.data, buf, size);
 
 		proc->messages.Add(msg);
 	}
+
+	if (!async)
+	{
+		TMP_MSG* msg = new TMP_MSG;
+		msg->id = id;
+		msg->thread = Scheduler::current_thread;
+		msg->next = first_msg;
+		first_msg = msg;
+
+		Scheduler::BlockThread(Scheduler::current_thread);
+	}
+
+	return id;
+}
+
+void send_message_reponse(int msg_id, int type, char* buf, int size)
+{
+	TMP_MSG* msg = first_msg;
+	
+	while (msg)
+	{
+		if (msg->id == msg_id)
+		{
+			msg->received = true;
+			msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, type, size, buf);
+
+			Scheduler::AwakeThread(msg->thread);
+			break;
+		}
+
+		msg = msg->next;
+	}
+}
+
+bool get_message_reponse(int msg_id, USER_MESSAGE& response)
+{
+	TMP_MSG* msg = first_msg;
+
+	while (msg)
+	{
+		if (msg->id == msg_id)
+		{
+			if (msg->received)
+			{
+				response.id = ++msg->id;
+				response.type = msg->response.type;
+				response.size = msg->response.size;
+
+				response.data = new char[response.size];
+				memcpy(response.data, msg->response.data, response.size);
+
+				delete msg;
+				return true;
+			}
+
+			break;
+		}
+
+		msg = msg->next;
+	}
+
+	return false;
 }
 
 //
@@ -167,6 +250,8 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_SEND_SIGNAL, (SYSCALL_HANDLER)send_signal);
 	InstallSyscall(SYSCALL_SET_MESSAGE, (SYSCALL_HANDLER)set_message);
 	InstallSyscall(SYSCALL_SEND_MESSAGE, (SYSCALL_HANDLER)send_message);
+	InstallSyscall(SYSCALL_SEND_MESSAGE_RESPONSE, (SYSCALL_HANDLER)send_message_reponse);
+	InstallSyscall(SYSCALL_GET_MESSAGE_RESPONSE, (SYSCALL_HANDLER)get_message_reponse);
 }
 
 void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)

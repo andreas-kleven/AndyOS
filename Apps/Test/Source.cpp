@@ -9,9 +9,11 @@ void sig_handler(int signo)
 	debug_print("SIGNAL %i\n", signo);
 }
 
-void msg_handler(int type, char* buf, int size)
+void msg_handler(int id, int type, char* data, int size)
 {
-	debug_print("MESSAGE %i %s\n", size, buf);
+	debug_print("MESSAGE %i %s\n", size, data);
+	char* msg = "Response";
+	send_message_response(id, type, msg, strlen(msg) + 1);
 }
 
 int main()
@@ -23,13 +25,22 @@ int main()
 	send_signal(2, 121);
 	
 	char* msg = "Hello";
-	send_message(2, 1, msg, strlen(msg) + 1);
+	MESSAGE response = send_message(2, 1, msg, strlen(msg) + 1);
+	debug_print("Received\t%ux\t%s\n", response.id, response.data);
 
-	while(get_ticks() != -1)
+	if (response.id == 3)
 	{
-		while(!get_key_down(KEY_SPACE));
-		send_signal(2, 1337);
-		while(get_key_down(KEY_SPACE));
+		debug_print("Stop");
+		while (1);
+	}
+
+	while (get_ticks() != -1)
+	{
+		while (!get_key_down(KEY_SPACE));
+		//send_signal(2, 1337);
+		MESSAGE response = send_message(2, 1, msg, strlen(msg) + 1);
+		debug_print("Received\t%ux\t%s\n", response.id, response.data);
+		while (get_key_down(KEY_SPACE));
 	}
 
 	sleep(1000000);

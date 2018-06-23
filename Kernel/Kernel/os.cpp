@@ -311,7 +311,6 @@ void OS::Main()
 			if (!proc->messages.IsEmpty())
 			{
 				MESSAGE* msg = proc->messages.Get();
-				Debug::Print("TYPE: %i\n", msg->type);
 
 				if (msg)
 				{
@@ -326,7 +325,7 @@ void OS::Main()
 					else
 					{
 						if (proc->message_handler)
-							proc->message_handler(msg->param, msg->data, msg->size);
+							proc->message_handler(msg->id, msg->param, msg->data, msg->size);
 					}
 
 					asm("sti");
@@ -339,7 +338,7 @@ void OS::Main()
 
 	/*ProcessManager::Load("1game");
 
-	while(1)
+	while (1)
 	{
 		asm("int %0" :: "N" (TASK_SCHEDULE_IRQ));
 	}*/
@@ -372,5 +371,5 @@ void OS::Main()
 	//_Font();
 	//COM();
 	_Process();
-	while(1);
+	while (1);
 }

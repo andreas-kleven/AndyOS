@@ -11,12 +11,28 @@ void send_signal(int proc_id, int signo)
     Call(SYSCALL_SEND_SIGNAL, proc_id, signo);
 }
 
-int set_message(void(*handler)(int, char*, int))
+int set_message(void(*handler)(int, int, char*, int))
 {
     return Call(SYSCALL_SET_MESSAGE, (int)handler);
 }
 
-void send_message(int proc_id, int type, char* buf, int size)
+void post_message(int proc_id, int type, char* data, int size)
 {
-    Call(SYSCALL_SEND_MESSAGE, proc_id, type, (int)buf, size);
+    //Asynchronous
+    Call(SYSCALL_SEND_MESSAGE, proc_id, type, (int)data, size, true);
+}
+
+MESSAGE send_message(int proc_id, int type, char* data, int size)
+{
+    //Synchronous
+    int msg_id = Call(SYSCALL_SEND_MESSAGE, proc_id, type, (int)data, size, false);
+
+    MESSAGE response;
+    Call(SYSCALL_GET_MESSAGE_RESPONSE, msg_id, (int)&response);
+    return response;
+}
+
+void send_message_response(int msg_id, int type, char* data, int size)
+{
+    Call(SYSCALL_SEND_MESSAGE_RESPONSE, msg_id, type, (int)data, size);
 }
