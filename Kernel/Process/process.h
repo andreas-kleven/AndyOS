@@ -5,7 +5,8 @@
 
 #define PROC_MAX_MESSAGES 32
 
-typedef void SIGNAL_HANDLER(int);
+typedef void SIGNAL_HANDLER(int signo);
+typedef void MESSAGE_HANDLER(int type, char* buf, int size);
 
 enum PROCESS_FLAGS
 {
@@ -16,13 +17,14 @@ enum PROCESS_FLAGS
 enum MESSAGE_TYPE
 {
 	MESSAGE_TYPE_SIGNAL,
-	MESSAGE_TYPE_2
+	MESSAGE_TYPE_MESSAGE
 };
 
 struct MESSAGE
 {
 	MESSAGE_TYPE type;
-	int signo;
+	int param;
+	int size;
 	char* data;
 };
 
@@ -35,6 +37,7 @@ struct PROCESS
 	PROCESS* next;
 
 	SIGNAL_HANDLER* signal_handler;
+	MESSAGE_HANDLER* message_handler;
 	CircularBuffer<MESSAGE> messages;
 
 	PROCESS(PROCESS_FLAGS flags, PAGE_DIR* page_dir);

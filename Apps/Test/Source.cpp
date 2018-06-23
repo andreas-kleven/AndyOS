@@ -9,12 +9,21 @@ void sig_handler(int signo)
 	debug_print("SIGNAL %i\n", signo);
 }
 
+void msg_handler(int type, char* buf, int size)
+{
+	debug_print("MESSAGE %i %s\n", size, buf);
+}
+
 int main()
 {
 	set_signal(sig_handler);
-	sleep(1000);
+	set_message(msg_handler);
+	sleep(200);
 
 	send_signal(2, 121);
+	
+	char* msg = "Hello";
+	send_message(2, 1, msg, strlen(msg) + 1);
 
 	while(get_ticks() != -1)
 	{

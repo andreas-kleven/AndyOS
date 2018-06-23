@@ -50,8 +50,8 @@ all: libs kernel apps
 
 iso: all
 	cp $(LIBS)/andyos.bin $(BOOT_DIR)/andyos.bin
-	cp $(LIBS)/winman $(ISO_DIR)/winman
-	cp $(LIBS)/test $(ISO_DIR)/test
+	cp $(LIBS)/winman $(ISO_DIR)/1winman
+	cp $(LIBS)/test $(ISO_DIR)/1test
 	cp $(LIBS)/game $(ISO_DIR)/1game
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 

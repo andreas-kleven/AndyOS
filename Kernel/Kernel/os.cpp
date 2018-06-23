@@ -311,13 +311,24 @@ void OS::Main()
 			if (!proc->messages.IsEmpty())
 			{
 				MESSAGE* msg = proc->messages.Get();
+				Debug::Print("TYPE: %i\n", msg->type);
 
 				if (msg)
 				{
 					asm("cli");
 					VMem::SwitchDir(proc->page_dir);
-					//ProcessManager::CreateThread(proc, (void(*)())proc->signal_handler);
-					proc->signal_handler(msg->signo);
+
+					if (msg->type == MESSAGE_TYPE_SIGNAL)
+					{
+						if (proc->signal_handler)
+							proc->signal_handler(msg->param);
+					}
+					else
+					{
+						if (proc->message_handler)
+							proc->message_handler(msg->param, msg->data, msg->size);
+					}
+
 					asm("sti");
 				}
 			}

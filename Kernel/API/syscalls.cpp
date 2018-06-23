@@ -96,6 +96,7 @@ void debug_reset()
 	Debug::Clear(0xFF000000);
 }
 
+//
 int set_signal(SIGNAL_HANDLER handler)
 {
 	Scheduler::current_thread->process->signal_handler = handler;
@@ -110,12 +111,37 @@ void send_signal(int proc_id, int signo)
 	{
 		MESSAGE msg;
 		msg.type = MESSAGE_TYPE_SIGNAL;
-		msg.signo = signo;
+		msg.param = signo;
 
 		proc->messages.Add(msg);
 	}
 }
 
+int set_message(MESSAGE_HANDLER handler)
+{
+	Scheduler::current_thread->process->message_handler = handler;
+	return 1;
+}
+
+void send_message(int proc_id, int type, char* buf, int size)
+{
+	PROCESS* proc = ProcessManager::GetProcess(proc_id);
+
+	if (proc)
+	{
+		MESSAGE msg;
+		msg.type = MESSAGE_TYPE_MESSAGE;
+		msg.param = type;
+		msg.size = size;
+
+		msg.data = new char[size];
+		memcpy(msg.data, buf, size);
+
+		proc->messages.Add(msg);
+	}
+}
+
+//
 STATUS Syscalls::Init()
 {
 	if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
@@ -136,8 +162,11 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 	InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
 	InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
+
 	InstallSyscall(SYSCALL_SET_SIGNAL, (SYSCALL_HANDLER)set_signal);
 	InstallSyscall(SYSCALL_SEND_SIGNAL, (SYSCALL_HANDLER)send_signal);
+	InstallSyscall(SYSCALL_SET_MESSAGE, (SYSCALL_HANDLER)set_message);
+	InstallSyscall(SYSCALL_SEND_MESSAGE, (SYSCALL_HANDLER)send_message);
 }
 
 void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)
