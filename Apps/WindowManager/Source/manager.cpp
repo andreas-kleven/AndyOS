@@ -78,10 +78,9 @@ static MESSAGE msg_handler(MESSAGE msg)
 			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
 			debug_print("Create window request: %s\n", request->title);
 
-			WindowManager::CreateWindow(request->title);
+			Window* wnd = WindowManager::CreateWindow(request->title);
 
-			BOOL_RESPONSE response;
-			response.success = true;
+			CREATE_WINDOW_RESPONSE response(0, wnd->bounds.width, wnd->bounds.height);
 
 			return MESSAGE(GUI_MESSAGE_TYPE, &response, sizeof(BOOL_RESPONSE));
 		}

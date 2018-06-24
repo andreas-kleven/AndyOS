@@ -1,4 +1,5 @@
 #pragma once
+#include "definitions.h"
 #include "string.h"
 
 #define GUI_MESSAGE_TYPE 1
@@ -34,4 +35,23 @@ struct CREATE_WINDOW_REQUEST
 struct BOOL_RESPONSE
 {
     bool success;
+};
+
+struct CREATE_WINDOW_RESPONSE
+{
+    REQUEST_TYPE type;
+    uint32* framebuffer;
+    int width;
+    int height;
+
+    CREATE_WINDOW_RESPONSE()
+    { }
+
+    CREATE_WINDOW_RESPONSE(uint32* framebuffer, int width, int height) 
+    { 
+        this->type = REQUEST_TYPE_CREATE_WINDOW;
+        this->framebuffer = framebuffer;
+        this->width = width;
+        this->height = height;
+    }
 };
