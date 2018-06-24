@@ -146,10 +146,10 @@ int set_message(MESSAGE_HANDLER handler)
 	return 1;
 }
 
-int send_message(int proc_id, int type, char* buf, int size, bool async)
+void send_message(int proc_id, int type, char* buf, int size, bool async, int& id)
 {
 	PROCESS* proc = ProcessManager::GetProcess(proc_id);
-	int id = ++msg_id;
+	id = ++msg_id;
 
 	if (proc)
 	{
@@ -171,8 +171,6 @@ int send_message(int proc_id, int type, char* buf, int size, bool async)
 
 		Scheduler::BlockThread(Scheduler::current_thread);
 	}
-
-	return id;
 }
 
 void send_message_reponse(int msg_id, int type, char* buf, int size)
@@ -184,7 +182,8 @@ void send_message_reponse(int msg_id, int type, char* buf, int size)
 		if (msg->id == msg_id)
 		{
 			msg->received = true;
-			msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, type, size, buf);
+			msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, type, size);
+			memcpy(msg->response.data, buf, size);
 
 			Scheduler::AwakeThread(msg->thread);
 			break;
@@ -280,13 +279,15 @@ void Syscalls::ISR(REGS* regs)
 		"push %3\n"
 		"push %4\n"
 		"push %5\n"
-		"call *%6\n"
+		"push %6\n"
+		"call *%7\n"
 		"pop %%ebx\n"
 		"pop %%ebx\n"
 		"pop %%ebx\n"
 		"pop %%ebx\n"
 		"pop %%ebx\n"
-		: "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
+		"pop %%ebx\n"
+		: "=a" (ret) : "g" (regs->ebp), "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
 
 	regs->eax = ret;
 }
