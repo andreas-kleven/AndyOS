@@ -26,7 +26,6 @@ PROCESS* ELF::Load(char* path)
 	}
 
 	ELF32_PHEADER* pheader = (ELF32_PHEADER*)(image + header->e_phoff);
-	ELF32_SHEADER* sheader = (ELF32_SHEADER*)(image + header->e_shoff);
 
 	asm volatile("cli");
 
@@ -40,8 +39,17 @@ PROCESS* ELF::Load(char* path)
 	uint32 virt = pheader->p_vaddr;
 
 	VMem::MapPhysAddr(phys, virt, flags, blocks);
-
 	memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
+
+	for (int i = 0; i < header->e_shnum; i++)
+	{
+		ELF32_SHEADER* sheader = (ELF32_SHEADER*)(image + header->e_shoff + i * header->e_shentsize);
+
+		if (sheader->sh_type == ELF32_SHT_NOBITS)
+		{
+			memset((void*)sheader->sh_addr, 0, sheader->sh_size);
+		}
+	}
 
 	Debug::Print("Loaded image %ux\n", dir);
 	
