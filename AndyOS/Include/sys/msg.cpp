@@ -1,9 +1,31 @@
 #include "msg.h"
+#include <AndyOS.h>
 #include "../../API/syscalls.h"
+
+static void(*_sig_handler)(int);
+static MESSAGE(*_msg_handler)(MESSAGE);
+
+static void __sig_handler(int signo)
+{
+    _sig_handler(signo);
+    exit(0);
+}
+
+static void __msg_handler(int id, int type, char* data, int size)
+{
+    MESSAGE msg(type, data, size);
+    msg.id = id;
+
+    MESSAGE response = _msg_handler(msg);
+    Call(SYSCALL_SEND_MESSAGE_RESPONSE, id, response.type, (int)response.data, response.size);
+    exit(0);
+}
+
 
 int set_signal(void(*handler)(int))
 {
-    return Call(SYSCALL_SET_SIGNAL, (int)handler);
+    _sig_handler = handler;
+    return Call(SYSCALL_SET_SIGNAL, (int)__sig_handler);
 }
 
 void send_signal(int proc_id, int signo)
@@ -11,9 +33,10 @@ void send_signal(int proc_id, int signo)
     Call(SYSCALL_SEND_SIGNAL, proc_id, signo);
 }
 
-int set_message(void(*handler)(int, int, char*, int))
+int set_message(MESSAGE(*handler)(MESSAGE))
 {
-    return Call(SYSCALL_SET_MESSAGE, (int)handler);
+    _msg_handler = handler;
+    return Call(SYSCALL_SET_MESSAGE, (int)__msg_handler);
 }
 
 void post_message(int proc_id, int type, void* data, int size)
@@ -32,9 +55,4 @@ MESSAGE send_message(int proc_id, int type, void* data, int size)
     MESSAGE response;
     Call(SYSCALL_GET_MESSAGE_RESPONSE, msg_id, (int)&response);
     return response;
-}
-
-void send_message_response(int msg_id, int type, void* data, int size)
-{
-    Call(SYSCALL_SEND_MESSAGE_RESPONSE, msg_id, type, (int)data, size);
 }

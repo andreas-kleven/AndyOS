@@ -35,6 +35,7 @@ uint32 get_ticks()
 
 void exit(int code)
 {
+	while(1);
 	Call(SYSCALL_EXIT, code);
 }
 

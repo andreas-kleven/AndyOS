@@ -1,23 +1,41 @@
 #include <AndyOS.h>
 #include <sys/msg.h>
+#include "GUI.h"
 #include "stdio.h"
 #include "string.h"
 #include "math.h"
+
+class MainWindow : public Window
+{
+public:
+	MainWindow(char* title)
+		: Window(title)
+	{
+
+	}
+};
 
 void sig_handler(int signo)
 {
 	debug_print("SIGNAL %i\n", signo);
 }
 
-void msg_handler(int id, int type, char* data, int size)
+MESSAGE msg_handler(MESSAGE msg)
 {
-	debug_print("MESSAGE %i %s\n", size, data);
-	char* msg = "Response";
-	send_message_response(id, type, msg, strlen(msg) + 1);
+	debug_print("MESSAGE %i %s\n", msg.size, msg.data);
+	char* str = "Response";
+	return MESSAGE(msg.type, str, strlen(str) + 1);
 }
 
 int main()
 {
+	char title[256];
+	vprintf(title, "Test window: %i", get_ticks());
+	MainWindow wnd(title);
+
+	char* a = new char;
+	while(1);
+
 	set_signal(sig_handler);
 	set_message(msg_handler);
 	sleep(200);
@@ -37,7 +55,7 @@ int main()
 	while (get_ticks() != -1)
 	{
 		while (!get_key_down(KEY_SPACE));
-		//send_signal(2, 1337);
+		send_signal(2, 1337);
 		MESSAGE response = send_message(2, 1, msg, strlen(msg) + 1);
 		debug_print("Received\t%ux\t%s\n", response.id, response.data);
 		while (get_key_down(KEY_SPACE));

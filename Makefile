@@ -37,6 +37,7 @@ libs: create_dir
 	$(MAKE) -C AndyOS
 
 apps: libs
+	$(MAKE) -C Apps/GUI
 	$(MAKE) -C Apps/WindowManager
 	$(MAKE) -C Apps/Test
 	$(MAKE) -C Apps/GL
@@ -60,6 +61,7 @@ clean:
 	$(MAKE) -C Kernel clean
 	$(MAKE) -C Lib clean
 	$(MAKE) -C AndyOS clean
+	$(MAKE) -C Apps/GUI clean
 	$(MAKE) -C Apps/WindowManager clean
 	$(MAKE) -C Apps/Test clean
 	$(MAKE) -C Apps/GL clean

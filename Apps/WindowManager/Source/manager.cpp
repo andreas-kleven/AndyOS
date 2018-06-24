@@ -1,5 +1,7 @@
 #include <AndyOS.h>
 #include <sys/drawing.h>
+#include <sys/msg.h>
+#include "GUI/messages.h"
 #include "manager.h"
 #include "window.h"
 #include "message.h"
@@ -53,6 +55,41 @@ static MOUSE_CLICK_INFO mouse_click_R_info;
 static MOUSE_CLICK_INFO mouse_click_M_info;
 static WINDOW_DRAG_INFO window_drag_info;
 
+static MESSAGE msg_handler(MESSAGE msg)
+{
+    if (msg.type == GUI_MESSAGE_TYPE)
+	{
+		if (msg.size < sizeof(GUI_MESSAGE_TYPE))
+			return MESSAGE(0);
+
+		REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
+
+		if (type == REQUEST_TYPE_CONNECT)
+		{
+			debug_print("Client connected\n");
+
+			BOOL_RESPONSE response;
+			response.success = true;
+
+			return MESSAGE(GUI_MESSAGE_TYPE, &response, sizeof(BOOL_RESPONSE));
+		}
+		else if (type == REQUEST_TYPE_CREATE_WINDOW)
+		{
+			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
+			debug_print("Create window request: %s\n", request->title);
+
+			WindowManager::CreateWindow(request->title);
+
+			BOOL_RESPONSE response;
+			response.success = true;
+
+			return MESSAGE(GUI_MESSAGE_TYPE, &response, sizeof(BOOL_RESPONSE));
+		}
+	}
+
+	return MESSAGE(0);
+}
+
 void WindowManager::Start()
 {
 	gc = GC(1024, 768);
@@ -70,9 +107,7 @@ void WindowManager::Start()
 	focused_window = 0;
 	hover_window = 0;
 
-	CreateWindow("Title");
-	CreateWindow("Window");
-
+	set_message(msg_handler);
 	UpdateLoop();
 }
 
@@ -187,8 +222,6 @@ void WindowManager::PaintCursor()
 
 	Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, gc, cursor_x, cursor_y, 1);
 }
-
-bool a;
 
 void WindowManager::HandleMouseInput()
 {

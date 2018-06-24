@@ -29,6 +29,14 @@ PROCESS* ProcessManager::Load(char* path)
 	proc->next = first;
 	first = proc;
 
+	//Start threads
+	THREAD* thread = proc->main_thread;
+	while (thread)
+	{
+		Scheduler::InsertThread(thread);
+		thread = thread->procNext;
+	}
+
 	return proc;
 }
 
@@ -72,8 +80,8 @@ THREAD* ProcessManager::CreateThread(PROCESS* proc, void(*entry)())
 	//Insert into thread list
 	if (proc->main_thread == 0)
 	{
-		thread->procNext = thread;
 		proc->main_thread = thread;
+		thread->procNext = 0;
 	}
 	else
 	{
@@ -81,7 +89,6 @@ THREAD* ProcessManager::CreateThread(PROCESS* proc, void(*entry)())
 		proc->main_thread->procNext = thread;
 	}
 
-	Scheduler::InsertThread(thread);
 	return thread;
 }
 

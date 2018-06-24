@@ -24,6 +24,7 @@ void Panic::KernelPanic(char* err, char* msg, ...)
 
 	Debug::Print("%s\n", err);
 	Debug::Print("%s\n", buffer);
+	Debug::Print("Proc: %ux\n", Scheduler::current_thread->process->id);
 
 	asm volatile(
 		"cli\n"

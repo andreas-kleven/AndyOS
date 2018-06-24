@@ -1,12 +1,12 @@
-TARGET = $(LIBS)/test
+TARGET = $(LIBS)/gui.a
 
 SRC_DIR := .
 OBJ_DIR := obj
 SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
-$(TARGET): $(OBJ_FILES) $(LIBS)/gui.a $(LIBS)/andyos.a $(LIBS)/libc.a
-	$(CC) $(APP_LDFLAGS) -o $@ $^
+$(TARGET): $(OBJ_FILES)
+	$(AR) cr $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)

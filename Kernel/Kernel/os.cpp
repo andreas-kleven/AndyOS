@@ -299,12 +299,13 @@ void Terminal()
 
 void OS::Main()
 {
+	PROCESS* proc = ProcessManager::Load("1winman");
 	ProcessManager::Load("1test");
-	ProcessManager::Load("1test");
+	PROCESS* last = ProcessManager::Load("1test");
 
 	while (1)
 	{
-		PROCESS* proc = ProcessManager::GetProcess(2);
+		PROCESS* proc = last;
 
 		while (proc)
 		{
@@ -320,12 +321,34 @@ void OS::Main()
 					if (msg->type == MESSAGE_TYPE_SIGNAL)
 					{
 						if (proc->signal_handler)
-							proc->signal_handler(msg->param);
+						{
+							THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->signal_handler);
+
+							uint32* stack_ptr = (uint32*)thread->regs->user_stack;
+							*--stack_ptr = msg->param;
+							thread->regs->user_stack -= 8;
+							
+							Scheduler::InsertThread(thread);
+						}
 					}
 					else
 					{
 						if (proc->message_handler)
-							proc->message_handler(msg->id, msg->param, msg->data, msg->size);
+						{
+							THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
+
+							char* data_ptr = (char*)thread->regs->user_stack - msg->size - 4;
+							memcpy(data_ptr, msg->data, msg->size);
+
+							uint32* stack_ptr = (uint32*)data_ptr;
+							*--stack_ptr = msg->size;
+							*--stack_ptr = (int)data_ptr;
+							*--stack_ptr = msg->param;
+							*--stack_ptr = msg->id;
+							thread->regs->user_stack -= 24 + msg->size;
+
+							Scheduler::InsertThread(thread);
+						}
 					}
 
 					asm("sti");
