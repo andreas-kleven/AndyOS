@@ -7,7 +7,7 @@ Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
 	char* buffer;
 
-	uint32 size = read_file(&buffer, filename);
+	uint32 size = read_file(buffer, filename);
 
 	if (size)
 	{

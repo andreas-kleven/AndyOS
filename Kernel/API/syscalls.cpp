@@ -119,9 +119,15 @@ void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
 	VMem::UserAllocShared(dir1, dir2, addr1, addr2, blocks);
 }
 
-uint32 read_file(char** buffer, char* filename)
+uint32 read_file(char*& buffer, char* filename)
 {
-	return VFS::ReadFile(filename, *buffer);
+	char* kernel_buf;
+
+	int size = VFS::ReadFile(filename, kernel_buf);
+	buffer = (char*)VMem::UserAlloc(BYTES_TO_BLOCKS(size));
+
+	memcpy(buffer, kernel_buf, size);
+	return size;
 }
 
 void debug_reset()

@@ -10,7 +10,7 @@ MyBox::MyBox()
 
 	if (!img_buf)
 	{
-		if (!read_file(&img_buf, "img.bmp"))
+		if (!read_file(img_buf, "img.bmp"))
 		{
 			debug_print("bmp not found");
 			while (1);
