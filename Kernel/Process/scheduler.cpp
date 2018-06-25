@@ -4,16 +4,18 @@
 #include "string.h"
 #include "Lib/debug.h"
 
-THREAD* first_thread;
-THREAD* last_thread;
-THREAD* idle_thread;
+static THREAD* first_thread;
+static THREAD* last_thread;
+static THREAD* idle_thread;
 THREAD* Scheduler::current_thread;
 
-uint32 id_counter = 0;
-uint32 tmp_stack;
-IRQ_HANDLER pit_isr;
+static uint32 id_counter = 0;
+static uint32 tmp_stack;
+static IRQ_HANDLER pit_isr;
 
-uint8 __attribute__((aligned(16))) fpu_state[512];
+static bool enabled = false;
+
+static uint8 __attribute__((aligned(16))) fpu_state[512];
 
 STATUS Scheduler::Init()
 {
@@ -114,6 +116,27 @@ void Scheduler::StartThreading()
 		"iret" :: "r" (idle_thread->stack));
 }
 
+int disableCount = 0;
+
+void Scheduler::Enable()
+{
+	if (disableCount <= 1)
+	{
+		enabled = true;
+		disableCount = 0;
+	}
+	else
+	{
+		disableCount--;
+	}
+}
+
+void Scheduler::Disable()
+{
+	enabled = false;
+	disableCount++;
+}
+
 void Scheduler::RemoveThread(THREAD* thread)
 {
 	if (!thread)
@@ -188,6 +211,12 @@ void Scheduler::Schedule()
 {
 	//Call original isr
 	pit_isr(0);
+
+	if (!enabled)
+	{
+		PIC::InterruptDone(TASK_SCHEDULE_IRQ);
+		return;
+	}
 
 	asm volatile("fxsave (%0)" :: "m" (fpu_state));
 	memcpy(current_thread->fpu_state, fpu_state, 512);

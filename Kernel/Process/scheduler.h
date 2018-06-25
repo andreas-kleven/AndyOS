@@ -14,6 +14,8 @@ public:
 	static void InsertThread(THREAD* thread);
 
 	static void StartThreading();
+	static void Enable();
+	static void Disable();
 	static void RemoveThread(THREAD* thread);
 
 	static void ExitThread(int code, THREAD* thread = current_thread);

@@ -4,6 +4,7 @@
 #include "string.h"
 #include "Lib/debug.h"
 #include "Drawing/vbe.h"
+#include "Process/scheduler.h"
 
 #define PAGE_DIR_INDEX(x) 	(((x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3FF)
@@ -68,6 +69,8 @@ void VMem::Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end)
 
 bool VMem::MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks)
 {
+	Scheduler::Disable();
+
 	PAGE_DIR* dir = GetCurrentDirVirt();
 
 	for (int i = 0; i < blocks; i++)
@@ -100,12 +103,13 @@ bool VMem::MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks)
 		asm volatile("invlpg (%0)" :: "r" (virt));
 	}
 
+	Scheduler::Enable();
 	return 1;
 }
 
 void* VMem::KernelAlloc(uint32 blocks)
 {
-	return Alloc(PTE_PRESENT | PTE_WRITABLE | PTE_USER, blocks, KERNEL_BASE, KERNEL_END);
+	return Alloc(PTE_PRESENT | PTE_WRITABLE, blocks, KERNEL_BASE, KERNEL_END);
 }
 
 void* VMem::UserAlloc(uint32 blocks)
@@ -125,6 +129,8 @@ void* VMem::UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
 
 uint32 VMem::FirstFree(uint32 blocks, uint32 start, uint32 end)
 {
+	Scheduler::Disable();
+
 	for (int i = start; i < end; i += PAGE_SIZE)
 	{
 		if (!GetFlags(i) & PTE_PRESENT)
@@ -142,11 +148,13 @@ uint32 VMem::FirstFree(uint32 blocks, uint32 start, uint32 end)
 
 			if (found)
 			{
+				Scheduler::Enable();
 				return i;
 			}
 		}
 	}
 
+	Scheduler::Enable();
 	return 0;
 }
 
@@ -219,24 +227,35 @@ PAGE_DIR* VMem::GetCurrentDir()
 
 uint32 VMem::GetAddress(uint32 virt)
 {
+	Scheduler::Disable();
 	PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-	return table->GetAddr(PAGE_TABLE_INDEX(virt));
+	uint32 addr = table->GetAddr(PAGE_TABLE_INDEX(virt));
+	Scheduler::Enable();
+	return addr;
 }
 
 uint32 VMem::GetFlags(uint32 virt)
 {
+	Scheduler::Disable();
 	PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-	return table->GetFlags(PAGE_TABLE_INDEX(virt));
+	uint32 flags = table->GetFlags(PAGE_TABLE_INDEX(virt));
+	Scheduler::Enable();
+	return flags;
 }
 
 //Private
 void* VMem::Alloc(uint32 flags, uint32 blocks, uint32 start, uint32 end)
 {
+	Scheduler::Disable();
+
 	uint32 virt = FirstFree(blocks, start, end);
 	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
 	MapPhysAddr(phys, virt, flags, blocks);
+
+	Scheduler::Enable();
 	return (void*)virt;
 
+	//
 	uint32 _virt = virt;
 
 	if (!virt)
