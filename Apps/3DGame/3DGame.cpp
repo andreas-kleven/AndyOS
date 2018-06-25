@@ -7,10 +7,10 @@
 
 #include "GL.h"
 
+MyBox* walls[6];
+
 void CreateCornell(Game* game)
 {
-	MyBox* walls[6];
-
 	walls[0] = game->CreateObject<MyBox>("Floor");
 	walls[0]->transform.position = Vector3(0, -1, 0);
 
