@@ -112,6 +112,13 @@ void free(void* ptr, uint32 blocks)
 
 }
 
+void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
+{
+	PAGE_DIR* dir1 = Scheduler::current_thread->page_dir;
+	PAGE_DIR* dir2 = ProcessManager::GetProcess(proc_id)->page_dir;
+	VMem::UserAllocShared(dir1, dir2, addr1, addr2, blocks);
+}
+
 uint32 read_file(char** buffer, char* filename)
 {
 	return VFS::ReadFile(filename, *buffer);
@@ -257,6 +264,7 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_GET_KEY_DOWN, (SYSCALL_HANDLER)get_key_down);
 	InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
+	InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)alloc_shared);
 	InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
 	InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
 

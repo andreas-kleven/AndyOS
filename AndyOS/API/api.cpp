@@ -69,6 +69,11 @@ void free(void* ptr, uint32 blocks)
 	Call(SYSCALL_ALLOC, (int)ptr, blocks);
 }
 
+void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
+{
+	Call(SYSCALL_ALLOC_SHARED, proc_id, (int)&addr1, (int)&addr2, blocks);
+}
+
 int read_file(char** buffer, char* filename)
 {
     return Call(SYSCALL_READ_FILE, (int)buffer, (int)filename);

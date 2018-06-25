@@ -107,6 +107,7 @@ public:
 	static void* UserAlloc(uint32 blocks);
 	static void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
 	static void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
+	static void UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks);
 
 	static uint32 FirstFree(uint32 blocks, uint32 start, uint32 end);
 

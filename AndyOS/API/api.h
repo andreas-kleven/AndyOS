@@ -20,6 +20,7 @@ bool get_key_down(KEYCODE key);
 
 uint32* alloc(uint32 blocks);
 void free(void* ptr, uint32 blocks);
+void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks);
 
 int read_file(char** buffer, char* filename);
 

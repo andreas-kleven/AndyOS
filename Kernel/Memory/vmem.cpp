@@ -127,6 +127,27 @@ void* VMem::UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
 	return MapFirstFree(phys, flags, blocks, USER_BASE, USER_END);
 }
 
+void VMem::UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks)
+{
+	Scheduler::Disable();
+	PAGE_DIR* _dir = GetCurrentDir();
+
+	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+	uint32 flags = PDE_PRESENT | PDE_WRITABLE | PDE_USER;
+
+	SwitchDir(dir1);
+	addr1 = UserMapFirstFree(phys, flags, blocks);
+
+	SwitchDir(dir2);
+	void* _addr2 = UserMapFirstFree(phys, flags, blocks);
+
+	//Switch back
+	SwitchDir(_dir);
+
+	addr2 = _addr2;
+	Scheduler::Enable();
+}
+
 uint32 VMem::FirstFree(uint32 blocks, uint32 start, uint32 end)
 {
 	Scheduler::Disable();
