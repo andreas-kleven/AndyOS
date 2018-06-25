@@ -25,21 +25,25 @@ PROCESS* ELF::Load(char* path)
 		return 0;
 	}
 
-	ELF32_PHEADER* pheader = (ELF32_PHEADER*)(image + header->e_phoff);
-
 	asm volatile("cli");
 
 	PAGE_DIR* dir = VMem::CreatePageDir();
 	VMem::SwitchDir(dir);
 
 	uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
-	uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz);
 
-	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
-	uint32 virt = pheader->p_vaddr;
+	for (int i = 0; i < header->e_phnum; i++)
+	{
+		ELF32_PHEADER* pheader = (ELF32_PHEADER*)(image + header->e_phoff + i * header->e_phentsize);
 
-	VMem::MapPhysAddr(phys, virt, flags, blocks);
-	memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
+		uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz);
+
+		uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+		uint32 virt = pheader->p_vaddr;
+
+		VMem::MapPhysAddr(phys, virt, flags, blocks);
+		memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
+	}
 
 	for (int i = 0; i < header->e_shnum; i++)
 	{
