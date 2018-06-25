@@ -344,8 +344,9 @@ void OS::Main()
 							*--stack_ptr = msg->size;
 							*--stack_ptr = (int)data_ptr;
 							*--stack_ptr = msg->param;
+							*--stack_ptr = msg->src_proc;
 							*--stack_ptr = msg->id;
-							thread->regs->user_stack -= 24 + msg->size;
+							thread->regs->user_stack -= 28 + msg->size;
 
 							Scheduler::InsertThread(thread);
 						}

@@ -6,18 +6,22 @@ struct MESSAGE
     int type;
     int size;
     char* data;
+    int src_proc;
 
     MESSAGE()
     {
         this->type = 0;
+        this->src_proc = 0;
     }
 
     MESSAGE(int type)
+        : MESSAGE()
     {
         this->type = type;
     }
 
     MESSAGE(int type, void* data, int size)
+        : MESSAGE()
     {
         this->type = type;
         this->size = size;

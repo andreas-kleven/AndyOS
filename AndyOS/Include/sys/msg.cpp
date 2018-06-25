@@ -11,13 +11,17 @@ static void __sig_handler(int signo)
     exit(0);
 }
 
-static void __msg_handler(int id, int type, char* data, int size)
+static void __msg_handler(int id, int src_proc, int type, char* data, int size)
 {
     MESSAGE msg(type, data, size);
     msg.id = id;
+    msg.src_proc = src_proc;
 
     MESSAGE response = _msg_handler(msg);
-    Call(SYSCALL_SEND_MESSAGE_RESPONSE, id, response.type, (int)response.data, response.size);
+
+    if (response.type != 0)
+        Call(SYSCALL_SEND_MESSAGE_RESPONSE, id, response.type, (int)response.data, response.size);
+        
     exit(0);
 }
 
@@ -54,5 +58,6 @@ MESSAGE send_message(int proc_id, int type, void* data, int size)
 
     MESSAGE response;
     Call(SYSCALL_GET_MESSAGE_RESPONSE, msg_id, (int)&response);
+
     return response;
 }

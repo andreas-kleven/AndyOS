@@ -21,6 +21,7 @@ void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
 	Debug::Init(1);
 	Debug::color = 0xFF00FF00;
+	Debug::y = 2;
 
     uint32 kernel_start = (uint32)&__KERNEL_START;
     uint32 kernel_end = (uint32)&__KERNEL_END;

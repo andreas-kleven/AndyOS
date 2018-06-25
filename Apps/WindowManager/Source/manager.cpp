@@ -59,19 +59,19 @@ static MESSAGE msg_handler(MESSAGE msg)
 {
     if (msg.type == GUI_MESSAGE_TYPE)
 	{
-		if (msg.size < sizeof(GUI_MESSAGE_TYPE))
+		if (msg.size < 4)
 			return MESSAGE(0);
 
 		REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
 
 		if (type == REQUEST_TYPE_CONNECT)
 		{
-			debug_print("Client connected\n");
+			debug_print("Client connected %i\n", msg.src_proc);
 
-			BOOL_RESPONSE response;
-			response.success = true;
+			BOOL_RESPONSE* response = new BOOL_RESPONSE();
+			response->success = true;
 
-			return MESSAGE(GUI_MESSAGE_TYPE, &response, sizeof(BOOL_RESPONSE));
+			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
 		}
 		else if (type == REQUEST_TYPE_CREATE_WINDOW)
 		{
@@ -80,9 +80,8 @@ static MESSAGE msg_handler(MESSAGE msg)
 
 			Window* wnd = WindowManager::CreateWindow(request->title);
 
-			CREATE_WINDOW_RESPONSE response(0, wnd->bounds.width, wnd->bounds.height);
-
-			return MESSAGE(GUI_MESSAGE_TYPE, &response, sizeof(BOOL_RESPONSE));
+			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(0, wnd->bounds.width, wnd->bounds.height);
+			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
 		}
 	}
 

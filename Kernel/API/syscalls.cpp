@@ -132,10 +132,11 @@ int set_signal(SIGNAL_HANDLER handler)
 void send_signal(int proc_id, int signo)
 {
 	PROCESS* proc = ProcessManager::GetProcess(proc_id);
+	int src_proc = Scheduler::current_thread->process->id;
 
 	if (proc)
 	{
-		MESSAGE msg(MESSAGE_TYPE_SIGNAL, ++msg_id, signo, 0);
+		MESSAGE msg(MESSAGE_TYPE_SIGNAL, ++msg_id, src_proc, signo, 0);
 		proc->messages.Add(msg);
 	}
 }
@@ -149,17 +150,18 @@ int set_message(MESSAGE_HANDLER handler)
 void send_message(int proc_id, int type, char* buf, int size, bool async, int& id)
 {
 	PROCESS* proc = ProcessManager::GetProcess(proc_id);
+
+	if (!proc)
+		return;
+
+	int src_proc = Scheduler::current_thread->process->id;
 	id = ++msg_id;
 
-	if (proc)
-	{
-		MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, type, size);
+	MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, src_proc, type, size);
+	msg.data = new char[size];
+	memcpy(msg.data, buf, size);
 
-		msg.data = new char[size];
-		memcpy(msg.data, buf, size);
-
-		proc->messages.Add(msg);
-	}
+	proc->messages.Add(msg);
 
 	if (!async)
 	{
@@ -176,13 +178,14 @@ void send_message(int proc_id, int type, char* buf, int size, bool async, int& i
 void send_message_reponse(int msg_id, int type, char* buf, int size)
 {
 	TMP_MSG* msg = first_msg;
-	
+	int src_proc = Scheduler::current_thread->process->id;
+
 	while (msg)
 	{
 		if (msg->id == msg_id)
 		{
 			msg->received = true;
-			msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, type, size);
+			msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, src_proc, type, size);
 			memcpy(msg->response.data, buf, size);
 
 			Scheduler::AwakeThread(msg->thread);
@@ -196,6 +199,7 @@ void send_message_reponse(int msg_id, int type, char* buf, int size)
 bool get_message_reponse(int msg_id, USER_MESSAGE& response)
 {
 	TMP_MSG* msg = first_msg;
+	TMP_MSG* prev = 0;
 
 	while (msg)
 	{
@@ -207,8 +211,18 @@ bool get_message_reponse(int msg_id, USER_MESSAGE& response)
 				response.type = msg->response.type;
 				response.size = msg->response.size;
 
-				response.data = new char[response.size];
+				response.data = (char*)VMem::UserAlloc(BYTES_TO_BLOCKS(response.size));
 				memcpy(response.data, msg->response.data, response.size);
+
+				//Remove message
+				if (prev)
+				{
+					prev->next = msg->next;
+				}
+				else
+				{
+					first_msg = msg->next;
+				}
 
 				delete msg;
 				return true;
@@ -217,6 +231,7 @@ bool get_message_reponse(int msg_id, USER_MESSAGE& response)
 			break;
 		}
 
+		prev = msg;
 		msg = msg->next;
 	}
 

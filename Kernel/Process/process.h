@@ -25,6 +25,7 @@ struct MESSAGE
 {
 	MESSAGE_TYPE type;
 	int id;
+	int src_proc;
 	int param;
 	int size;
 	char* data;
@@ -32,24 +33,27 @@ struct MESSAGE
 	MESSAGE()
 	{
 		id = 0;
+		src_proc = 0;
 		param = 0;
 		size = 0;
 		data = 0;
 	}
 
-	MESSAGE(MESSAGE_TYPE type, int id, int param, int size, char* data)
+	MESSAGE(MESSAGE_TYPE type, int id, int src_proc, int param, int size, char* data)
 	{
 		this->type = type;
 		this->id = id;
+		this->src_proc = src_proc;
 		this->param = param;
 		this->size = size;
 		this->data = data;
 	}
 
-	MESSAGE(MESSAGE_TYPE type, int id, int param, int size)
+	MESSAGE(MESSAGE_TYPE type, int id, int src_proc, int param, int size)
 	{
 		this->type = type;
 		this->id = id;
+		this->src_proc = src_proc;
 		this->param = param;
 		this->size = size;
 		this->data = new char[size];

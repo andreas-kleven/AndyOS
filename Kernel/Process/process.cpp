@@ -26,6 +26,9 @@ PROCESS* ProcessManager::Load(char* path)
 {
 	PROCESS* proc = ELF::Load(path);
 
+	if (!proc)
+		return 0;
+
 	proc->next = first;
 	first = proc;
 
