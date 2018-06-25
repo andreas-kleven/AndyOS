@@ -105,7 +105,7 @@ void WindowManager::Start()
 	gc_cursor = GC(8, 14);
 
 	col_taskbar = Color(0.2, 0.3, 0.5);
-	col_desktop_bg = Color(0.5, 0.5, 0.5);
+	col_desktop_bg = Color(0.9, 0.9, 0.9);
 
 	bmp_background = 0;
 	window_count = 0;

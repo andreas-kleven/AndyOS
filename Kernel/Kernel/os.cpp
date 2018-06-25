@@ -300,7 +300,7 @@ void Terminal()
 void OS::Main()
 {
 	PROCESS* proc = ProcessManager::Load("1winman");
-	ProcessManager::Load("1test");
+	ProcessManager::Load("1game");
 	PROCESS* last = ProcessManager::Load("1test");
 
 	while (1)

@@ -40,7 +40,7 @@ int main()
 			char r = rand() / 0xFF;
 			char g = rand() / 0xFF;
 			char b = rand() / 0xFF;
-			wnd.framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+			wnd.gc.framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
 		}
 	}
 }

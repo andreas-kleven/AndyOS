@@ -1,10 +1,11 @@
 #pragma once
+#include <sys/drawing.h>
 #include "definitions.h"
 
 class Window
 {
 public:
-    uint32* framebuffer;
+    GC gc;
     int width;
     int height;
 

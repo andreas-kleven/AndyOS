@@ -5,7 +5,7 @@ OBJ_DIR := obj
 SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
-$(TARGET): $(OBJ_FILES) $(LIBS)/engine.a $(LIBS)/gl.a $(LIBS)/andyos.a $(LIBS)/libc.a
+$(TARGET): $(OBJ_FILES) $(LIBS)/engine.a $(LIBS)/gl.a $(LIBS)/gui.a $(LIBS)/andyos.a $(LIBS)/libc.a
 	$(CC) $(APP_LDFLAGS) -o $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

@@ -686,7 +686,6 @@ void GEngine::Render()
 {
 	//Raytracer tracer(active_game, _gc);
 	//tracer.Render();
-	//draw(_gc.framebuffer);
 	//return;
 
 	Camera* cam = active_game->GetActiveCamera();
@@ -735,5 +734,4 @@ void GEngine::Render()
 	}
 
 	GL::SwapBuffers();
-	draw(_gc.framebuffer);
 }

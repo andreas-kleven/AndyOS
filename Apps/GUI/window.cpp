@@ -9,9 +9,9 @@ Window::Window(char* title)
     CREATE_WINDOW_RESPONSE response;
     if (Client::SendRequest(CREATE_WINDOW_REQUEST(title), response))
     {
-        this->framebuffer = response.framebuffer;
         this->width = response.width;
         this->height = response.height;
+        this->gc = GC(response.width, response.height, response.framebuffer);
     }
 }
 
