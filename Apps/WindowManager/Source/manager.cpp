@@ -78,10 +78,19 @@ static MESSAGE msg_handler(MESSAGE msg)
 			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
 			debug_print("Create window request: %s\n", request->title);
 
-			Window* wnd = WindowManager::CreateWindow(request->title);
+			const int width = 400;
+			const int height = 300;
 
-			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(0, wnd->bounds.width, wnd->bounds.height);
-			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
+			void* addr1;
+			void* addr2;
+
+			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
+
+			Window* wnd = new Window(request->title, width, height, (uint32*)addr1);
+			WindowManager::AddWindow(wnd);
+
+			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE((uint32*)addr2, wnd->gc.width, wnd->gc.height);
+			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
 		}
 	}
 
@@ -109,26 +118,23 @@ void WindowManager::Start()
 	UpdateLoop();
 }
 
-Window* WindowManager::CreateWindow(char* title)
+void WindowManager::AddWindow(Window* wnd)
 {
-	Window* window = new Window();
-	window->title = title;
-	window->next = 0;
-	window->previous = 0;
+	wnd->next = 0;
+	wnd->previous = 0;
 
 	if (window_count)
 	{
-		window->previous = last_window;
-		last_window->next = window;
+		wnd->previous = last_window;
+		last_window->next = wnd;
 	}
 	else
 	{
-		first_window = window;
+		first_window = wnd;
 	}
 
-	last_window = window;
+	last_window = wnd;
 	window_count++;
-	return window;
 }
 
 void WindowManager::CloseWindow(Window* wnd)
@@ -154,8 +160,6 @@ void WindowManager::UpdateLoop()
 {
 	while (1)
 	{
-		Drawing::Clear(Color::Black, gc);
-
 		HandleMouseInput();
 		HandleKeyInput();
 
@@ -182,12 +186,7 @@ void WindowManager::PaintWindows()
 	Window* wnd = last_window;
 	while (wnd)
 	{
-		wnd->Paint();
-
-		Rect& bounds = wnd->bounds;
-		GC& src = wnd->gc;
-		Drawing::BitBlt(src, 0, 0, src.width, src.height, gc, bounds.x, bounds.y);
-
+		wnd->Paint(gc);
 		wnd = wnd->previous;
 	}
 }

@@ -25,7 +25,6 @@ public:
 	bool focused;
 
 	GC gc;
-	GC gc_content;
 
 	char* title;
 
@@ -35,9 +34,9 @@ public:
 	Window* next;
 	Window* previous;
 
-	Window();
+	Window(char* title, int width, int height, uint32* framebuffer);
 
-	void Paint();
+	void Paint(GC& main_gc);
 	void Close();
 
 	void PaintWindow();
