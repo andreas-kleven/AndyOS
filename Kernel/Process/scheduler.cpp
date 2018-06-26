@@ -149,11 +149,7 @@ void Scheduler::RemoveThread(THREAD* thread)
 
 		if (next == thread)
 		{
-			t->next = next->next;
-
-			if (thread == current_thread)
-				current_thread = t;
-
+			t->next = thread->next;
 			delete thread;
 			return;
 		}
@@ -164,11 +160,18 @@ void Scheduler::RemoveThread(THREAD* thread)
 
 void Scheduler::ExitThread(int code, THREAD* thread)
 {
-	RemoveThread(thread);
+	thread->state = THREAD_STATE_TERMINATED;
+
+	//Switch thread
+	if (thread == current_thread)
+		asm volatile("int %0" :: "N" (TASK_SCHEDULE_IRQ));
 }
 
 void Scheduler::SleepThread(uint32 until, THREAD* thread)
 {
+	if (thread->state == THREAD_STATE_TERMINATED)
+		return;
+
 	if (thread->state != THREAD_STATE_TERMINATED)
 	{
 		thread->state = THREAD_STATE_SLEEPING;
@@ -182,6 +185,9 @@ void Scheduler::SleepThread(uint32 until, THREAD* thread)
 
 void Scheduler::BlockThread(THREAD* thread)
 {
+	if (thread->state == THREAD_STATE_TERMINATED)
+		return;
+
 	if (thread->state != THREAD_STATE_TERMINATED)
 	{
 		thread->state = THREAD_STATE_BLOCKING;
@@ -194,6 +200,9 @@ void Scheduler::BlockThread(THREAD* thread)
 
 void Scheduler::AwakeThread(THREAD* thread)
 {
+	if (thread->state == THREAD_STATE_TERMINATED)
+		return;
+
 	if (thread->state != THREAD_STATE_TERMINATED)
 	{
 		if (PIT::ticks >= thread->sleep_until)
@@ -234,6 +243,13 @@ void Scheduler::Schedule()
 	while (current_thread->next != first)
 	{
 		current_thread = current_thread->next;
+
+		if (current_thread->state == THREAD_STATE_TERMINATED)
+		{
+			THREAD* next = current_thread->next;
+			RemoveThread(current_thread);	
+			current_thread = next;
+		}
 
 		if (current_thread == idle_thread)
 			current_thread = current_thread->next;
