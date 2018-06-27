@@ -1,6 +1,5 @@
 #pragma once
 #include <sys/drawing.h>
-#include "message.h"
 
 #define GUI_WINDOW_BORDER_WIDTH		1
 #define GUI_TITLEBAR_HEIGHT			28
@@ -23,13 +22,11 @@ public:
 	WINDOW_STATE state;
 	Rect bounds;
 	bool focused;
+	bool dirty;
 
 	GC gc;
 
 	char* title;
-
-	bool b_message = 0;
-	WND_MSG message;
 
 	Window* next;
 	Window* previous;

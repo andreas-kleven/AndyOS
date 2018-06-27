@@ -1,14 +1,25 @@
 #pragma once
+#include <AndyOS.h>
 #include <sys/drawing.h>
+#include "Elements/element.h"
 #include "definitions.h"
+#include "guibase.h"
 
-class Window
+namespace gui
 {
-public:
-    GC gc;
-    int width;
-    int height;
+    class Window : public GUIBase
+    {
+    public:
+        int id;
+        int width;
+        int height;
 
-    Window(char* title);
-    ~Window();
-};
+        Window(char* title);
+        ~Window();
+
+        void Paint();
+
+    private:
+        void PaintElement(GUIBase* elem);
+    };
+}

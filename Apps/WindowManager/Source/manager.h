@@ -1,5 +1,6 @@
 #pragma once
 #include "window.h"
+#include <sys/msg.h>
 
 #define GUI_TASKBAR_HEIGHT		40
 
@@ -33,6 +34,7 @@ public:
 	static void CloseWindow(Window* wnd);
 
 private:
+	static MESSAGE MessageHandler(MESSAGE msg);
 	static void UpdateLoop();
 
 	static void PaintBackground();
@@ -45,4 +47,6 @@ private:
 
 	static Window* GetWindowAtCursor();
 	static void SetFocusedWindow(Window* new_active);
+
+	static Window* GetWindow(int id);
 };

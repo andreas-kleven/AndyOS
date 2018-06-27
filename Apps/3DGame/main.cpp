@@ -3,6 +3,8 @@
 #include "GEngine.h"
 #include "3DGame.h"
 
+using namespace gui;
+
 class GameWindow : public Window
 {
 public:

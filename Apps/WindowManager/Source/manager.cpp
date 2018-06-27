@@ -4,25 +4,26 @@
 #include "GUI/messages.h"
 #include "manager.h"
 #include "window.h"
-#include "message.h"
 #include "string.h"
 #include "stdio.h"
 
+using namespace gui;
+
 static uint32 cursor_bitmap[8 * 14] =
 {
-	0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00,
+	0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000,
 	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFF000000, 0x00,
-	0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00, 0x00,
-	0xFF000000, 0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0xFF000000, 0xFF000000, 0xFF000000, 0x00, 0x00
+	0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFF000000, 0x00000000,
+	0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000, 0x00000000,
+	0xFF000000, 0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0xFF000000, 0xFF000000, 0xFF000000, 0x00000000, 0x00000000
 };
 
 static Color col_taskbar;
@@ -55,48 +56,6 @@ static MOUSE_CLICK_INFO mouse_click_R_info;
 static MOUSE_CLICK_INFO mouse_click_M_info;
 static WINDOW_DRAG_INFO window_drag_info;
 
-static MESSAGE msg_handler(MESSAGE msg)
-{
-    if (msg.type == GUI_MESSAGE_TYPE)
-	{
-		if (msg.size < 4)
-			return MESSAGE(0);
-
-		REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
-
-		if (type == REQUEST_TYPE_CONNECT)
-		{
-			debug_print("Client connected %i\n", msg.src_proc);
-
-			BOOL_RESPONSE* response = new BOOL_RESPONSE();
-			response->success = true;
-
-			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
-		}
-		else if (type == REQUEST_TYPE_CREATE_WINDOW)
-		{
-			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
-			debug_print("Create window request: %s\n", request->title);
-
-			const int width = 400;
-			const int height = 300;
-
-			void* addr1;
-			void* addr2;
-
-			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
-
-			Window* wnd = new Window(request->title, width, height, (uint32*)addr1);
-			WindowManager::AddWindow(wnd);
-
-			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE((uint32*)addr2, wnd->gc.width, wnd->gc.height);
-			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
-		}
-	}
-
-	return MESSAGE(0);
-}
-
 void WindowManager::Start()
 {
 	gc = GC(1024, 768);
@@ -114,7 +73,7 @@ void WindowManager::Start()
 	focused_window = 0;
 	hover_window = 0;
 
-	set_message(msg_handler);
+	set_message(MessageHandler);
 	UpdateLoop();
 }
 
@@ -156,6 +115,58 @@ void WindowManager::CloseWindow(Window* wnd)
 	delete wnd;
 }
 
+MESSAGE WindowManager::MessageHandler(MESSAGE msg)
+{
+    if (msg.type == GUI_MESSAGE_TYPE)
+	{
+		if (msg.size < 4)
+			return MESSAGE(0);
+
+		REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
+
+		if (type == REQUEST_TYPE_CONNECT)
+		{
+			debug_print("Client connected %i\n", msg.src_proc);
+
+			BOOL_RESPONSE* response = new BOOL_RESPONSE();
+			response->success = true;
+
+			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
+		}
+		else if (type == REQUEST_TYPE_CREATE_WINDOW)
+		{
+			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
+			debug_print("Create window request: %s\n", request->title);
+
+			const int width = 400;
+			const int height = 300;
+
+			void* addr1;
+			void* addr2;
+
+			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
+
+			Window* wnd = new Window(request->title, width, height, (uint32*)addr1);
+			WindowManager::AddWindow(wnd);
+
+			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
+			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
+		}
+		else if (type == REQUEST_TYPE_PAINT)
+		{
+			PAINT_REQUEST* request = (PAINT_REQUEST*)msg.data;
+			Window* wnd = GetWindow(request->id);
+
+			if (wnd)
+			{
+				wnd->dirty = true;
+			}
+		}
+	}
+
+	return MESSAGE(0);
+}
+
 void WindowManager::UpdateLoop()
 {
 	while (1)
@@ -186,7 +197,9 @@ void WindowManager::PaintWindows()
 	Window* wnd = last_window;
 	while (wnd)
 	{
-		wnd->Paint(gc);
+		//if (wnd->dirty)
+			wnd->Paint(gc);
+			
 		wnd = wnd->previous;
 	}
 }
@@ -367,4 +380,19 @@ void WindowManager::SetFocusedWindow(Window* new_focused)
 
 		wnd = wnd->next;
 	}
+}
+
+Window* WindowManager::GetWindow(int id)
+{
+	Window* wnd = first_window;
+
+	while (wnd)
+	{
+		if (wnd->id == id)
+			return wnd;
+
+		wnd = wnd->next;
+	}
+
+	return 0;
 }

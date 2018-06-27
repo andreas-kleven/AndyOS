@@ -16,10 +16,11 @@ Window::Window(char* title, int width, int height, uint32* framebuffer)
 	id = new_id++;
 
 	state = WINDOW_STATE_NORMAL;
-	focused = 0;
+	focused = false;
+	dirty = true;
 
-	bounds.x = 20;
-	bounds.y = 20;
+	bounds.x = id * 100;
+	bounds.y = id * 100;
 	bounds.width = width;
 	bounds.height = height;
 
@@ -28,7 +29,8 @@ Window::Window(char* title, int width, int height, uint32* framebuffer)
 
 void Window::Paint(GC& main_gc)
 {
-	Drawing::BitBlt(gc, 0, 0, gc.width, gc.height, main_gc, bounds.x + GUI_WINDOW_BORDER_WIDTH, bounds.y + GUI_TITLEBAR_HEIGHT);
+	//if (dirty)
+		Drawing::BitBlt(gc, 0, 0, gc.width, gc.height, main_gc, bounds.x + GUI_WINDOW_BORDER_WIDTH, bounds.y + GUI_TITLEBAR_HEIGHT);
 
 	Color _titlebar = focused ? color_background : Color::White;
 	Color _border = focused ? color_background : Color::Black;
@@ -36,6 +38,8 @@ void Window::Paint(GC& main_gc)
 	Drawing::FillRect(bounds.x, bounds.y, bounds.width, GUI_TITLEBAR_HEIGHT, _titlebar, main_gc); //Title bar
 	Drawing::DrawText(bounds.x + 6, bounds.y + 6, title, color_title, main_gc); //Title
 	Drawing::DrawRect(bounds.x, bounds.y, bounds.width, bounds.height, GUI_WINDOW_BORDER_WIDTH, _border, main_gc); //Window border
+
+	dirty = false;
 }
 
 void Window::Close()

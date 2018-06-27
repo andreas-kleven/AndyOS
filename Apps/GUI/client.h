@@ -2,24 +2,38 @@
 #include <sys/msg.h>
 #include "GUI/messages.h"
 
-class Client
+namespace gui
 {
-public:
-    static bool connected;
-
-    static void Init();
-
-    template <class IN, class OUT>
-    static bool SendRequest(IN req, OUT& res, bool ignore_disconnected = false)
+    class Client
     {
-        if (!connected && !ignore_disconnected)
-            return false;
+    public:
+        static bool connected;
 
-        MESSAGE response = send_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+        static void Init();
 
-        if (response.size != sizeof(OUT))
-            return false;
+        template <class IN, class OUT>
+        static bool SendRequest(IN req, OUT& res, bool ignore_disconnected = false)
+        {
+            if (!connected && !ignore_disconnected)
+                return false;
 
-        res = *(OUT*)response.data;
-    }
-};
+            MESSAGE response = send_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+
+            if (response.size != sizeof(OUT))
+                return false;
+
+            res = *(OUT*)response.data;
+            return true;
+        }
+
+        template <class IN>
+        static bool SendRequest(IN req, bool ignore_disconnected = false)
+        {
+            if (!connected && !ignore_disconnected)
+                return false;
+
+            post_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+            return true;
+        }
+    };
+}

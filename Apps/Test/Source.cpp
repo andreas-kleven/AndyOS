@@ -5,13 +5,16 @@
 #include "string.h"
 #include "math.h"
 
+using namespace gui;
+
 class MainWindow : public Window
 {
 public:
 	MainWindow(char* title)
 		: Window(title)
 	{
-
+		Label* label = new Label("Label");
+		AddChild(label);
 	}
 };
 
@@ -29,12 +32,18 @@ MESSAGE msg_handler(MESSAGE msg)
 
 int main()
 {
+	Drawing::Init();
+
 	char title[256];
 	vprintf(title, "Test window: %i", get_ticks());
 	MainWindow wnd(title);
 
 	while (1)
 	{
+		wnd.Paint();
+		sleep(100);
+		continue;
+
 		for (int i = 0; i < wnd.width * wnd.height; i++)
 		{
 			char r = rand() / 0xFF;
