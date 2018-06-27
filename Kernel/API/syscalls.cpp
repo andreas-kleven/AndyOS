@@ -284,7 +284,7 @@ STATUS Syscalls::Init()
 
 void Syscalls::InstallSyscall(int id, SYSCALL_HANDLER handler)
 {
-	if (id <= 0 || id >= MAX_SYSCALLS)
+	if (id >= MAX_SYSCALLS)
 		return;
 
 	syscalls[id] = (void*)handler;
