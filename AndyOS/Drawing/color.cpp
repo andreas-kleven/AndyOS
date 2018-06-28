@@ -10,6 +10,9 @@ Color Color::Magenta(1, 0, 1);
 Color Color::Yellow(1, 1, 0);
 Color Color::Black(0, 0, 0);
 Color Color::White(1, 1, 1);
+Color Color::Gray(0.5, 0.5, 0.5);
+Color Color::LightGray(0.8, 0.8, 0.8);
+Color Color::DarkGray(0.2, 0.2, 0.2);
 
 Color::Color()
 {

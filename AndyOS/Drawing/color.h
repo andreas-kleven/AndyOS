@@ -26,4 +26,7 @@ struct Color
 	static Color Yellow;
 	static Color Black;
 	static Color White;
+	static Color Gray;
+	static Color LightGray;
+	static Color DarkGray;
 };

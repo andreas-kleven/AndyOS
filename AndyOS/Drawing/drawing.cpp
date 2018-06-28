@@ -15,6 +15,9 @@ void Drawing::Init()
 	Color::Yellow = Color(1, 1, 0);
 	Color::Black = Color(0, 0, 0);
 	Color::White = Color(1, 1, 1);
+	Color::Gray = Color(0.5, 0.5, 0.5);
+	Color::LightGray = Color(0.8, 0.8, 0.8);
+	Color::DarkGray = Color(0.2, 0.2, 0.2);
 }
 
 void Drawing::Draw(GC& gc)
