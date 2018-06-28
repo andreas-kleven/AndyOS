@@ -86,6 +86,8 @@ THREAD* Scheduler::CreateUserThread(void(*main)(), void* stack)
 
 void Scheduler::InsertThread(THREAD* thread)
 {
+	Disable();
+
 	if (first_thread)
 	{
 		thread->next = first_thread;
@@ -99,6 +101,8 @@ void Scheduler::InsertThread(THREAD* thread)
 		last_thread = thread;
 		current_thread = thread;
 	}
+
+	Enable();
 }
 
 void Scheduler::StartThreading()
@@ -142,20 +146,27 @@ void Scheduler::RemoveThread(THREAD* thread)
 	if (!thread)
 		return;
 
+	Disable();
+
 	THREAD* t = first_thread;
 	while (t)
 	{
-		THREAD* next = t->next;
-
-		if (next == thread)
+		if (t->next == thread)
 		{
+			if (thread == last_thread)
+				last_thread = t;
+
 			t->next = thread->next;
 			delete thread;
+
+			Enable();
 			return;
 		}
 
-		t = next;
+		t = t->next;
 	}
+
+	Enable();
 }
 
 void Scheduler::ExitThread(int code, THREAD* thread)
@@ -244,7 +255,7 @@ void Scheduler::Schedule()
 	{
 		current_thread = current_thread->next;
 
-		if (current_thread->state == THREAD_STATE_TERMINATED)
+		while (current_thread->state == THREAD_STATE_TERMINATED)
 		{
 			THREAD* next = current_thread->next;
 			RemoveThread(current_thread);	
