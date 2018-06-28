@@ -35,5 +35,8 @@ namespace gui
 	void Button::MouseUp()
 	{
 		isMouseDown = false;
+		
+		if (OnClick)
+			OnClick();
 	}
 }

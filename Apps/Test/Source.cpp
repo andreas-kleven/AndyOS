@@ -7,6 +7,8 @@
 
 using namespace gui;
 
+void btnClick();
+
 class MainWindow : public Window
 {
 public:
@@ -20,22 +22,21 @@ public:
 		button = new Button("A button");
 
 		button->bounds = Rect(100, 200, 80, 20);
+		button->OnClick = btnClick;
 
 		AddChild(label);
 		AddChild(button);
 	}
 };
 
-void sig_handler(int signo)
-{
-	debug_print("SIGNAL %i\n", signo);
-}
+MainWindow* wnd;
 
-MESSAGE msg_handler(MESSAGE msg)
+int clicks = 0;
+void btnClick()
 {
-	debug_print("MESSAGE %i %s\n", msg.size, msg.data);
-	char* str = "Response";
-	return MESSAGE(msg.type, str, strlen(str) + 1);
+	char buf[100];
+	vprintf(buf, "Clicked %i", ++clicks);
+	wnd->label->text = buf;
 }
 
 int main()
@@ -44,20 +45,20 @@ int main()
 
 	char title[256];
 	vprintf(title, "Test window: %i", get_ticks());
-	MainWindow wnd(title);
+	wnd = new MainWindow(title);
 
 	while (1)
 	{
-		wnd.Paint();
+		wnd->Paint();
 		sleep(100);
 		continue;
 
-		for (int i = 0; i < wnd.width * wnd.height; i++)
+		for (int i = 0; i < wnd->width * wnd->height; i++)
 		{
 			char r = rand() / 0xFF;
 			char g = rand() / 0xFF;
 			char b = rand() / 0xFF;
-			wnd.gc.framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+			wnd->gc.framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
 		}
 	}
 }

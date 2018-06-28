@@ -11,6 +11,8 @@ namespace gui
 
 		Button(String text);
 
+		void (*OnClick)() = 0;
+
 		virtual void Paint();
 		virtual void MouseDown();
 		virtual void MouseUp();
