@@ -46,6 +46,10 @@ static Window* hover_window;
 static int cursor_x;
 static int cursor_y;
 
+static int cursor_left = false;
+static int cursor_right = false;
+static int cursor_middle = false;
+
 static bool mouse_click_L;
 static bool mouse_click_R;
 static bool mouse_click_M;
@@ -245,13 +249,37 @@ void WindowManager::HandleMouseInput()
 
 	bool mouse_moved = cx != cursor_x || cy != cursor_y;
 
+	Window* wnd = GetWindowAtCursor();
+	hover_window = wnd;
+
+	if (wnd)
+	{
+		if (left != cursor_left)
+		{
+			KEY_INPUT_MESSAGE msg(wnd->id, KEY_LBUTTON, left);
+			post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+		}
+
+		if (right != cursor_right)
+		{
+			KEY_INPUT_MESSAGE msg(wnd->id, KEY_RBUTTON, right);
+			post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+		}
+
+		if (middle != cursor_middle)
+		{
+			KEY_INPUT_MESSAGE msg(wnd->id, KEY_MBUTTON, middle);
+			post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+		}
+	}
+
+	cursor_left = left;
+	cursor_right = right;
+	cursor_middle = middle;
 	cursor_x = cx;
 	cursor_y = cy;
 
 	int time = get_ticks();
-
-	Window* wnd = GetWindowAtCursor();
-	hover_window = wnd;
 
 	if (mouse_moved)
 	{
@@ -346,13 +374,12 @@ void WindowManager::HandleKeyInput()
 		{
 			if (get_key_down((KEYCODE)i))
 			{
-				KEY_INPUT_MESSAGE msg(focused_window->id, (KEYCODE)i, false);
+				KEY_INPUT_MESSAGE msg(focused_window->id, (KEYCODE)i, true);
 				post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
 			}
 		}
 	}
 }
-
 
 Window* WindowManager::GetWindowAtCursor()
 {

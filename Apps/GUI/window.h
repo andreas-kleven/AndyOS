@@ -25,5 +25,7 @@ namespace gui
     private:
         void PaintElement(GUIBase* elem);
         void HoverElement(GUIBase* elem, int x, int y);
+
+        Element* GetElementAt(int x, int y, GUIBase* parent);
     };
 }

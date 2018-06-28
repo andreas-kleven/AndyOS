@@ -21,11 +21,13 @@ namespace gui
 
         virtual void Paint() { }
 
-    protected:
+    //protected:
         virtual void KeyDown(KEYCODE key) { };
         virtual void KeyUp(KEYCODE key) { };
+        virtual void MouseDown() { };
+        virtual void MouseUp() { };
 
-        virtual void BeginHover() { };
-        virtual void EndHover() { };
+        virtual void MouseEnter() { }
+        virtual void MouseLeft() { }
     };
 }

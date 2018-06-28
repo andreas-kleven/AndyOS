@@ -10,6 +10,8 @@ namespace gui
         Color foreground;
         Color background;
 
+        bool isActive;
+
         Element(Rect bounds);
         Element(int x, int y, int width, int height);
 
@@ -17,13 +19,5 @@ namespace gui
         GC CreateGC() const;
 
         virtual void Paint() { }
-
-        virtual void MouseDown() { }
-        virtual void MouseUp() { }
-        virtual void MouseEnter() { }
-        virtual void MouseLeft() { }
-
-        virtual void KeyDown() { }
-        virtual void KeyUp() { }
     };
 }

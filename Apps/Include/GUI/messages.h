@@ -89,14 +89,14 @@ namespace gui
         REQUEST_TYPE type;
         int id;
         KEYCODE key;
-        bool up;
+        bool down;
 
-        KEY_INPUT_MESSAGE(int id, KEYCODE key, bool up)
+        KEY_INPUT_MESSAGE(int id, KEYCODE key, bool down)
         {
             this->type = REQUEST_TYPE_KEY_INPUT;
             this->id = id;
             this->key = key;
-            this->up = up;
+            this->down = down;
         }
     };
 

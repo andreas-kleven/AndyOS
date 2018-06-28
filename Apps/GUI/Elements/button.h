@@ -12,5 +12,7 @@ namespace gui
 		Button(String text);
 
 		virtual void Paint();
+		virtual void MouseDown();
+		virtual void MouseUp();
 	};
 }

@@ -5,7 +5,7 @@ namespace gui
     Element::Element(Rect bounds)
     {
         this->bounds = bounds;
-        this->parent = 0;
+        this->isActive = false;
     }
 
     Element::Element(int x, int y, int width, int height)
