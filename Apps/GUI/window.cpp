@@ -88,12 +88,17 @@ namespace gui
                 if (input->down)
                 {
                     if (active_element)
+                    {
                         active_element->KeyDown(input->key);
+                        active_element->KeyPress(input->key);
+                    }
                 }
                 else
                 {
                     if (active_element)
+                    {
                         active_element->KeyUp(input->key);
+                    }
                 }
             }
         }

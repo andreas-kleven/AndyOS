@@ -24,6 +24,8 @@ namespace gui
     //protected:
         virtual void KeyDown(KEYCODE key) { };
         virtual void KeyUp(KEYCODE key) { };
+        virtual void KeyPress(KEYCODE key) { };
+        
         virtual void MouseDown() { };
         virtual void MouseUp() { };
 

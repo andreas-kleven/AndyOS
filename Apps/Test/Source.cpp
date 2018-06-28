@@ -14,18 +14,24 @@ class MainWindow : public Window
 public:
 	Label* label;
 	Button* button;
+	TextBox* textBox;
 
 	MainWindow(char* title)
 		: Window(title)
 	{
 		label = new Label("Label");
 		button = new Button("A button");
+		textBox = new TextBox();
 
 		button->bounds = Rect(100, 200, 80, 20);
 		button->OnClick = btnClick;
 
+		textBox->bounds.x = 10;
+		textBox->bounds.y = 30;
+
 		AddChild(label);
 		AddChild(button);
+		AddChild(textBox);
 	}
 };
 
