@@ -1,6 +1,7 @@
 #pragma once
 #include <sys/msg.h>
 #include "GUI/messages.h"
+#include "window.h"
 
 namespace gui
 {
@@ -10,6 +11,9 @@ namespace gui
         static bool connected;
 
         static void Init();
+        static MESSAGE MessageHandler(MESSAGE msg);
+
+        static void AddWindow(Window* wnd);
 
         template <class IN, class OUT>
         static bool SendRequest(IN req, OUT& res, bool ignore_disconnected = false)

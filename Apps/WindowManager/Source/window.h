@@ -19,6 +19,7 @@ public:
 	Color color_title;
 
 	int id;
+	int proc_id;
 	WINDOW_STATE state;
 	Rect bounds;
 	bool focused;
@@ -31,7 +32,7 @@ public:
 	Window* next;
 	Window* previous;
 
-	Window(char* title, int width, int height, uint32* framebuffer);
+	Window(int proc_id, char* title, int width, int height, uint32* framebuffer);
 
 	void Paint(GC& main_gc);
 	void Close();

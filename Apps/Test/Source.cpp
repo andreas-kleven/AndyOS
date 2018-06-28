@@ -10,11 +10,19 @@ using namespace gui;
 class MainWindow : public Window
 {
 public:
+	Label* label;
+	Button* button;
+
 	MainWindow(char* title)
 		: Window(title)
 	{
-		Label* label = new Label("Label");
+		label = new Label("Label");
+		button = new Button("A button");
+
+		button->bounds = Rect(100, 200, 80, 20);
+
 		AddChild(label);
+		AddChild(button);
 	}
 };
 

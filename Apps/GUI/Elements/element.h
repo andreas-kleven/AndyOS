@@ -7,14 +7,13 @@ namespace gui
     class Element : public GUIBase
     {
     public:
-        Rect bounds;
-
         Color foreground;
         Color background;
 
         Element(Rect bounds);
         Element(int x, int y, int width, int height);
 
+        Rect GetGlobalBounds();
         GC CreateGC() const;
 
         virtual void Paint() { }

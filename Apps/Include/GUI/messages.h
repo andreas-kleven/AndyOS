@@ -1,4 +1,5 @@
 #pragma once
+#include <AndyOS.h>
 #include <sys/drawing.h>
 #include "definitions.h"
 #include "string.h"
@@ -10,7 +11,9 @@ namespace gui
     {
         REQUEST_TYPE_CONNECT,
         REQUEST_TYPE_CREATE_WINDOW,
-        REQUEST_TYPE_PAINT
+        REQUEST_TYPE_PAINT,
+        REQUEST_TYPE_KEY_INPUT,
+        REQUEST_TYPE_MOUSE_INPUT
     };
 
     struct SIMPLE_REQUEST
@@ -72,6 +75,44 @@ namespace gui
             this->type = REQUEST_TYPE_PAINT;
             this->id = id;
             this->bounds = bounds;
+        }
+    };
+
+    struct WINDOW_MESSAGE
+    {
+        REQUEST_TYPE type;
+        int id;
+    };
+
+    struct KEY_INPUT_MESSAGE
+    {
+        REQUEST_TYPE type;
+        int id;
+        KEYCODE key;
+        bool up;
+
+        KEY_INPUT_MESSAGE(int id, KEYCODE key, bool up)
+        {
+            this->type = REQUEST_TYPE_KEY_INPUT;
+            this->id = id;
+            this->key = key;
+            this->up = up;
+        }
+    };
+
+    struct MOUSE_INPUT_MESSAGE
+    {
+        REQUEST_TYPE type;
+        int id;
+        int x;
+        int y;
+
+        MOUSE_INPUT_MESSAGE(int id, int x, int y)
+        {
+            this->type = REQUEST_TYPE_MOUSE_INPUT;
+            this->id = id;
+            this->x = x;
+            this->y = y;
         }
     };
 }

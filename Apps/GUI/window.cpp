@@ -6,8 +6,6 @@ namespace gui
 {
     Window::Window(char* title)
     {
-        this->parent = 0;
-
         Client::Init();
 
         CREATE_WINDOW_RESPONSE response;
@@ -18,6 +16,8 @@ namespace gui
             this->height = response.height;
             this->gc = GC(response.width, response.height, response.framebuffer);
 	        Drawing::Clear(Color::White, this->gc);
+
+            Client::AddWindow(this);
         }
     }
 
@@ -44,5 +44,48 @@ namespace gui
         }
 
         elem->Paint();
+    }
+
+    void Window::HandleMessage(MESSAGE& msg)
+    {
+        REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
+
+        if (type == REQUEST_TYPE_KEY_INPUT)
+        {
+            KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)msg.data;
+
+            if (input->up)
+            {
+                KeyUp(input->key);
+            }
+            else
+            {
+                KeyDown(input->key);
+            }
+        }
+        else if (type == REQUEST_TYPE_MOUSE_INPUT)
+        {
+            MOUSE_INPUT_MESSAGE* input = (MOUSE_INPUT_MESSAGE*)msg.data;
+            HoverElement(this, input->x, input->y);
+        }
+    }
+
+    void Window::HoverElement(GUIBase* elem, int x, int y)
+    {
+        for (int i = 0; i < elem->elements.Count(); i++)
+        {
+            Element* child = (Element*)elem->elements[i];
+            bool isInside = child->bounds.Contains(x, y);
+
+            if (isInside != child->isHovering)
+            {
+                HoverElement(child, x, y);
+            }
+        }
+
+        if (elem != this)
+        {
+            elem->isHovering = ((Element*)elem)->bounds.Contains(x, y);;
+        }
     }
 }

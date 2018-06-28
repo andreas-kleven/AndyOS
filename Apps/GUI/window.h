@@ -1,6 +1,7 @@
 #pragma once
 #include <AndyOS.h>
 #include <sys/drawing.h>
+#include <sys/msg.h>
 #include "Elements/element.h"
 #include "definitions.h"
 #include "guibase.h"
@@ -19,7 +20,10 @@ namespace gui
 
         void Paint();
 
+        void HandleMessage(MESSAGE& msg);
+
     private:
         void PaintElement(GUIBase* elem);
+        void HoverElement(GUIBase* elem, int x, int y);
     };
 }

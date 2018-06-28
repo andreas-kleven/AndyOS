@@ -146,7 +146,7 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 
 			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
-			Window* wnd = new Window(request->title, width, height, (uint32*)addr1);
+			Window* wnd = new Window(msg.src_proc, request->title, width, height, (uint32*)addr1);
 			WindowManager::AddWindow(wnd);
 
 			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
@@ -238,13 +238,31 @@ void WindowManager::HandleMouseInput()
 	bool left;
 	bool right;
 	bool middle;
+	int cx, cy;
 
 	get_mouse_buttons(left, right, middle);
-	get_mouse_pos(cursor_x, cursor_y);
+	get_mouse_pos(cx, cy);
+
+	bool mouse_moved = cx != cursor_x || cy != cursor_y;
+
+	cursor_x = cx;
+	cursor_y = cy;
 
 	int time = get_ticks();
 
 	Window* wnd = GetWindowAtCursor();
+	hover_window = wnd;
+
+	if (mouse_moved)
+	{
+		if (hover_window)
+		{
+			int relx = cx - hover_window->bounds.x;
+			int rely = cy - hover_window->bounds.y - GUI_TITLEBAR_HEIGHT;
+			MOUSE_INPUT_MESSAGE msg(hover_window->id, relx, rely);
+			post_message(hover_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
+		}
+	}
 
 	if (left)
 	{
@@ -322,7 +340,17 @@ void WindowManager::HandleMouseInput()
 
 void WindowManager::HandleKeyInput()
 {
-
+	if (focused_window)
+	{
+		for (int i = 0; i < 0x100; i++)
+		{
+			if (get_key_down((KEYCODE)i))
+			{
+				KEY_INPUT_MESSAGE msg(focused_window->id, (KEYCODE)i, false);
+				post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+			}
+		}
+	}
 }
 
 

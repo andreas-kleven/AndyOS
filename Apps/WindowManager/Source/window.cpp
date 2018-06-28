@@ -4,16 +4,17 @@
 
 static int new_id = 1;
 
-Window::Window(char* title, int width, int height, uint32* framebuffer)
+Window::Window(int proc_id, char* title, int width, int height, uint32* framebuffer)
 {
 	color_background = Color(0, 0.5, 0.5);
 	color_foreground = Color::White;
 	color_title = Color::Black;
 
+	this->id = new_id++;
+	this->proc_id = proc_id;
+
 	this->title = new char[strlen(title) + 1];
 	strcpy(this->title, title);
-
-	id = new_id++;
 
 	state = WINDOW_STATE_NORMAL;
 	focused = false;
