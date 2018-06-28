@@ -3,6 +3,7 @@
 int strcmp(const char* str1, const char* str2);
 int strcicmp(char const *a, char const *b);
 char* strcpy(char *dest, const char *src);
+char* strncpy(char *dest, const char *src, int length);
 unsigned int strlen(const char* str);
 char* strcat(char* dest, const char* src);
 char* strncat(char* dest, const char* src, int n);
@@ -41,9 +42,9 @@ public:
 		delete[] buffer;
 	}
 
-	inline int Length() { return strlen(buffer); }
+	inline int Length() const { return strlen(buffer); }
 
-	inline char* ToChar()
+	inline char* ToChar() const
 	{
 		int len = Length();
 		char* c = new char[len + 1];
@@ -52,7 +53,7 @@ public:
 		return c;
 	}
 
-	bool Contains(String str)
+	bool Contains(String str) const
 	{
 		char* a = buffer;
 
@@ -69,6 +70,18 @@ public:
 		}
 
 		return 0;
+	}
+
+	String Remove(const int index) const
+	{
+		int length = index + 1;
+
+		if (length > Length() || length < 0)
+			return "";
+
+		char newStr[length];
+		strncpy(newStr, buffer, length);
+		return String(newStr);
 	}
 
 	/*void String::Split(List<String>& out, char delim)

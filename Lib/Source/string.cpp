@@ -35,6 +35,16 @@ char* strcpy(char* dest, const char* src)
 	return s1_p;
 }
 
+char* strncpy(char* dest, const char* src, int length)
+{
+	char *s1_p = dest;
+	while (length && (*dest++ = *src++)) length--;
+
+	*dest = 0;
+	while (length--) *dest++ = 0;
+	return s1_p;
+}
+
 unsigned int strlen(const char* str)
 {
 	unsigned int len = 0;
