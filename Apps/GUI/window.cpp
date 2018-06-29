@@ -59,7 +59,7 @@ namespace gui
         if (type == REQUEST_TYPE_KEY_INPUT)
         {
             KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)msg.data;
-            InputParser::Update(input->code, input->pressed);
+            InputParser::HandleKey(input->code, input->pressed);
 
             if (input->code == KEY_LBUTTON || input->code == KEY_RBUTTON || input->code == KEY_MBUTTON)
             {
@@ -115,6 +115,7 @@ namespace gui
             mouse_x = input->x;
             mouse_y = input->y;
 
+            InputParser::HandleMouse(input->dx, input->dy);
             HoverElement(this, input->x, input->y);
         }
     }

@@ -2,43 +2,28 @@
 #include "HAL/hal.h"
 #include "math.h"
 
-float Mouse::x;
-float Mouse::y;
-float Mouse::sensitivity;
+int x;
+int y;
 
-bool Mouse::mouse_L;
-bool Mouse::mouse_R;
-bool Mouse::mouse_M;
+int scroll_x;
+int scroll_y;
 
-int Mouse::scroll_x;
-int Mouse::scroll_y;
+bool left = 0;
+bool right = 0;
+bool middle = 0;
 
-uint32 w;
-uint32 h;
+int sx;
+int sy;
 
 uint8 mouse_cycle;
 uint8 mouse_byte[4];
 
 bool initialized;
 
-int sx;
-int sy;
-
-float deltaX;
-float deltaY;
-
 STATUS Mouse::Init(uint32 width, uint32 height, float sens)
 {
-	w = width;
-	h = height;
-	sensitivity = sens;
-
-	mouse_L = 0;
-	mouse_R = 0;
-	mouse_M = 0;
-
-	x = 0;
-	y = 0;
+	ResetPos();
+	ResetScroll();
 
 	IDT::InstallIRQ(44, (IRQ_HANDLER)Mouse_ISR);
 
@@ -123,6 +108,37 @@ uint8 Mouse::MouseRead()
 	return inb(MOUSE_PORT0);
 }
 
+void Mouse::GetButtons(bool& _left, bool& _right, bool& _middle)
+{
+	_left = left;
+	_right = right;
+	_middle = middle;
+}
+
+void Mouse::GetPos(int& _x, int& _y)
+{
+	_x = x;
+	_y = y;
+}
+
+void Mouse::GetScroll(int& x, int& y)
+{
+	x = scroll_x;
+	y = scroll_y;
+}
+
+void Mouse::ResetPos()
+{
+	x = 0;
+	y = 0;
+}
+
+void Mouse::ResetScroll()
+{
+	scroll_x = 0;
+	scroll_y = 0;
+}
+
 void Mouse::Mouse_ISR(REGS* regs)
 {
 	if (initialized)
@@ -160,18 +176,12 @@ void Mouse::Mouse_ISR(REGS* regs)
 			if (mouse_byte[0] & 0x20)
 				sy |= 0xFFFFFF00;
 
-			deltaX = sx * sensitivity;
-			deltaY = sy * sensitivity;
+			x += sx;
+			y += sy;
 
-			//float scaleX = abs(deltaX) / 20 + 1;
-			//float scaleY = abs(deltaY) / 20 + 1;
-
-			x = clamp(x + deltaX, 0.f, (float)w);
-			y = clamp(y - deltaY, 0.f, (float)h);
-
-			mouse_L = mouse_byte[0] & 1;
-			mouse_R = mouse_byte[0] >> 1 & 1;
-			mouse_M = mouse_byte[0] >> 2 & 1;
+			left = mouse_byte[0] & 1;
+			right = mouse_byte[0] >> 1 & 1;
+			middle = mouse_byte[0] >> 2 & 1;
 
 			mouse_cycle = 0;
 			mouse_cycle = 3;

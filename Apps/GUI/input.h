@@ -19,9 +19,12 @@ struct KEY_PACKET
 class InputParser
 {
 public:
-    static void Update(KEYCODE code, bool pressed);
+    static void HandleKey(KEYCODE code, bool pressed);
     static KEY_PACKET GetPacket();
     static bool GetKeyDown(KEYCODE code);
+
+	static void HandleMouse(int dx, int dy);
+	static void GetMouseDelta(int& dx, int& dy);
 
 private:
     static void DecodeCharacter(KEY_PACKET& packet);

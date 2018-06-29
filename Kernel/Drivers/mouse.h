@@ -9,18 +9,15 @@
 class Mouse
 {
 public:
-	static float x;
-	static float y;
-	static float sensitivity;
-
-	static bool mouse_L;
-	static bool mouse_R;
-	static bool mouse_M;
-
-	static int scroll_x;
-	static int scroll_y;
-
 	static STATUS Init(uint32 width, uint32 height, float sens);
+
+	static void GetButtons(bool& left, bool& right, bool& middle);
+
+	static void GetPos(int& x, int& y);
+	static void GetScroll(int& x, int& y);
+
+	static void ResetPos();
+	static void ResetScroll();
 
 private:
 	static void MouseWait(uint8 type);

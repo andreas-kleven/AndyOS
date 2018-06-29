@@ -5,7 +5,10 @@ static bool keystates[MAX_KEYS];
 static KEYCODE last_code;
 static bool last_pressed;
 
-void InputParser::Update(KEYCODE code, bool pressed)
+static int delta_x;
+static int delta_y;
+
+void InputParser::HandleKey(KEYCODE code, bool pressed)
 {
     keystates[code] = pressed;
     last_code = code;
@@ -33,6 +36,18 @@ KEY_PACKET InputParser::GetPacket()
 bool InputParser::GetKeyDown(KEYCODE code)
 {
     return keystates[code];
+}
+
+void InputParser::HandleMouse(int dx, int dy)
+{
+	delta_x += dx;
+	delta_y += dy;
+}
+
+void InputParser::GetMouseDelta(int& dx, int& dy)
+{
+	dx = delta_x;
+	dy = delta_y;
 }
 
 void InputParser::DecodeCharacter(KEY_PACKET& packet)

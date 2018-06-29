@@ -9,7 +9,6 @@ float p3 = 0;
 float p4 = 1;
 float p5 = 60;
 
-Vector3 last_mouse_pos;
 int ticks;
 int totalFrames = 0;
 int startTicks = 0;
@@ -39,9 +38,8 @@ void GEngine::StartGame(Game* game)
 
 	char buf[256];
 
-	int mouse_x, mouse_y;
-	get_mouse_pos(mouse_x, mouse_y);
-	last_mouse_pos = Vector3(mouse_x, mouse_y, 0);
+	float mouse_x = Input::GetAxis(AXIS_X);
+	float mouse_y = Input::GetAxis(AXIS_Y);
 
 	ticks = get_ticks();
 
@@ -115,41 +113,15 @@ void GEngine::Update()
 	deltaTime = (get_ticks() - ticks) / 1000.f;
 	ticks = get_ticks();
 
-	/*if (Mouse::x == GL::m_width)
-	{
-		last_mouse_pos.x = 1;
-		Mouse::x = 1;
-	}
-	else if (Mouse::x == 0)
-	{
-		last_mouse_pos.x = GL::m_width - 1;
-		Mouse::x = GL::m_width - 1;
-	}
-
-	if (Mouse::y == GL::m_height)
-	{
-		last_mouse_pos.y = 1;
-		Mouse::y = 1;
-	}
-	else if (Mouse::y == 0)
-	{
-		last_mouse_pos.y = GL::m_height - 1;
-		Mouse::y = GL::m_height - 1;
-	}*/
-
-	int mouse_x, mouse_y;
-	get_mouse_pos(mouse_x, mouse_y);
-	Vector3 mouse_pos = Vector3(mouse_x, mouse_y, 0);
+	float mouse_x = Input::GetAxis(AXIS_X);
+	float mouse_y = Input::GetAxis(AXIS_Y);
 
 	bool mouse_r, mouse_l, mouse_m;
 	get_mouse_buttons(mouse_l, mouse_r, mouse_m);
 
-	Vector3 mouse_delta = mouse_pos - last_mouse_pos;
-	Vector3 mouse_axis = mouse_delta * deltaTime;
-	last_mouse_pos = mouse_pos;
+	Vector3 mouse_axis = Vector3(mouse_x, mouse_y, 0) * deltaTime;
 
-	//float sign = Keyboard::shift ? -1 : 1;.
-	float sign = 1;
+	float sign = Input::GetKey(KEY_LSHIFT) ? -1 : 1;
 
 	if (Input::GetKey(KEY_LCTRL))
 	{
@@ -213,11 +185,11 @@ void GEngine::Update()
 	if (mouse_r)
 	{
 		LightSource* light = active_game->lights[0];
-		light->transform.Translate(Vector3(mouse_delta.x, -mouse_delta.y, 0) * 0.1f);
+		light->transform.Translate(Vector3(mouse_axis.x, -mouse_axis.y, 0) * 0.1f);
 	}
 	else
 	{
-		cam->RotateEuler(Vector3(mouse_delta.y, mouse_delta.x, 0) * 0.01f);
+		cam->RotateEuler(Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.01f);
 	}
 
 	float speed = 10;

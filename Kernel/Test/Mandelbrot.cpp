@@ -120,7 +120,7 @@ void Mandelbrot::Run()
 
 	int iter_max = 256;
 
-	Mouse::scroll_y = 4;
+	//Mouse::scroll_y = 4;
 
 	double zoom = 4;
 	double ofx = 0;

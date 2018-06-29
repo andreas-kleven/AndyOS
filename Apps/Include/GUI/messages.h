@@ -113,13 +113,17 @@ namespace gui
         int id;
         int x;
         int y;
+        int dx;
+        int dy;
 
-        MOUSE_INPUT_MESSAGE(int id, int x, int y)
+        MOUSE_INPUT_MESSAGE(int id, int x, int y, int dx, int dy)
         {
             this->type = REQUEST_TYPE_MOUSE_INPUT;
             this->id = id;
             this->x = x;
             this->y = y;
+            this->dx = dx;
+            this->dy = dy;
         }
     };
 }

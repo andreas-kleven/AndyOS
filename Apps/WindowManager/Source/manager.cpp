@@ -26,6 +26,11 @@ static uint32 cursor_bitmap[8 * 14] =
 	0x00000000, 0x00000000, 0x00000000, 0xFF000000, 0xFF000000, 0xFF000000, 0x00000000, 0x00000000
 };
 
+const int width = 1024;
+const int height = 768;
+
+const float sensitivity = 0.5f;
+
 static Color col_taskbar;
 static Color col_desktop_bg;
 
@@ -43,12 +48,14 @@ static Window* last_window;
 static Window* focused_window;
 static Window* hover_window;
 
-static int cursor_x;
-static int cursor_y;
+static float cursor_x;
+static float cursor_y;
 
 static int cursor_left = false;
 static int cursor_right = false;
 static int cursor_middle = false;
+
+static bool cursor_enabled;
 
 static bool mouse_click_L;
 static bool mouse_click_R;
@@ -62,7 +69,7 @@ static WINDOW_DRAG_INFO window_drag_info;
 
 void WindowManager::Start()
 {
-	gc = GC(1024, 768);
+	gc = GC(width, height);
 	gc_background = GC(gc.width, gc.height);
 	gc_taskbar = GC(gc.width, GUI_TASKBAR_HEIGHT);
 	gc_cursor = GC(8, 14);
@@ -175,6 +182,8 @@ void WindowManager::UpdateLoop()
 {
 	while (1)
 	{
+		cursor_enabled = !focused_window || !focused_window->capture;
+
 		HandleMouseInput();
 		HandleKeyInput();
 
@@ -182,7 +191,7 @@ void WindowManager::UpdateLoop()
 		PaintWindows();
 		PaintTaskbar();
 		
-		if (!focused_window || !focused_window->capture)
+		if (cursor_enabled)
 			PaintCursor();
 
 		Drawing::Draw(gc);
@@ -237,7 +246,7 @@ void WindowManager::PaintCursor()
 		}
 	}
 
-	Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, gc, cursor_x, cursor_y, 1);
+	Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, gc, (int)cursor_x, (int)cursor_y, 1);
 }
 
 void WindowManager::HandleMouseInput()
@@ -245,12 +254,16 @@ void WindowManager::HandleMouseInput()
 	bool left;
 	bool right;
 	bool middle;
-	int cx, cy;
+	int dx, dy;
 
 	get_mouse_buttons(left, right, middle);
-	get_mouse_pos(cx, cy);
+	get_mouse_pos(dx, dy);
 
-	bool mouse_moved = cx != cursor_x || cy != cursor_y;
+	if (cursor_enabled)
+	{
+		cursor_x = clamp(cursor_x + sensitivity * dx, 0.0f, (float)width);
+		cursor_y = clamp(cursor_y - sensitivity * dy, 0.0f, (float)height);
+	}
 
 	Window* wnd = GetWindowAtCursor();
 	hover_window = wnd;
@@ -279,21 +292,22 @@ void WindowManager::HandleMouseInput()
 	cursor_left = left;
 	cursor_right = right;
 	cursor_middle = middle;
-	cursor_x = cx;
-	cursor_y = cy;
 
-	int time = get_ticks();
-
-	if (mouse_moved)
+	if (dx != 0 || dy != 0)
 	{
 		if (hover_window)
 		{
-			int relx = cx - hover_window->bounds.x;
-			int rely = cy - hover_window->bounds.y - GUI_TITLEBAR_HEIGHT;
-			MOUSE_INPUT_MESSAGE msg(hover_window->id, relx, rely);
+			int relx = cursor_x - hover_window->bounds.x;
+			int rely = cursor_y - hover_window->bounds.y - GUI_TITLEBAR_HEIGHT;
+			int _dx = (focused_window == hover_window) ? dx : 0;
+			int _dy = (focused_window == hover_window) ? dy : 0;
+
+			MOUSE_INPUT_MESSAGE msg(hover_window->id, relx, rely, _dx, _dy);
 			post_message(hover_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
 		}
 	}
+
+	int time = get_ticks();
 
 	if (left)
 	{

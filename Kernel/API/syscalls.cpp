@@ -85,15 +85,13 @@ uint32 get_ticks()
 
 void get_mouse_pos(int& x, int& y)
 {
-	x = Mouse::x;
-	y = Mouse::y;
+	Mouse::GetPos(x, y);
+	Mouse::ResetPos();
 }
 
 void get_mouse_buttons(bool& left, bool& right, bool& middle)
 {
-	left = Mouse::mouse_L;
-	right = Mouse::mouse_R;
-	middle = Mouse::mouse_M;
+	Mouse::GetButtons(left, right, middle);
 }
 
 bool get_last_key(KEYCODE& code, bool& pressed)
