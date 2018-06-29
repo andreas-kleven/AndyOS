@@ -138,7 +138,7 @@ void Mandelbrot::Run()
 		//double ofx = (Mouse::x - width / 2) / (double)width;
 		//double ofy = (Mouse::y - height / 2) / (double)width;
 
-		if (Keyboard::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
+		/*if (Keyboard::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
 		if (Keyboard::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
 
 		if (Keyboard::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
@@ -146,7 +146,7 @@ void Mandelbrot::Run()
 		if (Keyboard::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
 		if (Keyboard::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
 
-		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
+		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;*/
 
 		Drawing::Clear(0, gc_buf);
 		Debug::x = 0;

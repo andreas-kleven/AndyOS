@@ -88,14 +88,14 @@ namespace gui
     {
         REQUEST_TYPE type;
         int id;
-        KEYCODE key;
+        KEYCODE code;
         bool pressed;
 
-        KEY_INPUT_MESSAGE(int id, KEYCODE key, bool pressed)
+        KEY_INPUT_MESSAGE(int id, KEYCODE code, bool pressed)
         {
             this->type = REQUEST_TYPE_KEY_INPUT;
             this->id = id;
-            this->key = key;
+            this->code = code;
             this->pressed = pressed;
         }
     };

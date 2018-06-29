@@ -1,13 +1,5 @@
-#include "Engine.h"
+#include "GEngine.h"
 #include "math.h"
-#include "GL.h"
-#include "MeshComponent.h"
-#include "Collision.h"
-#include "Rigidbody.h"
-#include "SphereCollider.h"
-#include "BoxCollider.h"
-#include "DirectionalLight.h"
-#include "Raytracer.h"
 #include "stdio.h"
 #include "ctype.h"
 
@@ -101,13 +93,13 @@ void GEngine::StartGame(Game* game)
 			debug_print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
 		}
 
-		if (get_key_down(KEY_TAB))
+		if (Input::GetKey(KEY_TAB))
 		{
 			GL::MatrixMode(GL_PROJECTION);
 			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * GL::gc_out.width, 1080 * GL::gc_out.height, 90, 1, 10));
 		}
 
-		if (get_key_down(KEY_ESCAPE))
+		if (Input::GetKey(KEY_ESCAPE))
 			break;
 
 		Update();
@@ -159,61 +151,61 @@ void GEngine::Update()
 	//float sign = Keyboard::shift ? -1 : 1;.
 	float sign = 1;
 
-	if (get_key_down(KEY_LCTRL))
+	if (Input::GetKey(KEY_LCTRL))
 	{
 		sign *= 0.2;
 	}
 
-	if (get_key_down(KEY_D1))
+	if (Input::GetKey(KEY_D1))
 	{
 		p1 += sign * deltaTime * 2000;
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
-	if (get_key_down(KEY_D2))
+	if (Input::GetKey(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
-	if (get_key_down(KEY_D3))
+	if (Input::GetKey(KEY_D3))
 	{
 		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
-	if (get_key_down(KEY_D4))
+	if (Input::GetKey(KEY_D4))
 	{
 		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
 		active_game->objects[0]->transform.Translate(Vector3(1, 0, 0) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
-	if (get_key_down(KEY_D5))
+	if (Input::GetKey(KEY_D5))
 	{
 		active_game->objects[0]->transform.Translate(Vector3(0, 1, 0) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
-	if (get_key_down(KEY_D6))
+	if (Input::GetKey(KEY_D6))
 	{
 		active_game->objects[0]->transform.Translate(Vector3(0, 0, 1) * deltaTime * sign);
 		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 
-	if (get_key_down(KEY_D0))
+	if (Input::GetKey(KEY_D0))
 	{
 		active_game->objects[1]->rigidbody->angularVelocity += Vector3(0, 0, 1) * M_PI * deltaTime * sign;
 	}
 
 	Camera* cam = active_game->GetActiveCamera();
 
-	if (get_key_down(KEY_F))
+	if (Input::GetKey(KEY_F))
 	{
 		active_game->objects[0]->transform.Rotate(Vector3(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
 	}
-	if (get_key_down(KEY_G))
+	if (Input::GetKey(KEY_G))
 	{
 		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
@@ -230,20 +222,20 @@ void GEngine::Update()
 
 	float speed = 10;
 
-	if (get_key_down(KEY_LSHIFT))
+	if (Input::GetKey(KEY_LSHIFT))
 		speed /= 4;
 
-	if (get_key_down(KEY_D))
+	if (Input::GetKey(KEY_D))
 		cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime);
-	if (get_key_down(KEY_A))
+	if (Input::GetKey(KEY_A))
 		cam->transform.Translate(-cam->transform.GetRightVector() * speed * deltaTime);
-	if (get_key_down(KEY_W))
+	if (Input::GetKey(KEY_W))
 		cam->transform.Translate(cam->transform.GetForwardVector() * speed * deltaTime);
-	if (get_key_down(KEY_S))
+	if (Input::GetKey(KEY_S))
 		cam->transform.Translate(-cam->transform.GetForwardVector() * speed * deltaTime);
-	if (get_key_down(KEY_E))
+	if (Input::GetKey(KEY_E))
 		cam->transform.Translate(cam->transform.GetUpVector() * speed * deltaTime);
-	if (get_key_down(KEY_Q))
+	if (Input::GetKey(KEY_Q))
 		cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime);
 
 	for (int i = 0; i < active_game->objects.Count(); i++)

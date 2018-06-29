@@ -59,8 +59,9 @@ namespace gui
         if (type == REQUEST_TYPE_KEY_INPUT)
         {
             KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)msg.data;
+            InputParser::Update(input->code, input->pressed);
 
-            if (input->key == KEY_LBUTTON || input->key == KEY_RBUTTON || input->key == KEY_MBUTTON)
+            if (input->code == KEY_LBUTTON || input->code == KEY_RBUTTON || input->code == KEY_MBUTTON)
             {
                 Element* elem = GetElementAt(mouse_x, mouse_y, this);
 
@@ -88,19 +89,21 @@ namespace gui
             }
             else
             {
+                KEY_PACKET packet = InputParser::GetPacket();
+
                 if (input->pressed)
                 {
                     if (active_element)
                     {
-                        active_element->KeyDown(input->key);
-                        active_element->KeyPress(input->key);
+                        active_element->KeyDown(packet);
+                        active_element->KeyPress(packet);
                     }
                 }
                 else
                 {
                     if (active_element)
                     {
-                        active_element->KeyUp(input->key);
+                        active_element->KeyUp(packet);
                     }
                 }
             }

@@ -2,6 +2,7 @@
 #include <AndyOS.h>
 #include <sys/drawing.h>
 #include "GUI/messages.h"
+#include "input.h"
 
 namespace gui
 {
@@ -24,9 +25,9 @@ namespace gui
     //protected:
         virtual void Focus() { };
 
-        virtual void KeyDown(KEYCODE key) { };
-        virtual void KeyUp(KEYCODE key) { };
-        virtual void KeyPress(KEYCODE key) { };
+        virtual void KeyDown(KEY_PACKET packet) { };
+        virtual void KeyUp(KEY_PACKET packet) { };
+        virtual void KeyPress(KEY_PACKET packet) { };
         
         virtual void MouseDown() { };
         virtual void MouseUp() { };

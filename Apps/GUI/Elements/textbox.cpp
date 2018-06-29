@@ -39,9 +39,9 @@ namespace gui
         focusTime = get_ticks();
     }
 
-    void TextBox::KeyPress(KEYCODE key)
+    void TextBox::KeyPress(KEY_PACKET packet)
     {
-        if (key == KEY_BACK)
+        if (packet.code == KEY_BACK)
         {
             if (text.Length() > 0)
             {
@@ -51,8 +51,11 @@ namespace gui
         }
         else
         {
-            text += (char)key;
-            focusTime = get_ticks();
-        }        
+            if (packet.character)
+            {
+                text += packet.character;
+                focusTime = get_ticks();
+            }
+        }
     }
 }

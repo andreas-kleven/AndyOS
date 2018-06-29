@@ -1,8 +1,9 @@
 #include "Input.h"
+#include "GUI.h"
 
 bool Input::GetKey(KEYCODE key)
 {
-	return get_key_down(key);
+	return InputParser::GetKeyDown(key);
 }
 
 float Input::GetAxis(int axis)

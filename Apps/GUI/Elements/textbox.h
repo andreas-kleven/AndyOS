@@ -14,6 +14,6 @@ namespace gui
 		virtual void Paint();
 
         virtual void Focus();
-        virtual void KeyPress(KEYCODE key);
+        virtual void KeyPress(KEY_PACKET packet);
 	};
 }

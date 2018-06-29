@@ -49,37 +49,37 @@ void Thing::Update(float delta)
 
 	float speed = 20;
 
-	if (get_key_down(KEY_SPACE))
+	if (Input::GetKey(KEY_SPACE))
 	{
 		phys->AddImpulse(Vector3(0, speed * delta, 0));
 	}
 
-	if (get_key_down(KEY_L))
+	if (Input::GetKey(KEY_L))
 	{
 		phys->AddImpulse(Vector3(speed, 0, 0) * delta);
 	}
 
-	if (get_key_down(KEY_J))
+	if (Input::GetKey(KEY_J))
 	{
 		phys->AddImpulse(Vector3(-speed, 0, 0) * delta);
 	}
 
-	if (get_key_down(KEY_I))
+	if (Input::GetKey(KEY_I))
 	{
 		phys->AddImpulse(Vector3(0, 0, speed) * delta);
 	}
 
-	if (get_key_down(KEY_K))
+	if (Input::GetKey(KEY_K))
 	{
 		phys->AddImpulse(Vector3(0, 0, -speed) * delta);
 	}
 
-	if (get_key_down(KEY_O))
+	if (Input::GetKey(KEY_O))
 	{
 		phys->AddImpulse(Vector3(0, speed + 9.8, 0) * delta);
 	}
 
-	if (get_key_down(KEY_U))
+	if (Input::GetKey(KEY_U))
 	{
 		phys->AddImpulse(Vector3(0, -speed, 0) * delta);
 	}

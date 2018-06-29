@@ -96,11 +96,6 @@ void get_mouse_buttons(bool& left, bool& right, bool& middle)
 	middle = Mouse::mouse_M;
 }
 
-bool get_key_down(KEYCODE key)
-{
-	return Keyboard::GetKeyDown(key);
-}
-
 bool get_last_key(KEYCODE& code, bool& pressed)
 {
 	return Keyboard::GetLastKey(code, pressed);
@@ -272,7 +267,6 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)get_ticks);
 	InstallSyscall(SYSCALL_GET_MOUSE_POS, (SYSCALL_HANDLER)get_mouse_pos);
 	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, (SYSCALL_HANDLER)get_mouse_buttons);
-	InstallSyscall(SYSCALL_GET_KEY_DOWN, (SYSCALL_HANDLER)get_key_down);
 	InstallSyscall(SYSCALL_GET_LAST_KEY, (SYSCALL_HANDLER)get_last_key);
 	InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);

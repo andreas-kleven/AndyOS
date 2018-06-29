@@ -5,7 +5,13 @@
 #include "Lib/circbuf.h"
 #include "Lib/debug.h"
 
-#define MAX_PACKETS 32
+#define KEY_BUFFER_SIZE 32
+
+struct KEY_ACTION
+{
+	KEYCODE code;
+	bool pressed;
+};
 
 const KEYCODE scancodes[] =
 {
@@ -103,26 +109,26 @@ const KEYCODE scancodes[] =
 	KEY_INVALID,
 };
 
-bool Keyboard::ctrl;
-bool Keyboard::shift;
-bool Keyboard::alt;
+bool ctrl;
+bool shift;
+bool alt;
 
-bool Keyboard::caps;
-bool Keyboard::num;
-bool Keyboard::scroll;
-
-bool keystates[MAX_KEYS];
+bool caps;
+bool num;
+bool scroll;
 
 bool extended;
 uint8 scancode;
 
-KEY_PACKET last_key;
+uint8 scan;
+bool pressed;
+KEYCODE code;
 
-CircularBuffer<KEY_PACKET> packets;
+CircularBuffer<KEY_ACTION> key_buffer;
 
 STATUS Keyboard::Init()
 {
-	packets = CircularBuffer<KEY_PACKET>(MAX_PACKETS);
+	key_buffer = CircularBuffer<KEY_ACTION>(KEY_BUFFER_SIZE);
 
 	IDT::InstallIRQ(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
 	return STATUS_SUCCESS;
@@ -130,12 +136,12 @@ STATUS Keyboard::Init()
 
 bool Keyboard::GetLastKey(KEYCODE& code, bool& pressed)
 {
-	if (packets.IsEmpty())
+	if (key_buffer.IsEmpty())
 		return false;
 
-	KEY_PACKET* packet = packets.Get();
+	KEY_ACTION* packet = key_buffer.Get();
 
-	code = packet->key;
+	code = packet->code;
 	pressed = packet->pressed;
 
 	if (code == KEY_INVALID)
@@ -143,185 +149,6 @@ bool Keyboard::GetLastKey(KEYCODE& code, bool& pressed)
 
 	return true;
 }
-
-bool Keyboard::GetKeyDown(KEYCODE key)
-{
-	return keystates[key];
-}
-
-void Keyboard::DecodeAscii(KEY_PACKET& packet)
-{
-	uint8 key = packet.key;
-	packet.character = 0;
-
-	if (packet.ctrl)
-		return;
-
-	if (packet.alt)
-		return;
-
-	if (!isprint(key))
-	{
-		switch (key)
-		{
-		case KEY_SPACE:
-			key = ' ';
-			break;
-
-		case KEY_TAB:
-			key = '\t';
-			break;
-
-		case KEY_BACK:
-			key = '\b';
-			break;
-
-		case KEY_RETURN:
-			key = '\n';
-			break;
-
-		default:
-			return;
-		}
-	}
-
-	if (isupper(key))
-	{
-		if (packet.shift == packet.caps)
-			key += 32;
-	}
-	else if (isdigit(key))
-	{
-		if (packet.shift)
-		{
-			switch (key)
-			{
-			case KEY_D0:
-				key = '=';
-				break;
-			case KEY_D1:
-				key = '!';
-				break;
-			case KEY_D2:
-				key = '"';
-				break;
-			case KEY_D3:
-				key = '#';
-				break;
-			case KEY_D4:
-				key = '¤';
-				break;
-			case KEY_D5:
-				key = '%';
-				break;
-			case KEY_D6:
-				key = '&';
-				break;
-			case KEY_D7:
-				key = '/';
-				break;
-			case KEY_D8:
-				key = '(';
-				break;
-			case KEY_D9:
-				key = ')';
-				break;
-
-			default:
-				key = 0;
-				break;
-			}
-		}
-	}
-	else
-	{
-		if (packet.shift)
-		{
-			switch (key)
-			{
-			case KEY_BAR:
-				key = '§';
-				break;
-			case KEY_PLUS:
-				key = '?';
-				break;
-			case KEY_BACKSLASH:
-				key = '`';
-				break;
-			case KEY_CARET:
-				key = '^';
-				break;
-			case KEY_QUOTE:
-				key = '*';
-				break;
-			case KEY_LESS:
-				key = '>';
-				break;
-			case KEY_COMMA:
-				key = ';';
-				break;
-			case KEY_DOT:
-				key = ':';
-				break;
-			case KEY_MINUS:
-				key = '_';
-				break;
-			}
-		}
-		else
-		{
-			switch (key)
-			{
-			case KEY_BAR:
-				key = '|';
-				break;
-			case KEY_PLUS:
-				key = '+';
-				break;
-			case KEY_BACKSLASH:
-				key = '\\';
-				break;
-			case KEY_CARET:
-				key = '^';
-				break;
-			case KEY_QUOTE:
-				key = '\'';
-				break;
-			case KEY_LESS:
-				key = '<';
-				break;
-			case KEY_COMMA:
-				key = ',';
-				break;
-			case KEY_DOT:
-				key = '.';
-				break;
-			case KEY_MINUS:
-				key = '-';
-				break;
-
-			case KEY_SPACE:
-				key = ' ';
-				break;
-			case KEY_TAB:
-				key = '\t';
-				break;
-			case KEY_RETURN:
-				key = '\n';
-				break;
-			case KEY_BACK:
-				key = '\b';
-				break;
-			}
-		}
-	}
-
-	packet.character = key;
-}
-
-uint8 scan;
-bool pressed;
-KEYCODE key;
 
 void Keyboard::Keyboard_ISR(REGS* regs)
 {
@@ -337,19 +164,18 @@ void Keyboard::Keyboard_ISR(REGS* regs)
 		{
 			if (!extended)
 			{
-				key = scancodes[scan & ~0x80];
+				code = scancodes[scan & ~0x80];
 				pressed = !(scan & 0x80);
-				keystates[key] = pressed;
 
 				if (pressed)
 				{
-					if (key == KEY_LCTRL || key == KEY_RCTRL) ctrl = 1;
-					else if (key == KEY_LSHIFT || key == KEY_RSHIFT) shift = 1;
-					else if (key == KEY_LALT || key == KEY_RALT) alt = 1;
+					if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 1;
+					else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 1;
+					else if (code == KEY_LALT || code == KEY_RALT) alt = 1;
 
-					else if (key == KEY_CAPS) caps = !caps;
-					else if (key == KEY_NUMLOCK) num = !num;
-					else if (key == KEY_SCROLLLOCK) scroll = !scroll;
+					else if (code == KEY_CAPS) caps = !caps;
+					else if (code == KEY_NUMLOCK) num = !num;
+					else if (code == KEY_SCROLLLOCK) scroll = !scroll;
 
 					scancode = scan;
 				}
@@ -357,23 +183,16 @@ void Keyboard::Keyboard_ISR(REGS* regs)
 				{
 					scan -= 0x80;
 
-					if (key == KEY_LCTRL || key == KEY_RCTRL) ctrl = 0;
-					else if (key == KEY_LSHIFT || key == KEY_RSHIFT) shift = 0;
-					else if (key == KEY_LALT || key == KEY_RALT) alt = 0;
+					if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 0;
+					else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 0;
+					else if (code == KEY_LALT || code == KEY_RALT) alt = 0;
 				}
 
-				last_key.key = key;
-				last_key.pressed = pressed;
-				last_key.shift = shift;
-				last_key.alt = alt;
-				last_key.ctrl = ctrl;
-				last_key.caps = caps;
-				last_key.scroll = scroll;
-				last_key.numlock = num;
-				DecodeAscii(last_key);
-				//Set leds
+				KEY_ACTION key;
+				key.code = code;
+				key.pressed = pressed;
 
-				packets.Add(last_key);
+				key_buffer.Add(key);
 			}
 
 			extended = false;
