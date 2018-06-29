@@ -2,7 +2,10 @@
 #include "HAL/hal.h"
 #include "string.h"
 #include "ctype.h"
+#include "Lib/circbuf.h"
 #include "Lib/debug.h"
+
+#define MAX_PACKETS 32
 
 const KEYCODE scancodes[] =
 {
@@ -115,21 +118,30 @@ uint8 scancode;
 
 KEY_PACKET last_key;
 
+CircularBuffer<KEY_PACKET> packets;
+
 STATUS Keyboard::Init()
 {
+	packets = CircularBuffer<KEY_PACKET>(MAX_PACKETS);
+
 	IDT::InstallIRQ(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
 	return STATUS_SUCCESS;
 }
 
-KEY_PACKET Keyboard::GetLastKey()
+bool Keyboard::GetLastKey(KEYCODE& code, bool& pressed)
 {
-	return last_key;
-}
+	if (packets.IsEmpty())
+		return false;
 
-void Keyboard::DiscardLastKey()
-{
-	//scancode = 0;
-	last_key.key = KEY_INVALID;
+	KEY_PACKET* packet = packets.Get();
+
+	code = packet->key;
+	pressed = packet->pressed;
+
+	if (code == KEY_INVALID)
+		return false;
+
+	return true;
 }
 
 bool Keyboard::GetKeyDown(KEYCODE key)
@@ -360,6 +372,8 @@ void Keyboard::Keyboard_ISR(REGS* regs)
 				last_key.numlock = num;
 				DecodeAscii(last_key);
 				//Set leds
+
+				packets.Add(last_key);
 			}
 
 			extended = false;

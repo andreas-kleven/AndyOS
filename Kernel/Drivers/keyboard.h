@@ -31,9 +31,7 @@ public:
 	static bool scroll;
 
 	static STATUS Init();
-	static KEY_PACKET GetLastKey();
-	static void DiscardLastKey();
-
+	static bool GetLastKey(KEYCODE& code, bool& pressed);
 	static bool GetKeyDown(KEYCODE key);
 
 private:

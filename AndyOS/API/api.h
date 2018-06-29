@@ -17,6 +17,7 @@ void sleep(uint32 ticks);
 void get_mouse_pos(int& x, int& y);
 void get_mouse_buttons(bool& left, bool& right, bool& middle);
 bool get_key_down(KEYCODE key);
+bool get_last_key(KEYCODE& code, bool& pressed);
 
 uint32* alloc(uint32 blocks);
 void free(void* ptr, uint32 blocks);

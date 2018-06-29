@@ -87,14 +87,14 @@ void COM()
 
 	while (1)
 	{
-		KEY_PACKET key = Keyboard::GetLastKey();
+		/*KEY_PACKET key = Keyboard::GetLastKey();
 
 		if (key.key != KEY_INVALID)
 		{
 			char c = key.character;
 			Keyboard::DiscardLastKey();
 			Serial::Transmit(COM_PORT1, c);
-		}
+		}*/
 	}
 }
 
@@ -246,7 +246,7 @@ void GetCommand(char* buf)
 
 	while (1)
 	{
-		KEY_PACKET pack = Keyboard::GetLastKey();
+		/*KEY_PACKET pack = Keyboard::GetLastKey();
 
 		if (pack.key != KEY_INVALID)
 		{
@@ -278,7 +278,7 @@ void GetCommand(char* buf)
 					}
 				}
 			}
-		}
+		}*/
 	}
 }
 

@@ -372,9 +372,12 @@ void WindowManager::HandleKeyInput()
 	{
 		for (int i = 0; i < 0x100; i++)
 		{
-			if (get_key_down((KEYCODE)i))
+			KEYCODE code;
+			bool pressed;
+
+			if (get_last_key(code, pressed))
 			{
-				KEY_INPUT_MESSAGE msg(focused_window->id, (KEYCODE)i, true);
+				KEY_INPUT_MESSAGE msg(focused_window->id, code, pressed);
 				post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
 			}
 		}

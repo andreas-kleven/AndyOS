@@ -101,6 +101,11 @@ bool get_key_down(KEYCODE key)
 	return Keyboard::GetKeyDown(key);
 }
 
+bool get_last_key(KEYCODE& code, bool& pressed)
+{
+	return Keyboard::GetLastKey(code, pressed);
+}
+
 void* alloc(uint32 blocks)
 {
 	VMem::SwitchDir(Scheduler::current_thread->page_dir);
@@ -268,6 +273,7 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_GET_MOUSE_POS, (SYSCALL_HANDLER)get_mouse_pos);
 	InstallSyscall(SYSCALL_GET_MOUSE_BUTTONS, (SYSCALL_HANDLER)get_mouse_buttons);
 	InstallSyscall(SYSCALL_GET_KEY_DOWN, (SYSCALL_HANDLER)get_key_down);
+	InstallSyscall(SYSCALL_GET_LAST_KEY, (SYSCALL_HANDLER)get_last_key);
 	InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 	InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)alloc_shared);

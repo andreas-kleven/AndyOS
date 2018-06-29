@@ -58,6 +58,11 @@ bool get_key_down(KEYCODE key)
 	Call(SYSCALL_GET_KEY_DOWN, key);
 }
 
+bool get_last_key(KEYCODE& code, bool& pressed)
+{
+	return Call(SYSCALL_GET_LAST_KEY, (int)&code, (int)&pressed);
+}
+
 uint32* alloc(uint32 blocks)
 {
 	return (uint32*)Call(SYSCALL_ALLOC, blocks);
