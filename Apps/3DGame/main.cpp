@@ -9,7 +9,7 @@ class GameWindow : public Window
 {
 public:
     GameWindow() 
-        : Window("Game")
+        : Window("Game", 600, 400, true)
     {
         GEngine engine(this->gc);
         engine.StartGame(new MyGame());

@@ -30,11 +30,18 @@ namespace gui
     {
         REQUEST_TYPE type;
         char title[256];
+        int width;
+        int height;
+        bool capture;
 
-        CREATE_WINDOW_REQUEST(char* title) 
+        CREATE_WINDOW_REQUEST(char* title, int width, int height, bool capture)
         { 
             this->type = REQUEST_TYPE_CREATE_WINDOW; 
             strcpy(this->title, title);
+
+            this->width = width;
+            this->height = height;
+            this->capture = capture;
         }
     };
 

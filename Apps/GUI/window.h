@@ -15,7 +15,7 @@ namespace gui
         int width;
         int height;
 
-        Window(char* title);
+        Window(char* title, int width = 400, int height = 300, bool capture = false);
         ~Window();
 
         void Paint();

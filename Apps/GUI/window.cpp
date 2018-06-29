@@ -9,12 +9,12 @@ namespace gui
     static int mouse_x = 0;
     static int mouse_y = 0;
 
-    Window::Window(char* title)
+    Window::Window(char* title, int width, int height, bool capture)
     {
         Client::Init();
 
         CREATE_WINDOW_RESPONSE response;
-        if (Client::SendRequest(CREATE_WINDOW_REQUEST(title), response))
+        if (Client::SendRequest(CREATE_WINDOW_REQUEST(title, width, height, capture), response))
         {
             this->id = response.id;
             this->width = response.width;

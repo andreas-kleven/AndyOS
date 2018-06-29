@@ -142,15 +142,15 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
 			debug_print("Create window request: %s\n", request->title);
 
-			const int width = 400;
-			const int height = 300;
+			int width = request->width;
+			int height = request->height;
 
 			void* addr1;
 			void* addr2;
 
 			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
-			Window* wnd = new Window(msg.src_proc, request->title, width, height, (uint32*)addr1);
+			Window* wnd = new Window(msg.src_proc, request->title, width, height, request->capture, (uint32*)addr1);
 			WindowManager::AddWindow(wnd);
 
 			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
@@ -181,7 +181,10 @@ void WindowManager::UpdateLoop()
 		PaintBackground();
 		PaintWindows();
 		PaintTaskbar();
-		PaintCursor();
+		
+		if (!focused_window || !focused_window->capture)
+			PaintCursor();
+
 		Drawing::Draw(gc);
 	}
 }
