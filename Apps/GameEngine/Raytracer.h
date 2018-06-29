@@ -6,7 +6,7 @@
 class Raytracer
 {
 public:
-	Raytracer(Game* game, GC gc);
+	Raytracer(GC gc);
 	void Render();
 };
 

@@ -15,26 +15,33 @@ int startTicks = 0;
 
 bool BOOL1 = false;
 
-GC _gc;
+float GEngine::deltaTime;
+Game* GEngine::game;
+gui::Window* GEngine::window;
 
-GEngine::GEngine(GC gc)
+GC gc;
+bool paused = false;
+
+List<Component*> all_components;
+List<MeshComponent*> meshComponents;
+List<Rigidbody*> rigidbodies;
+List<Component*> physics_components;
+
+void GEngine::StartGame(Game* game, gui::Window* wnd)
 {
-	_gc = gc;
+	GEngine::game = game;
+	GEngine::window = wnd;
+
+	gc = wnd->gc;
 	GL::Init(gc);
-	active_game = 0;
+
 	deltaTime = 1 / 100.0f;
-}
-
-void GEngine::StartGame(Game* game)
-{
-	active_game = game;
-
 	startTicks = get_ticks();
 
-	Camera* cam = active_game->GetActiveCamera();
+	Camera* cam = game->GetActiveCamera();
 
-	GameObject* thing = active_game->GetObject("Thing");
-	GameObject* floor = active_game->GetObject("Floor");
+	GameObject* thing = game->GetObject("Thing");
+	GameObject* floor = game->GetObject("Floor");
 
 	char buf[256];
 
@@ -44,7 +51,7 @@ void GEngine::StartGame(Game* game)
 	ticks = get_ticks();
 
 	GL::MatrixMode(GL_PROJECTION);
-	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10));
+	GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10));
 
 	/*while (1)
 	{
@@ -98,7 +105,12 @@ void GEngine::StartGame(Game* game)
 		}
 
 		if (Input::GetKey(KEY_ESCAPE))
-			break;
+		{
+			window->SetCapture(paused);
+			paused = !paused;
+
+			while (Input::GetKey(KEY_ESCAPE));
+		}
 
 		Update();
 		//Collision();
@@ -131,65 +143,65 @@ void GEngine::Update()
 	if (Input::GetKey(KEY_D1))
 	{
 		p1 += sign * deltaTime * 2000;
-		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
+		//game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
+		game->objects[0]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Input::GetKey(KEY_D2))
 	{
 		p2 += sign * deltaTime * 400;
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
+		game->objects[0]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Input::GetKey(KEY_D3))
 	{
-		active_game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
+		game->objects[0]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 	if (Input::GetKey(KEY_D4))
 	{
-		//active_game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
-		active_game->objects[0]->transform.Translate(Vector3(1, 0, 0) * deltaTime * sign);
-		//active_game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
+		//game->objects[0]->transform.rotation.x += 2 * M_PI * deltaTime * sign;
+		game->objects[0]->transform.Translate(Vector3(1, 0, 0) * deltaTime * sign);
+		//game->objects[1]->transform.rotation.Rotate(Vector3(1, 0, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Input::GetKey(KEY_D5))
 	{
-		active_game->objects[0]->transform.Translate(Vector3(0, 1, 0) * deltaTime * sign);
-		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
+		game->objects[0]->transform.Translate(Vector3(0, 1, 0) * deltaTime * sign);
+		//game->objects[1]->transform.rotation.Rotate(Vector3(0, 1, 0), M_PI * deltaTime * sign);
 	}
 
 	if (Input::GetKey(KEY_D6))
 	{
-		active_game->objects[0]->transform.Translate(Vector3(0, 0, 1) * deltaTime * sign);
-		//active_game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
+		game->objects[0]->transform.Translate(Vector3(0, 0, 1) * deltaTime * sign);
+		//game->objects[1]->transform.rotation.Rotate(Vector3(0, 0, 1), M_PI * deltaTime * sign);
 	}
 
 
 	if (Input::GetKey(KEY_D0))
 	{
-		active_game->objects[1]->rigidbody->angularVelocity += Vector3(0, 0, 1) * M_PI * deltaTime * sign;
+		game->objects[1]->rigidbody->angularVelocity += Vector3(0, 0, 1) * M_PI * deltaTime * sign;
 	}
 
-	Camera* cam = active_game->GetActiveCamera();
+	Camera* cam = game->GetActiveCamera();
 
 	if (Input::GetKey(KEY_F))
 	{
-		active_game->objects[0]->transform.Rotate(Vector3(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
+		game->objects[0]->transform.Rotate(Vector3(4 * deltaTime, 0, 0) * deltaTime, mouse_axis.y);
 	}
 	if (Input::GetKey(KEY_G))
 	{
-		active_game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
+		game->objects[0]->transform.Rotate(Vector3(0, 4 * deltaTime, 0), -mouse_axis.x);
 	}
 
 	if (mouse_r)
 	{
-		LightSource* light = active_game->lights[0];
+		LightSource* light = game->lights[0];
 		light->transform.Translate(Vector3(mouse_axis.x, -mouse_axis.y, 0) * 0.1f);
 	}
 	else
 	{
-		cam->RotateEuler(Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.01f);
+		cam->RotateEuler(Vector3(mouse_axis.y, mouse_axis.x, 0) * 0.1f);
 	}
 
 	float speed = 10;
@@ -210,15 +222,15 @@ void GEngine::Update()
 	if (Input::GetKey(KEY_Q))
 		cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime);
 
-	for (int i = 0; i < active_game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.Count(); i++)
 	{
-		GameObject* obj = active_game->objects[i];
+		GameObject* obj = game->objects[i];
 		obj->Update(deltaTime);
 	}
 
-	for (int i = 0; i < active_game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.Count(); i++)
 	{
-		GameObject* obj = active_game->objects[i];
+		GameObject* obj = game->objects[i];
 
 		for (int j = 0; j < obj->components.Count(); j++)
 		{
@@ -230,9 +242,9 @@ void GEngine::Update()
 
 float err = 0;
 
-Vector3 GEngine::WorldToScreen(Game* game, Vector3& point)
+Vector3 GEngine::WorldToScreen(Vector3& point)
 {
-	Matrix4 P = Matrix4::CreatePerspectiveProjection(_gc.width, _gc.height, 90, 1, 10);
+	Matrix4 P = Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10);
 
 	Camera* cam = game->GetActiveCamera();
 	Matrix4 V = Matrix4::CreateView(
@@ -248,8 +260,8 @@ Vector3 GEngine::WorldToScreen(Game* game, Vector3& point)
 		return Vector3(0, 0, 0);
 
 	Vector3 screen;
-	screen.x = p.x * _gc.width / p.w + _gc.width * 0.5;
-	screen.y = p.y * _gc.height / p.w + _gc.height * 0.5;
+	screen.x = p.x * gc.width / p.w + gc.width * 0.5;
+	screen.y = p.y * gc.height / p.w + gc.height * 0.5;
 
 	//if (isnan(screen.x) || isnan(screen.y))
 	//{
@@ -260,10 +272,10 @@ Vector3 GEngine::WorldToScreen(Game* game, Vector3& point)
 }
 
 
-void GEngine::DebugLine(Game* game, Vector3 start, Vector3 end, Color& color)
+void GEngine::DebugLine(Vector3 start, Vector3 end, Color& color)
 {
-	Vector3 lpstart = WorldToScreen(game, start);
-	Vector3 lpend = WorldToScreen(game, end);
+	Vector3 lpstart = WorldToScreen(start);
+	Vector3 lpend = WorldToScreen(end);
 
 	float total = lpstart.x + lpend.x + lpstart.y + lpend.y;
 	if (isnan(total))
@@ -274,10 +286,10 @@ void GEngine::DebugLine(Game* game, Vector3 start, Vector3 end, Color& color)
 		while (1);
 	}
 
-	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color, _gc);
+	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color, gc);
 }
 
-void GEngine::DebugBox(Game* game, Box& box, Color& color)
+void GEngine::DebugBox(Box& box, Color& color)
 {
 	Vector3 maxx = Vector3(box.max.x, box.min.y, box.min.z);
 	Vector3 maxy = Vector3(box.min.x, box.max.y, box.min.z);
@@ -287,21 +299,21 @@ void GEngine::DebugBox(Game* game, Box& box, Color& color)
 	Vector3 miny = Vector3(box.max.x, box.min.y, box.max.z);
 	Vector3 minz = Vector3(box.max.x, box.max.y, box.min.z);
 
-	DebugLine(game, box.min, maxx, color);
-	DebugLine(game, box.min, maxy, color);
-	DebugLine(game, box.min, maxz, color);
+	DebugLine(box.min, maxx, color);
+	DebugLine(box.min, maxy, color);
+	DebugLine(box.min, maxz, color);
 
-	DebugLine(game, box.max, minx, color);
-	DebugLine(game, box.max, miny, color);
-	DebugLine(game, box.max, minz, color);
+	DebugLine(box.max, minx, color);
+	DebugLine(box.max, miny, color);
+	DebugLine(box.max, minz, color);
 
-	DebugLine(game, maxx, miny, color);
-	DebugLine(game, maxy, minz, color);
-	DebugLine(game, maxz, minx, color);
+	DebugLine(maxx, miny, color);
+	DebugLine(maxy, minz, color);
+	DebugLine(maxz, minx, color);
 
-	DebugLine(game, minx, maxy, color);
-	DebugLine(game, miny, maxz, color);
-	DebugLine(game, minz, maxx, color);
+	DebugLine(minx, maxy, color);
+	DebugLine(miny, maxz, color);
+	DebugLine(minz, maxx, color);
 }
 
 void PrintMatrix(Matrix3 M)
@@ -387,9 +399,9 @@ void GEngine::Collision()
 
 	List<Rigidbody*> all;
 
-	for (int i = 0; i < active_game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.Count(); i++)
 	{
-		GameObject* obj = active_game->objects[i];
+		GameObject* obj = game->objects[i];
 
 		Rigidbody* comp = obj->rigidbody;
 
@@ -433,7 +445,7 @@ void GEngine::Collision()
 					a->parent->transform.position += mtv * b->mass / (a->mass + b->mass);
 					b->parent->transform.position -= mtv * a->mass / (a->mass + b->mass);
 
-					//DrawLine(active_game, a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, 0xFF00FF00);
+					//DrawLine(a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, 0xFF00FF00);
 
 					if (count == 0)
 						continue;
@@ -445,12 +457,12 @@ void GEngine::Collision()
 						Manifold& m = man[p];
 						colPoint += m.Point / count;
 
-						Vector3 sc = WorldToScreen(active_game, m.Point);
-						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Red, _gc);
+						Vector3 sc = WorldToScreen(m.Point);
+						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Red, gc);
 					}
 
-					Vector3 sc = WorldToScreen(active_game, colPoint);
-					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue, _gc);
+					Vector3 sc = WorldToScreen(colPoint);
+					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue, gc);
 
 					Vector3 va;
 					Vector3 vb;
@@ -519,7 +531,7 @@ void GEngine::Collision()
 
 						//colPoint = Vector3(-1, 0.5, -1);
 
-						//DrawLine(active_game, colPoint, colPoint + n, 0xFF0000FF);
+						//DrawLine(colPoint, colPoint + n, 0xFF0000FF);
 						Vector3 ra = /*-rota * */(colPoint - Xa);
 						Vector3 rb = /*-rotb * */(colPoint - Xb);
 
@@ -580,7 +592,7 @@ void GEngine::Collision()
 							a->angularVelocity -= waf;
 							b->angularVelocity += wbf;
 
-							DebugLine(active_game, colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, Color::Green);
+							DebugLine(colPoint, colPoint + waf * sqrt(waf.Magnitude()) * 10, Color::Green);
 
 							//a->angularVelocity.x = 0;
 							//a->angularVelocity.y = 0;
@@ -588,17 +600,17 @@ void GEngine::Collision()
 							//b->angularVelocity.x = 0;
 							//b->angularVelocity.y = 0;
 
-							DebugLine(active_game, colPoint, colPoint + force * sqrt(force.Magnitude()) * 10, Color::Red);
+							DebugLine(colPoint, colPoint + force * sqrt(force.Magnitude()) * 10, Color::Red);
 							//PIT::Sleep(1000);
 
 
-							//DrawLine(active_game, colPoint, colPoint + t * 10, 0xFFFF00FF);
+							//DrawLine(colPoint, colPoint + t * 10, 0xFFFF00FF);
 
 							continue;
 							Vector3 ffa = FrictionForce(a, -n, vr, (a->bEnabledGravity ? Vector3(0, -9.8, 0) * a->mass : Vector3()));
 							Vector3 ffb = FrictionForce(b, n, vr, (b->bEnabledGravity ? Vector3(0, -9.8, 0) * b->mass : Vector3()));
 
-							DebugLine(active_game, colPoint, colPoint + ffa * 10, Color::Yellow);
+							DebugLine(colPoint, colPoint + ffa * 10, Color::Yellow);
 
 							a->AddImpulse(ffa * deltaTime);
 							b->AddImpulse(ffb * deltaTime);
@@ -648,11 +660,11 @@ void GEngine::Collision()
 
 void GEngine::Render()
 {
-	//Raytracer tracer(active_game, _gc);
+	//Raytracer tracer(gc);
 	//tracer.Render();
 	//return;
 
-	Camera* cam = active_game->GetActiveCamera();
+	Camera* cam = game->GetActiveCamera();
 	Matrix4 V = Matrix4::CreateView(
 		-cam->transform.GetForwardVector().ToVector4(),
 		cam->transform.GetUpVector().ToVector4(),
@@ -667,9 +679,9 @@ void GEngine::Render()
 	GL::LoadMatrix(V);
 	GL::MatrixMode(GL_MODEL);
 
-	for (int i = 0; i < active_game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.Count(); i++)
 	{
-		GameObject* obj = active_game->objects[i];
+		GameObject* obj = game->objects[i];
 
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{

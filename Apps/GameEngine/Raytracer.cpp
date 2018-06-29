@@ -17,9 +17,9 @@ int mouseX;
 int mouseY;
 int resolution;
 
-Raytracer::Raytracer(Game* _game, GC _gc)
+Raytracer::Raytracer(GC _gc)
 {
-	game = _game;
+	game = GEngine::game;
 	gc = _gc;
 }
 
@@ -550,7 +550,7 @@ void Raytracer::Render()
 	for (int i = 0; i < currentNumPhotons; i++)
 	{
 		Photon& photon = photonMap[i];
-		Vector3 p = GEngine::WorldToScreen(game, photon.position);
+		Vector3 p = GEngine::WorldToScreen(photon.position);
 		Drawing::SetPixel(p.x, p.y, photon.color, gc);
 	}
 }

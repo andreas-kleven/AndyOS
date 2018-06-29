@@ -12,9 +12,7 @@ public:
         : Window("Game", 600, 400)
     {
         SetCapture(true);
-
-        GEngine engine(this->gc);
-        engine.StartGame(new MyGame());
+        GEngine::StartGame(new MyGame(), this);
     }
 };
 
