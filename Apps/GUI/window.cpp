@@ -64,7 +64,7 @@ namespace gui
             {
                 Element* elem = GetElementAt(mouse_x, mouse_y, this);
 
-                if (input->down)
+                if (input->pressed)
                 {                   
                     if (active_element)
                         active_element->isActive = false;
@@ -75,7 +75,10 @@ namespace gui
                     active_element = elem;
 
                     if (elem)
+                    {
+                        elem->Focus();
                         elem->MouseDown();
+                    }
                 }
                 else
                 {
@@ -85,7 +88,7 @@ namespace gui
             }
             else
             {
-                if (input->down)
+                if (input->pressed)
                 {
                     if (active_element)
                     {

@@ -13,6 +13,7 @@ namespace gui
 
 		virtual void Paint();
 
+        virtual void Focus();
         virtual void KeyPress(KEYCODE key);
 	};
 }

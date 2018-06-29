@@ -22,6 +22,8 @@ namespace gui
         virtual void Paint() { }
 
     //protected:
+        virtual void Focus() { };
+
         virtual void KeyDown(KEYCODE key) { };
         virtual void KeyUp(KEYCODE key) { };
         virtual void KeyPress(KEYCODE key) { };
