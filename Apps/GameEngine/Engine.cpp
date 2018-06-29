@@ -3,29 +3,29 @@
 #include "stdio.h"
 #include "ctype.h"
 
-int p1 = 0;
-float p2 = 0;
-float p3 = 0;
-float p4 = 1;
-float p5 = 60;
+static int p1 = 0;
+static float p2 = 0;
+static float p3 = 0;
+static float p4 = 1;
+static float p5 = 60;
 
-int ticks;
-int totalFrames = 0;
-int startTicks = 0;
+static int ticks;
+static int totalFrames = 0;
+static int startTicks = 0;
 
-bool BOOL1 = false;
+static bool BOOL1 = false;
 
 float GEngine::deltaTime;
 Game* GEngine::game;
 gui::Window* GEngine::window;
 
-GC gc;
-bool paused = false;
+static GC gc;
+static bool paused = false;
 
-List<Component*> all_components;
-List<MeshComponent*> meshComponents;
-List<Rigidbody*> rigidbodies;
-List<Component*> physics_components;
+static List<Component*> all_components;
+static List<MeshComponent*> meshComponents;
+static List<Rigidbody*> rigidbodies;
+static List<Component*> physics_components;
 
 void GEngine::StartGame(Game* game, gui::Window* wnd)
 {

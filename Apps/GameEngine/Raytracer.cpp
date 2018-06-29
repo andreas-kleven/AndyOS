@@ -3,19 +3,19 @@
 #include "GL.h"
 #include "limits.h"
 
-Game* game;
-GC gc;
-
 const int numPhotons = 10000;
-Photon photonMap[numPhotons];
-Photon causticsMap[numPhotons];
-int currentNumPhotons;
-int currentNumCausticsPhotons;
+static Photon photonMap[numPhotons];
+static Photon causticsMap[numPhotons];
+static int currentNumPhotons;
+static int currentNumCausticsPhotons;
 
-Transform prevCamTransform;
-int mouseX;
-int mouseY;
-int resolution;
+static Game* game;
+static GC gc;
+
+static Transform prevCamTransform;
+static int mouseX;
+static int mouseY;
+static int resolution;
 
 Raytracer::Raytracer(GC _gc)
 {
