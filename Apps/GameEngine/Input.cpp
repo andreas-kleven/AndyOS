@@ -6,7 +6,7 @@ float last_axes[4];
 
 bool Input::GetKey(KEYCODE key)
 {
-	return InputParser::GetKeyDown(key);
+	return InputManager::GetKeyDown(key);
 }
 
 float Input::GetAxis(INPUT_AXIS axis)
@@ -22,7 +22,7 @@ void Input::UpdateAxes()
 {
 	int dx;
 	int dy;
-	InputParser::GetMouseDelta(dx, dy);
+	InputManager::GetMouseDelta(dx, dy);
 
 	axes[AXIS_X] = dx;
 	axes[AXIS_Y] = -dy;

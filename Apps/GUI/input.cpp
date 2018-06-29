@@ -8,14 +8,14 @@ static bool last_pressed;
 static int delta_x;
 static int delta_y;
 
-void InputParser::HandleKey(KEYCODE code, bool pressed)
+void InputManager::HandleKey(KEYCODE code, bool pressed)
 {
     keystates[code] = pressed;
     last_code = code;
     last_pressed = pressed;
 }
 
-KEY_PACKET InputParser::GetPacket()
+KEY_PACKET InputManager::GetPacket()
 {
     KEY_PACKET pkt;
     pkt.code = last_code;
@@ -33,24 +33,24 @@ KEY_PACKET InputParser::GetPacket()
     return pkt;
 }
 
-bool InputParser::GetKeyDown(KEYCODE code)
+bool InputManager::GetKeyDown(KEYCODE code)
 {
     return keystates[code];
 }
 
-void InputParser::HandleMouse(int dx, int dy)
+void InputManager::HandleMouse(int dx, int dy)
 {
 	delta_x += dx;
 	delta_y += dy;
 }
 
-void InputParser::GetMouseDelta(int& dx, int& dy)
+void InputManager::GetMouseDelta(int& dx, int& dy)
 {
 	dx = delta_x;
 	dy = delta_y;
 }
 
-void InputParser::DecodeCharacter(KEY_PACKET& packet)
+void InputManager::DecodeCharacter(KEY_PACKET& packet)
 {
 	uint8 key = packet.code;
 	packet.character = 0;

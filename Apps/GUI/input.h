@@ -16,7 +16,7 @@ struct KEY_PACKET
 	bool numlock;
 };
 
-class InputParser
+class InputManager
 {
 public:
     static void HandleKey(KEYCODE code, bool pressed);

@@ -24,15 +24,15 @@ void run(GC gc)
 		double asd0 = zoom;
 		double asd1 = asd0 / gc_buf.width;
 
-		if (InputParser::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
-		if (InputParser::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
 
-		if (InputParser::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
-		if (InputParser::GetKeyDown(KEY_D)) ofx += 1.0f * delta * asd0;
-		if (InputParser::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
-		if (InputParser::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_D)) ofx += 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
 
-		if (InputParser::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
+		if (InputManager::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
 
 		Drawing::Clear(Color::Black, gc_buf);
 		debug_reset();
