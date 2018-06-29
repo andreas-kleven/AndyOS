@@ -9,8 +9,10 @@ class GameWindow : public Window
 {
 public:
     GameWindow() 
-        : Window("Game", 600, 400, true)
+        : Window("Game", 600, 400)
     {
+        SetCapture(true);
+
         GEngine engine(this->gc);
         engine.StartGame(new MyGame());
     }

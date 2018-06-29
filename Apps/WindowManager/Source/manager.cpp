@@ -157,7 +157,7 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 
 			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
-			Window* wnd = new Window(msg.src_proc, request->title, width, height, request->capture, (uint32*)addr1);
+			Window* wnd = new Window(msg.src_proc, request->title, width, height, (uint32*)addr1);
 			WindowManager::AddWindow(wnd);
 
 			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
@@ -172,6 +172,13 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 			{
 				wnd->dirty = true;
 			}
+		}
+		else if (type == REQUEST_TYPE_SET_CAPTURE)
+		{
+			SET_CAPTURE_REQUEST* request = (SET_CAPTURE_REQUEST*)msg.data;
+			Window* wnd = GetWindow(request->id);
+
+			wnd->capture = request->capture;
 		}
 	}
 

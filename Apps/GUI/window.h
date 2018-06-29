@@ -15,10 +15,12 @@ namespace gui
         int width;
         int height;
 
-        Window(char* title, int width = 400, int height = 300, bool capture = false);
+        Window(char* title, int width = 400, int height = 300);
         ~Window();
 
         void Paint();
+
+        void SetCapture(bool capture);
 
         void HandleMessage(MESSAGE& msg);
 

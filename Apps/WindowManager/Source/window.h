@@ -32,7 +32,7 @@ public:
 	Window* next;
 	Window* previous;
 
-	Window(int proc_id, char* title, int width, int height, bool capture, uint32* framebuffer);
+	Window(int proc_id, char* title, int width, int height, uint32* framebuffer);
 
 	void Paint(GC& main_gc);
 	void Close();

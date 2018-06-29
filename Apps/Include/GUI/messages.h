@@ -13,7 +13,8 @@ namespace gui
         REQUEST_TYPE_CREATE_WINDOW,
         REQUEST_TYPE_PAINT,
         REQUEST_TYPE_KEY_INPUT,
-        REQUEST_TYPE_MOUSE_INPUT
+        REQUEST_TYPE_MOUSE_INPUT,
+        REQUEST_TYPE_SET_CAPTURE
     };
 
     struct SIMPLE_REQUEST
@@ -32,16 +33,14 @@ namespace gui
         char title[256];
         int width;
         int height;
-        bool capture;
 
-        CREATE_WINDOW_REQUEST(char* title, int width, int height, bool capture)
+        CREATE_WINDOW_REQUEST(char* title, int width, int height)
         { 
             this->type = REQUEST_TYPE_CREATE_WINDOW; 
             strcpy(this->title, title);
 
             this->width = width;
             this->height = height;
-            this->capture = capture;
         }
     };
 
@@ -124,6 +123,20 @@ namespace gui
             this->y = y;
             this->dx = dx;
             this->dy = dy;
+        }
+    };
+
+    struct SET_CAPTURE_REQUEST
+    {
+        REQUEST_TYPE type;
+        int id;
+        bool capture;
+    
+        SET_CAPTURE_REQUEST(int id, bool capture)
+        {
+            this->type = REQUEST_TYPE_SET_CAPTURE;
+            this->id = id;
+            this->capture = capture;
         }
     };
 }
