@@ -1,156 +1,41 @@
-#include "Mandelbrot.h"
-#include "Lib/debug.h"
-#include "Drawing/drawing.h"
+#include <AndyOS.h>
+#include <sys/drawing.h>
+#include "GUI.h"
 #include "math.h"
-#include "HAL/hal.h"
-#include "Drivers/keyboard.h"
-#include "Drivers/mouse.h"
 
-struct Complex
+using namespace gui;
+
+double zoom = 4;
+double ofx = 0;
+double ofy = 0;
+double rot = 0;
+
+void run(GC gc)
 {
-	float real;
-	float img;
-
-	Complex()
-	{
-		real = 0;
-		img = 0;
-	}
-
-	Complex(float real, float img)
-	{
-		this->real = real;
-		this->img = img;
-	}
-
-	Complex& operator+=(const Complex& z)
-	{
-		real += z.real;
-		img += z.img;
-		return *this;
-	}
-
-	Complex& operator*=(const Complex& z)
-	{
-		real = real * z.real - img * z.img;
-		img = real * z.img + img * z.real;
-		return *this;
-	}
-
-	void Square()
-	{
-		float _real = real;
-
-		real = real * real - img * img;
-		img = 2 * _real * img;
-	}
-
-	float Magnitude()
-	{
-		return sqrt(real * real + img * img);
-	}
-};
-
-int count = 1024;
-
-Complex tz;
-
-inline int test(const Complex& c)
-{
-	int i;
-	tz = Complex(0, 0);
-
-	for (i = 0; i < count; i++)
-	{
-		tz.Square();
-		tz += c;
-
-		//Debug::Print("%f, %f, %f\t", z.real, z.img, z.Magnitude());
-
-		if (tz.Magnitude() >= (1 << 16))
-		{
-			//Debug::Print("\nret %f, %i", z.Magnitude(), i);
-
-			return i + 1 - log(log(tz.Magnitude())) / log(2);
-			//return i;
-		}
-	}
-
-	//Debug::Print("\nret1 %i\n", i);
-	return 0;
-}
-
-#pragma optimize("", off)
-void stuff()
-{
-	int ti = PIT::ticks;
-	for (int i = 0; i < 10000000; i++)
-	{
-		//log(M_PI);
-		float f = 0.00000000000000000000009048903434712123154234f;
-		float b = 0.00000000000000000000009048903434712123154321f;
-		float r = f * b;
-	}
-	Debug::Print("%i\n", PIT::ticks - ti);
-	while (1);
-}
-#pragma optimize("", on)
-
-Mandelbrot::Mandelbrot(GC gc)
-{
-	this->gc_out = gc;
-	this->gc_buf = GC(gc.width, gc.height);
-}
-
-void Mandelbrot::Run()
-{
-	//stuff();
-
-	Debug::Print("Start\n");
-
-	//Complex z(1, 1);
-	//z.Square();
-
-	//
-	//z.real = -1;
-	//z.img = 0;
-	//int gg = test(z);
-	//Debug::Print("%f, %f", z.real, z.img);
-	//while (1);
+	GC gc_buf(gc.width, gc.height);
 
 	int iter_max = 256;
 
-	//Mouse::scroll_y = 4;
-
-	double zoom = 4;
-	double ofx = 0;
-	double ofy = 0;
-
-	double rot = 0;
-
-	int ticks = PIT::ticks;
+	int ticks = get_ticks();
 	double delta = 1;
 
 	while (1)
 	{
 		double asd0 = zoom;
 		double asd1 = asd0 / gc_buf.width;
-		//double ofx = (Mouse::x - width / 2) / (double)width;
-		//double ofy = (Mouse::y - height / 2) / (double)width;
 
-		/*if (Keyboard::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
-		if (Keyboard::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
 
-		if (Keyboard::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
-		if (Keyboard::GetKeyDown(KEY_D)) ofx += 1.0f * delta * asd0;
-		if (Keyboard::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
-		if (Keyboard::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_D)) ofx += 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
+		if (InputParser::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
 
-		if (Keyboard::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;*/
+		if (InputParser::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
 
-		Drawing::Clear(0, gc_buf);
-		Debug::x = 0;
-		Debug::y = 0;
+		Drawing::Clear(Color::Black, gc_buf);
+		debug_reset();
 
 		int index = 0;
 		uint32* buf = gc_buf.framebuffer + gc_buf.y * gc_buf.stride + gc_buf.x;
@@ -302,13 +187,29 @@ void Mandelbrot::Run()
 			buf += gc_buf.stride - gc_buf.width;
 		}
 
-		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
+		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
 
-		int delta_ticks = (PIT::ticks - ticks);
+		int delta_ticks = (get_ticks() - ticks);
 		delta = delta_ticks / 1000.0f;
-		ticks = PIT::ticks;
-		Debug::Print("Ticks: %i\tFPS: %i\n", delta_ticks, (int)(1 / delta));
-		Debug::Print("Zoom: %f\n", zoom);
+		ticks = get_ticks();
+		debug_print("Ticks: %i\tFPS: %i\n", delta_ticks, (int)(1 / delta));
+		debug_print("Zoom: %f\n", zoom);
 	}
-	while (1);
+}
+
+class MainWindow : public Window
+{
+public:
+	MainWindow()
+		: Window("Mandelbrot")
+	{
+		SetCapture(true);
+		run(this->gc);
+	}
+};
+
+int main()
+{
+	MainWindow wnd;
+	exit(0);
 }

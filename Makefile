@@ -43,6 +43,7 @@ apps: libs
 	$(MAKE) -C Apps/GL
 	$(MAKE) -C Apps/GameEngine
 	$(MAKE) -C Apps/3DGame
+	$(MAKE) -C Apps/Mandelbrot
 
 kernel: libs
 	$(MAKE) -C Kernel
@@ -54,6 +55,7 @@ iso: all
 	cp $(LIBS)/winman $(ISO_DIR)/1winman
 	cp $(LIBS)/test $(ISO_DIR)/1test
 	cp $(LIBS)/game $(ISO_DIR)/1game
+	cp $(LIBS)/mandelbrot $(ISO_DIR)/1mndlbrt
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 .PHONY: clean
@@ -67,5 +69,6 @@ clean:
 	$(MAKE) -C Apps/GL clean
 	$(MAKE) -C Apps/GameEngine clean
 	$(MAKE) -C Apps/3DGame clean
+	$(MAKE) -C Apps/Mandelbrot clean
 	rm -f $(BOOT_DIR)/andyos.bin
 	rm -f $(LIBS)/*
