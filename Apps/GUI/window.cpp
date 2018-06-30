@@ -127,6 +127,8 @@ namespace gui
             InputManager::HandleMouse(input->dx, input->dy);
             HoverElement(this, input->x, input->y);
         }
+
+		Paint();
     }
 
     void Window::HoverElement(GUIBase* elem, int x, int y)

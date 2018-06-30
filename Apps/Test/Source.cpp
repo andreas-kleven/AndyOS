@@ -55,8 +55,7 @@ int main()
 
 	while (1)
 	{
-		wnd->Paint();
-		sleep(100);
+		sleep(1000);
 		continue;
 
 		for (int i = 0; i < wnd->width * wnd->height; i++)
