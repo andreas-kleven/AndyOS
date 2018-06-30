@@ -1,13 +1,13 @@
 #include <AndyOS.h>
 #include <sys/drawing.h>
 #include <sys/msg.h>
-#include "GUI/messages.h"
+#include "GUI.h"
 #include "manager.h"
 #include "window.h"
 #include "string.h"
 #include "stdio.h"
 
-using namespace gui;
+using namespace gui::messages;
 
 static uint32 cursor_bitmap[8 * 14] =
 {
@@ -46,6 +46,7 @@ static Window* first_window;
 static Window* last_window;
 
 static Window* focused_window;
+static Window* active_window;
 static Window* hover_window;
 
 static float cursor_x;
@@ -82,6 +83,7 @@ void WindowManager::Start()
 	first_window = 0;
 	last_window = 0;
 	focused_window = 0;
+	active_window = 0;
 	hover_window = 0;
 
 	set_message(MessageHandler);
@@ -189,7 +191,7 @@ void WindowManager::UpdateLoop()
 {
 	while (1)
 	{
-		cursor_enabled = !focused_window || !focused_window->capture;
+		cursor_enabled = !active_window || !active_window->capture;
 
 		HandleMouseInput();
 		HandleKeyInput();
@@ -199,7 +201,19 @@ void WindowManager::UpdateLoop()
 		PaintTaskbar();
 		
 		if (cursor_enabled)
+		{
 			PaintCursor();
+		}
+		else
+		{
+			//Center cursor in active window
+			if (active_window)
+			{
+				Rect* bounds = &active_window->bounds;
+				cursor_x = bounds->x + bounds->width / 2;
+				cursor_y = bounds->y + bounds->height / 2;
+			}
+		}
 
 		Drawing::Draw(gc);
 	}
@@ -306,8 +320,8 @@ void WindowManager::HandleMouseInput()
 		{
 			int relx = cursor_x - hover_window->bounds.x;
 			int rely = cursor_y - hover_window->bounds.y - GUI_TITLEBAR_HEIGHT;
-			int _dx = (focused_window == hover_window) ? dx : 0;
-			int _dy = (focused_window == hover_window) ? dy : 0;
+			int _dx = (active_window == hover_window) ? dx : 0;
+			int _dy = (active_window == hover_window) ? dy : 0;
 
 			MOUSE_INPUT_MESSAGE msg(hover_window->id, relx, rely, _dx, _dy);
 			post_message(hover_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
@@ -332,8 +346,14 @@ void WindowManager::HandleMouseInput()
 			if (wnd)
 			{
 				if (focused_window == 0 || wnd->id != focused_window->id)
+				{
 					SetFocusedWindow(wnd);
+				}
 
+				if (wnd->content_bounds.Contains(cursor_x, cursor_y))
+				{
+					active_window = wnd;
+				}
 			}
 		}
 		else
@@ -360,8 +380,9 @@ void WindowManager::HandleMouseInput()
 
 			if (window_drag)
 			{
-				window_drag_info.window->bounds.x = window_drag_info.start_x + dx;
-				window_drag_info.window->bounds.y = window_drag_info.start_y + dy;
+				int x = window_drag_info.start_x + dx;
+				int y = window_drag_info.start_y + dy;
+				window_drag_info.window->Move(x, y);
 			}
 		}
 	}
@@ -392,19 +413,24 @@ void WindowManager::HandleMouseInput()
 
 void WindowManager::HandleKeyInput()
 {
-	if (focused_window)
-	{
-		for (int i = 0; i < 0x100; i++)
-		{
-			KEYCODE code;
-			bool pressed;
+	KEYCODE code;
+	bool pressed;
 
-			if (get_last_key(code, pressed))
-			{
-				KEY_INPUT_MESSAGE msg(focused_window->id, code, pressed);
-				post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
-			}
+	if (get_last_key(code, pressed))
+	{
+		gui::InputManager::HandleKey(code, pressed);
+
+		if (focused_window)
+		{
+			KEY_INPUT_MESSAGE msg(focused_window->id, code, pressed);
+			post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
 		}
+	}
+
+	//alt+tab
+	if (gui::InputManager::GetKeyDown(KEY_LALT) && gui::InputManager::GetKeyDown(KEY_TAB))
+	{
+		active_window = 0;
 	}
 }
 

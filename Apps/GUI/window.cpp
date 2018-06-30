@@ -4,6 +4,8 @@
 
 namespace gui
 {
+    using namespace messages;
+
     static Element* active_element = 0;
 
     static int mouse_x = 0;

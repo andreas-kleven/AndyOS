@@ -24,6 +24,7 @@ public:
 	bool capture;
 	WINDOW_STATE state;
 	Rect bounds;
+	Rect content_bounds;
 	bool focused;
 	bool dirty;
 
@@ -36,9 +37,7 @@ public:
 
 	void Paint(GC& main_gc);
 	void Close();
-
-	void PaintWindow();
-
+	void Move(int x, int y);
 	void SetFocus(bool focus);
 	void SetState(WINDOW_STATE state);
 };

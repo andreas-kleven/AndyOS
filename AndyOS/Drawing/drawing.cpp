@@ -246,11 +246,14 @@ void Drawing::DrawRect(int x, int y, int w, int h, int bw, Color& col, GC& gc)
 
 void Drawing::FillRect(int x, int y, int w, int h, Color& col, GC& gc)
 {
-	x = clamp(x, 0, gc.width);
-	y = clamp(y, 0, gc.height);
+	int cx = clamp(x, 0, gc.width) - x;
+	int cy = clamp(y, 0, gc.height) - y;
 
-	w = clamp(w, 0, gc.width - x);
-	h = clamp(h, 0, gc.height - y);
+	w = clamp(w - cx, 0, gc.width - x - cx);
+	h = clamp(h - cy, 0, gc.height - y - cy);
+
+	x += cx;
+	y += cy;
 
 	int delta = gc.stride - w;
 	uint32* buf = gc.framebuffer + (y + gc.y) * gc.stride + (x + gc.x);

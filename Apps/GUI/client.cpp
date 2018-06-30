@@ -4,6 +4,8 @@
 
 namespace gui
 {
+    using namespace messages;
+
     static bool initialized = 0;
     bool Client::connected = false;
 

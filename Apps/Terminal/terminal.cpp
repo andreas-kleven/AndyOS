@@ -267,7 +267,7 @@ public:
 	{
 		if (y >= gc.height / 16 - 1)
 		{
-			Drawing::BitBlt(gc, 0, 16, width, 16 * 15, gc, 0, 0);
+			Drawing::BitBlt(gc, 0, 16, width, 16 * (height / 16), gc, 0, 0);
 			ClearLine();
 		}
 
