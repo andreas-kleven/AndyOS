@@ -109,6 +109,8 @@ const KEYCODE scancodes[] =
 	KEY_INVALID,
 };
 
+KEYCODE extended_scancodes[256];
+
 bool ctrl;
 bool shift;
 bool alt;
@@ -129,7 +131,7 @@ CircularBuffer<KEY_ACTION> key_buffer;
 STATUS Keyboard::Init()
 {
 	key_buffer = CircularBuffer<KEY_ACTION>(KEY_BUFFER_SIZE);
-
+	SetupScancodes();
 	IDT::InstallIRQ(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
 	return STATUS_SUCCESS;
 }
@@ -150,6 +152,16 @@ bool Keyboard::GetLastKey(KEYCODE& code, bool& pressed)
 	return true;
 }
 
+void Keyboard::SetupScancodes()
+{
+	extended_scancodes[0x48] = KEY_UP;
+	extended_scancodes[0x49] = KEY_PAGEUP;
+	extended_scancodes[0x4B] = KEY_LEFT;
+	extended_scancodes[0x4D] = KEY_RIGHT;
+	extended_scancodes[0x50] = KEY_DOWN;
+	extended_scancodes[0x51] = KEY_PAGEDOWN;
+}
+
 void Keyboard::Keyboard_ISR(REGS* regs)
 {
 	if (inb(0x64) & 1)
@@ -162,40 +174,44 @@ void Keyboard::Keyboard_ISR(REGS* regs)
 		}
 		else
 		{
-			if (!extended)
+			if (extended)
+			{
+				extended = false;
+				code = extended_scancodes[scan & ~0x80];
+			}
+			else
 			{
 				code = scancodes[scan & ~0x80];
-				pressed = !(scan & 0x80);
-
-				if (pressed)
-				{
-					if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 1;
-					else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 1;
-					else if (code == KEY_LALT || code == KEY_RALT) alt = 1;
-
-					else if (code == KEY_CAPS) caps = !caps;
-					else if (code == KEY_NUMLOCK) num = !num;
-					else if (code == KEY_SCROLLLOCK) scroll = !scroll;
-
-					scancode = scan;
-				}
-				else
-				{
-					scan -= 0x80;
-
-					if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 0;
-					else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 0;
-					else if (code == KEY_LALT || code == KEY_RALT) alt = 0;
-				}
-
-				KEY_ACTION key;
-				key.code = code;
-				key.pressed = pressed;
-
-				key_buffer.Add(key);
 			}
 
-			extended = false;
+			pressed = !(scan & 0x80);
+
+			if (pressed)
+			{
+				if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 1;
+				else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 1;
+				else if (code == KEY_LALT || code == KEY_RALT) alt = 1;
+
+				else if (code == KEY_CAPS) caps = !caps;
+				else if (code == KEY_NUMLOCK) num = !num;
+				else if (code == KEY_SCROLLLOCK) scroll = !scroll;
+
+				scancode = scan;
+			}
+			else
+			{
+				scan -= 0x80;
+
+				if (code == KEY_LCTRL || code == KEY_RCTRL) ctrl = 0;
+				else if (code == KEY_LSHIFT || code == KEY_RSHIFT) shift = 0;
+				else if (code == KEY_LALT || code == KEY_RALT) alt = 0;
+			}
+
+			KEY_ACTION key;
+			key.code = code;
+			key.pressed = pressed;
+
+			key_buffer.Add(key);
 		}
 	}
 }

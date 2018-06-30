@@ -13,5 +13,6 @@ public:
 	static bool GetLastKey(KEYCODE& code, bool& pressed);
 
 private:
+	static void SetupScancodes();
 	static void Keyboard_ISR(REGS* regs);
 };
