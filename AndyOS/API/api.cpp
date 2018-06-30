@@ -78,6 +78,11 @@ int read_file(char*& buffer, char* filename)
     return Call(SYSCALL_READ_FILE, (int)&buffer, (int)filename);
 }
 
+int create_process(char* filename)
+{
+	return Call(SYSCALL_CREATE_PROCESS, (int)filename);
+}
+
 //TODO: remove
 void debug_reset()
 {

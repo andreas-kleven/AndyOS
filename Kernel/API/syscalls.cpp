@@ -128,6 +128,14 @@ uint32 read_file(char*& buffer, char* filename)
 	return size;
 }
 
+int create_process(char* filename)
+{
+	if (ProcessManager::Load(filename))
+		return 1;
+
+	return 0;
+}
+
 void debug_reset()
 {
 	Debug::Clear(0xFF000000);
@@ -270,6 +278,7 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 	InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)alloc_shared);
 	InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
+	InstallSyscall(SYSCALL_CREATE_PROCESS, (SYSCALL_HANDLER)create_process);
 	InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
 
 	InstallSyscall(SYSCALL_SET_SIGNAL, (SYSCALL_HANDLER)set_signal);

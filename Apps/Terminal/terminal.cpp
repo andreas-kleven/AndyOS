@@ -191,6 +191,10 @@ public:
 		}
 		else if (strcmp(arg1, "open") == 0)
 		{
+			if (!create_process(arg2)) 
+			{
+				Print("Could not create process");
+			}
 		}
 		else if (strcmp(arg1, "color") == 0)
 		{
