@@ -95,20 +95,24 @@ namespace gui
             else
             {
                 KEY_PACKET packet = InputManager::GetPacket();
+                GUIBase* receiver = active_element;
+
+                if (!active_element)
+                    receiver = this;
 
                 if (input->pressed)
                 {
-                    if (active_element)
+                    if (receiver)
                     {
-                        active_element->KeyDown(packet);
-                        active_element->KeyPress(packet);
+                        receiver->KeyDown(packet);
+                        receiver->KeyPress(packet);
                     }
                 }
                 else
                 {
-                    if (active_element)
+                    if (receiver)
                     {
-                        active_element->KeyUp(packet);
+                        receiver->KeyUp(packet);
                     }
                 }
             }

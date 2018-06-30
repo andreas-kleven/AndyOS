@@ -39,6 +39,7 @@ libs: create_dir
 apps: libs
 	$(MAKE) -C Apps/GUI
 	$(MAKE) -C Apps/WindowManager
+	$(MAKE) -C Apps/Terminal
 	$(MAKE) -C Apps/Test
 	$(MAKE) -C Apps/GL
 	$(MAKE) -C Apps/GameEngine
@@ -53,6 +54,7 @@ all: libs kernel apps
 iso: all
 	cp $(LIBS)/andyos.bin $(BOOT_DIR)/andyos.bin
 	cp $(LIBS)/winman $(ISO_DIR)/1winman
+	cp $(LIBS)/terminal $(ISO_DIR)/1term
 	cp $(LIBS)/test $(ISO_DIR)/1test
 	cp $(LIBS)/game $(ISO_DIR)/1game
 	cp $(LIBS)/mandelbrot $(ISO_DIR)/1mndlbrt
@@ -65,6 +67,7 @@ clean:
 	$(MAKE) -C AndyOS clean
 	$(MAKE) -C Apps/GUI clean
 	$(MAKE) -C Apps/WindowManager clean
+	$(MAKE) -C Apps/Terminal clean
 	$(MAKE) -C Apps/Test clean
 	$(MAKE) -C Apps/GL clean
 	$(MAKE) -C Apps/GameEngine clean
