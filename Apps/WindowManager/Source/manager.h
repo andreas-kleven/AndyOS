@@ -47,5 +47,8 @@ private:
 	static Window* GetWindowAtCursor();
 	static void SetFocusedWindow(Window* new_active);
 
+	static void MinimizeWindow(Window* wnd);
+	static void RestoreWindow(Window* wnd);
+
 	static Window* GetWindow(int id);
 };

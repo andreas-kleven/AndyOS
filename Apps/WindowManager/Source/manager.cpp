@@ -221,11 +221,28 @@ void WindowManager::PaintWindows()
 	if (window_count == 0)
 		return;
 
+	Window* start_window = last_window;
 	Window* wnd = last_window;
+
+	//Find first maximized window. Windows behind are not visible
 	while (wnd)
 	{
-		//if (wnd->dirty)
+		if (wnd->state == WINDOW_STATE_MAXIMIZED)
+		{
+			start_window = wnd;
+			break;
+		}
+			
+		wnd = wnd->previous;
+	}
+
+	wnd = start_window;
+	while (wnd)
+	{
+		if (wnd->state != WINDOW_STATE_MINIMIZED)
+		{
 			wnd->Paint(gc);
+		}
 			
 		wnd = wnd->previous;
 	}
@@ -351,15 +368,22 @@ void WindowManager::HandleMouseInput()
 				{
 					active_window = wnd;
 				}
-				else if (mouse_click_L_info.num_clicks == 1)
+				else if (wnd->titlebar_bounds.Contains(cursor_x, cursor_y))
 				{
-					if (wnd->state == WINDOW_STATE_NORMAL)
+					if (wnd->bclose_bounds.Contains(cursor_x, cursor_y))
 					{
-						wnd->SetState(WINDOW_STATE_MAXIMIZED);
 					}
-					else if (wnd->state == WINDOW_STATE_MAXIMIZED)
+					else if (wnd->bmin_bounds.Contains(cursor_x, cursor_y))
 					{
-						wnd->SetState(WINDOW_STATE_NORMAL);
+						MinimizeWindow(wnd);
+					}
+					else if (wnd->bmax_bounds.Contains(cursor_x, cursor_y))
+					{
+						wnd->ToggleMaximized();
+					}
+					else if (mouse_click_L_info.num_clicks == 1)
+					{
+						wnd->ToggleMaximized();
 					}
 				}
 			}
@@ -381,13 +405,11 @@ void WindowManager::HandleMouseInput()
 					window_drag_info.resize = false;
 					window_drag_info.bounds = wnd->bounds;
 
-					if (Rect(wnd->bounds.x, wnd->bounds.y, wnd->bounds.width, GUI_TITLEBAR_HEIGHT)
-						.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
+					if (wnd->titlebar_bounds.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
 					{
 						window_drag = 1;
 					}
-					else if (Rect(wnd->content_bounds)
-						.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
+					else if (wnd->content_bounds.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
 					{
 						if (!Rect(wnd->bounds.x + bw, wnd->bounds.y + bw, wnd->bounds.width - bw * 2, wnd->bounds.height - bw * 2)
 							.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
@@ -494,8 +516,13 @@ Window* WindowManager::GetWindowAtCursor()
 	Window* wnd = first_window;
 	while (wnd)
 	{
-		if (wnd->bounds.Contains(cursor_x, cursor_y))
-			return wnd;
+		if (wnd->state != WINDOW_STATE_MINIMIZED)
+		{
+			if (wnd->bounds.Contains(cursor_x, cursor_y))
+			{
+				return wnd;
+			}
+		}
 
 		wnd = wnd->next;
 	}
@@ -506,8 +533,9 @@ Window* WindowManager::GetWindowAtCursor()
 void WindowManager::SetFocusedWindow(Window* new_focused)
 {
 	focused_window = new_focused;
+	active_window = 0;
 
-	if (!focused_window->focused)
+	if (focused_window && !focused_window->focused)
 	{
 		if (focused_window != first_window)
 		{
@@ -543,6 +571,18 @@ void WindowManager::SetFocusedWindow(Window* new_focused)
 
 		wnd = wnd->next;
 	}
+}
+
+void WindowManager::MinimizeWindow(Window* wnd)
+{
+	SetFocusedWindow(0);
+	wnd->Minimize();
+}
+
+void WindowManager::RestoreWindow(Window* wnd)
+{
+	wnd->Restore();
+	SetFocusedWindow(wnd);
 }
 
 Window* WindowManager::GetWindow(int id)

@@ -2,7 +2,7 @@
 #include <sys/drawing.h>
 
 #define GUI_WINDOW_BORDER_WIDTH		1
-#define GUI_TITLEBAR_HEIGHT			28
+#define GUI_TITLEBAR_HEIGHT			22
 
 enum WINDOW_STATE
 {
@@ -23,9 +23,15 @@ public:
 	char* title;
 	bool capture;
 	WINDOW_STATE state;
+
 	Rect bounds;
 	Rect content_bounds;
+	Rect titlebar_bounds;
 	Rect normal_bounds;
+	Rect bclose_bounds;
+	Rect bmin_bounds;
+	Rect bmax_bounds;
+
 	bool focused;
 	bool dirty;
 
@@ -37,9 +43,19 @@ public:
 	Window(int proc_id, char* title, int width, int height, uint32* framebuffer);
 
 	void Paint(GC& main_gc);
-	void Close();
 	void Move(int x, int y);
 	void Resize(int w, int h);
+
+	void Close();
+	void Minimize();
+	void Restore();
+	void ToggleMaximized();
+
 	void SetFocus(bool focus);
 	void SetState(WINDOW_STATE state);
+
+private:
+	WINDOW_STATE saved_state;
+
+	void UpdateTitleButtons();
 };
