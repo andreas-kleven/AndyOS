@@ -31,6 +31,8 @@ public:
 
 	static void AddWindow(Window* wnd);
 	static void CloseWindow(Window* wnd);
+	static void MinimizeWindow(Window* wnd);
+	static void RestoreWindow(Window* wnd);
 
 	static void LoadBackground(char* filename);
 
@@ -49,9 +51,6 @@ private:
 
 	static Window* GetWindowAtCursor();
 	static void SetFocusedWindow(Window* new_active);
-
-	static void MinimizeWindow(Window* wnd);
-	static void RestoreWindow(Window* wnd);
 
 	static Window* GetWindow(int id);
 };

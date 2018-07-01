@@ -33,6 +33,11 @@ public:
 		AddChild(button);
 		AddChild(textBox);
 	}
+
+	void OnClose()
+	{
+		exit(0);
+	}
 };
 
 MainWindow* wnd;
@@ -53,17 +58,6 @@ int main()
 	vprintf(title, "Test window: %i", get_ticks());
 	wnd = new MainWindow(title);
 
-	while (1)
-	{
-		sleep(1000);
-		continue;
-
-		for (int i = 0; i < wnd->width * wnd->height; i++)
-		{
-			char r = rand() / 0xFF;
-			char g = rand() / 0xFF;
-			char b = rand() / 0xFF;
-			wnd->gc.framebuffer[i] = (0xFF << 24) | (r << 16) | (g << 8) | b;
-		}
-	}
+	while (true) sleep(100);
+	exit(0);
 }

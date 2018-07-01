@@ -31,6 +31,11 @@ public:
 		ResetCommand();
 	}
 
+	void OnClose()
+	{
+		exit(0);
+	}
+
 	void KeyPress(KEY_PACKET packet)
 	{
 		if (packet.code == KEY_BACK)
@@ -285,8 +290,6 @@ int main()
 	Drawing::Init();
 	MainWindow* wnd = new MainWindow();
 
-	while (1)
-		sleep(1000);
-
+	while (true) sleep(100);
 	exit(0);
 }

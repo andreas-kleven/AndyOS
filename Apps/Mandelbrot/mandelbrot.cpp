@@ -209,6 +209,11 @@ public:
 		SetCapture(true);
 		run(this->gc);
 	}
+
+	void OnClose()
+	{
+		exit(0);
+	}
 };
 
 int main()

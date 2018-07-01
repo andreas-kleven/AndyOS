@@ -124,6 +124,18 @@ void WindowManager::CloseWindow(Window* wnd)
 	delete wnd;
 }
 
+void WindowManager::MinimizeWindow(Window* wnd)
+{
+	SetFocusedWindow(0);
+	wnd->Minimize();
+}
+
+void WindowManager::RestoreWindow(Window* wnd)
+{
+	wnd->Restore();
+	SetFocusedWindow(wnd);
+}
+
 void WindowManager::LoadBackground(char* filename)
 {
 	char* buf;
@@ -435,6 +447,7 @@ void WindowManager::HandleMouseInput()
 				{
 					if (wnd->bclose_bounds.Contains(cursor_x, cursor_y))
 					{
+						CloseWindow(wnd);
 					}
 					else if (wnd->bmin_bounds.Contains(cursor_x, cursor_y))
 					{
@@ -634,18 +647,6 @@ void WindowManager::SetFocusedWindow(Window* new_focused)
 
 		wnd = wnd->next;
 	}
-}
-
-void WindowManager::MinimizeWindow(Window* wnd)
-{
-	SetFocusedWindow(0);
-	wnd->Minimize();
-}
-
-void WindowManager::RestoreWindow(Window* wnd)
-{
-	wnd->Restore();
-	SetFocusedWindow(wnd);
 }
 
 Window* WindowManager::GetWindow(int id)

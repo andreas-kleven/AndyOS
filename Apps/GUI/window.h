@@ -26,7 +26,13 @@ namespace gui
 
         void HandleMessage(MESSAGE& msg);
 
+    protected:
+        virtual void OnClose() { }
+        virtual void OnResize() { }
+
     private:
+        bool isClosed = false;
+
         void PaintElement(GUIBase* elem);
         void HoverElement(GUIBase* elem, int x, int y);
 

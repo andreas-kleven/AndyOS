@@ -18,7 +18,15 @@ namespace gui
             REQUEST_TYPE_KEY_INPUT,
             REQUEST_TYPE_MOUSE_INPUT,
             REQUEST_TYPE_SET_CAPTURE,
+            REQUEST_TYPE_ACTION,
             REQUEST_TYPE_RESIZE
+        };
+
+        enum WINDOW_ACTION
+        {
+            WINDOW_ACTION_CLOSE,
+            WINDOW_ACTION_MAXIMIZE,
+            WINDOW_ACTION_MINIMZE
         };
 
         struct SIMPLE_REQUEST
@@ -157,6 +165,20 @@ namespace gui
                 this->id = id;
                 this->width = width;
                 this->height = height;
+            }
+        };
+
+        struct WINDOW_ACTION_MESSAGE
+        {
+            REQUEST_TYPE type;
+            int id;
+            WINDOW_ACTION action;
+        
+            WINDOW_ACTION_MESSAGE(int id, WINDOW_ACTION action)
+            {
+                this->type = REQUEST_TYPE_ACTION;
+                this->id = id;
+                this->action = action;
             }
         };
     }

@@ -131,6 +131,16 @@ namespace gui
             InputManager::HandleMouse(input->dx, input->dy);
             HoverElement(this, input->x, input->y);
         }
+        else if (type == REQUEST_TYPE_ACTION)
+        {
+            WINDOW_ACTION_MESSAGE* msg = (WINDOW_ACTION_MESSAGE*)message.data;
+            
+            if (msg->action == WINDOW_ACTION_CLOSE)
+            {
+                OnClose();
+                isClosed = true;
+            }
+        }
         else if (type == REQUEST_TYPE_RESIZE)
         {
             RESIZE_MESSAGE* msg = (RESIZE_MESSAGE*)message.data;
@@ -138,6 +148,8 @@ namespace gui
             this->height = msg->height;
             this->gc.Resize(msg->width, msg->height);
 	        Drawing::Clear(background, this->gc);
+
+            OnResize();
         }
 
 		Paint();

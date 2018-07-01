@@ -87,7 +87,8 @@ void Window::Resize(int w, int h)
 
 void Window::Close()
 {
-	
+	WINDOW_ACTION_MESSAGE msg = WINDOW_ACTION_MESSAGE(id, WINDOW_ACTION_CLOSE);
+	post_message(this->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(msg));
 }
 
 void Window::Minimize()
