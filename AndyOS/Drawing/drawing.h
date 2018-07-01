@@ -47,6 +47,16 @@ struct Rect
 			&& (y >= this->y)
 			&& (y <= this->y + this->height));
 	}
+
+	int Right()
+	{
+		return this->x + this->width;
+	}
+
+	int Top()
+	{
+		return this->y + this->height;
+	}
 };
 
 struct GC
@@ -123,9 +133,12 @@ public:
 	static void DrawBezierQuad(Point* points, int count, Color& col, GC& gc);
 	static void DrawBezierCube(Point* points, int count, Color& col, GC& gc);
 
+	static void DrawRect(Rect& bounds, int width, Color& col, GC& gc);
 	static void DrawRect(int x, int y, int w, int h, int width, Color& col, GC& gc);
+	static void FillRect(Rect& bounds, Color& col, GC& gc);
 	static void FillRect(int x, int y, int w, int h, Color& col, GC& gc);
 
+	static void DrawImage(Rect& bounds, BMP* bmp, GC& gc);
 	static void DrawImage(int x, int y, int w, int h, BMP* bmp, GC& gc);
 
 	static void DrawText(int x, int y, char* c, Color& fg, GC& gc);

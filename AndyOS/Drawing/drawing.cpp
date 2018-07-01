@@ -236,12 +236,22 @@ void Drawing::DrawBezierCube(Point* points, int count, Color& color, GC& gc)
 	}
 }
 
+void Drawing::DrawRect(Rect& bounds, int bw, Color& col, GC& gc)
+{
+	Drawing::DrawRect(bounds.x, bounds.y, bounds.width, bounds.height, bw, col, gc);
+}
+
 void Drawing::DrawRect(int x, int y, int w, int h, int bw, Color& col, GC& gc)
 {
 	FillRect(x, y, w, bw, col, gc);			//Top
 	FillRect(x, y + h - bw, w, bw, col, gc);	//Botom
 	FillRect(x, y, bw, h, col, gc);			//Left
 	FillRect(x + w - bw, y, bw, h, col, gc);	//Right
+}
+
+void Drawing::FillRect(Rect& bounds, Color& col, GC& gc)
+{
+	Drawing::FillRect(bounds.x, bounds.y, bounds.width, bounds.height, col, gc);
 }
 
 void Drawing::FillRect(int x, int y, int w, int h, Color& col, GC& gc)
@@ -311,6 +321,10 @@ void Drawing::DrawImage(int x, int y, int w, int h, BMP* bmp, GC& gc)
 	}
 }
 
+void Drawing::DrawImage(Rect& bounds, BMP* bmp, GC& gc)
+{
+	Drawing::DrawImage(bounds.x, bounds.y, bounds.width, bounds.height, bmp, gc);
+}
 
 void Drawing::DrawText(int x, int y, char* c, Color& fg, GC& gc)
 {
