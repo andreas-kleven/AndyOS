@@ -3,128 +3,131 @@
 #include "string.h"
 #include "pic.h"
 
-IDT_DESCRIPTOR IDT::idt[MAX_INTERRUPTS];
-IRQ_HANDLER IDT::handlers[MAX_INTERRUPTS];
-IDT_REG IDT::idt_reg;
-
-/*push eax; push irq; mov eax, addr; jmp eax*/
-const uint8 irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
-char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
-
-char fpustate[512];
-
-STATUS IDT::Init()
+namespace IDT
 {
-	idt_reg.base = (uint32)&idt;
-	idt_reg.limit = sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1;
+	IDT_DESCRIPTOR idt[MAX_INTERRUPTS];
+	IRQ_HANDLER handlers[MAX_INTERRUPTS];
+	IDT_REG idt_reg;
 
-	memset(idt, 0, sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1);
+	/*push eax; push irq; mov eax, addr; jmp eax*/
+	const uint8 irs_code[] = { 0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0 };
+	char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
 
-	for (int i = 0; i < MAX_INTERRUPTS; i++)
+	char fpustate[512];
+
+	IDT_DESCRIPTOR* GetIR(uint32 i)
 	{
-		//Copy irq code
-		char* ptr = (char*)&isrs[i * sizeof(irs_code)];
-		memcpy(ptr, (char*)irs_code, sizeof(irs_code));
-
-		//Set irq values
-		uint32 target_addr = (uint32)CommonISR;
-
-		ptr[2] = i;
-		ptr[4] = target_addr & 0xFF;
-		ptr[5] = (target_addr >> 8) & 0xFF;
-		ptr[6] = (target_addr >> 16) & 0xFF;
-		ptr[7] = (target_addr >> 24) & 0xFF;
-
-		if (i == 0x80)
-			SetISR(i, (ISR)ptr, IDT_DESC_RING3);
-		else
-			SetISR(i, (ISR)ptr, 0);
-
-		handlers[i] = 0;
+		return &idt[i];
 	}
 
-	asm volatile("lidt (%0)" :: "r" (&idt_reg));
-	return STATUS_SUCCESS;
-}
+	void INTERRUPT EmptyISR()
+	{
+		asm volatile("pusha");
+		PIC::InterruptDone(0);
+		asm volatile("popa\n"
+			"iret");
+	}
 
-STATUS IDT::SetISR(uint32 i, ISR isr, int flags)
-{
-	if (i > MAX_INTERRUPTS || !isr)
-		return STATUS_FAILED;
+	void CommonHandler(int i, REGS* regs)
+	{
+		if (handlers[i])
+			handlers[i](regs);
 
-	uint32 uiBase = (uint32)isr;
+		PIC::InterruptDone(i);
+	}
 
-	idt[i].low = uint16(uiBase & 0xffff);
-	idt[i].high = uint16((uiBase >> 16) & 0xffff);
-	idt[i].reserved = 0;
-	idt[i].flags = IDT_DESC_PRESENT | IDT_DESC_BIT32 | flags;
-	idt[i].sel = KERNEL_CS;
+	void INTERRUPT CommonISR()
+	{
+		asm volatile(
+			"cli\n"
+			"pop %%eax\n"
+			"and $0xFF, %%eax\n"
+			"sub $48, %%esp\n"
+			"push %%eax\n"
+			"add $52, %%esp\n"
+			"pop %%eax\n"
+			
+			"pusha\n"
+			"push %%ds\n"
+			"push %%es\n"
+			"push %%fs\n"
+			"push %%gs\n"
 
-	return STATUS_SUCCESS;
-}
+			"push %%esp\n"
+			"sub $4, %%esp\n"
+			"call %P0\n"
+			"add $8, %%esp\n"
 
-STATUS IDT::InstallIRQ(uint32 i, IRQ_HANDLER handler)
-{
-	if (i > MAX_INTERRUPTS || !handler)
-		return STATUS_FAILED;
+			"pop %%gs\n"
+			"pop %%fs\n"
+			"pop %%es\n"
+			"pop %%ds\n"
+			"popa\n"
 
-	handlers[i] = handler;
-	return STATUS_SUCCESS;
-}
+			"iret" :: "i" (CommonHandler));
+	}
 
-IRQ_HANDLER IDT::GetHandler(uint32 i)
-{
-	return handlers[i];
-}
+	STATUS SetISR(uint32 i, ISR isr, int flags)
+	{
+		if (i > MAX_INTERRUPTS || !isr)
+			return STATUS_FAILED;
 
-IDT_DESCRIPTOR* IDT::GetIR(uint32 i)
-{
-	return &idt[i];
-}
+		uint32 uiBase = (uint32)isr;
 
-void INTERRUPT IDT::EmptyISR()
-{
-	asm volatile("pusha");
-	PIC::InterruptDone(0);
-	asm volatile("popa\n"
-		"iret");
-}
+		idt[i].low = uint16(uiBase & 0xffff);
+		idt[i].high = uint16((uiBase >> 16) & 0xffff);
+		idt[i].reserved = 0;
+		idt[i].flags = IDT_DESC_PRESENT | IDT_DESC_BIT32 | flags;
+		idt[i].sel = KERNEL_CS;
 
-void INTERRUPT IDT::CommonISR()
-{
-	asm volatile(
-		"cli\n"
-		"pop %%eax\n"
-		"and $0xFF, %%eax\n"
-		"sub $48, %%esp\n"
-		"push %%eax\n"
-		"add $52, %%esp\n"
-		"pop %%eax\n"
-		
-		"pusha\n"
-		"push %%ds\n"
-		"push %%es\n"
-		"push %%fs\n"
-		"push %%gs\n"
+		return STATUS_SUCCESS;
+	}
 
-		"push %%esp\n"
-		"sub $4, %%esp\n"
-		"call %P0\n"
-		"add $8, %%esp\n"
+	STATUS InstallIRQ(uint32 i, IRQ_HANDLER handler)
+	{
+		if (i > MAX_INTERRUPTS || !handler)
+			return STATUS_FAILED;
 
-		"pop %%gs\n"
-		"pop %%fs\n"
-		"pop %%es\n"
-		"pop %%ds\n"
-		"popa\n"
+		handlers[i] = handler;
+		return STATUS_SUCCESS;
+	}
 
-		"iret" :: "i" (CommonHandler));
-}
+	IRQ_HANDLER GetHandler(uint32 i)
+	{
+		return handlers[i];
+	}
 
-void IDT::CommonHandler(int i, REGS* regs)
-{
-	if (handlers[i])
-		handlers[i](regs);
+	STATUS Init()
+	{
+		idt_reg.base = (uint32)&idt;
+		idt_reg.limit = sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1;
 
-	PIC::InterruptDone(i);
+		memset(idt, 0, sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1);
+
+		for (int i = 0; i < MAX_INTERRUPTS; i++)
+		{
+			//Copy irq code
+			char* ptr = (char*)&isrs[i * sizeof(irs_code)];
+			memcpy(ptr, (char*)irs_code, sizeof(irs_code));
+
+			//Set irq values
+			uint32 target_addr = (uint32)CommonISR;
+
+			ptr[2] = i;
+			ptr[4] = target_addr & 0xFF;
+			ptr[5] = (target_addr >> 8) & 0xFF;
+			ptr[6] = (target_addr >> 16) & 0xFF;
+			ptr[7] = (target_addr >> 24) & 0xFF;
+
+			if (i == 0x80)
+				SetISR(i, (ISR)ptr, IDT_DESC_RING3);
+			else
+				SetISR(i, (ISR)ptr, 0);
+
+			handlers[i] = 0;
+		}
+
+		asm volatile("lidt (%0)" :: "r" (&idt_reg));
+		return STATUS_SUCCESS;
+	}
 }

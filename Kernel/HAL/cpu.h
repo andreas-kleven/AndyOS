@@ -1,12 +1,7 @@
 #pragma once
 #include "definitions.h"
 
-class CPU
+namespace CPU
 {
-public:
-	static STATUS Init();
-
-private:
-	static STATUS EnableSSE();
-	static STATUS EnableFPU();
+	STATUS Init();
 };

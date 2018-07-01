@@ -5,21 +5,6 @@
 #include "idt.h"
 #include "pit.h"
 
-STATUS HAL::Init()
-{
-	asm volatile("cli");
-
-	if (!GDT::Init()) return STATUS_FAILED;
-	if (!TSS::Init(5, 0x9000)) return STATUS_FAILED;
-	if (!PIC::Init()) return STATUS_FAILED;
-	if (!IDT::Init()) return STATUS_FAILED;
-	if (!PIT::Init()) return STATUS_FAILED;
-
-	asm volatile("sti");
-
-	return STATUS_SUCCESS;
-}
-
 uint8 inb(uint16 port)
 {
 	uint8 ret;
@@ -54,4 +39,19 @@ void outw(uint16 port, uint16 val)
 void outl(uint16 port, uint32 val)
 {
 	asm volatile ("outl %0, %1" : : "a"(val), "Nd"(port));
+}
+
+STATUS HAL::Init()
+{
+	asm volatile("cli");
+
+	if (!GDT::Init()) return STATUS_FAILED;
+	if (!TSS::Init(5, 0x9000)) return STATUS_FAILED;
+	if (!PIC::Init()) return STATUS_FAILED;
+	if (!IDT::Init()) return STATUS_FAILED;
+	if (!PIT::Init()) return STATUS_FAILED;
+
+	asm volatile("sti");
+
+	return STATUS_SUCCESS;
 }

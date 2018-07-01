@@ -4,12 +4,8 @@
 
 typedef void(*SYSCALL_HANDLER)();
 
-class Syscalls
+namespace Syscalls
 {
-public:
-	static STATUS Init();
-	static void InstallSyscall(int id, SYSCALL_HANDLER);
-
-private:
-	static void ISR(REGS* regs);
+	void InstallSyscall(int id, SYSCALL_HANDLER);
+	STATUS Init();
 };

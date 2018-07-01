@@ -5,40 +5,43 @@
 
 #define GDT_FLAG 0xE9
 
-TSS_ENTRY tss;
-
-STATUS TSS::Init(uint32 gdt_index, uint32 kernelESP)
+namespace TSS
 {
-	uint32 base = (uint32)&tss;
-	memset((void*)&tss, 0, sizeof(TSS_ENTRY));
+	TSS_ENTRY tss;
 
-	if (!GDT::SetDescriptor(gdt_index, base, base + sizeof(TSS_ENTRY), GDT_FLAG))
-		return STATUS_FAILED;
+	void Flush() 
+	{
+		asm volatile (
+			"cli\n"
+			"movw $0x2B, %ax\n"
+			"ltr %ax");
+	}
 
-	tss.ss0 = KERNEL_SS;
-	tss.esp0 = kernelESP;
-	tss.cs = 0x0B;
-	tss.ss = 0x13;
-	tss.es = 0x13;
-	tss.ds = 0x13;
-	tss.fs = 0x13;
-	tss.gs = 0x13;
+	void SetStack(uint32 kernelSS, uint32 kernelESP) {
 
-	Flush();
+		tss.ss0 = kernelSS;
+		tss.esp0 = kernelESP;
+	}
 
-	return STATUS_SUCCESS;
-}
+	STATUS Init(uint32 gdt_index, uint32 kernelESP)
+	{
+		uint32 base = (uint32)&tss;
+		memset((void*)&tss, 0, sizeof(TSS_ENTRY));
 
-void TSS::Flush() {
+		if (!GDT::SetDescriptor(gdt_index, base, base + sizeof(TSS_ENTRY), GDT_FLAG))
+			return STATUS_FAILED;
 
-	asm volatile (
-		"cli\n"
-		"movw $0x2B, %ax\n"
-		"ltr %ax");
-}
+		tss.ss0 = KERNEL_SS;
+		tss.esp0 = kernelESP;
+		tss.cs = 0x0B;
+		tss.ss = 0x13;
+		tss.es = 0x13;
+		tss.ds = 0x13;
+		tss.fs = 0x13;
+		tss.gs = 0x13;
 
-void TSS::SetStack(uint32 kernelSS, uint32 kernelESP) {
+		Flush();
 
-	tss.ss0 = kernelSS;
-	tss.esp0 = kernelESP;
+		return STATUS_SUCCESS;
+	}
 }

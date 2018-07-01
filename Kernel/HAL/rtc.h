@@ -1,12 +1,11 @@
 #pragma once
 
-class RTC
+namespace RTC
 {
-public:
-	static int Second();
-	static int Minute();
-	static int Hour();
-	static int Day();
-	static int Month();
-	static int Year();
+	int Second();
+	int Minute();
+	int Hour();
+	int Day();
+	int Month();
+	int Year();
 };

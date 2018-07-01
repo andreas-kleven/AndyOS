@@ -40,12 +40,11 @@ struct VBE_MODE_INFO
 	uint8 reserved1[206];
 } __attribute__((packed));
 
-class VBE
+namespace VBE
 {
-public:
-	static STATUS Init(VBE_MODE_INFO* info);
-	static VBE_MODE_INFO GetMode();
-	static void Draw(uint32* framebuffer);
-	static void SetPixel(int x, int y, uint32 col);
-	static void DrawText(int x, int y, char* c, uint32 fg, uint32 bg);
+	void Draw(uint32* framebuffer);
+	void SetPixel(int x, int y, uint32 col);
+	void DrawText(int x, int y, char* c, uint32 fg, uint32 bg);
+	VBE_MODE_INFO GetMode();
+	STATUS Init(VBE_MODE_INFO* info);
 };

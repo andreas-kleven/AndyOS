@@ -68,8 +68,7 @@ struct ELF32_SHEADER {
 	uint32 sh_entsize;
 } __attribute__((packed));
 
-class ELF
+namespace ELF
 {
-public:
-    static PROCESS* Load(char* path);
+    PROCESS* Load(char* path);
 };

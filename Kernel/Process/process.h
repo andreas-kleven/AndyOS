@@ -75,16 +75,15 @@ struct PROCESS
 	PROCESS(PROCESS_FLAGS flags, PAGE_DIR* page_dir);
 };
 
-class ProcessManager
+namespace ProcessManager
 {
-public:
-	static PROCESS* Load(char* path);
-	static STATUS Terminate(PROCESS* proc);
-	static STATUS Kill(PROCESS* proc);
-	static THREAD* CreateThread(PROCESS* proc, void(*entry)());
-	static STATUS RemoveThread(THREAD* thread);
+	PROCESS* Load(char* path);
+	STATUS Terminate(PROCESS* proc);
+	STATUS Kill(PROCESS* proc);
+	THREAD* CreateThread(PROCESS* proc, void(*entry)());
+	STATUS RemoveThread(THREAD* thread);
 
-	static PROCESS* GetProcess(int id);
-	static PROCESS* GetFirst();
+	PROCESS* GetProcess(int id);
+	PROCESS* GetFirst();
 };
 

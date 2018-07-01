@@ -33,19 +33,9 @@
 #define	PIT_OCW_COUNTER_1			0x40	//01000000
 #define	PIT_OCW_COUNTER_2			0x80	//10000000
 
-class PIT
+namespace PIT
 {
-public:
-	static uint32 ticks;
-
-	static STATUS Init();
-	static void Sleep(uint32 time);
-
-private:
-	static STATUS Start();
-
-	static uint8 ReadData(uint8 counter);
-	static void SendData(uint16 data, uint8 counter);
-
-	static void PIT_ISR(REGS* regs);
+	uint32 Ticks();
+	void Sleep(uint32 time);
+	STATUS Init();
 };

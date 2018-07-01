@@ -14,331 +14,333 @@
 
 #define PAGE_TABLE_AT(virt) (PAGE_TABLE*)(PAGE_TABLE_ADDRESS(PAGE_DIR_INDEX((virt))));
 
-PAGE_DIR* current_dir;
-PAGE_DIR* main_dir;
-
-PAGE_DIR* GetCurrentDirVirt()
+namespace VMem
 {
-	if (!current_dir)
-		return main_dir;
+	PAGE_DIR* current_dir;
+	PAGE_DIR* main_dir;
 
-	return (PAGE_DIR*)PAGE_DIR_ADDRESS;
-}
-
-void VMem::Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end)
-{
-	current_dir = 0;
-
-	MULTIBOOT_INFO info = *bootinfo;
-	VBE_MODE_INFO vbe_info = *(VBE_MODE_INFO*)bootinfo->vbe_mode_info;
-	info.vbe_mode_info = (uint32)&vbe_info;
-
-	//Page dir
-	main_dir = (PAGE_DIR*)PMem::AllocBlocks(1);
-	memset(main_dir, 0, sizeof(PAGE_DIR));
-
-	//Tables
-	PAGE_TABLE* tables = (PAGE_TABLE*)PMem::AllocBlocks(PAGE_DIR_LENGTH);
-	memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
-
-	uint32 flags = PDE_PRESENT | PDE_WRITABLE;
-
-	for (int i = 0; i < PAGE_DIR_LENGTH; i++)
+	void EnablePaging()
 	{
-		PAGE_TABLE* table = tables + i;
-		main_dir->SetFlag(i, flags);
-		main_dir->SetTable(i, table);
+		asm volatile(
+			"mov %cr0, %eax\n"
+			"or $0x80000000, %eax\n"
+			"mov %eax, %cr0");
 	}
 
-	//Map page dir
-	MapPhysAddr((uint32)main_dir, (uint32)main_dir, flags, 1);
-	MapPhysAddr((uint32)main_dir, PAGE_DIR_ADDRESS, flags, 1);
-
-	//Map tables
-	MapPhysAddr((uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
-	MapPhysAddr((uint32)tables, PAGE_TABLE_ADDRESS(0), flags, PAGE_DIR_LENGTH - 1);
-
-	//Map kernel and memory map
-	MapPhysAddr(KERNEL_BASE, KERNEL_BASE, flags, BYTES_TO_BLOCKS(kernel_end - KERNEL_BASE + MEMORY_MAP_SIZE));
-
-	SwitchDir(main_dir);
-	EnablePaging();
-
-	Kernel::HigherHalf(info);
-}
-
-bool VMem::MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks)
-{
-	Scheduler::Disable();
-
-	PAGE_DIR* dir = GetCurrentDirVirt();
-
-	for (int i = 0; i < blocks; i++)
+	PAGE_DIR* GetCurrentDirVirt()
 	{
-		int index = PAGE_DIR_INDEX(virt);
-		int table_index = PAGE_TABLE_INDEX(virt);
+		if (!current_dir)
+			return main_dir;
 
-		if (dir->GetTable(index) == 0)
-			CreatePageTable(virt, flags);
-
-		dir->SetFlag(index, flags);
-
-		PAGE_TABLE* table;
-
-		if (current_dir)
-		{
-			table = PAGE_TABLE_AT(virt);
-		}
-		else
-		{
-			table = dir->GetTable(index);
-		}
-
-		table->SetFlag(table_index, flags);
-		table->SetAddr(table_index, phys);
-
-		phys += PAGE_SIZE;
-		virt += PAGE_SIZE;
-
-		asm volatile("invlpg (%0)" :: "r" (virt));
+		return (PAGE_DIR*)PAGE_DIR_ADDRESS;
 	}
 
-	Scheduler::Enable();
-	return 1;
-}
-
-void* VMem::KernelAlloc(uint32 blocks)
-{
-	return Alloc(PTE_PRESENT | PTE_WRITABLE, blocks, KERNEL_BASE, KERNEL_END);
-}
-
-void* VMem::UserAlloc(uint32 blocks)
-{
-	return Alloc(PTE_PRESENT | PTE_WRITABLE | PTE_USER, blocks, USER_BASE, USER_END);
-}
-
-void* VMem::KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
-{
-	return MapFirstFree(phys, flags, blocks, KERNEL_BASE, KERNEL_END);
-}
-
-void* VMem::UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
-{
-	return MapFirstFree(phys, flags, blocks, USER_BASE, USER_END);
-}
-
-void VMem::UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks)
-{
-	Scheduler::Disable();
-	PAGE_DIR* _dir = GetCurrentDir();
-
-	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
-	uint32 flags = PDE_PRESENT | PDE_WRITABLE | PDE_USER;
-
-	SwitchDir(dir1);
-	addr1 = UserMapFirstFree(phys, flags, blocks);
-
-	SwitchDir(dir2);
-	void* _addr2 = UserMapFirstFree(phys, flags, blocks);
-
-	//Switch back
-	SwitchDir(_dir);
-
-	addr2 = _addr2;
-	Scheduler::Enable();
-}
-
-uint32 VMem::FirstFree(uint32 blocks, uint32 start, uint32 end)
-{
-	Scheduler::Disable();
-
-	for (int i = start; i < end; i += PAGE_SIZE)
+	void* MapFirstFree(uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end)
 	{
-		if (!GetFlags(i) & PTE_PRESENT)
-		{
-			bool found = true;
+		uint32 virt = FirstFree(blocks, start, end);
 
-			for (int j = 1; j < blocks; j++)
-			{
-				if (GetFlags(i + j * PAGE_SIZE) & PTE_PRESENT)
-				{
-					found = false;
-					break;
-				}
-			}
-
-			if (found)
-			{
-				Scheduler::Enable();
-				return i;
-			}
-		}
-	}
-
-	Scheduler::Enable();
-	return 0;
-}
-
-void VMem::SwitchDir(PAGE_DIR* dir)
-{
-	if (dir == current_dir)
-		return;
-
-	current_dir = dir;
-
-	asm volatile(
-		"mov (%0), %%eax\n"
-		"mov %%eax, %%cr3" 
-		:: "r" (&dir));
-}
-
-PAGE_DIR* VMem::CreatePageDir()
-{
-	uint32 flags = PDE_PRESENT | PDE_WRITABLE;
-
-	//Dir
-	PAGE_DIR* phys = (PAGE_DIR*)PMem::AllocBlocks(1);
-	PAGE_DIR* dir = (PAGE_DIR*)KernelMapFirstFree((uint32)phys, flags, 1);
-	memset(dir, 0, sizeof(PAGE_DIR));
-
-	//Tables
-	PAGE_TABLE* tables_phys = (PAGE_TABLE*)PMem::AllocBlocks(768);
-	PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelMapFirstFree((uint32)tables_phys, flags, 768));
-	memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
-
-	tables_phys -= 256;
-	tables_virt -= 256;
-
-	for (int i = 0; i < 256; i++)
-	{
-		dir->values[i] = main_dir->values[i];
-	}
-
-	for (int i = 256; i < PAGE_DIR_LENGTH; i++)
-	{
-		dir->SetTable(i, tables_phys + i);
-	}
-
-	//Map tables and directory to last table
-	PAGE_TABLE* cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
-	PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
-	dir->SetFlag(PAGE_DIR_LENGTH - 1, flags);
-
-	for (int i = 0; i < 256; i++)
-	{
-		last_table->values[i] = cur_last_table->values[i];	
-	}
-
-	for (int i = 256; i < 1023; i++)
-	{
-		last_table->SetFlag(i, flags);
-		last_table->SetAddr(i, (uint32)(tables_phys + i));
-	}
-
-	last_table->SetFlag(PAGE_TABLE_LENGTH - 1, flags);
-	last_table->SetAddr(PAGE_TABLE_LENGTH - 1, (uint32)phys);
-
-	return phys;
-}
-
-PAGE_DIR* VMem::GetCurrentDir()
-{
-	return current_dir;
-}
-
-uint32 VMem::GetAddress(uint32 virt)
-{
-	Scheduler::Disable();
-	PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-	uint32 addr = table->GetAddr(PAGE_TABLE_INDEX(virt));
-	Scheduler::Enable();
-	return addr;
-}
-
-uint32 VMem::GetFlags(uint32 virt)
-{
-	Scheduler::Disable();
-	PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-	uint32 flags = table->GetFlags(PAGE_TABLE_INDEX(virt));
-	Scheduler::Enable();
-	return flags;
-}
-
-//Private
-void* VMem::Alloc(uint32 flags, uint32 blocks, uint32 start, uint32 end)
-{
-	Scheduler::Disable();
-
-	uint32 virt = FirstFree(blocks, start, end);
-	uint32 phys = (uint32)PMem::AllocBlocks(blocks);
-	MapPhysAddr(phys, virt, flags, blocks);
-
-	Scheduler::Enable();
-	return (void*)virt;
-
-	//
-	uint32 _virt = virt;
-
-	if (!virt)
-		return 0;
-
-	for (int i = 0; i < blocks; i++)
-	{
-		uint32 phys = (uint32)PMem::AllocBlocks(1);
-
-		if (!phys)
+		if (!virt)
 			return 0;
 
-		if (!MapPhysAddr(phys, _virt, flags, 1))
+		if (MapPhysAddr(phys, (uint32)virt, flags, blocks))
+		{
+			PMem::DeInitRegion((void*)phys, blocks * BLOCK_SIZE);
+			return (void*)virt;
+		}
+
+		return 0;
+	}
+	
+	void* Alloc(uint32 flags, uint32 blocks, uint32 start, uint32 end)
+	{
+		Scheduler::Disable();
+
+		uint32 virt = FirstFree(blocks, start, end);
+		uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+		MapPhysAddr(phys, virt, flags, blocks);
+
+		Scheduler::Enable();
+		return (void*)virt;
+
+		//
+		uint32 _virt = virt;
+
+		if (!virt)
 			return 0;
 
-		_virt += PAGE_SIZE;
-	}
+		for (int i = 0; i < blocks; i++)
+		{
+			uint32 phys = (uint32)PMem::AllocBlocks(1);
 
-	return (void*)virt;
-}
+			if (!phys)
+				return 0;
 
-void* VMem::MapFirstFree(uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end)
-{
-	uint32 virt = FirstFree(blocks, start, end);
+			if (!MapPhysAddr(phys, _virt, flags, 1))
+				return 0;
 
-	if (!virt)
-		return 0;
+			_virt += PAGE_SIZE;
+		}
 
-	if (MapPhysAddr(phys, (uint32)virt, flags, blocks))
-	{
-		PMem::DeInitRegion((void*)phys, blocks * BLOCK_SIZE);
 		return (void*)virt;
 	}
 
-	return 0;
-}
-
-bool VMem::CreatePageTable(uint32 virt, uint32 flags)
-{
-	return 0;
-	/*PAGE_DIR* dir = (PAGE_DIR*)PAGE_DIR_ADDRESS;
-	PAGE_DIR_ENTRY* dir_entry = &dir->entries[PAGE_DIR_INDEX(virt)];
-
-	if (dir_entry->value)
+	bool CreatePageTable(uint32 virt, uint32 flags)
+	{
 		return 0;
+		/*PAGE_DIR* dir = (PAGE_DIR*)PAGE_DIR_ADDRESS;
+		PAGE_DIR_ENTRY* dir_entry = &dir->entries[PAGE_DIR_INDEX(virt)];
 
-	PAGE_TABLE* table = (PAGE_TABLE*)PMem::AllocBlocks(1);
+		if (dir_entry->value)
+			return 0;
 
-	if (!table)
+		PAGE_TABLE* table = (PAGE_TABLE*)PMem::AllocBlocks(1);
+
+		if (!table)
+			return 0;
+
+		memset(table, 0, PAGE_SIZE);
+		dir_entry->SetFlag(flags);
+		dir_entry->SetTable(table);
+		MapPhysAddr((uint32)table, (uint32)table, flags, 1);
+		return 1;*/
+	}
+
+	PAGE_DIR* GetCurrentDir()
+	{
+		return current_dir;
+	}
+
+	void SwitchDir(PAGE_DIR* dir)
+	{
+		if (dir == current_dir)
+			return;
+
+		current_dir = dir;
+
+		asm volatile(
+			"mov (%0), %%eax\n"
+			"mov %%eax, %%cr3" 
+			:: "r" (&dir));
+	}
+
+	uint32 GetAddress(uint32 virt)
+	{
+		Scheduler::Disable();
+		PAGE_TABLE* table = PAGE_TABLE_AT(virt);
+		uint32 addr = table->GetAddr(PAGE_TABLE_INDEX(virt));
+		Scheduler::Enable();
+		return addr;
+	}
+
+	uint32 GetFlags(uint32 virt)
+	{
+		Scheduler::Disable();
+		PAGE_TABLE* table = PAGE_TABLE_AT(virt);
+		uint32 flags = table->GetFlags(PAGE_TABLE_INDEX(virt));
+		Scheduler::Enable();
+		return flags;
+	}
+
+	void* KernelAlloc(uint32 blocks)
+	{
+		return Alloc(PTE_PRESENT | PTE_WRITABLE, blocks, KERNEL_BASE, KERNEL_END);
+	}
+
+	void* UserAlloc(uint32 blocks)
+	{
+		return Alloc(PTE_PRESENT | PTE_WRITABLE | PTE_USER, blocks, USER_BASE, USER_END);
+	}
+
+	void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
+	{
+		return MapFirstFree(phys, flags, blocks, KERNEL_BASE, KERNEL_END);
+	}
+
+	void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks)
+	{
+		return MapFirstFree(phys, flags, blocks, USER_BASE, USER_END);
+	}
+
+	void UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks)
+	{
+		Scheduler::Disable();
+		PAGE_DIR* _dir = GetCurrentDir();
+
+		uint32 phys = (uint32)PMem::AllocBlocks(blocks);
+		uint32 flags = PDE_PRESENT | PDE_WRITABLE | PDE_USER;
+
+		SwitchDir(dir1);
+		addr1 = UserMapFirstFree(phys, flags, blocks);
+
+		SwitchDir(dir2);
+		void* _addr2 = UserMapFirstFree(phys, flags, blocks);
+
+		//Switch back
+		SwitchDir(_dir);
+
+		addr2 = _addr2;
+		Scheduler::Enable();
+	}
+
+	uint32 FirstFree(uint32 blocks, uint32 start, uint32 end)
+	{
+		Scheduler::Disable();
+
+		for (int i = start; i < end; i += PAGE_SIZE)
+		{
+			if (!GetFlags(i) & PTE_PRESENT)
+			{
+				bool found = true;
+
+				for (int j = 1; j < blocks; j++)
+				{
+					if (GetFlags(i + j * PAGE_SIZE) & PTE_PRESENT)
+					{
+						found = false;
+						break;
+					}
+				}
+
+				if (found)
+				{
+					Scheduler::Enable();
+					return i;
+				}
+			}
+		}
+
+		Scheduler::Enable();
 		return 0;
+	}
 
-	memset(table, 0, PAGE_SIZE);
-	dir_entry->SetFlag(flags);
-	dir_entry->SetTable(table);
-	MapPhysAddr((uint32)table, (uint32)table, flags, 1);
-	return 1;*/
-}
+	bool MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks)
+	{
+		Scheduler::Disable();
 
-void VMem::EnablePaging()
-{
-	asm volatile(
-		"mov %cr0, %eax\n"
-		"or $0x80000000, %eax\n"
-		"mov %eax, %cr0");
+		PAGE_DIR* dir = GetCurrentDirVirt();
+
+		for (int i = 0; i < blocks; i++)
+		{
+			int index = PAGE_DIR_INDEX(virt);
+			int table_index = PAGE_TABLE_INDEX(virt);
+
+			if (dir->GetTable(index) == 0)
+				CreatePageTable(virt, flags);
+
+			dir->SetFlag(index, flags);
+
+			PAGE_TABLE* table;
+
+			if (current_dir)
+			{
+				table = PAGE_TABLE_AT(virt);
+			}
+			else
+			{
+				table = dir->GetTable(index);
+			}
+
+			table->SetFlag(table_index, flags);
+			table->SetAddr(table_index, phys);
+
+			phys += PAGE_SIZE;
+			virt += PAGE_SIZE;
+
+			asm volatile("invlpg (%0)" :: "r" (virt));
+		}
+
+		Scheduler::Enable();
+		return 1;
+	}
+
+	PAGE_DIR* CreatePageDir()
+	{
+		uint32 flags = PDE_PRESENT | PDE_WRITABLE;
+
+		//Dir
+		PAGE_DIR* phys = (PAGE_DIR*)PMem::AllocBlocks(1);
+		PAGE_DIR* dir = (PAGE_DIR*)KernelMapFirstFree((uint32)phys, flags, 1);
+		memset(dir, 0, sizeof(PAGE_DIR));
+
+		//Tables
+		PAGE_TABLE* tables_phys = (PAGE_TABLE*)PMem::AllocBlocks(768);
+		PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelMapFirstFree((uint32)tables_phys, flags, 768));
+		memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
+
+		tables_phys -= 256;
+		tables_virt -= 256;
+
+		for (int i = 0; i < 256; i++)
+		{
+			dir->values[i] = main_dir->values[i];
+		}
+
+		for (int i = 256; i < PAGE_DIR_LENGTH; i++)
+		{
+			dir->SetTable(i, tables_phys + i);
+		}
+
+		//Map tables and directory to last table
+		PAGE_TABLE* cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
+		PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
+		dir->SetFlag(PAGE_DIR_LENGTH - 1, flags);
+
+		for (int i = 0; i < 256; i++)
+		{
+			last_table->values[i] = cur_last_table->values[i];	
+		}
+
+		for (int i = 256; i < 1023; i++)
+		{
+			last_table->SetFlag(i, flags);
+			last_table->SetAddr(i, (uint32)(tables_phys + i));
+		}
+
+		last_table->SetFlag(PAGE_TABLE_LENGTH - 1, flags);
+		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, (uint32)phys);
+
+		return phys;
+	}
+
+	void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end)
+	{
+		current_dir = 0;
+
+		MULTIBOOT_INFO info = *bootinfo;
+		VBE_MODE_INFO vbe_info = *(VBE_MODE_INFO*)bootinfo->vbe_mode_info;
+		info.vbe_mode_info = (uint32)&vbe_info;
+
+		//Page dir
+		main_dir = (PAGE_DIR*)PMem::AllocBlocks(1);
+		memset(main_dir, 0, sizeof(PAGE_DIR));
+
+		//Tables
+		PAGE_TABLE* tables = (PAGE_TABLE*)PMem::AllocBlocks(PAGE_DIR_LENGTH);
+		memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
+
+		uint32 flags = PDE_PRESENT | PDE_WRITABLE;
+
+		for (int i = 0; i < PAGE_DIR_LENGTH; i++)
+		{
+			PAGE_TABLE* table = tables + i;
+			main_dir->SetFlag(i, flags);
+			main_dir->SetTable(i, table);
+		}
+
+		//Map page dir
+		MapPhysAddr((uint32)main_dir, (uint32)main_dir, flags, 1);
+		MapPhysAddr((uint32)main_dir, PAGE_DIR_ADDRESS, flags, 1);
+
+		//Map tables
+		MapPhysAddr((uint32)tables, (uint32)tables, flags, PAGE_DIR_LENGTH);
+		MapPhysAddr((uint32)tables, PAGE_TABLE_ADDRESS(0), flags, PAGE_DIR_LENGTH - 1);
+
+		//Map kernel and memory map
+		MapPhysAddr(KERNEL_BASE, KERNEL_BASE, flags, BYTES_TO_BLOCKS(kernel_end - KERNEL_BASE + MEMORY_MAP_SIZE));
+
+		SwitchDir(main_dir);
+		EnablePaging();
+
+		Kernel::HigherHalf(info);
+	}
 }

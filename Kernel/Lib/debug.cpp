@@ -5,7 +5,7 @@
 #include "stdio.h"
 #include "math.h"
 
-bool serial;
+static bool serial;
 static int x;
 static int y;
 

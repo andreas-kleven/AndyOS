@@ -54,14 +54,8 @@
 #define		PIC_OCW3_MASK_ESMM		0x40	//01000000
 #define		PIC_OCW3_MASK_D7		0x80	//10000000
 
-class PIC
+namespace PIC
 {
-public:
-	static STATUS Init();
-	static void InterruptDone(uint16 picNum);
-
-private:
-	static uint8 ReadData(uint8 picNum);
-	static void SendData(uint16 data, uint8 picNum);
-	static void SendCommand(uint8 cmd, uint8 picNum);
+	void InterruptDone(uint16 picNum);
+	STATUS Init();
 };

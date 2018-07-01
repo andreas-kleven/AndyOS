@@ -6,13 +6,8 @@
 #define KEYBOARD_IRQ 33
 #define MAX_KEYS 0xFF
 
-class Keyboard
+namespace Keyboard
 {
-public:
-	static STATUS Init();
-	static bool GetLastKey(KEYCODE& code, bool& pressed);
-
-private:
-	static void SetupScancodes();
-	static void Keyboard_ISR(REGS* regs);
+	bool GetLastKey(KEYCODE& code, bool& pressed);
+	STATUS Init();
 };

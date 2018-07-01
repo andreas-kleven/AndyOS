@@ -11,53 +11,56 @@
 #define COM_REG_MODEL_STATUS	6
 #define COM_REG_MODEL_SCRATCH	7
 
-STATUS Serial::Init(int port, int baud)
+namespace Serial
 {
-	if (baud > COM_MAX_BAUD)
-		return STATUS_FAILED;
+	bool IsTransmitEmpty(int port)
+	{
+		return inb(port + COM_REG_LINE_STATUS) & 0x20;
+	}
 
-	if (COM_MAX_BAUD % baud != 0)
-		return STATUS_FAILED;
+	bool SerialReceived(int port)
+	{
+		return inb(port + COM_REG_LINE_STATUS) & 1;
+	}
 
-	uint16 divisor = COM_MAX_BAUD / baud;
-	uint8 low = divisor & 0xFF;
-	uint8 high = divisor >> 8;
+	void Transmit(int port, char data)
+	{
+		while (!IsTransmitEmpty(port));
+		outb(port, data);
+	}
 
-	outb(port + COM_REG_INTERRUPT, 0x00);		// Disable all interrupts
-	outb(port + COM_REG_LINE_CONTROL, 0x80);	// Enable DLAB (set baud rate divisor)
-	outb(port + COM_REG_DATA, low);
-	outb(port + COM_REG_INTERRUPT, high);
-	outb(port + COM_REG_LINE_CONTROL, 0x03);	// 8 bits, no parity, one stop bit
-	outb(port + COM_REG_INTERRUPT_ID, 0xC7);	// Enable FIFO, clear them, with 14-byte threshold
-	outb(port + COM_REG_MODEM_CONTROL, 0x0B);	// IRQs enabled, RTS/DSR set
+	void Transmit(int port, char* data, int length)
+	{
+		while (length--)
+			Transmit(port, *data++);
+	}
 
-	return STATUS_SUCCESS;
-}
+	char Receive(int port)
+	{
+		while (SerialReceived(port) == 0);
+		return inb(port);
+	}
 
-void Serial::Transmit(int port, char data)
-{
-	while (!IsTransmitEmpty(port));
-	outb(port, data);
-}
+	STATUS Init(int port, int baud)
+	{
+		if (baud > COM_MAX_BAUD)
+			return STATUS_FAILED;
 
-void Serial::Transmit(int port, char* data, int length)
-{
-	while (length--)
-		Transmit(port, *data++);
-}
+		if (COM_MAX_BAUD % baud != 0)
+			return STATUS_FAILED;
 
-char Serial::Receive(int port)
-{
-	while (SerialReceived(port) == 0);
-	return inb(port);
-}
+		uint16 divisor = COM_MAX_BAUD / baud;
+		uint8 low = divisor & 0xFF;
+		uint8 high = divisor >> 8;
 
-bool Serial::IsTransmitEmpty(int port)
-{
-	return inb(port + COM_REG_LINE_STATUS) & 0x20;
-}
+		outb(port + COM_REG_INTERRUPT, 0x00);		// Disable all interrupts
+		outb(port + COM_REG_LINE_CONTROL, 0x80);	// Enable DLAB (set baud rate divisor)
+		outb(port + COM_REG_DATA, low);
+		outb(port + COM_REG_INTERRUPT, high);
+		outb(port + COM_REG_LINE_CONTROL, 0x03);	// 8 bits, no parity, one stop bit
+		outb(port + COM_REG_INTERRUPT_ID, 0xC7);	// Enable FIFO, clear them, with 14-byte threshold
+		outb(port + COM_REG_MODEM_CONTROL, 0x0B);	// IRQs enabled, RTS/DSR set
 
-bool Serial::SerialReceived(int port)
-{
-	return inb(port + COM_REG_LINE_STATUS) & 1;
+		return STATUS_SUCCESS;
+	}
 }

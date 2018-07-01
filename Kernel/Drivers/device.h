@@ -44,11 +44,9 @@ public:
 	}
 };
 
-class DeviceManager
+namespace DeviceManager
 {
-public:
-	static Device* first_device;
-
-	static STATUS Init();
-	static void AddDevice(Device* device);
+	void AddDevice(Device* device);
+	Device* GetDevice();
+	STATUS Init();
 };

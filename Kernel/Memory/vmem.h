@@ -97,30 +97,22 @@ struct PAGE_DIR
 	}
 } __attribute__((packed));
 
-class VMem
+namespace VMem
 {
-public:
-	static void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end);
-	static bool MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
+	PAGE_DIR* GetCurrentDir();
+	void SwitchDir(PAGE_DIR* dir);
+	uint32 GetAddress(uint32 virt);
+	uint32 GetFlags(uint32 virt);
 
-	static void* KernelAlloc(uint32 blocks);
-	static void* UserAlloc(uint32 blocks);
-	static void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
-	static void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
-	static void UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks);
+	void* KernelAlloc(uint32 blocks);
+	void* UserAlloc(uint32 blocks);
+	void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
+	void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
+	void UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks);
 
-	static uint32 FirstFree(uint32 blocks, uint32 start, uint32 end);
+	uint32 FirstFree(uint32 blocks, uint32 start, uint32 end);
+	bool MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
 
-	static void SwitchDir(PAGE_DIR* dir);
-	static PAGE_DIR* CreatePageDir();
-	static PAGE_DIR* GetCurrentDir();
-
-	static uint32 GetAddress(uint32 virt);
-	static uint32 GetFlags(uint32 virt);
-
-private:
-	static void* Alloc(uint32 flags, uint32 blocks, uint32 start, uint32 end);
-	static void* MapFirstFree(uint32 phys, uint32 flags, uint32 blocks, uint32 start, uint32 end);
-	static bool CreatePageTable(uint32 virt, uint32 flags);
-	static void EnablePaging();
+	PAGE_DIR* CreatePageDir();
+	void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end);
 };

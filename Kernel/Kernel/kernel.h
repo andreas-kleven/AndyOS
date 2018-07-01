@@ -1,9 +1,8 @@
 #pragma once
 #include "Boot/multiboot.h"
 
-class Kernel
+namespace Kernel
 {
-public:
-	static void Setup(MULTIBOOT_INFO* bootinfo);
-	static void HigherHalf(MULTIBOOT_INFO bootinfo);
+	void Setup(MULTIBOOT_INFO* bootinfo);
+	void HigherHalf(MULTIBOOT_INFO bootinfo);
 };

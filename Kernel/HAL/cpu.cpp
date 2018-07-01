@@ -1,37 +1,40 @@
 #include "cpu.h"
 
-STATUS CPU::Init()
+namespace CPU
 {
-	if (!EnableFPU())
-		return STATUS_FAILED;
+	STATUS EnableFPU()
+	{
+		asm volatile(
+			"mov %cr4, %eax\n"
+			"or $0x200, %eax\n"
+			"mov %eax, %cr4");
 
-	if (!EnableSSE())
-		return STATUS_FAILED;
+		return STATUS_SUCCESS;
+	}
 
-	return STATUS_SUCCESS;
-}
+	STATUS EnableSSE()
+	{
+		asm volatile(
+			"mov %cr0, %eax\n"
+			"and $0xFFFB, %ax\n"
+			"or $0x2, %ax\n"
+			"mov %eax, %cr0\n"
 
-STATUS CPU::EnableFPU()
-{
-	asm volatile(
-		"mov %cr4, %eax\n"
-		"or $0x200, %eax\n"
-		"mov %eax, %cr4");
+			"mov %cr4, %eax\n"
+			"or $0x600, %eax\n"
+			"mov %eax, %cr4");
 
-	return STATUS_SUCCESS;
-}
+		return STATUS_SUCCESS;
+	}
 
-STATUS CPU::EnableSSE()
-{
-	asm volatile(
-		"mov %cr0, %eax\n"
-		"and $0xFFFB, %ax\n"
-		"or $0x2, %ax\n"
-		"mov %eax, %cr0\n"
+	STATUS Init()
+	{
+		if (!EnableFPU())
+			return STATUS_FAILED;
 
-		"mov %cr4, %eax\n"
-		"or $0x600, %eax\n"
-		"mov %eax, %cr4");
+		if (!EnableSSE())
+			return STATUS_FAILED;
 
-	return STATUS_SUCCESS;
+		return STATUS_SUCCESS;
+	}
 }

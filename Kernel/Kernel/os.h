@@ -1,7 +1,6 @@
 #pragma once
 
-class OS
+namespace OS
 {
-public:
-	static void Main();
+	void Main();
 };

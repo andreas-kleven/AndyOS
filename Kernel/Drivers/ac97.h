@@ -24,13 +24,7 @@ struct AC97_DEVICE
 	uint8** buffers;
 } __attribute__((packed));
 
-class AC97
+namespace AC97
 {
-public:
-	static AC97_DEVICE device;
-
-	static STATUS Init(PCI_DEVICE* dev);
-
-private:
-	static void AC97_ISR(REGS* regs);
+	STATUS Init(PCI_DEVICE* dev);
 };

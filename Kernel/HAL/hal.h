@@ -23,8 +23,7 @@ void outb(uint16 port, uint8 val);
 void outw(uint16 port, uint16 val);
 void outl(uint16 port, uint32 val);
 
-class HAL
+namespace HAL
 {
-public:
-	static STATUS Init();
+	STATUS Init();
 };

@@ -1,55 +1,63 @@
 #include "pit.h"
 #include "HAL/hal.h"
 
-uint32 PIT::ticks;
-
-STATUS PIT::Init()
+namespace PIT
 {
-	IDT::InstallIRQ(32, (IRQ_HANDLER)PIT_ISR);
-	return Start();
-}
+	uint32 ticks;
 
-void PIT::Sleep(uint32 time)
-{
-	uint32 end = ticks + time;
-	while (ticks < end) asm volatile("pause");
-}
+	void SendData(uint16 data, uint8 counter)
+	{
+		uint8 port = (counter == PIT_OCW_COUNTER_0) ? PIT_REG_COUNTER0 :
+			((counter == PIT_OCW_COUNTER_1) ? PIT_REG_COUNTER1 : PIT_REG_COUNTER2);
 
-STATUS PIT::Start()
-{
-	uint16 divisor = uint16(1193181 / PIT_FREQUENCY);
+		outb(port, (uint8)data);
+	}
 
-	uint8 ocw = 0;
-	ocw = (ocw & ~PIT_OCW_MASK_MODE) | PIT_OCW_COUNTER_0;
-	ocw = (ocw & ~PIT_OCW_MASK_RL) | PIT_OCW_RL_DATA;
-	ocw = (ocw & ~PIT_OCW_MASK_COUNTER) | PIT_OCW_MODE_SQUAREWAVEGEN;
-	outb(PIT_REG_COMMAND, ocw);
+	uint8 ReadData(uint8 counter)
+	{
+		uint8 port = (counter == PIT_OCW_COUNTER_0) ? PIT_REG_COUNTER0 :
+			((counter == PIT_OCW_COUNTER_1) ? PIT_REG_COUNTER1 : PIT_REG_COUNTER2);
 
-	SendData(divisor & 0xff, 0);
-	SendData((divisor >> 8) & 0xff, 0);
+		return inb(port);
+	}
 
-	ticks = 0;
+	STATUS Start()
+	{
+		uint16 divisor = uint16(1193181 / PIT_FREQUENCY);
 
-	return STATUS_SUCCESS;
-}
+		uint8 ocw = 0;
+		ocw = (ocw & ~PIT_OCW_MASK_MODE) | PIT_OCW_COUNTER_0;
+		ocw = (ocw & ~PIT_OCW_MASK_RL) | PIT_OCW_RL_DATA;
+		ocw = (ocw & ~PIT_OCW_MASK_COUNTER) | PIT_OCW_MODE_SQUAREWAVEGEN;
+		outb(PIT_REG_COMMAND, ocw);
 
-uint8 PIT::ReadData(uint8 counter)
-{
-	uint8 port = (counter == PIT_OCW_COUNTER_0) ? PIT_REG_COUNTER0 :
-		((counter == PIT_OCW_COUNTER_1) ? PIT_REG_COUNTER1 : PIT_REG_COUNTER2);
+		SendData(divisor & 0xff, 0);
+		SendData((divisor >> 8) & 0xff, 0);
 
-	return inb(port);
-}
+		ticks = 0;
 
-void PIT::SendData(uint16 data, uint8 counter)
-{
-	uint8 port = (counter == PIT_OCW_COUNTER_0) ? PIT_REG_COUNTER0 :
-		((counter == PIT_OCW_COUNTER_1) ? PIT_REG_COUNTER1 : PIT_REG_COUNTER2);
+		return STATUS_SUCCESS;
+	}
 
-	outb(port, (uint8)data);
-}
+	void PIT_ISR(REGS* regs)
+	{
+		ticks++;
+	}
 
-void PIT::PIT_ISR(REGS* regs)
-{
-	ticks++;
+	uint32 Ticks()
+	{
+		return ticks;
+	}
+
+	void Sleep(uint32 time)
+	{
+		uint32 end = ticks + time;
+		while (ticks < end) asm volatile("pause");
+	}
+
+	STATUS Init()
+	{
+		IDT::InstallIRQ(32, (IRQ_HANDLER)PIT_ISR);
+		return Start();
+	}
 }

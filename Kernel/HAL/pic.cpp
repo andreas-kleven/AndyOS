@@ -1,64 +1,67 @@
 #include "pic.h"
 #include "HAL/hal.h"
 
-STATUS PIC::Init()
+namespace PIC
 {
-	uint8 icw = 0;
+	uint8 ReadData(uint8 picNum)
+	{
+		if (picNum > 1)
+			return 0;
 
-	icw = (icw & ~PIC_ICW1_MASK_INIT) | PIC_ICW1_INIT_YES;
-	icw = (icw & ~PIC_ICW1_MASK_IC4) | PIC_ICW1_IC4_EXPECT;
+		uint8 reg = (picNum == 1) ? PIC2_REG_DATA : PIC1_REG_DATA;
+		return inb(reg);
+	}
 
-	SendCommand(icw, 0);
-	SendCommand(icw, 1);
+	void SendData(uint16 data, uint8 picNum)
+	{
+		if (picNum > 1)
+			return;
 
-	SendData(PIT_BASE0, 0);
-	SendData(PIT_BASE1, 1);
+		uint8 reg = (picNum == 1) ? PIC2_REG_DATA : PIC1_REG_DATA;
+		outb(reg, data);
+	}
 
-	SendData(0x04, 0);
-	SendData(0x02, 1);
+	void SendCommand(uint8 cmd, uint8 picNum)
+	{
+		if (picNum > 1)
+			return;
 
-	icw = (icw & ~PIC_ICW4_MASK_UPM) | PIC_ICW4_UPM_86MODE;
+		uint8	reg = (picNum == 1) ? PIC2_REG_COMMAND : PIC1_REG_COMMAND;
+		outb(reg, cmd);
+	}
 
-	SendData(icw, 0);
-	SendData(icw, 1);
+	void InterruptDone(uint16 picNum)
+	{
+		//if (picNum >= 16)
+		//	return;
 
-	return STATUS_SUCCESS;
-}
+		if (picNum % 16 >= 8)
+			SendCommand(PIC_OCW2_MASK_EOI, 1);
 
-void PIC::InterruptDone(uint16 picNum)
-{
-	//if (picNum >= 16)
-	//	return;
+		SendCommand(PIC_OCW2_MASK_EOI, 0);
+	}
 
-	if (picNum % 16 >= 8)
-		SendCommand(PIC_OCW2_MASK_EOI, 1);
+	STATUS Init()
+	{
+		uint8 icw = 0;
 
-	SendCommand(PIC_OCW2_MASK_EOI, 0);
-}
+		icw = (icw & ~PIC_ICW1_MASK_INIT) | PIC_ICW1_INIT_YES;
+		icw = (icw & ~PIC_ICW1_MASK_IC4) | PIC_ICW1_IC4_EXPECT;
 
-uint8 PIC::ReadData(uint8 picNum)
-{
-	if (picNum > 1)
-		return 0;
+		SendCommand(icw, 0);
+		SendCommand(icw, 1);
 
-	uint8 reg = (picNum == 1) ? PIC2_REG_DATA : PIC1_REG_DATA;
-	return inb(reg);
-}
+		SendData(PIT_BASE0, 0);
+		SendData(PIT_BASE1, 1);
 
-void PIC::SendData(uint16 data, uint8 picNum)
-{
-	if (picNum > 1)
-		return;
+		SendData(0x04, 0);
+		SendData(0x02, 1);
 
-	uint8 reg = (picNum == 1) ? PIC2_REG_DATA : PIC1_REG_DATA;
-	outb(reg, data);
-}
+		icw = (icw & ~PIC_ICW4_MASK_UPM) | PIC_ICW4_UPM_86MODE;
 
-void PIC::SendCommand(uint8 cmd, uint8 picNum)
-{
-	if (picNum > 1)
-		return;
+		SendData(icw, 0);
+		SendData(icw, 1);
 
-	uint8	reg = (picNum == 1) ? PIC2_REG_COMMAND : PIC1_REG_COMMAND;
-	outb(reg, cmd);
+		return STATUS_SUCCESS;
+	}
 }

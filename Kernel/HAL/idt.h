@@ -38,21 +38,10 @@ struct IDT_REG
 	uint32 base;
 } __attribute__((packed));
 
-class IDT
+namespace IDT
 {
-public:
-	static STATUS Init();
-	static STATUS SetISR(uint32 i, ISR isr, int flags);
-	static STATUS InstallIRQ(uint32 i, IRQ_HANDLER irq);
-	static IRQ_HANDLER GetHandler(uint32 i);
-
-private:
-	static IDT_DESCRIPTOR idt[MAX_INTERRUPTS];
-	static IRQ_HANDLER handlers[MAX_INTERRUPTS];
-	static IDT_REG idt_reg;
-
-	static IDT_DESCRIPTOR* GetIR(uint32 i);
-	static void EmptyISR();
-	static void CommonISR();
-	static void CommonHandler(int i, REGS* regs);
+	STATUS SetISR(uint32 i, ISR isr, int flags);
+	STATUS InstallIRQ(uint32 i, IRQ_HANDLER irq);
+	IRQ_HANDLER GetHandler(uint32 i);
+	STATUS Init();
 };

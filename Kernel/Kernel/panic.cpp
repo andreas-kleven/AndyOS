@@ -5,7 +5,7 @@
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
 
-void Panic::KernelPanic(char* err, char* msg, ...)
+void KernelPanic(char* err, char* msg, ...)
 {
 	asm volatile("cli");
 
@@ -25,8 +25,8 @@ void Panic::KernelPanic(char* err, char* msg, ...)
 	debug_print("%s\n", err);
 	debug_print("%s\n", buffer);
 
-	if (Scheduler::current_thread->process)
-		debug_print("Proc: %ux\n", Scheduler::current_thread->process->id);
+	if (Scheduler::CurrentThread()->process)
+		debug_print("Proc: %ux\n", Scheduler::CurrentThread()->process->id);
 
 	asm volatile(
 		"cli\n"

@@ -104,14 +104,8 @@ struct PCI_DEVICE
 	PCI_CONFIG_SPACE configSpace;
 };
 
-class PCI
+namespace PCI
 {
-public:
-	static STATUS Init();
-
-	static PCI_DEVICE* GetDevice(int classCode, int subClass, int progIF);
-
-private:
-	static uint32 Read(uint8 bus, uint8 device, uint8 func, uint8 port, uint8 len);
-	static PCI_DEVICE* Create(uint8 bus, uint8 device, uint8 func);
+	STATUS Init();
+	PCI_DEVICE* GetDevice(int classCode, int subClass, int progIF);
 };

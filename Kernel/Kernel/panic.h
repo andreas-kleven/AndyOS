@@ -1,7 +1,3 @@
 #pragma once
 
-class Panic
-{
-public:
-	static void KernelPanic(char* err, char* msg = "", ...);
-};
+void KernelPanic(char* err, char* msg = "", ...);

@@ -8,16 +8,11 @@
 #define COM_PORT3 0x2E8
 #define COM_PORT4 0x2E8
 
-class Serial
+namespace Serial
 {
-public:
-	static STATUS Init(int port, int baud);
-	static void Transmit(int port, char data);
-	static void Transmit(int port, char* data, int length);
-	static char Receive(int port);
-
-private:
-	static bool IsTransmitEmpty(int port);
-	static bool SerialReceived(int port);
+	void Transmit(int port, char data);
+	void Transmit(int port, char* data, int length);
+	char Receive(int port);
+	STATUS Init(int port, int baud);
 };
 

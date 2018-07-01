@@ -32,11 +32,10 @@ struct TSS_ENTRY
 	uint16 iomap_base;
 } __attribute__((packed));
 
-class TSS
+namespace TSS
 {
-public:
-	static STATUS Init(uint32 gdt_index, uint32 kernelESP);
-	static void Flush();
-	static void SetStack(uint32 kernelSS, uint32 kernelESP);
+	void Flush();
+	void SetStack(uint32 kernelSS, uint32 kernelESP);
+	STATUS Init(uint32 gdt_index, uint32 kernelESP);
 };
 

@@ -114,8 +114,8 @@ void TcpSession::Connect(IPv4Address dst, uint16 port)
 
 	state = TCP_SYN_SENT;
 
-	int t_out = PIT::ticks + 1000;
-	while (state == TCP_SYN_SENT && PIT::ticks < t_out)
+	int t_out = PIT::Ticks() + 1000;
+	while (state == TCP_SYN_SENT && PIT::Ticks() < t_out)
 		asm volatile("pause");
 
 	if (state == TCP_SYN_SENT)
@@ -142,8 +142,8 @@ void TcpSession::Close()
 	Send(FIN);
 	state = TCP_FIN_WAIT_1;
 
-	int t_out = PIT::ticks + 1000;
-	while (state == TCP_FIN_WAIT_1 && PIT::ticks < t_out)
+	int t_out = PIT::Ticks() + 1000;
+	while (state == TCP_FIN_WAIT_1 && PIT::Ticks() < t_out)
 		asm volatile("pause");
 
 	if (state == TCP_FIN_WAIT_1)
@@ -154,8 +154,8 @@ void TcpSession::Close()
 		return;
 	}
 
-	t_out = PIT::ticks + 1000;
-	while (state == TCP_FIN_WAIT_2 && PIT::ticks < t_out)
+	t_out = PIT::Ticks() + 1000;
+	while (state == TCP_FIN_WAIT_2 && PIT::Ticks() < t_out)
 		asm volatile("pause");
 
 	if (state == TCP_TIME_WAIT)

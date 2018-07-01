@@ -1,8 +1,7 @@
 #pragma once
 
-class Path
+namespace Path
 {
-public:
-	static char GetDriveLetter(char* path);
+	char GetDriveLetter(char* path);
 };
 
