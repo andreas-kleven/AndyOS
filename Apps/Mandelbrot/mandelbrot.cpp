@@ -10,17 +10,20 @@ double ofx = 0;
 double ofy = 0;
 double rot = 0;
 
-void run(GC gc)
+void run(GC& gc)
 {
-	GC gc_buf(gc.width, gc.height);
-
 	int iter_max = 256;
 
 	int ticks = get_ticks();
 	double delta = 1;
 
+	GC gc_buf;
+
 	while (1)
 	{
+		if (gc_buf.width != gc.width || gc_buf.height != gc.height);
+			gc_buf = GC(gc.width, gc.height);
+
 		double asd0 = zoom;
 		double asd1 = asd0 / gc_buf.width;
 

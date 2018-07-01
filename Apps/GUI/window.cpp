@@ -11,8 +11,10 @@ namespace gui
     static int mouse_x = 0;
     static int mouse_y = 0;
 
-    Window::Window(char* title, int width, int height)
+    Window::Window(char* title, int width, int height, Color background)
     {
+        this->background = background;
+
         Client::Init();
 
         CREATE_WINDOW_RESPONSE response;
@@ -23,7 +25,7 @@ namespace gui
             this->height = response.height;
             this->bounds = Rect(0, 0, width, height);
             this->gc = GC(response.width, response.height, response.framebuffer);
-	        Drawing::Clear(Color::White, this->gc);
+	        Drawing::Clear(background, this->gc);
 
             Client::AddWindow(this);
         }
@@ -59,13 +61,13 @@ namespace gui
         Client::SendRequest(SET_CAPTURE_REQUEST(this->id, capture));
     }
 
-    void Window::HandleMessage(MESSAGE& msg)
+    void Window::HandleMessage(MESSAGE& message)
     {
-        REQUEST_TYPE type = *(REQUEST_TYPE*)msg.data;
+        REQUEST_TYPE type = *(REQUEST_TYPE*)message.data;
 
         if (type == REQUEST_TYPE_KEY_INPUT)
         {
-            KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)msg.data;
+            KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)message.data;
             InputManager::HandleKey(input->code, input->pressed);
 
             if (input->code == KEY_LBUTTON || input->code == KEY_RBUTTON || input->code == KEY_MBUTTON)
@@ -121,13 +123,21 @@ namespace gui
         }
         else if (type == REQUEST_TYPE_MOUSE_INPUT)
         {
-            MOUSE_INPUT_MESSAGE* input = (MOUSE_INPUT_MESSAGE*)msg.data;
+            MOUSE_INPUT_MESSAGE* input = (MOUSE_INPUT_MESSAGE*)message.data;
 
             mouse_x = input->x;
             mouse_y = input->y;
 
             InputManager::HandleMouse(input->dx, input->dy);
             HoverElement(this, input->x, input->y);
+        }
+        else if (type == REQUEST_TYPE_RESIZE)
+        {
+            RESIZE_MESSAGE* msg = (RESIZE_MESSAGE*)message.data;
+            this->width = msg->width;
+            this->height = msg->height;
+            this->gc.Resize(msg->width, msg->height);
+	        Drawing::Clear(background, this->gc);
         }
 
 		Paint();

@@ -151,15 +151,15 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 			CREATE_WINDOW_REQUEST* request = (CREATE_WINDOW_REQUEST*)msg.data;
 			debug_print("Create window request: %s\n", request->title);
 
-			int width = request->width;
-			int height = request->height;
+			int w = request->width;
+			int h = request->height;
 
 			void* addr1;
 			void* addr2;
 
 			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
-			Window* wnd = new Window(msg.src_proc, request->title, width, height, (uint32*)addr1);
+			Window* wnd = new Window(msg.src_proc, request->title, w, h, (uint32*)addr1);
 			WindowManager::AddWindow(wnd);
 
 			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
@@ -203,16 +203,6 @@ void WindowManager::UpdateLoop()
 		if (cursor_enabled)
 		{
 			PaintCursor();
-		}
-		else
-		{
-			//Center cursor in active window
-			if (active_window)
-			{
-				Rect* bounds = &active_window->bounds;
-				cursor_x = bounds->x + bounds->width / 2;
-				cursor_y = bounds->y + bounds->height / 2;
-			}
 		}
 
 		Drawing::Draw(gc);
@@ -336,6 +326,13 @@ void WindowManager::HandleMouseInput()
 		{
 			//Mouse down
 
+			mouse_click_L_info.num_clicks += 1;
+
+			if (time - mouse_click_L_info.click_time > DOUBLE_CLICK_TIME)
+			{
+				mouse_click_L_info.num_clicks = 0;
+			}
+
 			mouse_click_L = 1;
 			mouse_click_L_info.click_time = time;
 			mouse_click_L_info.click_x = cursor_x;
@@ -353,6 +350,17 @@ void WindowManager::HandleMouseInput()
 				if (wnd->content_bounds.Contains(cursor_x, cursor_y))
 				{
 					active_window = wnd;
+				}
+				else if (mouse_click_L_info.num_clicks == 1)
+				{
+					if (wnd->state == WINDOW_STATE_NORMAL)
+					{
+						wnd->SetState(WINDOW_STATE_MAXIMIZED);
+					}
+					else if (wnd->state == WINDOW_STATE_MAXIMIZED)
+					{
+						wnd->SetState(WINDOW_STATE_NORMAL);
+					}
 				}
 			}
 		}
@@ -380,6 +388,23 @@ void WindowManager::HandleMouseInput()
 
 			if (window_drag)
 			{
+				Window* dragwnd = window_drag_info.window;
+
+				if (dragwnd->state == WINDOW_STATE_MAXIMIZED)
+				{
+					//Set window state to normal when dragging maximized window
+
+					float ratio = cursor_x / (float)width;
+					int nx = cursor_x - dragwnd->normal_bounds.width * ratio;
+
+					dragwnd->normal_bounds.x = nx;
+					dragwnd->normal_bounds.y = 0;
+					dragwnd->SetState(WINDOW_STATE_NORMAL);
+
+					window_drag_info.start_x = dragwnd->bounds.x;
+ 					window_drag_info.start_y = dragwnd->bounds.y;
+				}
+
 				int x = window_drag_info.start_x + dx;
 				int y = window_drag_info.start_y + dy;
 				window_drag_info.window->Move(x, y);
@@ -402,6 +427,14 @@ void WindowManager::HandleMouseInput()
 			if (window_drag)
 			{
 				window_drag = 0;
+
+				Window* dragwnd = window_drag_info.window;
+
+				if (dragwnd)
+				{
+					if (dragwnd->bounds.y == 0)
+						dragwnd->SetState(WINDOW_STATE_MAXIMIZED);
+				}
 			}
 			else
 			{
@@ -416,7 +449,7 @@ void WindowManager::HandleKeyInput()
 	KEYCODE code;
 	bool pressed;
 
-	if (get_last_key(code, pressed))
+	while (get_last_key(code, pressed))
 	{
 		gui::InputManager::HandleKey(code, pressed);
 
@@ -425,12 +458,12 @@ void WindowManager::HandleKeyInput()
 			KEY_INPUT_MESSAGE msg(focused_window->id, code, pressed);
 			post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
 		}
-	}
 
-	//alt+tab
-	if (gui::InputManager::GetKeyDown(KEY_LALT) && gui::InputManager::GetKeyDown(KEY_TAB))
-	{
-		active_window = 0;
+		//alt+tab
+		if (gui::InputManager::GetKeyDown(KEY_LALT) && gui::InputManager::GetKeyDown(KEY_TAB))
+		{
+			active_window = 0;
+		}
 	}
 }
 

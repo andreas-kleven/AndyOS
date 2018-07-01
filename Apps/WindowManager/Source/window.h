@@ -25,6 +25,7 @@ public:
 	WINDOW_STATE state;
 	Rect bounds;
 	Rect content_bounds;
+	Rect normal_bounds;
 	bool focused;
 	bool dirty;
 
@@ -38,6 +39,7 @@ public:
 	void Paint(GC& main_gc);
 	void Close();
 	void Move(int x, int y);
+	void Resize(int w, int h);
 	void SetFocus(bool focus);
 	void SetState(WINDOW_STATE state);
 };

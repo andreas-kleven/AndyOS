@@ -22,7 +22,7 @@ public:
 	int history_index = 0;
 
 	MainWindow()
-		: Window("Terminal", 424, 288)
+		: Window("Terminal", 424, 288, Color::Black)
 	{
 		color = Color::White;
 		bcolor = Color::Black;

@@ -1,6 +1,9 @@
 #include "window.h"
+#include "GUI.h"
 #include "definitions.h"
 #include "string.h"
+
+using namespace gui::messages;
 
 static int new_id = 1;
 
@@ -23,10 +26,10 @@ Window::Window(int proc_id, char* title, int width, int height, uint32* framebuf
 	bounds.x = id * 100;
 	bounds.y = id * 100;
 	bounds.width = clamp(width, 0, 1024);
-	bounds.height = clamp(height, 0, 768) + GUI_TITLEBAR_HEIGHT;
+	bounds.height = clamp(height, 0, 768);
 
 	content_bounds = Rect(bounds.x, bounds.y + GUI_TITLEBAR_HEIGHT, bounds.width, bounds.height - GUI_TITLEBAR_HEIGHT);
-	gc = GC(width, height, framebuffer);
+	gc = GC(content_bounds.width, content_bounds.height, framebuffer);
 }
 
 void Window::Paint(GC& main_gc)
@@ -53,35 +56,53 @@ void Window::Close()
 
 void Window::Move(int x, int y)
 {
+	y = max(y, 0);
+
 	bounds.x = x;
 	bounds.y = y;
 	content_bounds.x = x;
 	content_bounds.y = y + GUI_TITLEBAR_HEIGHT;
 }
 
-void Window::SetFocus(bool focus)
+void Window::Resize(int w, int h)
 {
-	if (focus != this->focused)
-	{
-		this->focused = focus;
-	}
+	bounds.width = w;
+	bounds.height = h;
+	content_bounds.width = w;
+	content_bounds.height = h - GUI_TITLEBAR_HEIGHT;
+
+	gc.Resize(content_bounds.width, content_bounds.height);
+	Drawing::Clear(Color::Black, gc);
+
+	RESIZE_MESSAGE msg = RESIZE_MESSAGE(id, gc.width, gc.height);
+	post_message(this->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(msg));
 }
 
-void Window::SetState(WINDOW_STATE state)
+void Window::SetFocus(bool focus)
 {
-	switch (state)
+	this->focused = focus;
+}
+
+void Window::SetState(WINDOW_STATE ws)
+{
+	if (state == WINDOW_STATE_NORMAL)
+		normal_bounds = bounds;
+
+	switch (ws)
 	{
 	case WINDOW_STATE_NORMAL:
-		bounds.width = gc.width / 2;
-		bounds.height = gc.height / 2;
+		Move(normal_bounds.x, normal_bounds.y);
+		Resize(normal_bounds.width, normal_bounds.height);
 		break;
 
 	case WINDOW_STATE_MAXIMIZED:
-		bounds.width = gc.width;
-		bounds.height = gc.height - 50;
+		Move(0, 0);
+		Resize(1024, 768 - GUI_TASKBAR_HEIGHT);
 		break;
 
 	case WINDOW_STATE_MINIMIZED:
 		break;
 	}
+
+	state = ws;
 }

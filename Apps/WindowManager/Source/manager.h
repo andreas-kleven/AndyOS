@@ -2,19 +2,19 @@
 #include "window.h"
 #include <sys/msg.h>
 
-#define GUI_TASKBAR_HEIGHT		40
-
 struct MOUSE_CLICK_INFO
 {
-	Window* window;
+	Window* window = 0;
 
-	int click_time;
-	int click_x;
-	int click_y;
+	int click_time = 0;
+	int click_x = 0;
+	int click_y = 0;
 
-	int rel_time;
-	int rel_x;
-	int rel_y;
+	int rel_time = 0;
+	int rel_x = 0;
+	int rel_y = 0;
+
+	int num_clicks = 0;
 };
 
 struct WINDOW_DRAG_INFO

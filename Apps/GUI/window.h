@@ -11,11 +11,13 @@ namespace gui
     class Window : public GUIBase
     {
     public:
+        Color background;
+
         int id;
         int width;
         int height;
 
-        Window(char* title, int width = 400, int height = 300);
+        Window(char* title, int width = 400, int height = 300, Color background = Color::White);
         ~Window();
 
         void Paint();

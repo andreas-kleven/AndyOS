@@ -17,7 +17,8 @@ namespace gui
             REQUEST_TYPE_PAINT,
             REQUEST_TYPE_KEY_INPUT,
             REQUEST_TYPE_MOUSE_INPUT,
-            REQUEST_TYPE_SET_CAPTURE
+            REQUEST_TYPE_SET_CAPTURE,
+            REQUEST_TYPE_RESIZE
         };
 
         struct SIMPLE_REQUEST
@@ -140,6 +141,22 @@ namespace gui
                 this->type = REQUEST_TYPE_SET_CAPTURE;
                 this->id = id;
                 this->capture = capture;
+            }
+        };
+
+        struct RESIZE_MESSAGE
+        {
+            REQUEST_TYPE type;
+            int id;
+            int height;
+            int width;
+        
+            RESIZE_MESSAGE(int id, int width, int height)
+            {
+                this->type = REQUEST_TYPE_RESIZE;
+                this->id = id;
+                this->width = width;
+                this->height = height;
             }
         };
     }

@@ -89,6 +89,13 @@ struct GC
 	GC(GC& gc, Rect bounds) : GC(gc, bounds.x, bounds.y, bounds.width, bounds.height)
 	{ }
 
+	void Resize(int width, int height)
+	{
+		this->width = width;
+		this->height = height;
+		this->stride = width;
+	}
+
 	inline int memsize()
 	{
 		return width * height * 4;
