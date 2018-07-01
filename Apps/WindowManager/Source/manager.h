@@ -20,9 +20,8 @@ struct MOUSE_CLICK_INFO
 struct WINDOW_DRAG_INFO
 {
 	Window* window;
-
-	int start_x;
-	int start_y;
+	bool resize;
+	Rect bounds;
 };
 
 class WindowManager

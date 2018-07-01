@@ -66,6 +66,9 @@ void Window::Move(int x, int y)
 
 void Window::Resize(int w, int h)
 {
+	w = max(w, 100);
+	h = max(h, GUI_TITLEBAR_HEIGHT + 30);
+
 	bounds.width = w;
 	bounds.height = h;
 	content_bounds.width = w;

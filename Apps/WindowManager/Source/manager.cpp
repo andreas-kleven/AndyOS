@@ -375,13 +375,26 @@ void WindowManager::HandleMouseInput()
 			{
 				if (!window_drag && (dx != 0 || dy != 0))
 				{
+					int bw = 4;
+
+					window_drag_info.window = wnd;
+					window_drag_info.resize = false;
+					window_drag_info.bounds = wnd->bounds;
+
 					if (Rect(wnd->bounds.x, wnd->bounds.y, wnd->bounds.width, GUI_TITLEBAR_HEIGHT)
 						.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
 					{
 						window_drag = 1;
-						window_drag_info.window = wnd;
-						window_drag_info.start_x = wnd->bounds.x;
-						window_drag_info.start_y = wnd->bounds.y;
+					}
+					else if (Rect(wnd->content_bounds)
+						.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
+					{
+						if (!Rect(wnd->bounds.x + bw, wnd->bounds.y + bw, wnd->bounds.width - bw * 2, wnd->bounds.height - bw * 2)
+							.Contains(mouse_click_L_info.click_x, mouse_click_L_info.click_y))
+						{
+							window_drag = 1;
+							window_drag_info.resize = true;
+						}
 					}
 				}
 			}
@@ -390,24 +403,33 @@ void WindowManager::HandleMouseInput()
 			{
 				Window* dragwnd = window_drag_info.window;
 
-				if (dragwnd->state == WINDOW_STATE_MAXIMIZED)
+				if (window_drag_info.resize)
 				{
-					//Set window state to normal when dragging maximized window
-
-					float ratio = cursor_x / (float)width;
-					int nx = cursor_x - dragwnd->normal_bounds.width * ratio;
-
-					dragwnd->normal_bounds.x = nx;
-					dragwnd->normal_bounds.y = 0;
-					dragwnd->SetState(WINDOW_STATE_NORMAL);
-
-					window_drag_info.start_x = dragwnd->bounds.x;
- 					window_drag_info.start_y = dragwnd->bounds.y;
+					int w = window_drag_info.bounds.width + dx;
+					int h = window_drag_info.bounds.height + dy;
+					dragwnd->Resize(w, h);
 				}
+				else
+				{
+					if (dragwnd->state == WINDOW_STATE_MAXIMIZED)
+					{
+						//Set window state to normal when dragging maximized window
 
-				int x = window_drag_info.start_x + dx;
-				int y = window_drag_info.start_y + dy;
-				window_drag_info.window->Move(x, y);
+						float ratio = cursor_x / (float)width;
+						int nx = cursor_x - dragwnd->normal_bounds.width * ratio;
+
+						dragwnd->normal_bounds.x = nx;
+						dragwnd->normal_bounds.y = 0;
+						dragwnd->SetState(WINDOW_STATE_NORMAL);
+
+						window_drag_info.bounds.x = dragwnd->bounds.x;
+						window_drag_info.bounds.y = dragwnd->bounds.y;
+					}
+
+					int x = window_drag_info.bounds.x + dx;
+					int y = window_drag_info.bounds.y + dy;
+					window_drag_info.window->Move(x, y);
+				}
 			}
 		}
 	}
