@@ -1,8 +1,8 @@
-#include "Lib/debug.h"
+#include "debug.h"
+#include "Drivers/serial.h"
+#include "Drawing/vbe.h"
 #include "string.h"
 #include "stdio.h"
-#include "Drawing/drawing.h"
-#include "Drivers/serial.h"
 #include "math.h"
 
 bool serial;
@@ -48,6 +48,10 @@ void Debug::Putc(char c, bool escape)
 			Serial::Transmit(COM_PORT1, '\r');
 	}
 
+	VBE_MODE_INFO mode = VBE::GetMode();
+	int width = mode.width;
+	int height = mode.height;
+
 	if (escape)
 	{
 		switch (c)
@@ -68,13 +72,13 @@ void Debug::Putc(char c, bool escape)
 			break;
 
 		case '\b':
-			x = clamp(x - 1, 0, (int)(Drawing::gc.width / 8));
-			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor);
+			x = clamp(x - 1, 0, width / 8);
+			VBE::DrawText(x * 8, y * 16, " ", color, bcolor);
 			break;
 
 		default:
 			char str[] = { c, '\0' };
-			Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
+			VBE::DrawText(x * 8, y * 16, str, color, bcolor);
 			x++;
 			break;
 		}
@@ -82,17 +86,17 @@ void Debug::Putc(char c, bool escape)
 	else
 	{
 		char str[] = { c, '\0' };
-		Drawing::DrawText(x * 8, y * 16, str, color, bcolor);
+		VBE::DrawText(x * 8, y * 16, str, color, bcolor);
 		x++;
 	}
 
-	if (x > Drawing::gc.width / 8)
+	if (x > width / 8)
 	{
 		x = x0;
 		y++;
 	}
 
-	if (y > Drawing::gc.height / 16)
+	if (y > height / 16)
 	{
 		x = x0;
 		y = 0;

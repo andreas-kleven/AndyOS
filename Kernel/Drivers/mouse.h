@@ -9,7 +9,7 @@
 class Mouse
 {
 public:
-	static STATUS Init(uint32 width, uint32 height, float sens);
+	static STATUS Init();
 
 	static void GetButtons(bool& left, bool& right, bool& middle);
 

@@ -20,7 +20,7 @@ uint8 mouse_byte[4];
 
 bool initialized;
 
-STATUS Mouse::Init(uint32 width, uint32 height, float sens)
+STATUS Mouse::Init()
 {
 	ResetPos();
 	ResetScroll();

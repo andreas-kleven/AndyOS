@@ -9,7 +9,6 @@
 #include "Net/dhcp.h"
 #include "Net/http.h"
 #include "Process/scheduler.h"
-#include "Drawing/font.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
@@ -18,7 +17,6 @@
 #include "FS/iso.h"
 #include "Lib/debug.h"
 #include "Process/process.h"
-#include "Drawing/drawing.h"
 
 void _Process()
 {

@@ -3,7 +3,6 @@
 #include "API/syscalls.h"
 #include "Boot/multiboot.h"
 #include "Drawing/vbe.h"
-#include "Drawing/drawing.h"
 #include "Drivers/serial.h"
 #include "Drivers/ata.h"
 #include "Drivers/mouse.h"
@@ -42,9 +41,8 @@ void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)
 {
 	VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo.vbe_mode_info;
 	VBE::Init(vbeMode);
-	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
-	Debug::Print("Init VBE: %i %i %i\n", VBE::mode.width, VBE::mode.height, VBE::mode.bpp);
+	Debug::Print("Init VBE: %i %i %i\n", vbeMode->width, vbeMode->height, vbeMode->bpp);
 
 	DeviceManager::Init();
 	Debug::Print("Init devices\n");
@@ -52,7 +50,7 @@ void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)
 	VFS::Init();
 	Debug::Print("Init VFS\n");
 
-	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
+	Mouse::Init();
 	Debug::Print("Init Mouse\n");
 	
 	Keyboard::Init();

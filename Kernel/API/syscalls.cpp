@@ -65,7 +65,7 @@ void gettime(int& hour, int& minute, int& second)
 
 void draw(uint32* framebuffer)
 {
-	memcpy(VBE::mem_base, framebuffer, VBE::mem_size);
+	VBE::Draw(framebuffer);
 }
 
 void exit(int code)
