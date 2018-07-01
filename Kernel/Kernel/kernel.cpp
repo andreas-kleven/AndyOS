@@ -44,13 +44,22 @@ void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)
 	VBE::Init(vbeMode);
 	Drawing::Init(VBE::mode.width, VBE::mode.height, VBE::mem_base);
 
+	Debug::Print("Init VBE: %i %i %i\n", VBE::mode.width, VBE::mode.height, VBE::mode.bpp);
+
 	DeviceManager::Init();
+	Debug::Print("Init devices\n");
+
 	VFS::Init();
+	Debug::Print("Init VFS\n");
 
 	Mouse::Init(Drawing::gc.width, Drawing::gc.height, 0.5);
+	Debug::Print("Init Mouse\n");
+	
 	Keyboard::Init();
+	Debug::Print("Init Keyboard\n");
 
 	Scheduler::Init();
+	Debug::Print("Init Scheduler\n");
 
 	THREAD* mainThread = Scheduler::CreateKernelThread(OS::Main);
 	Scheduler::InsertThread(mainThread);
