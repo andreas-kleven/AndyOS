@@ -4,8 +4,8 @@
 #include "limits.h"
 
 const int numPhotons = 10000;
-static Photon photonMap[numPhotons];
-static Photon causticsMap[numPhotons];
+static Photon* photonMap;
+static Photon* causticsMap;
 static int currentNumPhotons;
 static int currentNumCausticsPhotons;
 
@@ -21,6 +21,9 @@ Raytracer::Raytracer(GC _gc)
 {
 	game = GEngine::game;
 	gc = _gc;
+
+	photonMap = new Photon[numPhotons];
+	causticsMap = new Photon[numPhotons];
 }
 
 void swap(float& a, float& b)
@@ -476,8 +479,8 @@ void Raytracer::Render()
 {
 	Camera* cam = game->GetActiveCamera();
 
-	int curMouseX, curMouseY;
-	get_mouse_pos(curMouseX, curMouseY);
+	int curMouseX = Input::GetAxis(AXIS_X);
+	int curMouseY = Input::GetAxis(AXIS_Y);
 
 	//Resolution
 	const int maxResolution = 16;
@@ -519,16 +522,12 @@ void Raytracer::Render()
 	{
 		for (int x = 0; x < gc.width; x += resolution)
 		{
-			/*//Stop on input
-			if (resolution < maxResolution)
+			//Stop on input
+			if (gui::InputManager::GetPacket().pressed != KEY_INVALID || Input::GetAxis(AXIS_X) != Input::GetAxis(AXIS_Y) || curMouseY != mouseY)
 			{
-				if (Keyboard::GetLastKey().key != KEY_INVALID || curMouseX != mouseX || curMouseY != mouseY)
-				{
-					Keyboard::DiscardLastKey();
-					resolution = maxResolution;
-					return;
-				}
-			}*/
+				resolution = maxResolution;
+				return;
+			}
 
 			float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
 			float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
