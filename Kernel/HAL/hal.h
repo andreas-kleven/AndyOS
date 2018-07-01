@@ -19,9 +19,9 @@ uint8 inb(uint16 port);
 uint16 inw(uint16 port);
 uint32 inl(uint16 port);
 
-void outb(uint16 port, uint8 data);
-void outw(uint16 port, uint16 data);
-void outl(uint16 port, uint32 data);
+void outb(uint16 port, uint8 val);
+void outw(uint16 port, uint16 val);
+void outl(uint16 port, uint32 val);
 
 class HAL
 {
