@@ -39,18 +39,18 @@ static GC gc_background;
 static GC gc_taskbar;
 static GC gc_cursor;
 
-static BMP* bmp_background;
+static BMP* bmp_background = 0;
 
-static int window_count;
-static Window* first_window;
-static Window* last_window;
+static int window_count = 0;
+static Window* first_window = 0;
+static Window* last_window = 0;
 
-static Window* focused_window;
-static Window* active_window;
-static Window* hover_window;
+static Window* focused_window = 0;
+static Window* active_window = 0;
+static Window* hover_window = 0;
 
-static float cursor_x;
-static float cursor_y;
+static float cursor_x = 0;
+static float cursor_y = 0;
 
 static int cursor_left = false;
 static int cursor_right = false;
@@ -61,12 +61,14 @@ static bool cursor_enabled;
 static bool mouse_click_L;
 static bool mouse_click_R;
 static bool mouse_click_M;
-static bool window_drag = 0;
+static bool window_drag = false;
 
 static MOUSE_CLICK_INFO mouse_click_L_info;
 static MOUSE_CLICK_INFO mouse_click_R_info;
 static MOUSE_CLICK_INFO mouse_click_M_info;
 static WINDOW_DRAG_INFO window_drag_info;
+
+static bool background_dirty = true;
 
 void WindowManager::Start()
 {
@@ -78,13 +80,7 @@ void WindowManager::Start()
 	col_taskbar = Color(0.2, 0.3, 0.5);
 	col_desktop_bg = Color(0.9, 0.9, 0.9);
 
-	bmp_background = 0;
-	window_count = 0;
-	first_window = 0;
-	last_window = 0;
-	focused_window = 0;
-	active_window = 0;
-	hover_window = 0;
+	LoadBackground("sierra.bmp");
 
 	set_message(MessageHandler);
 	UpdateLoop();
@@ -126,6 +122,21 @@ void WindowManager::CloseWindow(Window* wnd)
 		last_window = wnd->previous;
 
 	delete wnd;
+}
+
+void WindowManager::LoadBackground(char* filename)
+{
+	char* buf;
+	int size = read_file(buf, filename);
+
+	if (size == 0)
+	{
+		col_desktop_bg = Color::Magenta;
+		bmp_background = 0;
+		return;
+	}
+
+	bmp_background = new BMP(buf);
 }
 
 MESSAGE WindowManager::MessageHandler(MESSAGE msg)
@@ -209,10 +220,36 @@ void WindowManager::UpdateLoop()
 	}
 }
 
-
 void WindowManager::PaintBackground()
 {
-	Drawing::FillRect(0, 0, gc.width, gc.height, col_desktop_bg, gc_background);
+	if (background_dirty)
+	{
+		if (bmp_background)
+		{
+			Drawing::DrawImage(0, 0, bmp_background->width, bmp_background->height, bmp_background, gc_background);
+			/*//Repeat
+
+			int x = 0;
+			while (x < width)
+			{
+				int  y = 0;
+				while (y < height)
+				{
+					Drawing::DrawImage(x, y, bmp_background->width, bmp_background->height, bmp_background, gc_background);
+					y += bmp_background->height;
+				}
+
+				x += bmp_background->width;
+			}*/
+		}
+		else
+		{
+			Drawing::FillRect(0, 0, gc.width, gc.height, col_desktop_bg, gc_background);
+		}
+
+		background_dirty = false;
+	}
+
 	Drawing::BitBlt(gc_background, 0, 0, gc_background.width, gc_background.height, gc, 0, 0);
 }
 

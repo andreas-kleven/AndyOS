@@ -32,6 +32,8 @@ public:
 	static void AddWindow(Window* wnd);
 	static void CloseWindow(Window* wnd);
 
+	static void LoadBackground(char* filename);
+
 private:
 	static MESSAGE MessageHandler(MESSAGE msg);
 	static void UpdateLoop();
