@@ -119,6 +119,7 @@ void File()
 void OS::Main()
 {
 	PROCESS* proc = ProcessManager::Load("1winman");
+	PIT::Sleep(100);
 	ProcessManager::Load("1term");
 	ProcessManager::Load("1test");
 	PROCESS* last = ProcessManager::Load("1mndlbrt");

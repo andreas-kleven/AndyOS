@@ -4,6 +4,7 @@
 #include "FS/iso.h"
 #include "string.h"
 #include "Lib/debug.h"
+#include "Process/scheduler.h"
 
 ATADevice::ATADevice(int bus, int drive)
 {
@@ -27,15 +28,20 @@ bool ATADevice::Read(int location, char*& buffer, int length)
 	int sectors = (length - 1) / ATA_SECTOR_SIZE + 1;
 	buffer = new char[length];
 
+
 	for (int i = 0; i < sectors; i++)
 	{
 		if (i == sectors - 1)
 			size = length % ATA_SECTOR_SIZE;
 
 		if (!ReadSector(location + i * ATA_SECTOR_SIZE, size, &*buffer + i * ATA_SECTOR_SIZE))
+		{
+			Scheduler::Enable();
 			return STATUS_FAILED;
+		}
 	}
 
+	Scheduler::Enable();
 	return STATUS_SUCCESS;
 }
 
