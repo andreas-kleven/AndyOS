@@ -112,6 +112,12 @@ void GEngine::StartGame(Game* game, gui::Window* wnd)
 			while (Input::GetKey(KEY_ESCAPE));
 		}
 
+		if (window->gc.width != gc.width || window->gc.height != gc.height)
+		{
+			gc = window->gc;
+			GL::Init(gc);
+		}
+
 		Update();
 		//Collision();
 		Render();
