@@ -5,12 +5,15 @@
 
 class Rasterizer
 {
+private:
+	GC gc;
+	float* depth_buffer;
+
 public:
-	static uint32* color_buffer;
-	static float* depth_buffer;
-
-	static STATUS Init();
-
-	static void DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
-	static void DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
+	Rasterizer();
+	Rasterizer(GC gc);
+	
+	void Clear();
+	void DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
+	void DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture);
 };

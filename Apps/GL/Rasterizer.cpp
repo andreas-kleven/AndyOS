@@ -1,6 +1,7 @@
 #include "Rasterizer.h"
 #include "GL.h"
 #include "math.h"
+#include "limits.h"
 
 float EdgeFunction(const Vector4& a, const Vector4& b, const Vector4& c)
 {
@@ -12,13 +13,21 @@ float EdgeFunction(const Vector4& a, const Vector4& b, float cx, float cy)
 	return (cy - a.y) * (b.x - a.x) - (cx - a.x) * (b.y - a.y);
 }
 
-float* Rasterizer::depth_buffer;
-
-STATUS Rasterizer::Init()
+Rasterizer::Rasterizer()
 {
-	uint32 pixels = GL::m_height * GL::m_width;
-	depth_buffer = new float[pixels];
-	return STATUS_SUCCESS;
+	this->depth_buffer = 0;
+}
+
+Rasterizer::Rasterizer(GC gc)
+{
+	this->gc = gc;
+	this->depth_buffer = new float[gc.width * gc.height];
+}
+
+void Rasterizer::Clear()
+{
+	float val = FLT_MAX;
+	memset32(this->depth_buffer, *(uint32*)&val, gc.memsize());
 }
 
 void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
@@ -28,13 +37,13 @@ void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 	v1.tmpPos.w = 1 / v1.tmpPos.w;
 	v2.tmpPos.w = 1 / v2.tmpPos.w;
 
-	v0.tmpPos.x = v0.tmpPos.x * GL::m_width * v0.tmpPos.w + GL::m_width * 0.5;
-	v1.tmpPos.x = v1.tmpPos.x * GL::m_width * v1.tmpPos.w + GL::m_width * 0.5;
-	v2.tmpPos.x = v2.tmpPos.x * GL::m_width * v2.tmpPos.w + GL::m_width * 0.5;
+	v0.tmpPos.x = v0.tmpPos.x * gc.width * v0.tmpPos.w + gc.width * 0.5;
+	v1.tmpPos.x = v1.tmpPos.x * gc.width * v1.tmpPos.w + gc.width * 0.5;
+	v2.tmpPos.x = v2.tmpPos.x * gc.width * v2.tmpPos.w + gc.width * 0.5;
 
-	v0.tmpPos.y = v0.tmpPos.y * GL::m_height * v0.tmpPos.w + GL::m_height * 0.5;
-	v1.tmpPos.y = v1.tmpPos.y * GL::m_height * v1.tmpPos.w + GL::m_height * 0.5;
-	v2.tmpPos.y = v2.tmpPos.y * GL::m_height * v2.tmpPos.w + GL::m_height * 0.5;
+	v0.tmpPos.y = v0.tmpPos.y * gc.height * v0.tmpPos.w + gc.height * 0.5;
+	v1.tmpPos.y = v1.tmpPos.y * gc.height * v1.tmpPos.w + gc.height * 0.5;
+	v2.tmpPos.y = v2.tmpPos.y * gc.height * v2.tmpPos.w + gc.height * 0.5;
 
 	//Backface culling
 	Vector4 pa(v0.tmpPos.x, v0.tmpPos.y, v0.tmpPos.z, 0);
@@ -47,9 +56,9 @@ void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 
 	DrawTriangle2(v0, v1, v2, texture);
 
-	//Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, GL::gc_buf);
-	//Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, GL::gc_buf);
-	//Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, GL::gc_buf);
+	//Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, gc);
+	//Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, gc);
+	//Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, gc);
 }
 
 void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
@@ -60,18 +69,18 @@ void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 	int miny = min(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
 	int maxy = max(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
 
-	minx = clamp(minx, GL::gc_buf.x, (int)GL::m_width - 1);
-	maxx = clamp(maxx, GL::gc_buf.x, (int)GL::m_width - 1);
-	miny = clamp(miny, GL::gc_buf.y, (int)GL::m_height - 1);
-	maxy = clamp(maxy, GL::gc_buf.y, (int)GL::m_height - 1);
+	minx = clamp(minx, gc.x, (int)gc.width - 1);
+	maxx = clamp(maxx, gc.x, (int)gc.width - 1);
+	miny = clamp(miny, gc.y, (int)gc.height - 1);
+	maxy = clamp(maxy, gc.y, (int)gc.height - 1);
 
 	float area = EdgeFunction(v0.tmpPos, v1.tmpPos, v2.tmpPos);
 	float inv_area = 1 / area;
 
-	int line_delta = GL::m_width - (maxx - minx) - 1;
+	int line_delta = gc.width - (maxx - minx) - 1;
 
-	uint32* color_ptr = (uint32*)(GL::gc_buf.framebuffer + miny * GL::m_stride + minx);
-	float* depth_ptr = (float*)(depth_buffer + miny * GL::m_width + minx);
+	uint32* color_ptr = (uint32*)(gc.framebuffer + miny * gc.stride + minx);
+	float* depth_ptr = (float*)(depth_buffer + miny * gc.width + minx);
 
 	float co[3][3] = {
 		{ v0.builtColor.r * v0.tmpPos.w, v1.builtColor.r * v1.tmpPos.w , v2.builtColor.r * v2.tmpPos.w },

@@ -10,6 +10,8 @@ uint32 GL::m_width;
 uint32 GL::m_height;
 uint32 GL::m_stride;
 
+Rasterizer rasterizer;
+
 BMP** GL::m_textures;
 int tex_index;
 int bound_tex;
@@ -45,7 +47,7 @@ STATUS GL::Init(GC gc)
 	light_index = 0;
 	mat_stack_index = 0;
 
-	Rasterizer::Init();
+	rasterizer = Rasterizer(gc_buf);
 	return STATUS_SUCCESS;
 }
 
@@ -159,7 +161,7 @@ void GL::Draw(Vertex* verts, int count)
 
 		if (a.tmpPos.w > 0 && b.tmpPos.w > 0 && c.tmpPos.w > 0)
 		{
-			Rasterizer::DrawTriangle(a, b, c, texture);
+			rasterizer.DrawTriangle(a, b, c, texture);
 		}
 	}
 }
@@ -167,9 +169,7 @@ void GL::Draw(Vertex* verts, int count)
 void GL::Clear(Color color)
 {
 	Drawing::Clear(color, gc_buf);
-
-	float val = 1e100;
-	memset32(Rasterizer::depth_buffer, *(uint32*)&val, m_width * m_height);
+	rasterizer.Clear();
 }
 
 void GL::SwapBuffers()

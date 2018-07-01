@@ -108,7 +108,7 @@ struct GC
 
 	inline int memsize()
 	{
-		return width * height * 4;
+		return width * height;
 	}
 
 	inline int pixels()
