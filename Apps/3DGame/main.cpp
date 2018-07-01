@@ -9,10 +9,15 @@ class GameWindow : public Window
 {
 public:
     GameWindow() 
-        : Window("Game", 600, 400)
+        : Window("Game", 600, 400, Color::Black)
     {
         SetCapture(true);
         GEngine::StartGame(new MyGame(), this);
+    }
+
+    void OnClose()
+    {
+        exit(0);
     }
 };
 

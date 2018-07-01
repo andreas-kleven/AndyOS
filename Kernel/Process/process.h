@@ -85,5 +85,6 @@ public:
 	static STATUS RemoveThread(THREAD* thread);
 
 	static PROCESS* GetProcess(int id);
+	static PROCESS* GetFirst();
 };
 

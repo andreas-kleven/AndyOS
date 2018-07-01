@@ -45,7 +45,14 @@ PROCESS* ProcessManager::Load(char* path)
 
 STATUS ProcessManager::Terminate(PROCESS* proc)
 {
-	return STATUS_FAILED;
+	THREAD* thread = proc->main_thread;
+	while (thread)
+	{
+		Scheduler::ExitThread(0, thread);
+		thread = thread->procNext;
+	}
+
+	return STATUS_SUCCESS;
 }
 
 STATUS ProcessManager::Kill(PROCESS* proc)
@@ -114,4 +121,9 @@ PROCESS* ProcessManager::GetProcess(int id)
 	}
 
 	return 0;
+}
+
+PROCESS* ProcessManager::GetFirst()
+{
+	return first;
 }

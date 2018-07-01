@@ -70,6 +70,11 @@ void draw(uint32* framebuffer)
 
 void exit(int code)
 {
+	ProcessManager::Terminate(Scheduler::current_thread->process);
+}
+
+void exit_thread(int code)
+{
 	Scheduler::ExitThread(code);
 }
 
@@ -269,6 +274,7 @@ STATUS Syscalls::Init()
 	InstallSyscall(SYSCALL_GETTIME, (SYSCALL_HANDLER)gettime);
 	InstallSyscall(SYSCALL_DRAW, (SYSCALL_HANDLER)draw);
 	InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)exit);
+	InstallSyscall(SYSCALL_EXIT_THREAD, (SYSCALL_HANDLER)exit_thread);
 	InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sleep);
 	InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)get_ticks);
 	InstallSyscall(SYSCALL_GET_MOUSE_POS, (SYSCALL_HANDLER)get_mouse_pos);

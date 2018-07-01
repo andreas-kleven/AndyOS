@@ -8,7 +8,7 @@ static MESSAGE(*_msg_handler)(MESSAGE);
 static void __sig_handler(int signo)
 {
     _sig_handler(signo);
-    exit(0);
+    exit_thread(0);
 }
 
 static void __msg_handler(int id, int src_proc, int type, char* data, int size)
@@ -22,7 +22,7 @@ static void __msg_handler(int id, int src_proc, int type, char* data, int size)
     if (response.type != 0)
         Call(SYSCALL_SEND_MESSAGE_RESPONSE, id, response.type, (int)response.data, response.size);
         
-    exit(0);
+    exit_thread(0);
 }
 
 

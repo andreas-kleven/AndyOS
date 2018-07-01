@@ -12,6 +12,7 @@ void gettime(int& hours, int& minutes, int& seconds);
 uint32 get_ticks();
 
 void exit(int code);
+void exit_thread(int code);
 void sleep(uint32 ticks);
 
 void get_mouse_pos(int& x, int& y);

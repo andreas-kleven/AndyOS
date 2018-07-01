@@ -38,6 +38,11 @@ void exit(int code)
 	Call(SYSCALL_EXIT, code);
 }
 
+void exit_thread(int code)
+{
+	Call(SYSCALL_EXIT_THREAD, code);
+}
+
 void sleep(uint32 ticks)
 {
 	Call(SYSCALL_SLEEP, ticks);

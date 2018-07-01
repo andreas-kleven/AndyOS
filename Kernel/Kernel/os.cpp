@@ -122,11 +122,11 @@ void OS::Main()
 	PIT::Sleep(100);
 	ProcessManager::Load("1term");
 	ProcessManager::Load("1test");
-	PROCESS* last = ProcessManager::Load("1mndlbrt");
+	ProcessManager::Load("1mndlbrt");
 
 	while (1)
 	{
-		PROCESS* proc = last;
+		PROCESS* proc = ProcessManager::GetFirst();
 
 		while (proc)
 		{
