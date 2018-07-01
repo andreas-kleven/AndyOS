@@ -369,9 +369,9 @@ void WindowManager::HandleMouseInput()
 	}
 
 	Window* wnd = GetWindowAtCursor();
-	hover_window = wnd;
+	bool hovering_content = wnd && wnd->content_bounds.Contains(cursor_x, cursor_y);
 
-	if (wnd)
+	if (hovering_content)
 	{
 		if (left != cursor_left)
 		{
@@ -398,15 +398,15 @@ void WindowManager::HandleMouseInput()
 
 	if (dx != 0 || dy != 0)
 	{
-		if (hover_window)
+		if (hovering_content)
 		{
-			int relx = cursor_x - hover_window->bounds.x;
-			int rely = cursor_y - hover_window->bounds.y - GUI_TITLEBAR_HEIGHT;
-			int _dx = (active_window == hover_window) ? dx : 0;
-			int _dy = (active_window == hover_window) ? dy : 0;
+			int relx = cursor_x - wnd->bounds.x;
+			int rely = cursor_y - wnd->bounds.y - GUI_TITLEBAR_HEIGHT;
+			int _dx = (active_window == wnd) ? dx : 0;
+			int _dy = (active_window == wnd) ? dy : 0;
 
-			MOUSE_INPUT_MESSAGE msg(hover_window->id, relx, rely, _dx, _dy);
-			post_message(hover_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
+			MOUSE_INPUT_MESSAGE msg(wnd->id, relx, rely, _dx, _dy);
+			post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
 		}
 	}
 
@@ -573,10 +573,10 @@ void WindowManager::HandleKeyInput()
 	{
 		gui::InputManager::HandleKey(code, pressed);
 
-		if (focused_window)
+		if (active_window)
 		{
-			KEY_INPUT_MESSAGE msg(focused_window->id, code, pressed);
-			post_message(focused_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+			KEY_INPUT_MESSAGE msg(active_window->id, code, pressed);
+			post_message(active_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
 		}
 
 		//alt+tab
