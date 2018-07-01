@@ -37,7 +37,7 @@ PROCESS* ELF::Load(char* path)
 	{
 		ELF32_PHEADER* pheader = (ELF32_PHEADER*)(image + header->e_phoff + i * header->e_phentsize);
 
-		uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz);
+		uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz) + 1;
 
 		uint32 phys = (uint32)PMem::AllocBlocks(blocks);
 		uint32 virt = pheader->p_vaddr;

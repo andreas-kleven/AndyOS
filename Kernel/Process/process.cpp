@@ -73,10 +73,7 @@ THREAD* ProcessManager::CreateThread(PROCESS* proc, void(*entry)())
 
 	case PROCESS_USER:
 		VMem::SwitchDir(proc->page_dir);
-
-		uint32 stackPhys = (uint32)PMem::AllocBlocks(2);
-		uint8* stack = (uint8*)VMem::UserMapFirstFree(stackPhys, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 2);
-
+		uint8* stack = (uint8*)VMem::UserAlloc(2);
 		thread = Scheduler::CreateUserThread(entry, stack + BLOCK_SIZE);
 		break;
 	}
