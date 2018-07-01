@@ -250,12 +250,38 @@ void WindowManager::PaintWindows()
 
 void WindowManager::PaintTaskbar()
 {
+
 	int width = gc_taskbar.width;
 	int height = gc_taskbar.height;
 	int y = gc.height - gc_taskbar.height;
-
+	
 	Drawing::FillRect(0, 0, gc_taskbar.width, gc_taskbar.height, col_taskbar, gc_taskbar);
+	PaintTaskbarWindows();
 	Drawing::BitBlt(gc_taskbar, 0, 0, gc_taskbar.width, gc_taskbar.height, gc, 0, y);
+}
+
+void WindowManager::PaintTaskbarWindows()
+{
+	const int margin = 10;
+	const int size = gc_taskbar.height - 10;
+
+	int x = margin;
+	int y = (gc_taskbar.height - size) / 2;
+
+	Window* wnd = last_window;
+
+	while (wnd)
+	{
+		Color col = wnd->focused ? Color::LightGray : Color::Gray;
+		Drawing::FillRect(x, y, size, size, col, gc_taskbar);
+
+		x += margin + size;
+
+		if (x > width)
+			break;
+
+		wnd = wnd->previous;
+	}
 }
 
 void WindowManager::PaintCursor()

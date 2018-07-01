@@ -39,6 +39,7 @@ private:
 	static void PaintBackground();
 	static void PaintWindows();
 	static void PaintTaskbar();
+	static void PaintTaskbarWindows();
 	static void PaintCursor();
 
 	static void HandleMouseInput();
