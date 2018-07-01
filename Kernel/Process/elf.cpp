@@ -27,6 +27,7 @@ PROCESS* ELF::Load(char* path)
 
 	asm volatile("cli");
 
+	PAGE_DIR* old_dir = VMem::GetCurrentDir();
 	PAGE_DIR* dir = VMem::CreatePageDir();
 	VMem::SwitchDir(dir);
 
@@ -59,6 +60,8 @@ PROCESS* ELF::Load(char* path)
 	
 	PROCESS* proc = new PROCESS(PROCESS_USER, dir);
 	ProcessManager::CreateThread(proc, (void(*)())header->e_entry);
+
+	VMem::SwitchDir(old_dir);
 
 	asm volatile("sti");
 	return proc;
