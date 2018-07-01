@@ -19,14 +19,14 @@ void Panic::KernelPanic(char* err, char* msg, ...)
 
 	int line = 0;
 
-	Debug::Clear(0xFF000000);
-	Debug::color = 0xFFFF0000;
+	debug_clear(0xFF000000);
+	debug_color(0xFFFF0000);
 
-	Debug::Print("%s\n", err);
-	Debug::Print("%s\n", buffer);
+	debug_print("%s\n", err);
+	debug_print("%s\n", buffer);
 
 	if (Scheduler::current_thread->process)
-		Debug::Print("Proc: %ux\n", Scheduler::current_thread->process->id);
+		debug_print("Proc: %ux\n", Scheduler::current_thread->process->id);
 
 	asm volatile(
 		"cli\n"

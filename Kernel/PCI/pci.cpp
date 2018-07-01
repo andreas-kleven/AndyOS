@@ -4,7 +4,7 @@
 
 void printdev(PCI_DEVICE* dev)
 {
-	Debug::Print("Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x\n",
+	debug_print("Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x\n",
 		dev->bus, dev->device, dev->func, dev->configSpace.vendorID, dev->configSpace.deviceID,
 		dev->configSpace.classCode, dev->configSpace.subclass);
 }
@@ -36,7 +36,7 @@ PCI_DEVICE* PCI::GetDevice(int classCode, int subClass, int progIF)
 						dev->configSpace.progIF == progIF)
 					{
 						printdev(dev);
-						//Debug::Dump(&dev->configSpace, 64);
+						//debug_dump(&dev->configSpace, 64);
 						return dev;
 					}
 				}

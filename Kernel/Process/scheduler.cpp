@@ -330,7 +330,7 @@ void Scheduler::Idle()
 {
 	while (1)
 	{
-		//Debug::Print("Idle");
+		//debug_print("Idle");
 		asm volatile("pause");
 	}
 }

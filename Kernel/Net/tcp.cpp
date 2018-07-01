@@ -48,7 +48,7 @@ NetPacket* TCP::CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_por
 void TCP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
 {
 	TCP_Packet tcp;
-	//Debug::Dump(pkt->start, 127);
+	//debug_dump(pkt->start, 127);
 
 	if (!Decode(&tcp, pkt))
 		return;

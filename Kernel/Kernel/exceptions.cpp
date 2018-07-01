@@ -77,12 +77,11 @@ void Exceptions::ISR5(REGS* regs)
 
 void Exceptions::ISR6(REGS* regs)
 {
-	Debug::x = 0;
-	Debug::y = 1;
-	Debug::color = 0xFFFF0000;
+	debug_pos(0, 1);
+	debug_color(0xFFFF0000);
 
-	Debug::Print("0x%ux\t0x%ux\t0x%ux\t0x%ux\n", regs->esp, regs->cs, regs->eip, regs->eflags);
-	Debug::Dump((void*)regs->esp, 256);
+	debug_print("0x%ux\t0x%ux\t0x%ux\t0x%ux\n", regs->esp, regs->cs, regs->eip, regs->eflags);
+	debug_dump((void*)regs->esp, 256);
 
 	Panic::KernelPanic("Invalid opcode");
 }

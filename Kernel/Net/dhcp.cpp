@@ -36,7 +36,7 @@ struct DHCP_DISCOVER
 
 void DHCP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt)
 {
-	Debug::Print("DHCP RECEIVE\n");
+	debug_print("DHCP RECEIVE\n");
 }
 
 void DHCP::DoStuff(NetInterface* intf, IPv4Address dst)
@@ -69,7 +69,7 @@ void DHCP::DoStuff(NetInterface* intf, IPv4Address dst)
 
 	int length = sizeof(DHCP_DISCOVER) - (308 - 4);
 
-	Debug::Print("%i\n", length);
+	debug_print("%i\n", length);
 
 	NetPacket* pkt = UDP::CreatePacket(intf, dst, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8*)d, length);
 	intf->Send(pkt);

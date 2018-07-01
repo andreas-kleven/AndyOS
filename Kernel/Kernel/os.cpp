@@ -69,16 +69,16 @@ void COM_Receive()
 	while (1)
 	{
 		char c = Serial::Receive(COM_PORT1);
-		Debug::Print("%c", c);
+		debug_print("%c", c);
 	}
 }
 
 void COM()
 {
 	if (!Serial::Init(COM_PORT1, 9600))
-		Debug::Print("COM init failed\n");
+		debug_print("COM init failed\n");
 
-	Debug::Print("COM initialized\n");
+	debug_print("COM initialized\n");
 
 	THREAD* t = Scheduler::CreateKernelThread(COM_Receive);
 	Scheduler::InsertThread(t);
@@ -104,11 +104,11 @@ void File()
 	if (size)
 	{
 		for (int i = 0; i < size; i++)
-			Debug::Print("%c", buf[i]);
+			debug_print("%c", buf[i]);
 	}
 	else
 	{
-		Debug::Print("File not found");
+		debug_print("File not found");
 	}
 
 	while (1);

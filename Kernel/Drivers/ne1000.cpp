@@ -52,7 +52,7 @@ E1000::E1000(PCI_DEVICE* pci_dev) : NetInterface(pci_dev)
 
 void E1000::Send(NetPacket* pkt)
 {
-	//Debug::Dump(pkt->start, pkt->length);
+	//debug_dump(pkt->start, pkt->length);
 
 	tx_descs[tx_cur]->addr = (uint64)pkt->start;
 	tx_descs[tx_cur]->length = pkt->length;
@@ -156,7 +156,7 @@ void E1000::E1000_Interrupt(REGS* regs)
 			global_e->Poll();
 		}
 
-		//Debug::Print("IRQ %x | ", status);
+		//debug_print("IRQ %x | ", status);
 	}
 }
 

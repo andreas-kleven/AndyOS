@@ -62,7 +62,7 @@ NetPacket* IPv4::CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protoco
 
 void IPv4::Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt)
 {
-	//Debug::Print("IP PACKET\n");
+	//debug_print("IP PACKET\n");
 
 	IPv4_Header header;
 	if (!Decode(&header, pkt))

@@ -6,15 +6,13 @@
 #include "math.h"
 
 bool serial;
+static int x;
+static int y;
 
-int Debug::x;
-int Debug::y;
-int Debug::x0;
+static uint32 color = 0xFFFFFFFF;
+static uint32 bcolor = 0xFF000000;
 
-uint32 Debug::color = 0xFFFFFFFF;
-uint32 Debug::bcolor = 0xFF000000;
-
-STATUS Debug::Init(bool _serial)
+STATUS debug_init(bool _serial)
 {
 	serial = _serial;
 
@@ -24,7 +22,19 @@ STATUS Debug::Init(bool _serial)
 	return STATUS_SUCCESS;
 }
 
-void Debug::Print(char* str, ...)
+void debug_pos(int _x, int _y)
+{
+	x = _x;
+	y = _y;
+}
+
+void debug_color(uint32 foreground, uint32 background)
+{
+	color = foreground;
+	bcolor = background;
+}
+
+void debug_print(char* str, ...)
 {
 	char buffer[256];
 	memset(buffer, 0, 256);
@@ -35,10 +45,10 @@ void Debug::Print(char* str, ...)
 	str = vsprintf(buffer, str, args);
 
 	while (*str)
-		Putc(*str++);
+		debug_putc(*str++);
 }
 
-void Debug::Putc(char c, bool escape)
+void debug_putc(char c, bool escape)
 {
 	if (serial)
 	{
@@ -57,18 +67,18 @@ void Debug::Putc(char c, bool escape)
 		switch (c)
 		{
 		case '\n':
-			x = x0;
+			x = 0;
 			y += 1;
 			break;
 
 		case '\r':
-			x = x0;
+			x = 0;
 			break;
 
 		case '\t':
-			Putc(' ');
+			debug_putc(' ');
 			while (x % 4)
-				Putc(' ');
+				debug_putc(' ');
 			break;
 
 		case '\b':
@@ -92,24 +102,24 @@ void Debug::Putc(char c, bool escape)
 
 	if (x > width / 8)
 	{
-		x = x0;
+		x = 0;
 		y++;
 	}
 
 	if (y > height / 16)
 	{
-		x = x0;
+		x = 0;
 		y = 0;
 	}
 }
 
-void Debug::Clear(uint32 c)
+void debug_clear(uint32 c)
 {
-	x = x0;
+	x = 0;
 	y = 0;
 }
 
-void Debug::Dump(void* addr, int length, bool str)
+void debug_dump(void* addr, int length, bool str)
 {
 	uint8* ptr = (uint8*)addr;
 
@@ -122,7 +132,7 @@ void Debug::Dump(void* addr, int length, bool str)
 
 		if (str)
 		{
-			Debug::Putc(num, 0);
+			debug_putc(num, 0);
 		}
 		else
 		{
@@ -136,17 +146,17 @@ void Debug::Dump(void* addr, int length, bool str)
 				itoa(num, 16, buf + 1, 0);
 			}
 
-			Debug::Print("%s ", buf);
+			debug_print("%s ", buf);
 		}
 
 		if (!str)
 		{
 			if (count % 32 == 0)
-				Putc('\n');
+				debug_putc('\n');
 			else if (count % 8 == 0)
-				Putc(' ');
+				debug_putc(' ');
 		}
 	}
 
-	Debug::Putc('\n');;
+	debug_putc('\n');;
 }

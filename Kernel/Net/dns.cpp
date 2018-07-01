@@ -19,7 +19,7 @@ STATUS DNS::Init()
 
 void DNS::Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt)
 {
-	Debug::Print("Received DNS\n");
+	debug_print("Received DNS\n");
 
 	DNS_Packet dns;
 	if (!Decode(&dns, udp))
@@ -152,7 +152,7 @@ void DNS::AddEntry(char* name, IPv4Address addr)
 		{
 			if (!dns_cache[i].name[0])
 			{
-				Debug::Print("DNS added entry: %s ", name);
+				debug_print("DNS added entry: %s ", name);
 				Net::PrintIP("", addr);
 			}
 

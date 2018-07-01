@@ -1,20 +1,10 @@
 #pragma once
 #include "definitions.h"
 
-class Debug
-{
-public:
-	static int x;
-	static int y;
-	static int x0;
-
-	static uint32 color;
-	static uint32 bcolor;
-
-	static STATUS Init(bool serial);
-	static void Print(char* str, ...);
-	static void Putc(char c, bool escape = true);
-	static void Clear(uint32 c);
-	
-	static void Dump(void* addr, int length, bool str = 0);
-};
+STATUS debug_init(bool serial);
+void debug_pos(int x, int y);
+void debug_color(uint32 foreground, uint32 background = 0);
+void debug_print(char* str, ...);
+void debug_putc(char c, bool escape = true);
+void debug_clear(uint32 c);
+void debug_dump(void* addr, int length, bool str = 0);

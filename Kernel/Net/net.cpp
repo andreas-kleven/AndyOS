@@ -140,11 +140,11 @@ uint16 Net::ChecksumDouble(void* d0, int l0, void* d1, int l1)
 void Net::PrintIP(char* str, IPv4Address ip)
 {
 	uint8* addr = (uint8*)&ip;
-	Debug::Print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
+	debug_print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
 }
 
 void Net::PrintMac(char* str, MacAddress mac)
 {
 	uint8* addr = (uint8*)&mac;
-	Debug::Print("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+	debug_print("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
 }

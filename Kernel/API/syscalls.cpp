@@ -48,12 +48,12 @@ void halt()
 
 void print(char* text)
 {
-	Debug::Print(text);
+	debug_print(text);
 }
 
 void color(uint32 color)
 {
-	Debug::color = color;
+	debug_color(color);
 }
 
 void gettime(int& hour, int& minute, int& second)
@@ -143,7 +143,7 @@ int create_process(char* filename)
 
 void debug_reset()
 {
-	Debug::Clear(0xFF000000);
+	debug_clear(0xFF000000);
 }
 
 //

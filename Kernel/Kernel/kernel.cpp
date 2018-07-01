@@ -18,9 +18,9 @@ extern int __KERNEL_START, __KERNEL_END;
 
 void Kernel::Setup(MULTIBOOT_INFO* bootinfo)
 {
-	Debug::Init(1);
-	Debug::color = 0xFF00FF00;
-	Debug::y = 2;
+	debug_init(1);
+	debug_color(0xFF00FF00);
+	debug_pos(0, 2);
 
     uint32 kernel_start = (uint32)&__KERNEL_START;
     uint32 kernel_end = (uint32)&__KERNEL_END;
@@ -42,22 +42,22 @@ void Kernel::HigherHalf(MULTIBOOT_INFO bootinfo)
 	VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo.vbe_mode_info;
 	VBE::Init(vbeMode);
 
-	Debug::Print("Init VBE: %i %i %i\n", vbeMode->width, vbeMode->height, vbeMode->bpp);
+	debug_print("Init VBE: %i %i %i\n", vbeMode->width, vbeMode->height, vbeMode->bpp);
 
 	DeviceManager::Init();
-	Debug::Print("Init devices\n");
+	debug_print("Init devices\n");
 
 	VFS::Init();
-	Debug::Print("Init VFS\n");
+	debug_print("Init VFS\n");
 
 	Mouse::Init();
-	Debug::Print("Init Mouse\n");
+	debug_print("Init Mouse\n");
 	
 	Keyboard::Init();
-	Debug::Print("Init Keyboard\n");
+	debug_print("Init Keyboard\n");
 
 	Scheduler::Init();
-	Debug::Print("Init Scheduler\n");
+	debug_print("Init Scheduler\n");
 
 	THREAD* mainThread = Scheduler::CreateKernelThread(OS::Main);
 	Scheduler::InsertThread(mainThread);

@@ -67,7 +67,7 @@ void UDP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
 	if (!Decode(&udp, pkt))
 		return;
 
-	//Debug::Dump(udp.data, udp.data_length, 1);
+	//debug_dump(udp.data, udp.data_length, 1);
 	pkt->start += udp.header->length;
 
 	uint16 src_port = udp.header->src_port;

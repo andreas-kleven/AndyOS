@@ -10,7 +10,7 @@ PROCESS* ELF::Load(char* path)
 
 	if (!size)
 	{
-		Debug::Print("File not found '%s'", path);
+		debug_print("File not found '%s'", path);
 		return 0;
 	}
 
@@ -21,7 +21,7 @@ PROCESS* ELF::Load(char* path)
 	if (memcmp(&header->e_ident, &sig, sizeof(sig)))
 	{
 		//Not elf file
-		Debug::Print("Invalid signature\n");
+		debug_print("Invalid signature\n");
 		return 0;
 	}
 
@@ -56,7 +56,7 @@ PROCESS* ELF::Load(char* path)
 		}
 	}
 
-	Debug::Print("Loaded image %ux\n", dir);
+	debug_print("Loaded image %ux\n", dir);
 	
 	PROCESS* proc = new PROCESS(PROCESS_USER, dir);
 	ProcessManager::CreateThread(proc, (void(*)())header->e_entry);

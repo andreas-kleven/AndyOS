@@ -23,12 +23,12 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 
 	//if (header->flags & PSH)
 	//{
-	//	Debug::Print("-DATA-");
-	//	Debug::Print("%i");
+	//	debug_print("-DATA-");
+	//	debug_print("%i");
 	//	return;
 	//}
 
-	Debug::Print("Flags: %ux\tACK: %ui\tSEQ: %ui\n", header->flags, header->ack, header->seq);
+	debug_print("Flags: %ux\tACK: %ui\tSEQ: %ui\n", header->flags, header->ack, header->seq);
 
 	switch (state)
 	{
@@ -41,7 +41,7 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 	case TCP_SYN_SENT:
 		if (flags & SYN && flags & ACK)
 		{
-			Debug::Print("Connected\n");
+			debug_print("Connected\n");
 
 			Send(ACK);
 			state = TCP_ESTABLISHED;
@@ -58,8 +58,8 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 			//
 			//	if (Send(FIN))
 			//	{
-			//		//Debug::Print("FIN\n");
-			//		Debug::Print("LAST ACK\n");
+			//		//debug_print("FIN\n");
+			//		debug_print("LAST ACK\n");
 			//		state = TCP_LAST_ACK;
 			//	}
 			//}
@@ -76,7 +76,7 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 	case TCP_LAST_ACK:
 		if (flags & ACK)
 		{
-			Debug::Print("Closed\n");
+			debug_print("Closed\n");
 			Reset();
 		}
 		break;
@@ -149,7 +149,7 @@ void TcpSession::Close()
 	if (state == TCP_FIN_WAIT_1)
 	{
 		//timeout
-		Debug::Print("Timeout closed\n");
+		debug_print("Timeout closed\n");
 		Reset();
 		return;
 	}
@@ -164,7 +164,7 @@ void TcpSession::Close()
 	}
 
 	//delay here?
-	Debug::Print("Closed\n");
+	debug_print("Closed\n");
 	Reset();
 }
 
@@ -182,7 +182,7 @@ void TcpSession::ReceivedData(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 	next_ack = tcp->header->seq + tcp->data_length;
 	Send(ACK);
 
-	Debug::Dump(tcp->data, tcp->data_length, 1);
+	debug_dump(tcp->data, tcp->data_length, 1);
 }
 
 bool TcpSession::Send(uint8 flags, uint8* data, uint32 data_length)
