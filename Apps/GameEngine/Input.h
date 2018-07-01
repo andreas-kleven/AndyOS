@@ -7,12 +7,8 @@ enum INPUT_AXIS
 	AXIS_Y
 };
 
-class Input
+namespace Input
 {
-public:
-	static bool GetKey(KEYCODE key);
-	static float GetAxis(INPUT_AXIS axis);
-
-private:
-	static void UpdateAxes();
+	bool GetKey(KEYCODE key);
+	float GetAxis(INPUT_AXIS axis);
 };

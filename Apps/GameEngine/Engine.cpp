@@ -101,7 +101,7 @@ void GEngine::StartGame(Game* game, gui::Window* wnd)
 		if (Input::GetKey(KEY_TAB))
 		{
 			GL::MatrixMode(GL_PROJECTION);
-			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * GL::gc_out.width, 1080 * GL::gc_out.height, 90, 1, 10));
+			GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(1920 * gc.width, 1080 * gc.height, 90, 1, 10));
 		}
 
 		if (Input::GetKey(KEY_ESCAPE))

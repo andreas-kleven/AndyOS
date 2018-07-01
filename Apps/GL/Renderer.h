@@ -18,44 +18,27 @@ enum GLMatrixMode
 	GL_PROJECTION
 };
 
-class GL
+namespace GL
 {
-public:
-	static GC gc_buf;
-	static GC gc_out;
+	int AddTexture(BMP* bmp);
+	void BindTexture(int id);
 
-	static uint32 m_width;
-	static uint32 m_height;
-	static uint32 m_stride;
+	int LightSource(Vector4 light);
 
-	static BMP** m_textures;
+	void MatrixMode(GLMatrixMode mode);
+	void MulMatrix(const Matrix4& mat);
 
-	static STATUS Init(GC gc);
+	void LoadIdentity();
+	void LoadMatrix(const Matrix4& mat);
 
-	static int AddTexture(BMP* bmp);
-	static void BindTexture(int id);
+	void PushMatrix();
+	void PopMatrix();
 
-	static int LightSource(Vector4 light);
+	void CameraDirection(Vector4 dir);
 
-	static void MatrixMode(GLMatrixMode mode);
-	static void MulMatrix(const Matrix4& mat);
-
-	static void LoadIdentity();
-	static void LoadMatrix(const Matrix4& mat);
-
-	static void PushMatrix();
-	static void PopMatrix();
-
-	static void CameraDirection(Vector4 dir);
-
-	//static void LightingFunction()
-
-	static void Draw(Vertex* verts, int count);
-	static void Clear(Color color);
-	static void SwapBuffers();
-
-private:
-	static Matrix4& SelectedMatrix();
-
-	static Color(*LightingFunction)(int x, int y, int z, const Vector4& normal);
+	void Draw(Vertex* verts, int count);
+	void Clear(Color color);
+	void SwapBuffers();
+	
+	STATUS Init(GC gc);
 };

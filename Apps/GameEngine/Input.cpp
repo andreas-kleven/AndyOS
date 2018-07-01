@@ -1,29 +1,32 @@
 #include "Input.h"
 #include "GUI.h"
 
-float axes[4];
-float last_axes[4];
-
-bool Input::GetKey(KEYCODE key)
+namespace Input
 {
-	return gui::InputManager::GetKeyDown(key);
-}
+	float axes[4];
+	float last_axes[4];
 
-float Input::GetAxis(INPUT_AXIS axis)
-{
-	UpdateAxes();
+	void UpdateAxes()
+	{
+		int dx;
+		int dy;
+		gui::InputManager::GetMouseDelta(dx, dy);
 
-	float delta = axes[axis] - last_axes[axis];
-	last_axes[axis] = axes[axis];
-	return delta;
-}
+		axes[AXIS_X] = dx;
+		axes[AXIS_Y] = -dy;
+	}
 
-void Input::UpdateAxes()
-{
-	int dx;
-	int dy;
-	gui::InputManager::GetMouseDelta(dx, dy);
+	bool GetKey(KEYCODE key)
+	{
+		return gui::InputManager::GetKeyDown(key);
+	}
 
-	axes[AXIS_X] = dx;
-	axes[AXIS_Y] = -dy;
+	float GetAxis(INPUT_AXIS axis)
+	{
+		UpdateAxes();
+
+		float delta = axes[axis] - last_axes[axis];
+		last_axes[axis] = axes[axis];
+		return delta;
+	}
 }
