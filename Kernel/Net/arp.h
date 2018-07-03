@@ -19,7 +19,7 @@ struct ARP_Header
 	IPv4Address send_ip;
 	MacAddress recv_mac;
 	IPv4Address recv_ip;
-};
+} __attribute__((packed));
 
 struct ARP_TABLE_ENTRY
 {

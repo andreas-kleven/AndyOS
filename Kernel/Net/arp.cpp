@@ -96,7 +96,10 @@ void ARP::AddEntry(MacAddress mac, IPv4Address ip)
 		if (arp_cache[i].mac == Net::NullMAC || arp_cache[i].mac == mac)
 		{
 			if (arp_cache[i].mac == Net::NullMAC)
+			{
 				Net::PrintIP("ARP added entry ", ip);
+				Net::PrintMac("MAC: ", mac);
+			}
 
 			arp_cache[i].mac = mac;
 			arp_cache[i].ip = ip;

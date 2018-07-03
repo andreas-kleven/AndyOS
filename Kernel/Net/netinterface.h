@@ -7,7 +7,9 @@
 class NetInterface /*: public PciDevice*/
 {
 public:
-	NetInterface(PCI_DEVICE* pci_dev);
+	IPv4Address gateway_addr;
+
+	NetInterface(PciDevice* pci_dev);
 
 	virtual void Send(NetPacket* pkt) { }
 	virtual void Poll() { }
@@ -17,5 +19,5 @@ public:
 	virtual MacAddress GetMac() { return MacAddress(); }
 	virtual IPv4Address GetIP() { return IPv4Address(); }
 
-	PCI_DEVICE* dev;
+	PciDevice* dev;
 };

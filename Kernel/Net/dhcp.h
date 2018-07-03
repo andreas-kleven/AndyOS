@@ -7,7 +7,7 @@
 struct DHCP_Header
 {
 
-};
+} __attribute__((packed));
 
 class DHCP
 {

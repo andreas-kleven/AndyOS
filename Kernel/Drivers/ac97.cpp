@@ -87,12 +87,12 @@ namespace AC97
 		}
 	}
 
-	STATUS Init(PCI_DEVICE* dev)
+	STATUS Init(PciDevice* dev)
 	{
 		device.pci_device = dev;
-		device.nambar = dev->configSpace.BAR0 & ~1;
-		device.nabmbar = dev->configSpace.BAR1 & ~1;
-		device.irq = dev->configSpace.interruptLine;
+		device.nambar = dev->config.bar0 & ~1;
+		device.nabmbar = dev->config.bar1 & ~1;
+		device.irq = dev->config.interruptLine;
 		device.bdl = new AC97_BUFFER_ENTRY[AC97_BDL_LEN];
 		memset(device.bdl, 0, AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY));
 

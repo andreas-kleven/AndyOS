@@ -49,35 +49,37 @@
 #define PCI_BAR_64                      0x04
 #define PCI_BAR_PREFETCH                0x08
 
+#define PCI_ID(bus, dev, func) (((bus) << 16) | ((device) << 11) | ((func) << 8))
+
 struct PCI_CONFIG_SPACE
 {
-	uint16 vendorID;
-	uint16 deviceID;
+	uint16 vendor;
+	uint16 device;
 
 	uint16 command;
 	uint16 status;
 
-	uint8 revisionID;
-	uint8 progIF;
+	uint8 revision;
+	uint8 progIf;
 	uint8 subclass;
 	uint8 classCode;
 
 	uint8 cacheLineSize;
 	uint8 latencyTimer;
 	uint8 headerType;
-	uint8 BIST;
+	uint8 bist;
 
-	uint32 BAR0;
-	uint32 BAR1;
-	uint32 BAR2;
-	uint32 BAR3;
-	uint32 BAR4;
-	uint32 BAR5;
+	uint32 bar0;
+	uint32 bar1;
+	uint32 bar2;
+	uint32 bar3;
+	uint32 bar4;
+	uint32 bar5;
 
-	uint32 CISPntr;
+	uint32 cisptr;
 
-	uint16 subsystemID;
-	uint16 subsystemVendorID;
+	uint16 subsystem;
+	uint16 subsystemVendor;
 
 	uint32 expansionROMBaseAddress;
 
@@ -89,23 +91,32 @@ struct PCI_CONFIG_SPACE
 	uint32 reserved4;
 
 	uint8 interruptLine;
-	uint8 interruptPIN;
+	uint8 interruptPin;
 	uint8 minGrant;
 	uint8 maxLatency;
 } __attribute__((packed));
 
-struct PCI_DEVICE
+class PciDevice
 {
+public:
+	PciDevice(int bus, int device, int func);
+
 	uint8 bus;
 	uint8 device;
 	uint8 func;
-	uint8 port;
+	uint32 id;
 
-	PCI_CONFIG_SPACE configSpace;
+	PCI_CONFIG_SPACE config;
+
+	void ReadConfig();
+	void EnableBusMastering();
 };
 
 namespace PCI
 {
+	uint16 Read16(uint32 id, uint8 port);
+	void Write16(uint32 id, uint8 port, uint16 val);
+
+	PciDevice* GetDevice(int classCode, int subClass, int progIf);
 	STATUS Init();
-	PCI_DEVICE* GetDevice(int classCode, int subClass, int progIF);
 };

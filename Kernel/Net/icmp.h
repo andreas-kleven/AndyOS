@@ -16,14 +16,14 @@ struct ICMP_Header
 	uint16 checksum;
 	uint16 id;
 	uint16 seq;
-};
+} __attribute__((packed));
 
 struct ICMP_Packet
 {
 	ICMP_Header* header;
 	uint8* data;
 	uint32 data_length;
-};
+} __attribute__((packed));
 
 class ICMP
 {

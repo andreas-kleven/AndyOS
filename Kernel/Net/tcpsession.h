@@ -7,7 +7,7 @@ struct TcpLinkPacket
 	TCP_Packet* pkt;
 	TcpLinkPacket* next;
 	TcpLinkPacket* prev;
-};
+} __attribute__((packed));
 
 class TcpSession
 {

@@ -25,8 +25,6 @@ NetPacket* Eth::CreatePacket(NetInterface* intf, MacAddress dst, uint16 type, ui
 
 void Eth::Receive(NetInterface* intf, NetPacket* pkt)
 {
-	//debug_print("ETH RECEIVE\n");
-
 	EthPacket ep;
 	if (!Decode(&ep, pkt))
 		return;

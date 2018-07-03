@@ -17,7 +17,7 @@ struct IPv4_Header
 	uint16 checksum;
 	IPv4Address src;
 	IPv4Address dst;
-};
+} __attribute__((packed));
 
 struct IPv4_Packet
 {
@@ -33,7 +33,7 @@ struct IPv4_PSEUDO_HEADER
 	uint8 reserved;
 	uint8 protocol;
 	uint16 length;
-};
+} __attribute__((packed));
 
 class IPv4
 {

@@ -36,11 +36,11 @@ struct TCP_Header
 	uint16 window_size;
 	uint16 checksum;
 	uint16 urg_ptr;
-};
+} __attribute__((packed));
 
 struct TCP_Packet
 {
 	TCP_Header* header;
 	uint8* data;
 	uint32 data_length;
-};
+} __attribute__((packed));

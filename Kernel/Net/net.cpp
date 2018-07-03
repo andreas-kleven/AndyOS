@@ -31,9 +31,6 @@ uint32 ntohl(uint32 val)
 
 NetInterface* Net::intf;
 
-MacAddress Net::GatewayMAC;
-IPv4Address Net::GatewayIPv4;
-
 MacAddress Net::BroadcastMAC;
 IPv4Address Net::BroadcastIPv4;
 
@@ -45,21 +42,6 @@ STATUS Net::Init()
 	ARP::Init();
 	DNS::Init();
 	UDP::Init();
-
-	if (1)
-	{
-		//Ethernet
-		uint8 mac[6] = { 0x18, 0xA6, 0xF7, 0x22, 0x56, 0x80 };
-		memcpy(&GatewayMAC, mac, 6);
-		*(uint32*)&GatewayIPv4 = htonl(0xC0A80001);
-	}
-	else
-	{
-		//VirtualBox
-		uint8 mac[6] = { 0x0A, 0x00, 0x27, 0x00, 0x00, 0x0B };
-		memcpy(&GatewayMAC, mac, 6);
-		*(uint32*)&GatewayIPv4 = htonl(0xC0A83801);
-	}
 
 	memset(&BroadcastMAC, 0xFF, 6);
 	memset(&BroadcastIPv4, 0xFF, 4);

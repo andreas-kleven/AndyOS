@@ -12,14 +12,14 @@ struct UDP_Header
 	uint16 dst_port;
 	uint16 length;
 	uint16 checksum;
-};
+} __attribute__((packed));
 
 struct UDP_Packet
 {
 	UDP_Header* header;
 	uint16 data_length;
 	uint8* data;
-};
+} __attribute__((packed));
 
 class UDP
 {

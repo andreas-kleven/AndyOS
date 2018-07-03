@@ -54,7 +54,7 @@ bool DNS::Decode(DNS_Packet* dns, UDP_Packet* udp)
 
 void DNS::Query(NetInterface* intf, char* name)
 {
-	int dom_len = strlen(name);
+	int dom_len = strlen(name) + 2;
 	uint8* data = new uint8[sizeof(DNS_Header) + dom_len + 4];
 
 	DNS_Header* dns = (DNS_Header*)data;
@@ -67,7 +67,12 @@ void DNS::Query(NetInterface* intf, char* name)
 
 	AppendDomain(data + sizeof(DNS_Header), name);
 
-	NetPacket* pkt = UDP::CreatePacket(intf, Net::GatewayIPv4, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
+	data[sizeof(DNS_Header) + dom_len + 1] = 1;	//type
+	data[sizeof(DNS_Header) + dom_len + 3] = 1;	//class
+
+	debug_dump(data, sizeof(DNS_Header) + dom_len, 0);
+
+	NetPacket* pkt = UDP::CreatePacket(intf, intf->gateway_addr, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
 	intf->Send(pkt);
 
 	delete[] data;
@@ -95,11 +100,7 @@ uint8* DNS::AppendDomain(uint8* ptr, char* name)
 			break;
 	};
 
-	uint16* end = (uint16*)ptr;
-	*end++ = htons(1);
-	*end++ = htons(1);
-
-	return (uint8*)end;
+	return ptr;
 }
 
 uint8* DNS::ParseDomain(char* buf, uint8* ptr)

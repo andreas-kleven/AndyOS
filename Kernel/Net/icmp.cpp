@@ -33,6 +33,7 @@ bool ICMP::Decode(ICMP_Packet* ih, NetPacket* pkt)
 
 		ih->data = (uint8*)header + sizeof(ICMP_Header);
 		ih->data_length = pkt->end - ih->data;
+		return 1;
 	}
 	else
 	{

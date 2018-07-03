@@ -2,46 +2,53 @@
 #include "HAL/hal.h"
 #include "Lib/debug.h"
 
+PciDevice::PciDevice(int bus, int device, int func)
+{
+	this->bus = bus;
+	this->device = device;
+	this->func = func;
+	this->id = PCI_ID(bus, device, func);
+
+	ReadConfig();
+}
+
+void PciDevice::ReadConfig()
+{
+	uint16* buffer = (uint16*)&config;
+
+	for (int i = 0; i < 32; i++)
+		buffer[i] = PCI::Read16(id, i * 2);
+}
+
+void PciDevice::EnableBusMastering()
+{
+	PCI::Write16(id, PCI_CONFIG_COMMAND, config.command | 4);
+}
+
 namespace PCI
 {
-	void printdev(PCI_DEVICE* dev)
+	void printdev(PciDevice* dev)
 	{
 		debug_print("Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x\n",
-			dev->bus, dev->device, dev->func, dev->configSpace.vendorID, dev->configSpace.deviceID,
-			dev->configSpace.classCode, dev->configSpace.subclass);
+			dev->bus, dev->device, dev->func, dev->config.vendor, dev->config.device,
+			dev->config.classCode, dev->config.subclass);
 	}
 
-	uint32 Read(uint8 bus, uint8 device, uint8 func, uint8 port, uint8 len)
+	uint16 Read16(uint32 id, uint8 port)
 	{
-		uint32 val = 0x80000000 | (bus << 16) | (device << 11) | (func << 8) | (port & 0xFC);
-		outl(0x0CF8, val);
-
-		uint32 ret = inl(0xCFC) >> port * 8;
-		ret &= (0xFFFFFFFF >> ((4 - len) * 8));
-
-		return ret;
+		uint32 addr = 0x80000000 | id | (port & 0xFC);
+		outl(PCI_CONFIG_ADDR, addr);
+		return inw(PCI_CONFIG_DATA + (port & 2));
 	}
 
-	PCI_DEVICE* Create(uint8 bus, uint8 device, uint8 func)
+	void Write16(uint32 id, uint8 port, uint16 val)
 	{
-		PCI_DEVICE* dev = new PCI_DEVICE;
-		PCI_CONFIG_SPACE config;
-
-		char buffer[64];
-
-		for (int i = 0; i < 64; i++)
-			buffer[i] = Read(bus, device, func, i, 1);
-
-		config = *(PCI_CONFIG_SPACE*)buffer;
-
-		dev->bus = bus;
-		dev->device = device;
-		dev->func = func;
-		dev->configSpace = config;
-		return dev;
+		uint32 addr = 0x80000000 | id | (port & 0xFC);
+		outl(PCI_CONFIG_ADDR, addr);
+		outw(PCI_CONFIG_DATA + (port & 2), val);
 	}
 
-	PCI_DEVICE* GetDevice(int classCode, int subClass, int progIF)
+	PciDevice* GetDevice(int classCode, int subClass, int progIf)
 	{
 		for (uint8 bus = 0; bus < 255; bus++)
 		{
@@ -49,20 +56,23 @@ namespace PCI
 			{
 				for (uint8 func = 0; func < 8; func++)
 				{
-					uint32 vendor_id = Read(bus, device, func, 0, 2);
+					uint32 id = PCI_ID(bus, device, func);
+					uint16 vendor_id = Read16(id, PCI_CONFIG_VENDOR_ID);
 
 					if (vendor_id != 0xFFFF)
 					{
-						PCI_DEVICE* dev = Create(bus, device, func);
+						PciDevice* dev = new PciDevice(bus, device, func);
 						printdev(dev);
 
-						if (dev->configSpace.classCode == classCode &&
-							dev->configSpace.subclass == subClass &&
-							dev->configSpace.progIF == progIF)
+						if (dev->config.classCode == classCode &&
+							dev->config.subclass == subClass &&
+							dev->config.progIf == progIf)
 						{
-							printdev(dev);
-							//debug_dump(&dev->configSpace, 64);
 							return dev;
+						}
+						else
+						{
+							delete dev;
 						}
 					}
 				}

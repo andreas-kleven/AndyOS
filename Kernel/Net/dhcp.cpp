@@ -32,7 +32,7 @@ struct DHCP_DISCOVER
 	uint32 magic;
 
 	uint8 options[308];
-};
+} __attribute__((packed));
 
 void DHCP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt)
 {

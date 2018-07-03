@@ -12,14 +12,14 @@ struct EthHeader
 	MacAddress dst;
 	MacAddress src;
 	uint16 type;
-};
+} __attribute__((packed));
 
 struct EthPacket
 {
 	EthHeader* header;
 	uint16 type;
 	uint16 header_length;
-};
+} __attribute__((packed));
 
 class Eth
 {

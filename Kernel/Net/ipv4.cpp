@@ -14,13 +14,13 @@ void IPv4::Send(NetInterface* intf, NetPacket* pkt)
 
 NetPacket* IPv4::CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protocol, uint32 size)
 {
-	MacAddress mac = Net::GatewayMAC;
+	MacAddress mac;
 
 	if (dst == Net::BroadcastIPv4)
 	{
 		mac = Net::BroadcastMAC;
 	}
-	else if (!memcmp(&dst, &Net::GatewayIPv4, 3))
+	else if (!memcmp(&dst, &intf->gateway_addr, 3))
 	{
 		mac = ARP::LookupMac(dst);
 

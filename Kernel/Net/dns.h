@@ -12,7 +12,7 @@ struct DNS_Answer
 	uint32 ttl;
 	uint16 data_length;
 	IPv4Address addr;
-};
+} __attribute__((packed));
 
 struct DNS_Header
 {
@@ -22,14 +22,14 @@ struct DNS_Header
 	uint16 ans_count;
 	uint16 auth_count;
 	uint16 add_count;
-};
+} __attribute__((packed));
 
 struct DNS_Packet
 {
 	DNS_Header* hdr;
 	uint8* data;
 	uint32 data_length;
-};
+} __attribute__((packed));
 
 struct DNS_TABLE_ENTRY
 {

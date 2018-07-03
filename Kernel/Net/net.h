@@ -14,9 +14,6 @@ class Net
 public:
 	static NetInterface* intf;
 
-	static IPv4Address GatewayIPv4;
-	static MacAddress GatewayMAC;
-
 	static MacAddress BroadcastMAC;
 	static IPv4Address BroadcastIPv4;
 

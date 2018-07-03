@@ -2,8 +2,8 @@
 #include "Net/netinterface.h"
 #include "HAL/idt.h"
 
-#define NUM_RX_DESC 256
-#define NUM_TX_DESC 256
+#define E1000_NUM_RX_DESC 128
+#define E1000_NUM_TX_DESC 128
 
 struct E1000_RX_DESC
 {
@@ -29,7 +29,7 @@ struct E1000_TX_DESC
 class E1000 : public NetInterface
 {
 public:
-	E1000(PCI_DEVICE* pci_dev);
+	E1000(PciDevice* pci_dev);
 
 	virtual void Send(NetPacket* pkt);
 	virtual void Poll();
@@ -37,8 +37,6 @@ public:
 	virtual IPv4Address GetIP();
 
 private:
-	static E1000* global_e;
-
 	uint32 io_base;
 	uint32 mem_base;
 	uint32 irq;
@@ -49,8 +47,10 @@ private:
 	uint16 rx_cur;
 	uint16 tx_cur;
 
-	struct E1000_RX_DESC *rx_descs[NUM_RX_DESC];
-	struct E1000_TX_DESC *tx_descs[NUM_TX_DESC];
+	uint32 rx_virt_addr[E1000_NUM_RX_DESC];
+
+	E1000_RX_DESC* rx_descs[E1000_NUM_RX_DESC];
+	E1000_TX_DESC* tx_descs[E1000_NUM_TX_DESC];
 
 	void Start();
 	void Linkup();

@@ -14,7 +14,7 @@ struct AC97_BUFFER_ENTRY
 
 struct AC97_DEVICE
 {
-	PCI_DEVICE* pci_device;
+	PciDevice* pci_device;
 	uint16 nambar;
 	uint16 nabmbar;
 	uint8 irq;
@@ -26,5 +26,5 @@ struct AC97_DEVICE
 
 namespace AC97
 {
-	STATUS Init(PCI_DEVICE* dev);
+	STATUS Init(PciDevice* dev);
 };
