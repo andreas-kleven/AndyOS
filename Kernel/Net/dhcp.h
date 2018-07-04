@@ -6,12 +6,34 @@
 
 struct DHCP_Header
 {
+	uint8 op;
+	uint8 htype;
+	uint8 hlen;
+	uint8 hops;
 
+	uint32 xid;
+
+	uint16 secs;
+	uint16 flags;
+
+	IPv4Address ciaddr;
+	IPv4Address yiaddr;
+	IPv4Address siaddr;
+	IPv4Address giaddr;
+	MacAddress chaddr;
+
+	char pad[10];
+
+	char sname[64];
+	char file[128];
+
+	uint32 magic;
+
+	uint8 options[308];
 } __attribute__((packed));
 
-class DHCP
+namespace DHCP
 {
-public:
-	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
-	static void DoStuff(NetInterface* intf, IPv4Address dst);
-};
+	void Discover(NetInterface* intf);
+	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
+}
