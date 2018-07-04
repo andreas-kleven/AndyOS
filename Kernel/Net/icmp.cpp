@@ -2,68 +2,71 @@
 #include "net.h"
 #include "Lib/debug.h"
 
-void ICMP::Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
+namespace ICMP
 {
-	ICMP_Packet icmp;
-	if (!Decode(&icmp, pkt))
-		return;
-
-	switch (icmp.header->type)
+	bool Decode(ICMP_Packet* ih, NetPacket* pkt)
 	{
-	case ICMP_ECHO_REQUEST:
-		Net::PrintIP("icmp: echo from ", ip_hdr->src);
-		SendReply(intf, &icmp, ip_hdr->src);
-		break;
+		ICMP_Header* header = (ICMP_Header*)pkt->start;
+		ih->header = header;
+
+		ih->header->type = header->type;
+		ih->header->code = header->code;
+		ih->header->checksum = ntohs(header->checksum);
+
+		if (ih->header->type == ICMP_ECHO_REQUEST)
+		{
+			ih->header->id = ntohs(header->id);
+			ih->header->seq = ntohs(header->seq);
+
+			ih->data = (uint8*)header + sizeof(ICMP_Header);
+			ih->data_length = pkt->end - ih->data;
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
-}
 
-bool ICMP::Decode(ICMP_Packet* ih, NetPacket* pkt)
-{
-	ICMP_Header* header = (ICMP_Header*)pkt->start;
-	ih->header = header;
-
-	ih->header->type = header->type;
-	ih->header->code = header->code;
-	ih->header->checksum = ntohs(header->checksum);
-
-	if (ih->header->type == ICMP_ECHO_REQUEST)
+	void Send(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip, uint8 type)
 	{
-		ih->header->id = ntohs(header->id);
-		ih->header->seq = ntohs(header->seq);
+		NetPacket* pkt = IPv4::CreatePacket(intf, tip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
 
-		ih->data = (uint8*)header + sizeof(ICMP_Header);
-		ih->data_length = pkt->end - ih->data;
-		return 1;
+		if (!pkt)
+			return;
+
+		ICMP_Header* header = (ICMP_Header*)pkt->end;
+
+		header->type = type;
+		header->code = 0;
+		header->checksum = 0;
+		header->id = htons(icmp->header->id);
+		header->seq = htons(icmp->header->seq);
+
+		memcpy(header + 1, icmp->data, icmp->data_length);
+		header->checksum = Net::Checksum(header, sizeof(ICMP_Header) + icmp->data_length);
+
+		pkt->end += sizeof(ICMP_Header) + icmp->data_length;
+		intf->Send(pkt);
 	}
-	else
+
+	void SendReply(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip)
 	{
-		return 0;
+		Send(intf, icmp, tip, ICMP_ECHO_REPLY);
 	}
-}
 
-void ICMP::Send(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip, uint8 type)
-{
-	NetPacket* pkt = IPv4::CreatePacket(intf, tip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
+	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
+	{
+		ICMP_Packet icmp;
+		if (!Decode(&icmp, pkt))
+			return;
 
-	if (!pkt)
-		return;
-
-	ICMP_Header* header = (ICMP_Header*)pkt->end;
-
-	header->type = type;
-	header->code = 0;
-	header->checksum = 0;
-	header->id = htons(icmp->header->id);
-	header->seq = htons(icmp->header->seq);
-
-	memcpy(header + 1, icmp->data, icmp->data_length);
-	header->checksum = Net::Checksum(header, sizeof(ICMP_Header) + icmp->data_length);
-
-	pkt->end += sizeof(ICMP_Header) + icmp->data_length;
-	intf->Send(pkt);
-}
-
-void ICMP::SendReply(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip)
-{
-	Send(intf, icmp, tip, ICMP_ECHO_REPLY);
+		switch (icmp.header->type)
+		{
+		case ICMP_ECHO_REQUEST:
+			Net::PrintIP("icmp: echo from ", ip_hdr->src);
+			SendReply(intf, &icmp, ip_hdr->src);
+			break;
+		}
+	}
 }

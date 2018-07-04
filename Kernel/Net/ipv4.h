@@ -19,13 +19,6 @@ struct IPv4_Header
 	IPv4Address dst;
 } __attribute__((packed));
 
-struct IPv4_Packet
-{
-	IPv4_Header* hdr;
-	uint8* data;
-	uint32 data_length;
-};
-
 struct IPv4_PSEUDO_HEADER
 {
 	IPv4Address src;
@@ -35,12 +28,9 @@ struct IPv4_PSEUDO_HEADER
 	uint16 length;
 } __attribute__((packed));
 
-class IPv4
+namespace IPv4
 {
-public:
-	static void Send(NetInterface* intf, NetPacket* pkt);
-	static NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protocol, uint32 size);
-
-	static void Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt);
-	static bool Decode(IPv4_Header* ih, NetPacket* pkt);
-};
+	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protocol, uint32 size);
+	void Send(NetInterface* intf, NetPacket* pkt);
+	void Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt);
+}

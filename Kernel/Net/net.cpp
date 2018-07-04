@@ -7,13 +7,13 @@
 uint16 htons(uint16 val)
 {
 	return (val >> 8) | (val << 8);
-
 }
+
 uint16 ntohs(uint16 val)
 {
 	return (val >> 8) | (val << 8);
-
 }
+
 uint32 htonl(uint32 val)
 {
 	return ((val >> 24) & 0xff) |
@@ -21,6 +21,7 @@ uint32 htonl(uint32 val)
 		((val >> 8) & 0xff00) |
 		((val << 24) & 0xff000000);
 }
+
 uint32 ntohl(uint32 val)
 {
 	return ((val >> 24) & 0xff) |
@@ -29,104 +30,105 @@ uint32 ntohl(uint32 val)
 		((val << 24) & 0xff000000);
 }
 
-NetInterface* Net::intf;
-
-MacAddress Net::BroadcastMAC;
-IPv4Address Net::BroadcastIPv4;
-
-MacAddress Net::NullMAC;
-IPv4Address Net::NullIPv4;
-
-STATUS Net::Init()
+namespace Net
 {
-	ARP::Init();
-	DNS::Init();
-	UDP::Init();
+	MacAddress BroadcastMAC;
+	IPv4Address BroadcastIPv4;
 
-	memset(&BroadcastMAC, 0xFF, 6);
-	memset(&BroadcastIPv4, 0xFF, 4);
+	MacAddress NullMAC;
+	IPv4Address NullIPv4;
 
-	memset(&NullMAC, 0, 6);
-	memset(&NullIPv4, 0, 4);
-
-	return STATUS_SUCCESS;
-}
-
-uint16 Net::Checksum(void* vdata, int length)
-{
-	uint32 acc = 0xFFFF;
-	uint16* data = (uint16*)vdata;
-
-	while (length > 0)
+	STATUS Init()
 	{
-		acc += htons(*data++);
+		ARP::Init();
+		DNS::Init();
+		UDP::Init();
 
-		if (acc > 0xFFFF)
-			acc -= 0xFFFF;
+		memset(&BroadcastMAC, 0xFF, 6);
+		memset(&BroadcastIPv4, 0xFF, 4);
 
-		length -= 2;
+		memset(&NullMAC, 0, 6);
+		memset(&NullIPv4, 0, 4);
+
+		return STATUS_SUCCESS;
 	}
 
-	if (length) 
+	uint16 Checksum(void* vdata, int length)
 	{
-		acc += htons(*data & 0xFF);
-		if (acc > 0xFFFF)
-			acc -= 0xFFFF;
+		uint32 acc = 0xFFFF;
+		uint16* data = (uint16*)vdata;
+
+		while (length > 0)
+		{
+			acc += htons(*data++);
+
+			if (acc > 0xFFFF)
+				acc -= 0xFFFF;
+
+			length -= 2;
+		}
+
+		if (length) 
+		{
+			acc += htons(*data & 0xFF);
+			if (acc > 0xFFFF)
+				acc -= 0xFFFF;
+		}
+
+		return htons(~acc);
 	}
 
-	return htons(~acc);
-}
-
-uint16 Net::ChecksumDouble(void* d0, int l0, void* d1, int l1)
-{
-	uint32 acc = 0xFFFF;
-	uint16* data0 = (uint16*)d0;
-	uint16* data1 = (uint16*)d1;
-
-	while (l0 > 0)
+	uint16 ChecksumDouble(void* d0, int l0, void* d1, int l1)
 	{
-		acc += htons(*data0++);
+		uint32 acc = 0xFFFF;
+		uint16* data0 = (uint16*)d0;
+		uint16* data1 = (uint16*)d1;
 
-		if (acc > 0xFFFF)
-			acc -= 0xFFFF;
+		while (l0 > 0)
+		{
+			acc += htons(*data0++);
 
-		l0 -= 2;
+			if (acc > 0xFFFF)
+				acc -= 0xFFFF;
+
+			l0 -= 2;
+		}
+
+		if (l0)
+		{
+			acc += (*data0 << 4) + (*data1++ & 0xFF);
+			l1++;
+		}
+
+		while (l1 > 0)
+		{
+			acc += htons(*data1++);
+
+			if (acc > 0xFFFF)
+				acc -= 0xFFFF;
+
+			l1 -= 2;
+		}
+
+		if ((l0 + l1) & 1)
+		{
+			acc += htons(*data1 & 0xFF);
+			if (acc > 0xFFFF)
+				acc -= 0xFFFF;
+		}
+
+		return htons(~acc);
 	}
 
-	if (l0)
+	void PrintIP(char* str, IPv4Address ip)
 	{
-		acc += (*data0 << 4) + (*data1++ & 0xFF);
-		l1++;
+		uint8* addr = (uint8*)&ip;
+		debug_print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
 	}
 
-	while (l1 > 0)
+	void PrintMac(char* str, MacAddress mac)
 	{
-		acc += htons(*data1++);
-
-		if (acc > 0xFFFF)
-			acc -= 0xFFFF;
-
-		l1 -= 2;
+		uint8* addr = (uint8*)&mac;
+		debug_print("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
 	}
-
-	if ((l0 + l1) & 1)
-	{
-		acc += htons(*data1 & 0xFF);
-		if (acc > 0xFFFF)
-			acc -= 0xFFFF;
-	}
-
-	return htons(~acc);
-}
-
-void Net::PrintIP(char* str, IPv4Address ip)
-{
-	uint8* addr = (uint8*)&ip;
-	debug_print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
-}
-
-void Net::PrintMac(char* str, MacAddress mac)
-{
-	uint8* addr = (uint8*)&mac;
-	debug_print("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
 }

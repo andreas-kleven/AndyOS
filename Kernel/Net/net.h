@@ -9,21 +9,17 @@ uint16 ntohs(uint16 val);
 uint32 htonl(uint32 val);
 uint32 ntohl(uint32 val);
 
-class Net
+namespace Net
 {
-public:
-	static NetInterface* intf;
+	extern MacAddress BroadcastMAC;
+	extern IPv4Address BroadcastIPv4;
+	extern MacAddress NullMAC;
+	extern IPv4Address NullIPv4;
 
-	static MacAddress BroadcastMAC;
-	static IPv4Address BroadcastIPv4;
+	STATUS Init();
+	uint16 Checksum(void* data, int length);
+	uint16 ChecksumDouble(void* d0, int l0, void* d1, int l1);
 
-	static MacAddress NullMAC;
-	static IPv4Address NullIPv4;
-
-	static STATUS Init();
-	static uint16 Checksum(void* data, int length);
-	static uint16 ChecksumDouble(void* d0, int l0, void* d1, int l1);
-
-	static void PrintIP(char* str, IPv4Address ip);
-	static void PrintMac(char* str, MacAddress mac);
-};
+	void PrintIP(char* str, IPv4Address ip);
+	void PrintMac(char* str, MacAddress mac);
+}

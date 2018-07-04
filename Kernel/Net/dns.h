@@ -24,37 +24,13 @@ struct DNS_Header
 	uint16 add_count;
 } __attribute__((packed));
 
-struct DNS_Packet
+namespace DNS
 {
-	DNS_Header* hdr;
-	uint8* data;
-	uint32 data_length;
-} __attribute__((packed));
+	IPv4Address LookupAddress(char* name);
+	void AddEntry(char* name, IPv4Address addr);
 
-struct DNS_TABLE_ENTRY
-{
-	char* name;
-	IPv4Address addr;
-};
+	void Query(NetInterface* intf, char* name);
+	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
 
-class DNS
-{
-public:
-	static STATUS Init();
-
-	static IPv4Address dns_server;
-
-	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
-	static bool Decode(DNS_Packet* dns, UDP_Packet* pkt);
-	static void Query(NetInterface* intf, char* name);
-
-	static void AddEntry(char* name, IPv4Address addr);
-	static IPv4Address LookupAddress(char* name);
-	
-private:
-	static DNS_TABLE_ENTRY dns_cache[];
-
-	static uint8* AppendDomain(uint8* ptr, char* name);
-	static uint8* ParseDomain(char* buf, uint8* ptr);
-	static uint8* ParseAnswer(DNS_Answer* ans, uint8* ptr);
+	STATUS Init();
 };

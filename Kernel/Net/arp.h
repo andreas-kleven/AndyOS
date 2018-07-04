@@ -1,11 +1,7 @@
 #pragma once
 #include "eth.h"
 
-#define ARP_REQUEST		1
-#define ARP_REPLY		2
-
 #define ARP_HTYPE		1
-
 #define ARP_CACHE_SIZE	32
 
 struct ARP_Header
@@ -21,28 +17,13 @@ struct ARP_Header
 	IPv4Address recv_ip;
 } __attribute__((packed));
 
-struct ARP_TABLE_ENTRY
+namespace ARP
 {
-	MacAddress mac;
-	IPv4Address ip;
-};
+	MacAddress LookupMac(IPv4Address ip);
+	void AddEntry(MacAddress mac, IPv4Address ip);
 
-class ARP
-{
-public:
-	static STATUS Init();
+	void SendRequest(NetInterface* intf, IPv4Address tip);
+	void Receive(NetInterface* intf, NetPacket* pkt);
 
-	static void Receive(NetInterface* intf, NetPacket* pkt);
-	static bool Decode(ARP_Header* ah, NetPacket* pkt);
-
-	static void Send(NetInterface* intf, MacAddress dst, IPv4Address tip, uint16 op);
-	static void SendRequest(NetInterface* intf, IPv4Address tip);
-
-	static void AddEntry(MacAddress mac, IPv4Address ip);
-	static MacAddress LookupMac(IPv4Address ip);
-
-private:
-	static ARP_TABLE_ENTRY arp_cache[];
-
-	static void SendReply(NetInterface* intf, ARP_Header* ah);
+	STATUS Init();
 };

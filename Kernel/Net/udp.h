@@ -21,15 +21,13 @@ struct UDP_Packet
 	uint8* data;
 } __attribute__((packed));
 
-class UDP
+namespace UDP
 {
-public:
-	static STATUS Init();
-	static UdpSocket* CreateSocket(int port);
+	UdpSocket* CreateSocket(int port);
+	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8* data, uint32 data_length);
 
-	static void Send(NetInterface* intf, NetPacket* pkt);
-	static NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8* data, uint32 data_length);
-	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
-	static bool Decode(UDP_Packet* up, NetPacket* pkt);
-	//static void SendPacket(NetInterface* intf, UDP_Header* header, IPv4Address tip);
-};
+	void Send(NetInterface* intf, NetPacket* pkt);
+	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
+	
+	STATUS Init();
+}

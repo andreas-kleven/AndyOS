@@ -3,7 +3,7 @@
 
 UdpSocket::UdpSocket(uint16 src_port, uint16 dst_port)
 {
-	intf = Net::intf;
+	intf = 0;//Net::intf;
 	
 	this->src_port = src_port;
 	this->dst_port = dst_port;

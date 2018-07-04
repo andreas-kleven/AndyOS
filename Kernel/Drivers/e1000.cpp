@@ -148,7 +148,7 @@ void E1000::Poll()
 		pkt.end = end;
 		pkt.length = len;
 
-		Eth::Receive(this, &pkt);
+		ETH::Receive(this, &pkt);
 
 		rx_descs[rx_cur]->status = 0;
 		old_cur = rx_cur;

@@ -25,12 +25,10 @@ struct ICMP_Packet
 	uint32 data_length;
 } __attribute__((packed));
 
-class ICMP
+namespace ICMP
 {
-public:
-	static void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
-	static bool Decode(ICMP_Packet* ih, NetPacket* pkt);
+	void Send(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip, uint8 type);
+	void SendReply(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip);
 
-	static void Send(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip, uint8 type);
-	static void SendReply(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip);
-};
+	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
+}

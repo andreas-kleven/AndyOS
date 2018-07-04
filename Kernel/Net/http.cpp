@@ -11,7 +11,7 @@ void WebClient::Send(String addr, uint8* data, uint32 length)
 {
 	session = TCP::CreateSession();
 	
-	DNS::Query(Net::intf, addr.ToChar());
+	//DNS::Query(Net::intf, addr.ToChar());
 	PIT::Sleep(1000);
 
 	IPv4Address ip = DNS::LookupAddress(addr.ToChar());

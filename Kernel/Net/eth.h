@@ -4,8 +4,8 @@
 #include "netinterface.h"
 #include "address.h"
 
-#define ET_IPv4		0x800
-#define ET_ARP		0x806
+#define ETHERTYPE_IPv4		0x800
+#define ETHERTYPE_ARP		0x806
 
 struct EthHeader
 {
@@ -21,12 +21,10 @@ struct EthPacket
 	uint16 header_length;
 } __attribute__((packed));
 
-class Eth
+namespace ETH
 {
-public:
-	static void Send(NetInterface* intf, NetPacket* pkt);
-	static NetPacket* CreatePacket(NetInterface* intf, MacAddress dst, uint16 type, uint32 size);
+	NetPacket* CreatePacket(NetInterface* intf, MacAddress dst, uint16 type, uint32 size);
 	
-	static void Receive(NetInterface* intf, NetPacket* pkt);
-	static bool Decode(EthPacket* ep, NetPacket* pkt);
-};
+	void Send(NetInterface* intf, NetPacket* pkt);
+	void Receive(NetInterface* intf, NetPacket* pkt);
+}

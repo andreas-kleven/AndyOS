@@ -187,7 +187,7 @@ void TcpSession::ReceivedData(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 
 bool TcpSession::Send(uint8 flags, uint8* data, uint32 data_length)
 {
-	NetPacket* pkt = TCP::CreatePacket(Net::intf, dst_ip, src_port, dst_port, flags, next_seq, next_ack, data, data_length);
+	NetPacket* pkt = TCP::CreatePacket(/*Net::intf*/0, dst_ip, src_port, dst_port, flags, next_seq, next_ack, data, data_length);
 
 	if (!pkt)
 		return 0;
@@ -195,7 +195,7 @@ bool TcpSession::Send(uint8 flags, uint8* data, uint32 data_length)
 	//last_seq = seq;
 	//last_ack = ack;
 
-	Net::intf->Send(pkt);
+	//Net::intf->Send(pkt);
 	return 1;
 }
 
