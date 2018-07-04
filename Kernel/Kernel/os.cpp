@@ -1,7 +1,9 @@
 #include "os.h"
 #include "panic.h"
 #include "stdio.h"
+#include "PCI/pci.h"
 #include "Drivers/ac97.h"
+#include "Drivers/e1000.h"
 #include "Net/net.h"
 #include "Net/tcpsocket.h"
 #include "Net/udpsocket.h"
@@ -116,7 +118,7 @@ namespace OS
 		while (1);
 	}
 
-	void Main()
+	void GUI()
 	{
 		PROCESS* proc = ProcessManager::Load("1winman");
 		PIT::Sleep(100);
@@ -180,41 +182,64 @@ namespace OS
 				proc = proc->next;
 			}
 		}
+	}
 
-		/*ProcessManager::Load("1game");
+	void _Net()
+	{
+		Net::Init();
 
+		PciDevice* dev = PCI::GetDevice(2, 0, 0);
+
+		if (!dev)
+		{
+			debug_print("Network card not found\n");
+			return;
+		}
+
+		debug_print("Found network card\n");
+
+		E1000* intf = new E1000(dev);
+		PIT::Sleep(1000);
+
+		//DNS::Query(intf, "google.com");
+		IPv4Address addr(0xc0, 0xa8, 0x00, 0x7b);
+		DHCP::Discover(intf);
+
+		UdpSocket* socket = UDP::CreateSocket(9876);
+		
+		uint8* buffer;
 		while (1)
 		{
-			asm("int %0" :: "N" (TASK_SCHEDULE_IRQ));
-		}*/
+			int length = socket->Receive(buffer, Net::BroadcastIPv4);
+			debug_dump(buffer, length, 1);
 
+			//char* data = "Hello";
+			//socket->Send(addr, (uint8*)data, 5);
+		}
+		return;
+
+		MacAddress dst(0x30, 0x9C, 0x23, 0x21, 0xEB, 0xFE);
+
+		NetPacket* pkt = IPv4::CreatePacket(intf, addr, IP_PROTOCOL_ICMP, 0);
+
+		if (pkt)
+		{
+			intf->Send(pkt);
+		}
+		else
+		{
+			debug_print("PACKET ERR\n");
+		}
+	}
+
+	void Main()
+	{
+		//GUI();
 		//File();
-
-		char* _s1 = (char*)VMem::UserAlloc(1);
-		char* _s2 = (char*)VMem::UserAlloc(1);
-
-		VMem::MapPhysAddr((uint32)T1, (uint32)T1, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-		VMem::MapPhysAddr((uint32)T2, (uint32)T2, PTE_PRESENT | PTE_WRITABLE | PTE_USER, 1);
-
-		//THREAD* t1 = Scheduler::CreateKernelThread(T1);
-		//THREAD* t2 = Scheduler::CreateKernelThread(T2);
-		THREAD* t1 = Scheduler::CreateUserThread(T1, _s1 + BLOCK_SIZE);
-		THREAD* t2 = Scheduler::CreateUserThread(T2, _s2 + BLOCK_SIZE);
-
-		Scheduler::InsertThread(t1);
-		Scheduler::InsertThread(t2);
-		while (1);
-
-		//Net::Init();
-
-		//Mandelbrot mandelbrot(Drawing::gc);
-		//mandelbrot.Run();
-
-		//Game();
+		_Net();
 		//Audio();
-		//_Font();
 		//COM();
-		_Process();
-		while (1);
+		//_Process();
+		while (1) asm("pause");
 	}
 }
