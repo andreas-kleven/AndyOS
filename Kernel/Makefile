@@ -1,4 +1,4 @@
-TARGET := $(LIBS)/andyos.bin
+TARGET := $(BUILD_DIR)/andyos.bin
 
 SRC_DIR := .
 OBJ_DIR := obj
@@ -9,9 +9,18 @@ OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 ASM_FILES := $(wildcard $(SRC_DIR)/**/*.asm)
 OBJ_FILES += $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES))
 
-LDFLAGS += $(LIBS)/libc.a -T link.ld
+INC_SRCH_PATH := -I.
+INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
+INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Lib
 
-$(TARGET): $(OBJ_FILES) $(LIBS)/libc.a link.ld
+CPPFLAGS := $(INC_SRCH_PATH) -w
+CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
+
+LDFLAGS := $(INC_SRCH_PATH)
+LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
+LDFLAGS += -T link.ld
+
+$(TARGET): $(OBJ_FILES) link.ld
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

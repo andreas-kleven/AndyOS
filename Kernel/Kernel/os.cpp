@@ -123,8 +123,8 @@ namespace OS
 		PROCESS* proc = ProcessManager::Load("1winman");
 		PIT::Sleep(100);
 		ProcessManager::Load("1term");
-		ProcessManager::Load("1test");
-		ProcessManager::Load("1mndlbrt");
+		//ProcessManager::Load("1test");
+		//ProcessManager::Load("1mndlbrt");
 
 		while (1)
 		{
@@ -234,9 +234,9 @@ namespace OS
 
 	void Main()
 	{
-		//GUI();
+		GUI();
 		//File();
-		_Net();
+		//_Net();
 		//Audio();
 		//COM();
 		//_Process();
