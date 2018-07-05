@@ -7,7 +7,7 @@ WebClient::WebClient()
 {
 }
 
-void WebClient::Send(String addr, uint8* data, uint32 length)
+/*void WebClient::Send(String addr, uint8* data, uint32 length)
 {
 	session = TCP::CreateSession();
 	
@@ -31,4 +31,4 @@ void WebClient::Send(String addr, uint8* data, uint32 length)
 int WebClient::Download(String addr, uint8*& data)
 {
 	return 0;
-}
+}*/

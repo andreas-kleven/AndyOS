@@ -221,7 +221,7 @@ int memcmp(const void* a, const void* b, unsigned int n)
 //	return memset(dest, a, b);
 //}
 
-char* search(char* str, const char* delim)
+char* search(const char* str, const char* delim)
 {
 	char c = *str++;
 
@@ -233,7 +233,7 @@ char* search(char* str, const char* delim)
 		while (d)
 		{
 			if (c == d)
-				return str;
+				return (char*)str;
 
 			d = *del++;
 		}
@@ -245,8 +245,10 @@ char* search(char* str, const char* delim)
 }
 
 //Splits string
-char* strtok_r(char* str, const char* delim, char** saveptr)
+char* strtok_r(const char* _str, const char* delim, char** saveptr)
 {
+	char* str = (char*)_str;
+
 	if (!str)
 		str = *saveptr;
 
