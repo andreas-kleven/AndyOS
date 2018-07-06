@@ -6,7 +6,7 @@
 #include "Lib/debug.h"
 #include "Process/scheduler.h"
 
-ATADevice::ATADevice(int bus, int drive)
+ATADriver::ATADriver(int bus, int drive)
 {
 	this->bus = bus;
 	this->drive = drive;
@@ -15,38 +15,31 @@ ATADevice::ATADevice(int bus, int drive)
 	this->id = "hd_";
 	id[2] = 'a' + num;
 
-	this->status = DEVICE_STATUS_RUNNING;
+	this->status = DRIVER_STATUS_RUNNING;
 }
 
-bool ATADevice::Read(int location, char*& buffer, int length)
+int ATADriver::Read(long pos, char* buf, size_t length)
 {
 	if (length <= 0)
-		return STATUS_FAILED;
+		return -1;
 
 	int size = ATA_SECTOR_SIZE;
 	int sectors = (length - 1) / ATA_SECTOR_SIZE + 1;
-	buffer = new char[length];
-
 
 	for (int i = 0; i < sectors; i++)
 	{
-		if (i == sectors - 1)
+		if (i == sectors - 1 && length % ATA_SECTOR_SIZE != 0)
 			size = length % ATA_SECTOR_SIZE;
 
-		if (!ReadSector(location + i * ATA_SECTOR_SIZE, size, &*buffer + i * ATA_SECTOR_SIZE))
+		if (!ReadSector(pos + i * ATA_SECTOR_SIZE, buf + i * ATA_SECTOR_SIZE, size))
 		{
 			Scheduler::Enable();
-			return STATUS_FAILED;
+			return -1;
 		}
 	}
 
 	Scheduler::Enable();
-	return STATUS_SUCCESS;
-}
-
-IFileSystem* ATADevice::Mount()
-{
-	return new ISO_FS(this);
+	return length;
 }
 
 inline void Delay(int bus)
@@ -57,10 +50,10 @@ inline void Delay(int bus)
 	inb(bus + ATA_LBA_STATUS);
 }
 
-bool ATADevice::ReadSector(int location, int size, char* buffer)
+int ATADriver::ReadSector(long pos, char* buf, size_t size)
 {
-	int sector = location / ATA_SECTOR_SIZE;
-	int offset = location % ATA_SECTOR_SIZE;
+	int sector = pos / ATA_SECTOR_SIZE;
+	int offset = pos % ATA_SECTOR_SIZE;
 
 	uint8 read_cmd[12] = { 0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -91,28 +84,34 @@ bool ATADevice::ReadSector(int location, int size, char* buffer)
 	for (int i = 0; i < read_size; i += 2)
 	{
 		uint16 w = inw(bus + ATA_DATA);
-		buffer[i] = w & 0xFF;
-		buffer[i + 1] = w >> 8;
+
+		if (i < size)
+		{
+			buf[i] = w & 0xFF;
+
+			if (i + 1 < size)
+				buf[i + 1] = w >> 8;
+		}
 	}
 
 	while (inb(bus + ATA_LBA_STATUS) & 0x88) asm volatile("pause");
 
-	return STATUS_SUCCESS;
+	return size;
 }
 
-STATUS ATADevice::Init()
+STATUS ATADriver::Init()
 {
 	IDT::InstallIRQ(0x2E, (IRQ_HANDLER)ATA_Interrupt);
 	IDT::InstallIRQ(0x2F, (IRQ_HANDLER)ATA_Interrupt);
 
-	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
-	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
-	DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER));
-	//DeviceManager::AddDevice(new ATADevice(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE));
+	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
+	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
+	DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER));
+	//DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE));
 
 	return STATUS_SUCCESS;
 }
 
-void ATADevice::ATA_Interrupt(REGS* regs)
+void ATADriver::ATA_Interrupt(REGS* regs)
 {
 }

@@ -100,15 +100,21 @@ struct ISO_PRIMARY_DESC
 	char reserved[653];
 } __attribute__((packed));
 
-class ISO_FS : public IFileSystem
+class ISO_FS : public FileSystem
 {
+private:
+	BlockDriver* driver;
+
 public:
 	ISO_PRIMARY_DESC* desc;
 	ISO_DIRECTORY* root;
 
-	ISO_FS(BlockDevice* dev);
+	ISO_FS(BlockDriver* driver);
 
-	ISO_DIRECTORY* FindDirectory(const char* path, bool isDir);
+    int Read(FILE* file, char* buf, size_t size);
+	int GetFile(const char* path, FNODE* node);
+
+	ISO_DIRECTORY* FindDirectory(const char* path);
 	bool GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir);
 	bool GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file);
 	bool ReadFile(FILE_INFO* file, char*& buffer);

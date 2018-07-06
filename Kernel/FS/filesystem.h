@@ -1,6 +1,7 @@
 #pragma once
 #include "definitions.h"
-#include "Drivers/device.h"
+#include "Drivers/driver.h"
+#include "vfs.h"
 
 struct DIRECTORY_INFO
 {
@@ -18,18 +19,13 @@ struct FILE_INFO
 	uint32 attributes;
 };
 
-class IFileSystem
+class FileSystem : public Driver
 {
 public:
-	BlockDevice * device;
-	IFileSystem* next;
+	char* name;
+	char* mount_point;
 
-	IFileSystem(BlockDevice* dev);
+	FileSystem();
 
-	virtual bool GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir) { return 0; }
-	virtual bool GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file) { return 0; }
-	virtual bool ReadFile(FILE_INFO* file, char*& buffer) { return 0; }
-	virtual bool WriteFile(FILE_INFO* file, void* data, uint32 length) { return 0; }
-	virtual bool Count(const char* path, bool recursive, int& file_count, int& dir_count) { return 0; }
-	virtual bool List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count) { return 0; }
+	virtual int GetFile(const char* path, FNODE*) { return -1; }
 };

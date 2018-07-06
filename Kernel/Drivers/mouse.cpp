@@ -8,239 +8,157 @@
 #define MOUSE_PORT0 0x60
 #define MOUSE_PORT1 0x64
 
-#define PACKET_BUF_COUNT 256
+#define BUFFER_SIZE 128
 
-namespace Mouse
+static bool initialized;
+static int mouse_cycle = 0;
+static char* mouse_byte;
+static size_t buffer_pos;
+static char buffer[BUFFER_SIZE];
+
+void mouse_isr()
 {
-	char buffer[PACKET_BUF_COUNT * 4];
-	size_t pktnum;
-
-	int x;
-	int y;
-	int totx;
-	int toty;
-
-	int scroll_x;
-	int scroll_y;
-
-	bool left = 0;
-	bool right = 0;
-	bool middle = 0;
-
-	int sx;
-	int sy;
-
-	uint8 mouse_cycle;
-	uint8 mouse_byte[4];
-
-	bool initialized;
-
-	void Mouse_ISR(REGS* regs)
+	if (initialized)
 	{
-		if (initialized)
+		switch (mouse_cycle)
 		{
-			switch (mouse_cycle)
-			{
-			default:
-				mouse_byte[0] = inb(MOUSE_PORT0);
+		default:
+			mouse_byte = &buffer[(buffer_pos + 4) % BUFFER_SIZE];
+			
+			memset(mouse_byte, 0, 4);
+			buffer_pos += 4;
 
-				if (mouse_byte[0] & 8)
-					mouse_cycle++;
-				break;
+			mouse_byte[0] = inb(MOUSE_PORT0);
 
-			case 1:
-				mouse_byte[1] = inb(MOUSE_PORT0);
-				mouse_cycle++;
-				break;
+			if (mouse_byte[0] & 8)
+				mouse_cycle = 1;
+			break;
 
-			case 2:
-				mouse_byte[2] = inb(MOUSE_PORT0);
+		case 1:
+			mouse_byte[1] = inb(MOUSE_PORT0);
+			mouse_cycle = 2;
+			break;
 
-				if (mouse_byte[0] & 0x80 || mouse_byte[0] & 0x40)
-				{
-					//Bad packet
-					break;
-				}
+		case 2:
+			mouse_byte[2] = inb(MOUSE_PORT0);
+			mouse_cycle = 3;
+			break;
 
-				sx = mouse_byte[1];
-				sy = mouse_byte[2];
-
-				//Sign
-				if (mouse_byte[0] & 0x10)
-					sx |= 0xFFFFFF00;
-
-				if (mouse_byte[0] & 0x20)
-					sy |= 0xFFFFFF00;
-
-				x += sx;
-				y += sy;
-				totx += sx;
-				toty += sy;
-
-				left = mouse_byte[0] & 1;
-				right = mouse_byte[0] >> 1 & 1;
-				middle = mouse_byte[0] >> 2 & 1;
-
-				memcpy(&buffer[pktnum++ % PACKET_BUF_COUNT], &mouse_byte, 4);
-
-				mouse_cycle = 0;
-				mouse_cycle = 3;
-				break;
-
-			case 3:
-				mouse_byte[3] = inb(MOUSE_PORT0);
-				mouse_cycle = 0;
-
-				if (mouse_byte[3] & 1)
-					scroll_y += mouse_byte[3];
-				else
-					scroll_x += mouse_byte[3];
-				break;
-			}
+		case 3:
+			mouse_byte[3] = inb(MOUSE_PORT0);
+			mouse_cycle = 0;
+			break;
 		}
-	}
-
-	void MouseWait(uint8 type)
-	{
-		uint32 time = 100000;
-		if (type == 0)
-		{
-			while (time--)
-				if ((inb(MOUSE_PORT1) & 1) == 1)
-					return;
-			return;
-		}
-		else
-		{
-			while (time--)
-				if ((inb(MOUSE_PORT1) & 2) == 0)
-					return;
-			return;
-		}
-	}
-
-	void MouseWrite(uint8 val)
-	{
-		MouseWait(1);
-		outb(MOUSE_PORT1, 0xD4);
-		MouseWait(1);
-		outb(MOUSE_PORT0, val);
-	}
-
-	uint8 MouseRead()
-	{
-		MouseWait(0);
-		return inb(MOUSE_PORT0);
-	}
-
-	void GetButtons(bool& _left, bool& _right, bool& _middle)
-	{
-		_left = left;
-		_right = right;
-		_middle = middle;
-	}
-
-	void GetPos(int& _x, int& _y)
-	{
-		_x = x;
-		_y = y;
-	}
-
-	void GetScroll(int& x, int& y)
-	{
-		x = scroll_x;
-		y = scroll_y;
-	}
-
-	void ResetPos()
-	{
-		x = 0;
-		y = 0;
-	}
-
-	void ResetScroll()
-	{
-		scroll_x = 0;
-		scroll_y = 0;
-	}
-
-	STATUS Init()
-	{
-		ResetPos();
-		ResetScroll();
-
-		IDT::InstallIRQ(44, (IRQ_HANDLER)Mouse_ISR);
-
-		MouseWait(1);
-		outb(MOUSE_PORT1, 0xA8);
-
-		MouseWait(1);
-		outb(MOUSE_PORT1, 0x20);
-
-		uint8 status_byte;
-		MouseWait(0);
-		status_byte = (inb(MOUSE_PORT0) | 2);
-
-		MouseWait(1);
-		outb(MOUSE_PORT1, 0x60);
-
-		MouseWait(1);
-		outb(MOUSE_PORT0, status_byte);
-
-		MouseWrite(0xF6);
-		MouseRead();
-
-		MouseWrite(0xF4);
-		MouseRead();
-
-
-		MouseWrite(0xF3);
-		MouseRead();
-		MouseWrite(200);
-		MouseRead();
-
-		MouseWrite(0xF3);
-		MouseRead();
-		MouseWrite(100);
-		MouseRead();
-
-		MouseWrite(0xF3);
-		MouseRead();
-		MouseWrite(80);
-		MouseRead();
-
-		MouseWrite(0xF2);
-		MouseRead();
-
-		initialized = 1;
-
-		asm volatile("int $44");
-
-		DeviceManager::AddDevice(new MouseDevice());
-
-		return STATUS_SUCCESS;
 	}
 }
 
-MouseDevice::MouseDevice()
+static void mouse_wait(uint8 type)
+{
+	uint32 time = 100000;
+	if (type == 0)
+	{
+		while (time--)
+			if ((inb(MOUSE_PORT1) & 1) == 1)
+				return;
+		return;
+	}
+	else
+	{
+		while (time--)
+			if ((inb(MOUSE_PORT1) & 2) == 0)
+				return;
+		return;
+	}
+}
+
+static void mouse_write(uint8 val)
+{
+	mouse_wait(1);
+	outb(MOUSE_PORT1, 0xD4);
+	mouse_wait(1);
+	outb(MOUSE_PORT0, val);
+}
+
+static uint8 mouse_read()
+{
+	mouse_wait(0);
+	return inb(MOUSE_PORT0);
+}
+
+static void mouse_init()
+{
+	IDT::InstallIRQ(44, (IRQ_HANDLER)mouse_isr);
+
+	mouse_wait(1);
+	outb(MOUSE_PORT1, 0xA8);
+
+	mouse_wait(1);
+	outb(MOUSE_PORT1, 0x20);
+
+	uint8 status_byte;
+	mouse_wait(0);
+	status_byte = (inb(MOUSE_PORT0) | 2);
+
+	mouse_wait(1);
+	outb(MOUSE_PORT1, 0x60);
+
+	mouse_wait(1);
+	outb(MOUSE_PORT0, status_byte);
+
+	mouse_write(0xF6);
+	mouse_read();
+
+	mouse_write(0xF4);
+	mouse_read();
+
+
+	mouse_write(0xF3);
+	mouse_read();
+	mouse_write(200);
+	mouse_read();
+
+	mouse_write(0xF3);
+	mouse_read();
+	mouse_write(100);
+	mouse_read();
+
+	mouse_write(0xF3);
+	mouse_read();
+	mouse_write(80);
+	mouse_read();
+
+	mouse_write(0xF2);
+	mouse_read();
+
+	initialized = 1;
+
+	asm volatile("int $44");
+}
+
+MouseDriver::MouseDriver()
 {
 	this->id = "mouse";
-	this->status = DEVICE_STATUS_RUNNING;
+	this->status = DRIVER_STATUS_RUNNING;
+
+	mouse_init();
 }
 
-int MouseDevice::Read(char* buf, size_t size, int pos)
+int MouseDriver::Open(FNODE* node, FILE* file)
+{
+	file->pos = buffer_pos;
+	return SUCCESS;
+}
+
+int MouseDriver::Read(FILE* file, char* buf, size_t size)
 {
 	if (size < 4)
 		return 0;
 
-	if (pos / 4 >= Mouse::pktnum)
+	if (file->pos >= buffer_pos)
 		return 0;
 
-	int index = (pos / 4) % PACKET_BUF_COUNT;
-	memcpy(buf, &Mouse::buffer[index], 4);
+	int index = file->pos % BUFFER_SIZE;
+	memcpy(buf, &buffer[index], 4);
 
-	for (int i = 4; i < size; i++)
-		buf[i] = 0;
-
-	return size;
+	return 4;
 }

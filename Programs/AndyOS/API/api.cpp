@@ -73,16 +73,6 @@ void sleep(uint32 ticks)
 	Call(SYSCALL_SLEEP, ticks);
 }
 
-void get_mouse_pos(int& x, int& y)
-{
-	Call(SYSCALL_GET_MOUSE_POS, (int)&x, (int)&y);
-}
-
-void get_mouse_buttons(bool& left, bool& right, bool& middle)
-{
-	Call(SYSCALL_GET_MOUSE_BUTTONS, (int)&left, (int)&right, (int)&middle);
-}
-
 bool get_last_key(KEYCODE& code, bool& pressed)
 {
 	return Call(SYSCALL_GET_LAST_KEY, (int)&code, (int)&pressed);

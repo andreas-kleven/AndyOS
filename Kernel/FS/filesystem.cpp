@@ -1,6 +1,7 @@
 #include "filesystem.h"
 
-IFileSystem::IFileSystem(BlockDevice* dev)
+FileSystem::FileSystem()
 {
-	this->device = dev;
+	this->type = DRIVER_TYPE_FS;
+
 }

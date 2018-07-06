@@ -1,5 +1,5 @@
 #pragma once
-#include "device.h"
+#include "driver.h"
 #include "definitions.h"
 #include "HAL/idt.h"
 
@@ -28,21 +28,20 @@
 #define ATA_STATUS_ERR  0x01
 #define ATA_STATUS_DF   0x20
 
-class ATADevice : public BlockDevice
+class ATADriver : public BlockDriver
 {
 public:
 	int bus;
 	int drive;
 
-	ATADevice(int bus, int drive);
+	ATADriver(int bus, int drive);
 
-	bool Read(int location, char*& buffer, int length);
-	IFileSystem* Mount();
+	int Read(long pos, char* buf, size_t size);
 
 	static STATUS Init();
 
 private:
-	bool ReadSector(int location, int size, char* buffer);
+	int ReadSector(long pos, char* buf, size_t size);
 
 	static void ATA_Interrupt(REGS* regs);
 };

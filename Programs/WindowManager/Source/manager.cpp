@@ -4,6 +4,7 @@
 #include "GUI.h"
 #include "manager.h"
 #include "window.h"
+#include "input.h"
 #include "string.h"
 #include "stdio.h"
 
@@ -80,7 +81,9 @@ void WindowManager::Start()
 	col_taskbar = Color(0.2, 0.3, 0.5);
 	col_desktop_bg = Color(0.9, 0.9, 0.9);
 
-	LoadBackground("sierra.bmp");
+	//LoadBackground("sierra.bmp");
+
+	Input::Init();
 
 	set_message(MessageHandler);
 	UpdateLoop();
@@ -359,8 +362,8 @@ void WindowManager::HandleMouseInput()
 	bool middle;
 	int dx, dy;
 
-	get_mouse_buttons(left, right, middle);
-	get_mouse_pos(dx, dy);
+	Input::GetMouseButtons(left, right, middle);
+	Input::GetMouseMovement(dx, dy);
 
 	if (cursor_enabled)
 	{

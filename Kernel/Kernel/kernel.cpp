@@ -46,7 +46,7 @@ namespace Kernel
 
 		debug_print("Init VBE: %i %i %i\n", vbeMode->width, vbeMode->height, vbeMode->bpp);
 
-		DeviceManager::Init();
+		DriverManager::Init();
 		debug_print("Init devices\n");
 
 		VFS::Init();

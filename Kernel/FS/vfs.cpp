@@ -5,151 +5,162 @@
 #include "Lib/debug.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
-#include "Drivers/device.h"
+#include "Drivers/driver.h"
+#include "filesystem.h"
+
+#define NODE_COUNT 256
 
 namespace VFS
 {
-	enum FILE_TYPE
+	FileSystem* first_fs;
+	FileSystem* primary_fs;
+
+	FNODE* nodes[NODE_COUNT];
+
+	int Mount(BlockDriver* driver, char* mount_point)
 	{
-		FILE_TYPE_REGULAR,
-		FILE_TYPE_DIRECTORY,
-		FILE_TYPE_BLOCK,
-		FILE_TYPE_CHAR
-	};
+		FileSystem* fs = new ISO_FS(driver);
+		fs->mount_point = mount_point;
 
-	struct FILE_NODE
-	{
-		FILE_TYPE type;
-		char* filename = 0;
-		uint32 location = 0;
-		uint32 size = 0;
-		IFileSystem* fs = 0;
-		Device* dev = 0;
-	};
-
-	struct FILE_DESC
-	{
-		FILE_NODE* node;
-		size_t pos = 0;
-		PROCESS* owner = 0;
-		THREAD* thread = 0;
-	};
-
-	IFileSystem* first_fs;
-	IFileSystem* primary_fs;
-
-	void AddDrive(IFileSystem* fs)
-	{
-		if (fs)
-		{
-			if (first_fs)
-				fs->next = first_fs;
-			else
-				fs->next = 0;
-
-			first_fs = fs;
-		}
+		first_fs = fs;
+		primary_fs = fs;
 	}
 
-	FILE_NODE* GetNode(const char* filename)
+	bool AddNode(FNODE* node)
 	{
-		FILE_NODE* node = new FILE_NODE();
-
-		IFileSystem* fs = primary_fs;
-		FILE_INFO file;
-
-		if (!fs) return 0;
-		if (fs->GetFile(0, filename, &file))
+		for (int i = 0; i < NODE_COUNT; i++)
 		{
-			node->type = FILE_TYPE_REGULAR;
-			node->location = file.location;
-			node->size = file.size;
-			node->fs = fs;
-
-			char* tmp;
-			node->size = ReadFile(filename, tmp);
-		}
-		else
-		{
-			const char* id = filename + 5;
-			node->dev = DeviceManager::GetDevice(id);
-			node->type = FILE_TYPE_CHAR;
-
-			if (node->dev == 0)
-				return 0;
+			if (nodes[i] == 0)
+			{
+				nodes[i] = node;
+				return true;
+			}
 		}
 
-		node->filename = new char[strlen(filename) + 1];
-		strcpy(node->filename, filename);
+		return false;
+	}
+
+	FileSystem* GetFS(const char* path)
+	{
+		return primary_fs;
+	}
+
+	FNODE* GetNode(const char* path)
+	{
+		for (int i = 0; i < NODE_COUNT; i++)
+		{
+			FNODE* node = nodes[i];
+
+			if (node)
+			{
+				if (strcmp(node->path, path) == 0)
+				{
+					return node;
+				}
+			}
+		}
+
+		FileSystem* fs = GetFS(path);
+		FNODE* node = new FNODE;
+
+		if (fs)
+		{
+			if (fs->GetFile(path, node) == 0)
+			{
+				node->io = fs;
+			}
+			else
+			{
+				const char* id = path + 5;
+				Driver* drv = DriverManager::GetDriver(id);
+
+				if (drv && drv->type == DRIVER_TYPE_CHAR)
+				{
+					node->io = drv;
+					node->type = FILE_TYPE_CHAR;
+				}
+				else
+				{
+					delete node;
+					return 0;
+				}
+			}
+		}
+
+		node->path = new char[strlen(path) + 1];
+		strcpy(node->path, path);
+		AddNode(node);
 
 		return node;
 	}
 
 	int Open(const char* filename)
 	{
-		FILE_DESC* desc = new FILE_DESC;
-		desc->node = GetNode(filename);
-		desc->owner = Scheduler::CurrentThread()->process;
-		return (int)desc;
+		FILE* file = new FILE;
+		file->thread = Scheduler::CurrentThread();
+		file->node = GetNode(filename);
+
+		if (!file->node)
+			return 0;
+
+		FileIO* io = file->node->io;
+
+		if (io->Open(file->node, file) != SUCCESS)
+		{
+			return 0;
+		}
+
+		return (int)file;
 	}
 
 	int Close(int fd)
 	{
-		FILE_DESC* desc = (FILE_DESC*)fd;
-		delete desc;
+		if (!fd)
+			return -1;
+
+		FILE* file = (FILE*)fd;
+		delete file;
 		return 1;
 	}
 
 	size_t Read(int fd, char* dst, size_t size)
 	{
-		FILE_DESC* desc = (FILE_DESC*)fd;
-		FILE_NODE* node = desc->node;
-		char* buf;
-
-		switch (node->type)
-		{
-		case FILE_TYPE_REGULAR:
-		{
-			ReadFile(node->filename, buf);
-			memcpy(dst, buf + desc->pos, size);
-			desc->pos += size;
-			return size;
-		}
-
-		case FILE_TYPE_CHAR:
-		{
-			CharDevice* dev = (CharDevice*)node->dev;
-			int read = dev->Read(dst, size, desc->pos);
-			desc->pos += read;
-			return read;
-		}
-
-		default:
+		if (!fd)
 			return 0;
-		}
+
+		FILE* file = (FILE*)fd;
+		FNODE* node = file->node;
+
+		int read = node->io->Read(file, dst, size);
+		file->pos += read;
+		return read;
 	}
 
 	size_t Write(int fd, const char* buf, size_t size)
 	{
-
+		if (!fd)
+			return 0;
 	}
 
 	int Seek(int fd, long int offset, int origin)
 	{
-		FILE_DESC* desc = (FILE_DESC*)fd;
+		if (!fd)
+			return 0;
+
+		FILE* file = (FILE*)fd;
 
 		switch (origin)
 		{
 		case SEEK_SET:
-			desc->pos = offset;
+			file->pos = offset;
 			return 1;
 
 		case SEEK_CUR:
-			desc->pos += offset;
+			file->pos += offset;
 			return 1;
 
 		case SEEK_END:
-			desc->pos = desc->node->size + offset;
+			file->pos = file->node->size + offset;
 			return 1;
 
 		default:
@@ -159,68 +170,38 @@ namespace VFS
 
 	uint32 ReadFile(const char* path, char*& buffer)
 	{
-		//char letter = Path::GetDriveLetter(path);
-		//
-		//if (!letter)
-		//	return 0;
+		FILE file;
+		file.node = GetNode(path);
+		file.thread = Scheduler::CurrentThread();
 
-		IFileSystem* fs = primary_fs;
-		FILE_INFO file;
-
-		if (!fs) return 0;
-		if (!fs->GetFile(0, path, &file)) return 0;
-
-		if (fs->ReadFile(&file, buffer))
-			return file.size;
-
-		return 0;
-	}
-
-	bool List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count)
-	{
-		file_count = 0;
-		dir_count = 0;
-
-		if (!primary_fs)
+		if (!file.node)
 			return 0;
 
-		return primary_fs->List(path, files, dirs, file_count, dir_count);
-	}
+		buffer = new char[file.node->size];
+		int length = file.node->io->Read(&file, buffer, file.node->size);
 
-	IFileSystem* GetDrive(const char* id)
-	{
-		IFileSystem* fs = first_fs;
-
-		while (fs)
-		{
-			if (strcmp(fs->device->id, id) == 0)
-			{
-				return fs;
-			}
-
-			fs = fs->next;
-		}
+		return length;
 	}
 
 	STATUS Init()
 	{
+		memset(nodes, 0, sizeof(FNODE*) * NODE_COUNT);
+
 		first_fs = 0;
 		primary_fs = 0;
 
-		Device* dev = DeviceManager::GetDevice();
+		Driver* drv = DriverManager::GetDriver();
 
-		while (dev)
+		while (drv)
 		{
-			if (dev->type == DEVICE_TYPE_BLOCK)
+			if (drv->type == DRIVER_TYPE_BLOCK)
 			{
-				IFileSystem* fs = ((BlockDevice*)dev)->Mount();
-				AddDrive(fs);
+				Mount((BlockDriver*)drv, "/");
+				return STATUS_SUCCESS;
 			}
 
-			dev = dev->next;
+			drv = drv->next;
 		}
-
-		primary_fs = GetDrive("hdc");
 
 		return STATUS_SUCCESS;
 	}

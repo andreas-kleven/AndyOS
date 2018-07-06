@@ -212,7 +212,64 @@ public:
 		}
 		else if (strcmp(arg1, "test") == 0)
 		{
-			fopen("", "");
+			FILE* file = fopen("text.txt", "");
+			Print("File: %ux\n", file);
+
+			int len = 20;
+			char data[len];
+			memset(data, 0, len);
+
+			if (fread(data, len, 1, file))
+			{
+				for (int i = 0; i < len; i++)
+					Print("%c", data[i]);
+			}
+			else
+			{
+				Print("Read error\n");
+			}
+
+			/*Print("\n");
+			fseek(file, 2, SEEK_SET);
+			fread(data, 5, 1, file);
+			for (int i = 0; i < 5; i++)
+				Print("%c", data[i]);
+
+			Print("\n");
+			fseek(file, 4, SEEK_CUR);
+			fread(data, 5, 1, file);
+			for (int i = 0; i < 5; i++)
+				Print("%c", data[i]);
+
+			Print("\n");
+			fseek(file, -5, SEEK_END);
+			fread(data, 5, 1, file);
+			for (int i = 0; i < 5; i++)
+				Print("%c", data[i]);*/
+
+			fclose(file);
+
+			Print("\n");
+			if (file = fopen("/dev/mouse", ""))
+			{
+				memset(data, 0, 4);
+
+				while (1)
+				{
+					if (fread(data, 4, 1, file))
+					{
+						for (int i = 0; i < 4; i++)
+							Print("%ux ", (uint8)data[i]);
+						Print("\n");
+					}
+				}
+
+				fclose(file);
+			}
+			else
+			{
+				Print("Open error\n");
+			}
 		}
 		else
 		{
@@ -228,7 +285,7 @@ public:
 		char buf[256];
 		vsprintf(buf, format, args);
 
-		for (int i = 0; i < strlen(buf) + 1; i++)
+		for (int i = 0; i < strlen(buf); i++)
 		{
 			Putc(buf[i]);
 		}

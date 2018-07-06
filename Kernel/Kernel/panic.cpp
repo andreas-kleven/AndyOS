@@ -25,7 +25,8 @@ void KernelPanic(char* err, char* msg, ...)
 	debug_print("%s\n", err);
 	debug_print("%s\n", buffer);
 
-	if (Scheduler::CurrentThread()->process)
+	THREAD* thread = Scheduler::CurrentThread();
+	if (thread && thread->process)
 		debug_print("Proc: %ux\n", Scheduler::CurrentThread()->process->id);
 
 	asm volatile(

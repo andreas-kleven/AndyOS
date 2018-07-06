@@ -135,7 +135,7 @@ void GEngine::Update()
 	float mouse_y = Input::GetAxis(AXIS_Y);
 
 	bool mouse_r, mouse_l, mouse_m;
-	get_mouse_buttons(mouse_l, mouse_r, mouse_m);
+	//get_mouse_buttons(mouse_l, mouse_r, mouse_m);
 
 	Vector3 mouse_axis = Vector3(mouse_x, mouse_y, 0) * deltaTime;
 
