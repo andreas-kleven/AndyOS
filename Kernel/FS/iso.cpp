@@ -26,7 +26,7 @@ ISO_FS::ISO_FS(BlockDevice* dev)
 	root = (ISO_DIRECTORY*)buf;
 }
 
-ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
+ISO_DIRECTORY* ISO_FS::FindDirectory(const char* path, bool isDir)
 {
 	ISO_DIRECTORY* start = root;
 	ISO_DIRECTORY* dir = start;
@@ -86,7 +86,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(char* path, bool isDir)
 	return 0;
 }
 
-bool ISO_FS::GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* dir)
+bool ISO_FS::GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir)
 {
 	ISO_DIRECTORY* iso_dir = FindDirectory(path, true);
 
@@ -96,7 +96,7 @@ bool ISO_FS::GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* di
 	return ParseDirectory(iso_dir, path, dir);
 }
 
-bool ISO_FS::GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file)
+bool ISO_FS::GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file)
 {
 	ISO_DIRECTORY* iso_dir = FindDirectory(path, false);
 
@@ -119,7 +119,7 @@ bool ISO_FS::WriteFile(FILE_INFO* file, void* data, uint32 length)
 	return 0;
 }
 
-bool ISO_FS::Count(char* path, bool recursive, int& file_count, int& dir_count)
+bool ISO_FS::Count(const char* path, bool recursive, int& file_count, int& dir_count)
 {
 	ISO_DIRECTORY* start = FindDirectory(path, 1);
 	ISO_DIRECTORY* iso_dir = start;
@@ -154,7 +154,7 @@ bool ISO_FS::Count(char* path, bool recursive, int& file_count, int& dir_count)
 	return 1;
 }
 
-bool ISO_FS::List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count)
+bool ISO_FS::List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count)
 {
 	if (!Count(path, 0, file_count, dir_count))
 		return 0;
@@ -224,7 +224,7 @@ void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 	}
 }
 
-bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file)
+bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, const char* path, FILE_INFO* file)
 {
 	file->name = new char[iso_dir->idLength + 1];
 	file->path = new char[strlen(path) + 1];
@@ -239,7 +239,7 @@ bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file)
 	return 1;
 }
 
-bool ISO_FS::ParseDirectory(ISO_DIRECTORY* iso_dir, char* path, DIRECTORY_INFO* dir)
+bool ISO_FS::ParseDirectory(ISO_DIRECTORY* iso_dir, const char* path, DIRECTORY_INFO* dir)
 {
 	dir->name = new char[iso_dir->idLength + 1];
 	dir->path = new char[strlen(path) + 1];

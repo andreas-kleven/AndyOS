@@ -108,16 +108,16 @@ public:
 
 	ISO_FS(BlockDevice* dev);
 
-	ISO_DIRECTORY* FindDirectory(char* path, bool isDir);
-	bool GetDirectory(DIRECTORY_INFO* parent, char* path, DIRECTORY_INFO* dir);
-	bool GetFile(DIRECTORY_INFO* dir, char* path, FILE_INFO* file);
+	ISO_DIRECTORY* FindDirectory(const char* path, bool isDir);
+	bool GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir);
+	bool GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file);
 	bool ReadFile(FILE_INFO* file, char*& buffer);
 	bool WriteFile(FILE_INFO* file, void* data, uint32 length);
-	bool Count(char* path, bool recursive, int& file_count, int& dir_count);
-	bool List(char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count);
+	bool Count(const char* path, bool recursive, int& file_count, int& dir_count);
+	bool List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count);
 
 private:
 	void GetName(ISO_DIRECTORY* dir, char* buf);
-	bool ParseFile(ISO_DIRECTORY* iso_dir, char* path, FILE_INFO* file);
-	bool ParseDirectory(ISO_DIRECTORY* iso_dir, char* path, DIRECTORY_INFO* dir);
+	bool ParseFile(ISO_DIRECTORY* iso_dir, const char* path, FILE_INFO* file);
+	bool ParseDirectory(ISO_DIRECTORY* iso_dir, const char* path, DIRECTORY_INFO* dir);
 };
