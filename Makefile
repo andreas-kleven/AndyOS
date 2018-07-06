@@ -24,6 +24,7 @@ all: kernel programs
 
 iso: all
 	cp $(BUILD_DIR)/andyos.bin $(BOOT_DIR)/andyos.bin
+	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman
 	cp $(BUILD_DIR)/terminal $(ISO_DIR)/1term
 	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
 	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
