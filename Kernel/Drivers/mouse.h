@@ -1,6 +1,7 @@
 #pragma once
 #include "definitions.h"
 #include "HAL/idt.h"
+#include "Drivers/device.h"
 
 namespace Mouse
 {
@@ -13,4 +14,11 @@ namespace Mouse
 	void ResetScroll();
 	
 	STATUS Init();
+};
+
+class MouseDevice : public CharDevice
+{
+public:
+	MouseDevice();
+	int Read(char* buf, size_t size, int pos);
 };

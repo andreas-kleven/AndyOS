@@ -8,19 +8,24 @@ int sys_open(const char* filename, const char* mode)
 	return Call(SYSCALL_OPEN, (int)filename, (int)mode);
 }
 
-int sys_close(FILE* stream)
+int sys_close(int fd)
 {
-	return Call(SYSCALL_CLOSE, (int)stream);
+	return Call(SYSCALL_CLOSE, fd);
 }
 
-size_t sys_read(void* ptr, size_t size, size_t nmemb, FILE* stream)
+size_t sys_read(int fd, char* buf, size_t size)
 {
-	return Call(SYSCALL_READ, (int)ptr, size, nmemb, (int)stream);
+	return Call(SYSCALL_READ, fd, (int)buf, size);
 }
 
-size_t sys_write(const void* ptr, size_t size, size_t nmemb, FILE* stream)
+size_t sys_write(int fd, const char* buf, size_t size)
 {
-	return Call(SYSCALL_WRITE, (int)ptr, size, nmemb, (int)stream);
+	return Call(SYSCALL_WRITE, fd, (int)buf, size);
+}
+
+int sys_seek(int fd, long int offset, int origin)
+{
+	return Call(SYSCALL_SEEK, (int)fd, offset, origin);
 }
 
 void halt()

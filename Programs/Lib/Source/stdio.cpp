@@ -6,28 +6,43 @@
 #include "math.h"
 
 extern int sys_open(const char* filename, const char* mode);
-extern int sys_close(FILE* stream);
-extern size_t sys_read(void* ptr, size_t size, size_t nmemb, FILE* stream);
-extern size_t sys_write(const void* ptr, size_t size, size_t nmemb, FILE* stream);
+extern int sys_close(int fd);
+extern size_t sys_read(int fd, char* buf, size_t size);
+extern size_t sys_write(int fd, const char* buf, size_t size);
+extern int sys_seek(int fd, long int offset, int origin);
 
-int fopen(const char* filename, const char* mode)
+FILE* fopen(const char* filename, const char* mode)
 {
-	return sys_open(filename, mode);
+	FILE* stream = new FILE;
+	stream->fd = sys_open(filename, mode);
+	
+	if (stream->fd == 0)
+	{
+		delete stream;
+		return 0;
+	}
+
+	return stream;
 }
 
 int fclose(FILE* stream)
 {
-	return sys_close(stream);
+	return sys_close(stream->fd);
 }
 
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_read(ptr, size, nmemb, stream);
+	return sys_read(stream->fd, (char*)ptr, size);
 }
 
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_write(ptr, size, nmemb, stream);
+	return sys_write(stream->fd, (const char*)ptr, size);
+}
+
+int fseek(FILE* stream, long int offset, int origin)
+{
+	return sys_seek(stream->fd, offset, origin);
 }
 
 //Writes formatted string to buffer

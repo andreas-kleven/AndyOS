@@ -11,7 +11,6 @@
 #include "Process/process.h"
 #include "FS/vfs.h"
 
-
 namespace Syscalls
 {
 	struct TMP_MSG
@@ -41,6 +40,31 @@ namespace Syscalls
 	int msg_id = 0;
 
 	TMP_MSG* first_msg = 0;
+
+	int open(const char* filename, const char* mode)
+	{
+		return VFS::Open(filename);
+	}
+
+	int close(int fd)
+	{
+		return VFS::Close(fd);
+	}
+
+	size_t read(int fd, char* buf, size_t size)
+	{
+		return VFS::Read(fd, buf, size);
+	}
+
+	size_t write(int fd, const char* buf, size_t size)
+	{
+		return VFS::Write(fd, buf, size);
+	}
+
+	int seek(int fd, long int offset, int origin)
+	{
+		return VFS::Seek(fd, offset, origin);
+	}
 
 	void halt()
 	{
@@ -309,6 +333,12 @@ namespace Syscalls
 	{
 		if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
 			return STATUS_FAILED;
+
+		InstallSyscall(SYSCALL_OPEN, (SYSCALL_HANDLER)open);
+		InstallSyscall(SYSCALL_CLOSE, (SYSCALL_HANDLER)close);
+		InstallSyscall(SYSCALL_READ, (SYSCALL_HANDLER)read);
+		InstallSyscall(SYSCALL_WRITE, (SYSCALL_HANDLER)write);
+		InstallSyscall(SYSCALL_SEEK, (SYSCALL_HANDLER)seek);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);

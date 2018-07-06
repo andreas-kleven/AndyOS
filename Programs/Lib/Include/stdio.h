@@ -2,15 +2,21 @@
 #include "stdarg.h"
 #include "definitions.h"
 
+#define EOF         (-1)
+#define SEEK_SET	0
+#define SEEK_CUR	1
+#define SEEK_END	2
+
 struct FILE
 {
-    unsigned char* buffer;
+    unsigned int fd;
 };
 
-int fopen(const char* filename, const char* mode);
+FILE* fopen(const char* filename, const char* mode);
 int fclose(FILE* stream);
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream);
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream);
+int fseek(FILE* stream, long int offset, int origin);
 //int fputc(unsigned char c, FILE* stream);
 //int fputs(const char* str, FILE* stream);
 //int fgetc(FILE* stream);

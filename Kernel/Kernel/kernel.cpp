@@ -52,9 +52,6 @@ namespace Kernel
 		VFS::Init();
 		debug_print("Init VFS\n");
 
-		Mouse::Init();
-		debug_print("Init Mouse\n");
-		
 		Keyboard::Init();
 		debug_print("Init Keyboard\n");
 

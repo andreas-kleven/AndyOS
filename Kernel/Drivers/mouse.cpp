@@ -1,15 +1,24 @@
 #include "mouse.h"
 #include "HAL/hal.h"
+#include "circbuf.h"
 #include "math.h"
+#include "string.h"
 
 #define MOUSE_IRQ 12
 #define MOUSE_PORT0 0x60
 #define MOUSE_PORT1 0x64
 
+#define PACKET_BUF_COUNT 256
+
 namespace Mouse
 {
+	char buffer[PACKET_BUF_COUNT * 4];
+	size_t pktnum;
+
 	int x;
 	int y;
+	int totx;
+	int toty;
 
 	int scroll_x;
 	int scroll_y;
@@ -65,10 +74,14 @@ namespace Mouse
 
 				x += sx;
 				y += sy;
+				totx += sx;
+				toty += sy;
 
 				left = mouse_byte[0] & 1;
 				right = mouse_byte[0] >> 1 & 1;
 				middle = mouse_byte[0] >> 2 & 1;
+
+				memcpy(&buffer[pktnum++ % PACKET_BUF_COUNT], &mouse_byte, 4);
 
 				mouse_cycle = 0;
 				mouse_cycle = 3;
@@ -203,6 +216,31 @@ namespace Mouse
 
 		asm volatile("int $44");
 
+		DeviceManager::AddDevice(new MouseDevice());
+
 		return STATUS_SUCCESS;
 	}
+}
+
+MouseDevice::MouseDevice()
+{
+	this->id = "mouse";
+	this->status = DEVICE_STATUS_RUNNING;
+}
+
+int MouseDevice::Read(char* buf, size_t size, int pos)
+{
+	if (size < 4)
+		return 0;
+
+	if (pos / 4 >= Mouse::pktnum)
+		return 0;
+
+	int index = (pos / 4) % PACKET_BUF_COUNT;
+	memcpy(buf, &Mouse::buffer[index], 4);
+
+	for (int i = 4; i < size; i++)
+		buf[i] = 0;
+
+	return size;
 }

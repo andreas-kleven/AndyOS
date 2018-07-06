@@ -12,9 +12,8 @@ ATADevice::ATADevice(int bus, int drive)
 	this->drive = drive;
 
 	int num = ((bus == ATA_BUS_SECONDARY) << 1) | (drive == ATA_DRIVE_SLAVE);
-	char* id = "hd_";
+	this->id = "hd_";
 	id[2] = 'a' + num;
-	strcpy(this->id, id);
 
 	this->status = DEVICE_STATUS_RUNNING;
 }
