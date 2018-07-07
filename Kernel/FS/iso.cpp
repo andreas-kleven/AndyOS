@@ -33,7 +33,7 @@ int ISO_FS::Read(FILE* file, char* buf, size_t size)
 	return driver->Read(file->node->pos, buf, size);
 }
 
-int ISO_FS::GetFile(const char* path, FNODE* node)
+int ISO_FS::GetFile(const Path* path, FNODE* node)
 {
 	ISO_DIRECTORY* dir = FindDirectory(path);
 
@@ -54,20 +54,16 @@ int ISO_FS::GetFile(const char* path, FNODE* node)
 }
 
 
-ISO_DIRECTORY* ISO_FS::FindDirectory(const char* path)
+ISO_DIRECTORY* ISO_FS::FindDirectory(const Path* path)
 {
 	ISO_DIRECTORY* start = root;
 	ISO_DIRECTORY* dir = start;
 
-	if (!dir)
+	if (!dir || path->count == 0)
 		return 0;
 
-	char* saveptr;
-	char* part = strtok_r(path, "/", &saveptr);
-	char* next = strtok_r(0, "/", &saveptr);
-
-	if (!part)
-		return root;
+	int pi = 0;
+	char* part = path->parts[pi++];
 
 	while (part && dir && dir->length)
 	{
@@ -85,8 +81,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const char* path)
 					start = (ISO_DIRECTORY*)buffer;
 					dir = start;
 
-					part = next;
-					next = strtok_r(0, "/", &saveptr);
+					part = path->parts[pi++];
 				}
 				else
 				{
@@ -113,124 +108,6 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const char* path)
 	return 0;
 }
 
-/*bool ISO_FS::GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir)
-{
-	ISO_DIRECTORY* iso_dir = FindDirectory(path, true);
-
-	if (!iso_dir)
-		return 0;
-
-	return ParseDirectory(iso_dir, path, dir);
-}
-
-bool ISO_FS::GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file)
-{
-	ISO_DIRECTORY* iso_dir = FindDirectory(path, false);
-
-	if (!iso_dir)
-		return 0;
-
-	return ParseFile(iso_dir, path, file);
-}
-
-bool ISO_FS::ReadFile(FILE_INFO* file, char*& buffer)
-{
-	if (!driver->Read(file->location, buffer, file->size))
-		return 0;
-
-	return 1;
-}
-
-bool ISO_FS::WriteFile(FILE_INFO* file, void* data, uint32 length)
-{
-	return 0;
-}
-
-bool ISO_FS::Count(const char* path, bool recursive, int& file_count, int& dir_count)
-{
-	ISO_DIRECTORY* start = FindDirectory(path, 1);
-	ISO_DIRECTORY* iso_dir = start;
-
-	char* buffer;
-	driver->Read(iso_dir->locationLBA_LSB * ISO_SECTOR_SIZE, buffer, iso_dir->filesize_LSB);
-	start = (ISO_DIRECTORY*)buffer;
-	iso_dir = start;
-
-	if (!iso_dir)
-		return 0;
-
-	while (iso_dir->length)
-	{
-		if (iso_dir->flags & FILE_FLAG_DIRECTORY)
-		{
-			dir_count++;
-		}
-		else
-		{
-			file_count++;
-		}
-
-		iso_dir = (ISO_DIRECTORY*)((int)iso_dir + iso_dir->length);
-		if ((int)iso_dir - (int)start > ISO_SECTOR_SIZE - sizeof(ISO_DIRECTORY))
-		{
-			iso_dir = (ISO_DIRECTORY*)((int)start + ISO_SECTOR_SIZE);
-			start = iso_dir;
-		}
-	}
-
-	return 1;
-}*/
-
-/*bool ISO_FS::List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count)
-{
-	if (!Count(path, 0, file_count, dir_count))
-		return 0;
-
-	ISO_DIRECTORY* start = FindDirectory(path, 1);
-	ISO_DIRECTORY* iso_dir = start;
-
-	char* buffer;
-	driver->Read(iso_dir->locationLBA_LSB * ISO_SECTOR_SIZE, buffer, iso_dir->filesize_LSB);
-	start = (ISO_DIRECTORY*)buffer;
-	iso_dir = start;
-
-	if (!iso_dir)
-		return 0;
-
-	if (file_count + dir_count == 0)
-		return 1;
-
-	files = new FILE_INFO[file_count];
-	dirs = new DIRECTORY_INFO[dir_count];
-
-	int f = 0;
-	int d = 0;
-
-	while (iso_dir->length)
-	{
-		char name[32];
-		GetName(iso_dir, name);
-
-		if (iso_dir->flags & FILE_FLAG_DIRECTORY)
-		{
-			ParseDirectory(iso_dir, path, &dirs[d++]);
-		}
-		else
-		{
-			ParseFile(iso_dir, path, &files[f++]);
-		}
-
-		iso_dir = (ISO_DIRECTORY*)((int)iso_dir + iso_dir->length);
-		if ((int)iso_dir - (int)start > ISO_SECTOR_SIZE - sizeof(ISO_DIRECTORY))
-		{
-			iso_dir = (ISO_DIRECTORY*)((int)start + ISO_SECTOR_SIZE);
-			start = iso_dir;
-		}
-	}
-
-	return 1;
-}*/
-
 void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 {
 	memcpy(buf, &dir->identifier, dir->idLength);
@@ -250,31 +127,3 @@ void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 			buf[length - 3] = 0;
 	}
 }
-
-/*bool ISO_FS::ParseFile(ISO_DIRECTORY* iso_dir, const char* path, FILE_INFO* file)
-{
-	file->name = new char[iso_dir->idLength + 1];
-	file->path = new char[strlen(path) + 1];
-
-	GetName(iso_dir, file->name);
-	strcpy(file->path, path);
-
-	file->size = iso_dir->filesize_LSB;
-	file->location = iso_dir->locationLBA_LSB * ISO_SECTOR_SIZE;
-	file->attributes = iso_dir->attrib;
-
-	return 1;
-}
-
-bool ISO_FS::ParseDirectory(ISO_DIRECTORY* iso_dir, const char* path, DIRECTORY_INFO* dir)
-{
-	dir->name = new char[iso_dir->idLength + 1];
-	dir->path = new char[strlen(path) + 1];
-
-	GetName(iso_dir, dir->name);
-	strcpy(dir->path, path);
-
-	dir->attributes = iso_dir->attrib;
-
-	return 1;
-}*/

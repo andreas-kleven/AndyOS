@@ -112,18 +112,9 @@ public:
 	ISO_FS(BlockDriver* driver);
 
     int Read(FILE* file, char* buf, size_t size);
-	int GetFile(const char* path, FNODE* node);
-
-	ISO_DIRECTORY* FindDirectory(const char* path);
-	bool GetDirectory(DIRECTORY_INFO* parent, const char* path, DIRECTORY_INFO* dir);
-	bool GetFile(DIRECTORY_INFO* dir, const char* path, FILE_INFO* file);
-	bool ReadFile(FILE_INFO* file, char*& buffer);
-	bool WriteFile(FILE_INFO* file, void* data, uint32 length);
-	bool Count(const char* path, bool recursive, int& file_count, int& dir_count);
-	bool List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count);
+	int GetFile(const Path* path, FNODE* node);
 
 private:
+	ISO_DIRECTORY* FindDirectory(const Path* path);
 	void GetName(ISO_DIRECTORY* dir, char* buf);
-	bool ParseFile(ISO_DIRECTORY* iso_dir, const char* path, FILE_INFO* file);
-	bool ParseDirectory(ISO_DIRECTORY* iso_dir, const char* path, DIRECTORY_INFO* dir);
 };

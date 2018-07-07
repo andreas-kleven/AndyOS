@@ -271,22 +271,16 @@ loop:
 
 	char* end = search(str, delim);
 
-	if (!end)
+	if (end)
+	{
+		*(end - 1) = 0;
+		*saveptr = end;
+		return str;
+	}
+	else
 	{
 		*saveptr = 0;
 		return str;
-	}
-
-	if (end)
-	{
-		int len = end - str;
-		char* ret = new char[len];
-
-		memcpy(ret, str, len);
-		ret[len - 1] = 0;
-
-		*saveptr = end;
-		return ret;
 	}
 
 	return 0;

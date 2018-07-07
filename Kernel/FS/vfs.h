@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "path.h"
 #include "Process/scheduler.h"
 #include "stdio.h"
 
@@ -18,11 +19,15 @@ enum FILE_TYPE
 
 struct FNODE
 {
-	char* path = 0;
+	Path* path;
 	size_t size = 0;
 	long pos = 0;
 	FILE_TYPE type;
 	FileIO* io;
+
+	FNODE* parent = 0;
+	FNODE* next = 0;
+	FNODE* first_child = 0;
 };
 
 struct FILE
@@ -50,8 +55,6 @@ namespace VFS
 	size_t Write(int fd, const char* buf, size_t size);
 	int Seek(int fd, long offset, int origin);
 
-	uint32 ReadFile(const char* path, char*& buffer);
-	//bool List(const char* path, FILE_INFO*& files, DIRECTORY_INFO*& dirs, int& file_count, int& dir_count);
-	//FileSystem* GetDrive(const char* id);
+	uint32 ReadFile(const char* filename, char*& buffer);
 	STATUS Init();
 };

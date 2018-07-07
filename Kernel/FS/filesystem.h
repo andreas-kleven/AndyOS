@@ -3,22 +3,6 @@
 #include "Drivers/driver.h"
 #include "vfs.h"
 
-struct DIRECTORY_INFO
-{
-	char* name;
-	char* path;
-	uint32 attributes;
-};
-
-struct FILE_INFO
-{
-	char* name;
-	char* path;
-	uint32 location;
-	uint32 size;
-	uint32 attributes;
-};
-
 class FileSystem : public Driver
 {
 public:
@@ -26,6 +10,7 @@ public:
 	char* mount_point;
 
 	FileSystem();
-
-	virtual int GetFile(const char* path, FNODE*) { return -1; }
+	
+	virtual int Mount(FNODE* node) { return ERROR; }
+	virtual int GetFile(const Path* path, FNODE*) { return ERROR; }
 };

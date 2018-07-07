@@ -1,6 +1,5 @@
 #include "vfs.h"
 #include "string.h"
-#include "path.h"
 #include "iso.h"
 #include "Lib/debug.h"
 #include "Process/process.h"
@@ -40,20 +39,23 @@ namespace VFS
 		return false;
 	}
 
-	FileSystem* GetFS(const char* path)
+	FileSystem* GetFS(const Path* path)
 	{
 		return primary_fs;
 	}
 
-	FNODE* GetNode(const char* path)
+	FNODE* GetNode(const Path* path)
 	{
+		if (path->count == 0)
+			return 0;
+
 		for (int i = 0; i < NODE_COUNT; i++)
 		{
 			FNODE* node = nodes[i];
 
 			if (node)
 			{
-				if (strcmp(node->path, path) == 0)
+				if (node->path == path)
 				{
 					return node;
 				}
@@ -69,26 +71,36 @@ namespace VFS
 			{
 				node->io = fs;
 			}
-			else
+			else if (path->count >= 2)
 			{
-				const char* id = path + 5;
-				Driver* drv = DriverManager::GetDriver(id);
+				if (strcmp(path->parts[0], "dev") == 0)
+				{
+					Driver* drv = DriverManager::GetDriver(path->parts[1]);
 
-				if (drv && drv->type == DRIVER_TYPE_CHAR)
-				{
-					node->io = drv;
-					node->type = FILE_TYPE_CHAR;
-				}
-				else
-				{
-					delete node;
-					return 0;
+					if (drv && drv->type == DRIVER_TYPE_CHAR)
+					{
+						node->io = drv;
+						node->type = FILE_TYPE_CHAR;
+					}
 				}
 			}
 		}
 
-		node->path = new char[strlen(path) + 1];
-		strcpy(node->path, path);
+		if (!node->io)
+		{
+			delete node;
+			return 0;
+		}
+
+		node->parent = GetNode(path->Parent());
+
+		if (node->parent)
+		{
+			node->next = node->parent->first_child;
+			node->parent->first_child = node;
+		}
+
+		node->path = (Path*)path;
 		AddNode(node);
 
 		return node;
@@ -96,9 +108,11 @@ namespace VFS
 
 	int Open(const char* filename)
 	{
+		Path* path = new Path(filename);
+
 		FILE* file = new FILE;
 		file->thread = Scheduler::CurrentThread();
-		file->node = GetNode(filename);
+		file->node = GetNode(path);
 
 		if (!file->node)
 			return 0;
@@ -168,8 +182,10 @@ namespace VFS
 		}
 	}
 
-	uint32 ReadFile(const char* path, char*& buffer)
+	uint32 ReadFile(const char* filename, char*& buffer)
 	{
+		Path* path = new Path(filename);
+
 		FILE file;
 		file.node = GetNode(path);
 		file.thread = Scheduler::CurrentThread();
