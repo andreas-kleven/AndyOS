@@ -3,6 +3,8 @@ Build/
 Root/
 *.iso
 *.code-workspace
+Tools/*/*
+**/.DS_Store
 
 ### C++ ###
 # Prerequisites

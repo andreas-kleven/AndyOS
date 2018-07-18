@@ -1,6 +1,6 @@
 MAKE_DIR = $(CURDIR)
 CC := i686-elf-gcc
-AR := ar
+AR := i686-elf-ar
 
 BUILD_DIR := $(MAKE_DIR)/Build
 PROGRAMS_DIR = $(MAKE_DIR)/Programs
@@ -13,6 +13,7 @@ ISO_NAME :=  $(MAKE_DIR)/AndyOS.iso
 
 create_dir:
 	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BOOT_DIR)
 
 programs:
 	$(MAKE) -C $(PROGRAMS_DIR) all
