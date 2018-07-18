@@ -151,14 +151,14 @@ int MouseDriver::Open(FNODE* node, FILE* file)
 
 int MouseDriver::Read(FILE* file, char* buf, size_t size)
 {
-	if (size < 4)
-		return 0;
-
 	if (file->pos >= buffer_pos)
 		return 0;
 
-	int index = file->pos % BUFFER_SIZE;
-	memcpy(buf, &buffer[index], 4);
+	if (size > BUFFER_SIZE)
+		size = BUFFER_SIZE;
 
-	return 4;
+	int index = file->pos % BUFFER_SIZE;
+	memcpy(buf, &buffer[index], size);
+
+	return size;
 }

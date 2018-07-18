@@ -19,36 +19,40 @@ namespace Input
         if (!mouse_file)
             return;
 
-        unsigned char buf[4];
+        unsigned char buf[128];
+        int size = fread(buf, 4, 1, mouse_file);
 
-        int i = 0;
+        if (size % 4 != 0)
+            return;
 
-        if (fread(buf, 4, 1, mouse_file) == 4)
+        for (int i = 0; i < size; i += 4) 
         {
+            unsigned char* mb = &buf[i];
+
             //Buttons
-			_left = buf[0] & 1;
-			_right = buf[0] & 2;
-			_middle = buf[0] & 4;
+			_left = mb[0] & 1;
+			_right = mb[0] & 2;
+			_middle = mb[0] & 4;
 
             //Position
-            int sx = buf[1];
-			int sy = buf[2];
+            int sx = mb[1];
+			int sy = mb[2];
 
 			//Sign
-			if (buf[0] & 0x10)
+			if (mb[0] & 0x10)
 				sx |= 0xFFFFFF00;
 
-			if (buf[0] & 0x20)
+			if (mb[0] & 0x20)
 				sy |= 0xFFFFFF00;
 
 			_x += sx;
 			_y += sy;
 
             //Scroll
-            if (buf[3] & 1)
-				_scroll_y += buf[3];
+            if (mb[3] & 1)
+				_scroll_y += mb[3];
 			else
-				_scroll_x += buf[3];
+				_scroll_x += mb[3];
         }
     }
 
