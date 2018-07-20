@@ -3,27 +3,27 @@
 #include "string.h"
 #include "stdio.h"
 
-int sys_open(const char* filename, const char* mode)
+int open(const char* filename, int flags)
 {
-	return Call(SYSCALL_OPEN, (int)filename, (int)mode);
+	return Call(SYSCALL_OPEN, (int)filename, flags);
 }
 
-int sys_close(int fd)
+int close(int fd)
 {
 	return Call(SYSCALL_CLOSE, fd);
 }
 
-size_t sys_read(int fd, char* buf, size_t size)
+size_t read(int fd, char* buf, size_t size)
 {
 	return Call(SYSCALL_READ, fd, (int)buf, size);
 }
 
-size_t sys_write(int fd, const char* buf, size_t size)
+size_t write(int fd, const char* buf, size_t size)
 {
 	return Call(SYSCALL_WRITE, fd, (int)buf, size);
 }
 
-int sys_seek(int fd, long int offset, int origin)
+int seek(int fd, long int offset, int origin)
 {
 	return Call(SYSCALL_SEEK, (int)fd, offset, origin);
 }
@@ -117,6 +117,6 @@ void debug_print(char* str, ...)
 	va_list args;
 	va_start(args, str);
 
-	str = vsprintf(buffer, str, args);
-    print(str);
+	vsprintf(buffer, str, args);
+    print(buffer);
 }

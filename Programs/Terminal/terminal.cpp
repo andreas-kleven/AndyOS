@@ -196,9 +196,35 @@ public:
 		}
 		else if (strcmp(arg1, "open") == 0)
 		{
-			if (!create_process(arg2)) 
+			int pid = create_process(arg2);
+			return;
+
+			if (pid)
 			{
-				Print("Could not create process");
+				char filename[32];
+				vprintf(filename, "/proc/%i/fd/0", pid);
+
+				FILE* out = fopen(filename, "r");
+
+				if (out)
+				{
+					while (true)
+					{
+						char buf[100];
+						if (fread(buf, 100, 1, out))
+						{
+							Print(buf);
+						}
+					}
+				}
+				else
+				{
+					Print("Could not open stdout\n");
+				}
+			}
+			else
+			{
+				Print("Could not create process\n");
 			}
 		}
 		else if (strcmp(arg1, "color") == 0)

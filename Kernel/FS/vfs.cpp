@@ -83,6 +83,19 @@ namespace VFS
 						node->type = FILE_TYPE_CHAR;
 					}
 				}
+				else if (strcmp(path->parts[0], "proc") == 0)
+				{
+					if (path->count == 4)
+					{
+						int pid = atoi(path->parts[1]);
+						int fd = atoi(path->parts[3]);
+
+						if (pid != 0 && strcmp(path->parts[2], "fd") == 0)
+						{
+							node->type = FILE_TYPE_CHAR;
+						}
+					}
+				}
 			}
 		}
 

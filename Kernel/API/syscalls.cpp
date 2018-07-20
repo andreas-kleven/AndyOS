@@ -41,7 +41,7 @@ namespace Syscalls
 
 	TMP_MSG* first_msg = 0;
 
-	int open(const char* filename, const char* mode)
+	int open(const char* filename, int flags)
 	{
 		return VFS::Open(filename);
 	}
@@ -75,7 +75,8 @@ namespace Syscalls
 
 	void print(char* text)
 	{
-		debug_print(text);
+		while (*text)
+			debug_putc(*text++);
 	}
 
 	void color(uint32 color)
@@ -151,8 +152,10 @@ namespace Syscalls
 
 	int create_process(char* filename)
 	{
-		if (ProcessManager::Load(filename))
-			return 1;
+		PROCESS* proc = ProcessManager::Load(filename);
+
+		if (proc)
+			return proc->id;
 
 		return 0;
 	}

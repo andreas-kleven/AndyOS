@@ -3,6 +3,12 @@
 #include "definitions.h"
 #include "keycodes.h"
 
+int open(const char* filename, int flags);
+int close(int fd);
+size_t read(int fd, char* buf, size_t size);
+size_t write(int fd, const char* buf, size_t size);
+int seek(int fd, long int offset, int origin);
+
 void halt();
 void print(const char* msg);
 void color(uint32 color);

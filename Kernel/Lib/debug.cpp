@@ -42,8 +42,9 @@ void debug_print(char* str, ...)
 	va_list args;
 	va_start(args, str);
 
-	str = vsprintf(buffer, str, args);
+	vsprintf(buffer, str, args);
 
+	str = buffer;
 	while (*str)
 		debug_putc(*str++);
 }

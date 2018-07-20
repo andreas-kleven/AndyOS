@@ -5,16 +5,20 @@
 #include "limits.h"
 #include "math.h"
 
-extern int sys_open(const char* filename, const char* mode);
-extern int sys_close(int fd);
-extern size_t sys_read(int fd, char* buf, size_t size);
-extern size_t sys_write(int fd, const char* buf, size_t size);
-extern int sys_seek(int fd, long int offset, int origin);
+FILE* stdin;
+FILE* stdout;
+FILE* stderr;
+
+extern int open(const char* filename, int flags);
+extern int close(int fd);
+extern size_t read(int fd, char* buf, size_t size);
+extern size_t write(int fd, const char* buf, size_t size);
+extern int seek(int fd, long int offset, int origin);
 
 FILE* fopen(const char* filename, const char* mode)
 {
 	FILE* stream = new FILE;
-	stream->fd = sys_open(filename, mode);
+	stream->fd = open(filename, O_RDWR);
 	
 	if (stream->fd == 0)
 	{
@@ -27,26 +31,36 @@ FILE* fopen(const char* filename, const char* mode)
 
 int fclose(FILE* stream)
 {
-	return sys_close(stream->fd);
+	return close(stream->fd);
 }
 
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_read(stream->fd, (char*)ptr, size);
+	return read(stream->fd, (char*)ptr, size);
 }
 
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_write(stream->fd, (const char*)ptr, size);
+	return write(stream->fd, (const char*)ptr, size);
 }
 
 int fseek(FILE* stream, long int offset, int origin)
 {
-	return sys_seek(stream->fd, offset, origin);
+	return seek(stream->fd, offset, origin);
 }
 
-//Writes formatted string to buffer
-char* vprintf(char* buf, const char* format, ...)
+int printf(const char* format, ...)
+{
+	va_list	args;
+	va_start(args, format);
+
+	char buf[256];
+	vsprintf(buf, format, args);
+
+	write(STDOUT, buf, strlen(buf));
+}
+
+int vprintf(char* buf, const char* format, ...)
 {
 	va_list	args;
 	va_start(args, format);
@@ -54,26 +68,24 @@ char* vprintf(char* buf, const char* format, ...)
 	return vsprintf(buf, format, args);
 }
 
-char* vsprintf(char* buf, const char* format, va_list args)
+int vsprintf(char* buf, const char* format, va_list args)
 {
 	if (!buf)
-		return 0;
+		return -1;
 
 	if (!format)
-		return 0;
+		return -1;
 
-	char nstr[256];
-	strcpy(nstr, format);
 	int retnum = 0;
 
 	bool sign = true;
 
-	for (int i = 0; i <= strlen(nstr); i++)
+	for (int i = 0; i <= strlen(format); i++)
 	{
-		switch (nstr[i])
+		switch (format[i])
 		{
 		case '%':
-			switch (nstr[i + 1])
+			switch (format[i + 1])
 			{
 			case 'c':
 			{
@@ -136,26 +148,25 @@ char* vsprintf(char* buf, const char* format, va_list args)
 			case 'u':
 			{
 				sign = false;
-				nstr[i + 1] = '%';
+				*(char*)format[i + 1] = '%';
 				break;
 			}
 
 			default:
 				va_end(args);
-				return buf;
+				return 0;
 			}
 
 			break;
 
 		default:
-			buf[retnum++] = nstr[i];
+			buf[retnum++] = format[i];
 			break;
 		}
-
 	}
 
 	va_end(args);
-	return buf;
+	return 0;
 }
 
 //Converts a string to a long
