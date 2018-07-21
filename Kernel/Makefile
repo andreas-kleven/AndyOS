@@ -1,30 +1,51 @@
-TARGET := $(BUILD_DIR)/andyos.bin
+MAKE_DIR = $(CURDIR)
+TARGET := $(BUILD_DIR)/kernel.bin
 
 SRC_DIR := .
 OBJ_DIR := obj
+ARCH_DIR := Arch/$(ARCH)
 
-SRC_FILES := $(wildcard $(SRC_DIR)/**/*.cpp)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+#SRC_FILES := $(shell find $(SRC_DIR)/ -name '*.cpp' -not -path "$(SRC_DIR)/Arch/*")
+SRC_FILES := $(wildcard Memory/**/*.cpp)
+SRC_FILES += $(wildcard $(ARCH_DIR)/**/*.cpp)
+OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+			 
+ASM_FILES := $(wildcard $(SRC_DIR)/!(Arch)/**/*.S)
+ASM_FILES += $(wildcard $(ARCH_DIR)/**/*.S)
+OBJ_FILES += $(patsubst %.S,$(OBJ_DIR)/%_.o,$(ASM_FILES))
 
-ASM_FILES := $(wildcard $(SRC_DIR)/**/*.asm)
-OBJ_FILES += $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES))
+ifeq ($(ARCH),x86)
+	ASM_FILES2 := $(wildcard $(SRC_DIR)/!(Arch)/**/*.asm)
+	ASM_FILES2 += $(wildcard $(ARCH_DIR)/**/*.asm)
+	OBJ_FILES += $(patsubst %.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES2))
+endif
 
 INC_SRCH_PATH := -I.
-INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
-INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Lib
+INC_SRCH_PATH += -IInclude
+INC_SRCH_PATH += -ILib
+INC_SRCH_PATH += -I$(ARCH_DIR)/Include
 
-CPPFLAGS := $(INC_SRCH_PATH) -w
-CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
+BASEFLAGS := $(INC_SRCH_PATH) -nostdinc -nostdlib -nostartfiles
+LINKSCRIPT := $(ARCH_DIR)/link.ld
 
-LDFLAGS := $(INC_SRCH_PATH)
-LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
-LDFLAGS += -T link.ld
+CPPFLAGS := $(BASEFLAGS)
+CPPFLAGS += -w -O2 -fno-rtti -fno-exceptions -fno-stack-protector -ffreestanding
 
-$(TARGET): $(OBJ_FILES) link.ld
+LDFLAGS := $(BASEFLAGS) -T $(LINKSCRIPT)
+
+$(TARGET): $(OBJ_FILES) $(LINKSCRIPT)
+ifeq ($(ARCH),x86)
 	$(CC) $(LDFLAGS) -o $@ $^
+else ifeq ($(ARCH),aarch64)
+	$(LD) $(LDFLAGS) -o $@ $^
+	$(OBJCOPY) -O binary $@ $(BUILD_DIR)/kernel8.img
+endif
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%_.o: $(SRC_DIR)/%.S
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%_.o: $(SRC_DIR)/%.asm
