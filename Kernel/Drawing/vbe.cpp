@@ -61,9 +61,9 @@ namespace VBE
 
 		//Map framebuffer
 		mem_base = (uint32*)VMem::KernelMapFirstFree(
-			(uint32)mode.framebuffer,
-			PTE_PRESENT | PTE_WRITABLE,
-			BYTES_TO_BLOCKS(mem_size));
+			mode.framebuffer, 
+			BYTES_TO_BLOCKS(mem_size), 
+			PAGE_PRESENT | PAGE_WRITE);
 
 		mem_max = mem_base + mem_size;
 

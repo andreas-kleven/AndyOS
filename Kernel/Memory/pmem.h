@@ -3,9 +3,9 @@
 
 namespace PMem
 {
-	STATUS Init(uint32 size, uint32* map);
-	void InitRegion(void* addr, uint32 size);
-	void DeInitRegion(void* addr, uint32 size);
-	void* AllocBlocks(uint32 size);
-	void FreeBlocks(void* addr, uint32 size);
+	STATUS Init(size_t size, void* map);
+	void InitRegion(void* addr, size_t size);
+	void DeInitRegion(void* addr, size_t size);
+	void* AllocBlocks(size_t size);
+	void FreeBlocks(void* addr, size_t size);
 };

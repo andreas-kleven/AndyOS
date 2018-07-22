@@ -23,7 +23,7 @@ struct THREAD
 	uint32 stack;
 	REGS* regs;
 	uint32 kernel_esp;
-	PAGE_DIR* page_dir;
+	ADDRESS_SPACE addr_space;
 	uint32 id;
 	THREAD_STATE state;
 	THREAD* next;

@@ -10,11 +10,11 @@
 int procIdCounter = 0;
 PROCESS* first = 0;
 
-PROCESS::PROCESS(PROCESS_FLAGS flags, PAGE_DIR* page_dir)
+PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 {
 	this->id = ++procIdCounter;
 	this->flags = flags;
-	this->page_dir = page_dir;
+	this->addr_space = addr_space;
 	this->next = 0;
 	this->main_thread = 0;
 
@@ -74,7 +74,7 @@ namespace ProcessManager
 			break;
 
 		case PROCESS_USER:
-			VMem::SwitchDir(proc->page_dir);
+			VMem::SwapAddressSpace(proc->addr_space);
 			uint8* stack = (uint8*)VMem::UserAlloc(2);
 			thread = Scheduler::CreateUserThread(entry, stack + BLOCK_SIZE);
 			break;
@@ -83,7 +83,7 @@ namespace ProcessManager
 		if (!thread)
 			return 0;
 
-		thread->page_dir = proc->page_dir;
+		thread->addr_space = proc->addr_space;
 		thread->process = proc;
 
 		//Insert into thread list

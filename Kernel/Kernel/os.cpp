@@ -139,7 +139,7 @@ namespace OS
 					if (msg)
 					{
 						asm("cli");
-						VMem::SwitchDir(proc->page_dir);
+						VMem::SwapAddressSpace(proc->addr_space);
 
 						if (msg->type == MESSAGE_TYPE_SIGNAL)
 						{

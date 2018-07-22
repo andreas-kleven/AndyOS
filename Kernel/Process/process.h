@@ -64,7 +64,7 @@ struct PROCESS
 {
 	uint16 id;
 	PROCESS_FLAGS flags;
-	PAGE_DIR* page_dir;
+	ADDRESS_SPACE addr_space;
 	THREAD* main_thread;
 	PROCESS* next;
 
@@ -72,7 +72,7 @@ struct PROCESS
 	MESSAGE_HANDLER* message_handler;
 	CircularBuffer<MESSAGE> messages;
 
-	PROCESS(PROCESS_FLAGS flags, PAGE_DIR* page_dir);
+	PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space);
 };
 
 namespace ProcessManager

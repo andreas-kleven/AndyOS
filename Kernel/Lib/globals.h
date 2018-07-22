@@ -1,13 +1,14 @@
 #pragma once
 #include "Memory/memory.h"
 #include "math.h"
+#include "definitions.h"
 #include "string.h"
 #include "Lib/debug.h"
 
 int mem_left = 0;
 uint8* mem_ptr = 0;
 
-void* operator new(long unsigned int size)
+void* operator new(size_t size)
 {
 	if (!size)
 		return 0;
@@ -21,7 +22,7 @@ void operator delete(void* p)
 	
 }
 
-void* operator new[]( long unsigned int size)
+void* operator new[](size_t size)
 {
 	int blocks = BYTES_TO_BLOCKS(size);
 	void* addr = VMem::KernelAlloc(blocks);
@@ -57,7 +58,7 @@ void operator delete[](void* p)
 
 }
 
-void operator delete(void* p, unsigned long size)
+void operator delete(void* p, size_t size)
 {
 
 }

@@ -123,7 +123,7 @@ namespace Syscalls
 
 	void* alloc(uint32 blocks)
 	{
-		VMem::SwitchDir(Scheduler::CurrentThread()->page_dir);
+		VMem::SwapAddressSpace(Scheduler::CurrentThread()->addr_space);
 		return VMem::UserAlloc(blocks);
 	}
 
@@ -132,11 +132,10 @@ namespace Syscalls
 
 	}
 
-	void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
+	bool alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
 	{
-		PAGE_DIR* dir1 = Scheduler::CurrentThread()->page_dir;
-		PAGE_DIR* dir2 = ProcessManager::GetProcess(proc_id)->page_dir;
-		VMem::UserAllocShared(dir1, dir2, addr1, addr2, blocks);
+		ADDRESS_SPACE other_space = ProcessManager::GetProcess(proc_id)->addr_space;
+		return VMem::UserAllocShared(other_space, addr1, addr2, blocks);
 	}
 
 	uint32 read_file(char*& buffer, char* filename)

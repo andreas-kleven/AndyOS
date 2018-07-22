@@ -2,117 +2,66 @@
 #include "definitions.h"
 #include "Boot/multiboot.h"
 
-#define PAGE_SIZE		0x1000
+#define PAGE_SIZE 4096
 
-#define PAGE_TABLE_LENGTH	1024
-#define PAGE_DIR_LENGTH		1024
+typedef uint8 pflags_t;
 
-enum PAGE_TABLE_FLAG
+enum PAGE_FLAGS
 {
-	PTE_PRESENT = 1,
-	PTE_WRITABLE = 2,
-	PTE_USER = 4,
-	PTE_WRITETHROUGH = 8,
-	PTE_CACHE_DISABLED = 0x10,
-	PTE_ACCESSED = 0x20,
-	PTE_DIRTY = 0x40,
-	PTE_PAT = 0x80,
-	PTE_CPU_GLOBAL = 0x100,
-	PTE_LV4_GLOBAL = 0x200,
-	PTE_FRAME = 0x7FFFF000
+	PAGE_PRESENT = 1,
+	PAGE_WRITE = 2,
+	PAGE_USER = 4
 };
 
-enum PAGE_DIR_FLAG
+struct ADDRESS_SPACE
 {
-	PDE_PRESENT = 1,
-	PDE_WRITABLE = 2,
-	PDE_USER = 4,
-	PDE_WRITETHROUGH = 8,
-	PDE_CACHE_DISABLED = 0x10,
-	PDE_ACCESSED = 0x20,
-	PDE_DIRTY = 0x40,
-	PDE_4MB = 0x80,
-	PDE_CPU_GLOBAL = 0x100,
-	PDE_LV4_GLOBAL = 0x200,
-	PDE_FRAME = 0x7FFFF000
+    void* ptr;
+
+	ADDRESS_SPACE()
+	{
+		ptr = 0;
+	}
+
+	bool operator==(const ADDRESS_SPACE& other) const
+	{
+		return ptr == other.ptr;
+	}
 };
-
-struct PAGE_TABLE
-{
-	uint32 values[PAGE_TABLE_LENGTH];
-
-	void SetFlag(uint32 index, uint32 flag)
-	{
-		values[index] |= flag;
-	}
-
-	void UnsetFlag(uint32 index, uint32 flag)
-	{
-		values[index] &= ~flag;
-	}
-
-	uint32 GetFlags(uint32 index)
-	{
-		return values[index] & ~PTE_FRAME;
-	}
-
-	void SetAddr(uint32 index, uint32 addr)
-	{
-		values[index] = (values[index] & ~PTE_FRAME) | addr;
-	}
-
-	uint32 GetAddr(uint32 index)
-	{
-		return values[index] & PTE_FRAME;
-	}
-} __attribute__((packed));
-
-struct PAGE_DIR
-{
-	uint32 values[PAGE_DIR_LENGTH];
-
-	void SetFlag(uint32 index, uint32 flag)
-	{
-		values[index] |= flag;
-	}
-
-	void UnsetFlag(uint32 index, uint32 flag)
-	{
-		values[index] &= ~flag;
-	}
-
-	bool GetFlag(uint32 index, uint32 flag)
-	{
-		return values[index] & flag;
-	}
-
-	void SetTable(uint32 index, PAGE_TABLE* table)
-	{
-		values[index] = (values[index] & ~PDE_FRAME) | (uint32)table;
-	}
-
-	PAGE_TABLE* GetTable(uint32 index)
-	{
-		return (PAGE_TABLE*)(values[index] & PDE_FRAME);
-	}
-} __attribute__((packed));
 
 namespace VMem
 {
-	PAGE_DIR* GetCurrentDir();
-	void SwitchDir(PAGE_DIR* dir);
-	uint32 GetAddress(uint32 virt);
-	uint32 GetFlags(uint32 virt);
+	void* KernelAlloc(size_t count);
+	void* UserAlloc(size_t count);
+	void* KernelMapFirstFree(void* phys, size_t count, pflags_t flags);
+	void* UserMapFirstFree(void* phys, size_t count, pflags_t flags);
+	bool UserAllocShared(ADDRESS_SPACE other_space, void*& addr1, void*& addr2, size_t count);
 
-	void* KernelAlloc(uint32 blocks);
-	void* UserAlloc(uint32 blocks);
-	void* KernelMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
-	void* UserMapFirstFree(uint32 phys, uint32 flags, uint32 blocks);
-	void UserAllocShared(PAGE_DIR* dir1, PAGE_DIR* dir2, void*& addr1, void*& addr2, uint32 blocks);
+	ADDRESS_SPACE GetAddressSpace();
+    bool SwapAddressSpace(ADDRESS_SPACE& space);
+    ADDRESS_SPACE CreateAddressSpace();
 
-	uint32 FirstFree(uint32 blocks, uint32 start, uint32 end);
-	bool MapPhysAddr(uint32 phys, uint32 virt, uint32 flags, uint32 blocks);
+    size_t GetAddress(size_t virt);
+    pflags_t GetFlags(size_t virt);
 
-	PAGE_DIR* CreatePageDir();
-	void Init(MULTIBOOT_INFO* bootinfo, uint32 kernel_end);
+    void* FirstFree(size_t count, size_t start, size_t end);
+    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags);
+    bool FreePages(void* virt, size_t count);
+
+    bool Init();
+
+	namespace Arch
+	{
+		ADDRESS_SPACE GetAddressSpace();
+		bool SwapAddressSpace(ADDRESS_SPACE& space);
+		ADDRESS_SPACE CreateAddressSpace();
+
+		size_t GetAddress(size_t virt);
+		pflags_t GetFlags(size_t virt);
+
+		void* FirstFree(size_t count, size_t start, size_t end);
+		bool MapPages(void* virt, void* phys, size_t count, pflags_t flags);
+		bool FreePages(void* virt, size_t count);
+
+		bool Init();
+	}
 };

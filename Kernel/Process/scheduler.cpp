@@ -75,7 +75,7 @@ namespace Scheduler
 		//Restore stack
 		tmp_stack = current_thread->stack;
 
-		VMem::SwitchDir(current_thread->page_dir);
+		VMem::SwapAddressSpace(current_thread->addr_space);
 		TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
 		PIC::InterruptDone(TASK_SCHEDULE_IRQ);
 
@@ -269,7 +269,7 @@ namespace Scheduler
 		thread->regs->user_stack = 0;
 		thread->regs->user_ss = 0;
 		thread->kernel_esp = 0;
-		thread->page_dir = 0;
+		thread->addr_space.ptr = 0;
 		thread->next = 0;
 		thread->procNext = 0;
 
@@ -286,7 +286,7 @@ namespace Scheduler
 		thread->regs->fs = KERNEL_SS;
 		thread->regs->gs = KERNEL_SS;
 
-		thread->page_dir = VMem::GetCurrentDir();
+		thread->addr_space = VMem::GetAddressSpace();
 		thread->fpu_state = new uint8[512];
 
 		return thread;

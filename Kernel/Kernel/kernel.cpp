@@ -14,37 +14,39 @@
 #include "FS/vfs.h"
 #include "Lib/debug.h"
 
-extern int __KERNEL_START, __KERNEL_END;
+extern size_t __KERNEL_START, __KERNEL_END;
 
 namespace Kernel
 {
+	MULTIBOOT_INFO boot_info;
+	VBE_MODE_INFO vbe_mode;
+
 	void Setup(MULTIBOOT_INFO* bootinfo)
 	{
+		boot_info = *bootinfo;
+		vbe_mode = *(VBE_MODE_INFO*)boot_info.vbe_mode_info;
+
+		size_t kernel_start = (size_t)&__KERNEL_START;
+		size_t kernel_end = (size_t)&__KERNEL_END;
+		size_t mem_end = boot_info.mem_upper * 0x400;
+		size_t mem_size = mem_end;
+
 		debug_init(1);
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
-
-		uint32 kernel_start = (uint32)&__KERNEL_START;
-		uint32 kernel_end = (uint32)&__KERNEL_END;
-		uint32 mem_end = bootinfo->mem_upper * 0x400;
-		uint32 mem_size = mem_end;
 
 		CPU::Init();
 		HAL::Init();
 		Exceptions::Init();
 		Syscalls::Init();
-		
-		PMem::Init(mem_size, (uint32*)kernel_end);
-		PMem::InitRegion((uint32*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
-		VMem::Init(bootinfo, kernel_end);
-	}
 
-	void HigherHalf(MULTIBOOT_INFO bootinfo)
-	{
-		VBE_MODE_INFO* vbeMode = (VBE_MODE_INFO*)bootinfo.vbe_mode_info;
-		VBE::Init(vbeMode);
+		PMem::Init(mem_size, (size_t*)kernel_end);
+		PMem::InitRegion((size_t*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
+		VMem::Init();
 
-		debug_print("Init VBE: %i %i %i\n", vbeMode->width, vbeMode->height, vbeMode->bpp);
+		VBE::Init(&vbe_mode);
+
+		debug_print("Init VBE: %i %i %i\n", vbe_mode.width, vbe_mode.height, vbe_mode.bpp);
 
 		DriverManager::Init();
 		debug_print("Init devices\n");

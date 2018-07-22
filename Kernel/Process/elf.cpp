@@ -29,11 +29,11 @@ namespace ELF
 
 		asm volatile("cli");
 
-		PAGE_DIR* old_dir = VMem::GetCurrentDir();
-		PAGE_DIR* dir = VMem::CreatePageDir();
-		VMem::SwitchDir(dir);
+		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
+		ADDRESS_SPACE addr_space = VMem::CreateAddressSpace();
+		VMem::SwapAddressSpace(addr_space);
 
-		uint32 flags = PTE_PRESENT | PTE_WRITABLE | PTE_USER;
+		pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 
 		for (int i = 0; i < header->e_phnum; i++)
 		{
@@ -41,11 +41,11 @@ namespace ELF
 
 			uint32 blocks = BYTES_TO_BLOCKS(pheader->p_memsz) + 1;
 
-			uint32 phys = (uint32)PMem::AllocBlocks(blocks);
-			uint32 virt = pheader->p_vaddr;
+			void* phys = PMem::AllocBlocks(blocks);
+			void* virt = (void*)pheader->p_vaddr;
 
-			VMem::MapPhysAddr(phys, virt, flags, blocks);
-			memcpy((uint32*)virt, image + pheader->p_offset, pheader->p_memsz);
+			VMem::MapPages(virt, phys, blocks, flags);
+			memcpy(virt, image + pheader->p_offset, pheader->p_memsz);
 		}
 
 		for (int i = 0; i < header->e_shnum; i++)
@@ -58,12 +58,12 @@ namespace ELF
 			}
 		}
 
-		debug_print("Loaded image %ux\n", dir);
+		debug_print("Loaded image %ux\n", addr_space.ptr);
 		
-		PROCESS* proc = new PROCESS(PROCESS_USER, dir);
+		PROCESS* proc = new PROCESS(PROCESS_USER, addr_space);
 		ProcessManager::CreateThread(proc, (void(*)())header->e_entry);
 
-		VMem::SwitchDir(old_dir);
+		VMem::SwapAddressSpace(old_space);
 
 		asm volatile("sti");
 		return proc;

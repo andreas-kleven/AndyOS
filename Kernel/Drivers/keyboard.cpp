@@ -201,6 +201,9 @@ namespace Keyboard
 
 		KEY_ACTION* packet = key_buffer.Get();
 
+		if (!packet)
+			return false;
+
 		code = packet->code;
 		pressed = packet->pressed;
 

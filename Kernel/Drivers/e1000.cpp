@@ -66,7 +66,7 @@ E1000::E1000(PciDevice* pci_dev) : NetInterface(pci_dev)
 	dev->EnableBusMastering();
 
 	uint32 mmio_base = dev->config.bar0;
-	mem_base = (uint32)VMem::KernelMapFirstFree(mmio_base, PTE_PRESENT | PTE_WRITABLE, 6);
+	mem_base = (uint32)VMem::KernelMapFirstFree((void*)mmio_base, 6, PAGE_PRESENT | PAGE_WRITE);
 
 	DetectEEPROM();
 	ReadMac();
