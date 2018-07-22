@@ -5,19 +5,23 @@ SRC_DIR := .
 OBJ_DIR := obj
 ARCH_DIR := Arch/$(ARCH)
 
-#SRC_FILES := $(shell find $(SRC_DIR)/ -name '*.cpp' -not -path "$(SRC_DIR)/Arch/*")
+ifeq ($(ARCH),x86)
+SRC_FILES := $(shell find $(SRC_DIR)/ -name '*.cpp' -not -path "$(SRC_DIR)/Arch/*")
+else ifeq ($(ARCH),aarch64)
 SRC_FILES := $(wildcard Memory/**/*.cpp)
+endif
+
 SRC_FILES += $(wildcard $(ARCH_DIR)/**/*.cpp)
 OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 			 
-ASM_FILES := $(wildcard $(SRC_DIR)/!(Arch)/**/*.S)
+ASM_FILES := $(shell find $(SRC_DIR)/ -name '*.S' -not -path "$(SRC_DIR)/Arch/*")
 ASM_FILES += $(wildcard $(ARCH_DIR)/**/*.S)
 OBJ_FILES += $(patsubst %.S,$(OBJ_DIR)/%_.o,$(ASM_FILES))
 
 ifeq ($(ARCH),x86)
-	ASM_FILES2 := $(wildcard $(SRC_DIR)/!(Arch)/**/*.asm)
-	ASM_FILES2 += $(wildcard $(ARCH_DIR)/**/*.asm)
-	OBJ_FILES += $(patsubst %.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES2))
+ASM_FILES2 := $(shell find $(SRC_DIR)/ -name '*.asm' -not -path "$(SRC_DIR)/Arch/*")
+ASM_FILES2 += $(wildcard $(ARCH_DIR)/**/*.asm)
+OBJ_FILES += $(patsubst %.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES2))
 endif
 
 INC_SRCH_PATH := -I.
@@ -29,7 +33,7 @@ BASEFLAGS := $(INC_SRCH_PATH) -nostdinc -nostdlib -nostartfiles
 LINKSCRIPT := $(ARCH_DIR)/link.ld
 
 CPPFLAGS := $(BASEFLAGS)
-CPPFLAGS += -w -O2 -fno-rtti -fno-exceptions -fno-stack-protector -ffreestanding
+CPPFLAGS += -w -g -fno-rtti -fno-exceptions -fno-stack-protector -ffreestanding
 
 LDFLAGS := $(BASEFLAGS) -T $(LINKSCRIPT)
 

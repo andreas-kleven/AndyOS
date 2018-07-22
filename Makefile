@@ -1,4 +1,4 @@
-ARCH := aarch64
+ARCH := x86
 
 MAKE_DIR = $(CURDIR)
 BUILD_DIR = $(MAKE_DIR)/Build
@@ -41,6 +41,17 @@ iso: all
 	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
 	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/1mndlbrt
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
+
+iso-kernel: kernel
+	cp $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin
+	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
+
+iso-programs: programs
+	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman
+	cp $(BUILD_DIR)/terminal $(ISO_DIR)/1term
+	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
+	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
+	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/1mndlbrt
 
 .PHONY: clean
 clean:
