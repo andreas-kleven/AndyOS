@@ -15,6 +15,10 @@
 #define USER_SS		0x23
 #define USER_DS		0x23
 
+inline void pause();
+inline void enable();
+inline void disable();
+
 uint8 inb(uint16 port);
 uint16 inw(uint16 port);
 uint32 inl(uint16 port);

@@ -138,7 +138,7 @@ namespace OS
 
 					if (msg)
 					{
-						asm("cli");
+						disable();
 						VMem::SwapAddressSpace(proc->addr_space);
 
 						if (msg->type == MESSAGE_TYPE_SIGNAL)
@@ -175,7 +175,7 @@ namespace OS
 							}
 						}
 
-						asm("sti");
+						enable();
 					}
 				}
 
@@ -240,6 +240,6 @@ namespace OS
 		//Audio();
 		//COM();
 		//_Process();
-		while (1) asm("pause");
+		while (1) pause();
 	}
 }

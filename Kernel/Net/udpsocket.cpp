@@ -1,4 +1,5 @@
 #include "udpsocket.h"
+#include "HAL/hal.h"
 #include "math.h"
 
 UdpSocket::UdpSocket(uint16 src_port, uint16 dst_port)
@@ -30,7 +31,7 @@ int UdpSocket::Receive(uint8*& buffer, IPv4Address& addr)
 
 	while (pkt_length == 0)
 	{
-		asm volatile("pause");
+		pause();
 	}
 
 	buffer = new uint8[UDP_MAX_PACKET_SIZE];

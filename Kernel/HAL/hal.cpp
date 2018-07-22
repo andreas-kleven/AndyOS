@@ -75,7 +75,7 @@ void mmio_write32(uint32 addr, uint32 val)
 
 STATUS HAL::Init()
 {
-	asm volatile("cli");
+	disable();
 
 	if (!GDT::Init()) return STATUS_FAILED;
 	if (!TSS::Init(5, 0x9000)) return STATUS_FAILED;
@@ -83,7 +83,7 @@ STATUS HAL::Init()
 	if (!IDT::Init()) return STATUS_FAILED;
 	if (!PIT::Init()) return STATUS_FAILED;
 
-	asm volatile("sti");
+	enable();
 
 	return STATUS_SUCCESS;
 }

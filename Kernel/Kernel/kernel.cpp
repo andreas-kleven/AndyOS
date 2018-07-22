@@ -40,12 +40,11 @@ namespace Kernel
 		Exceptions::Init();
 		Syscalls::Init();
 
-		PMem::Init(mem_size, (size_t*)kernel_end);
-		PMem::InitRegion((size_t*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
+		PMem::Init(mem_size, (void*)kernel_end);
+		PMem::InitRegion((void*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
 		VMem::Init();
 
 		VBE::Init(&vbe_mode);
-
 		debug_print("Init VBE: %i %i %i\n", vbe_mode.width, vbe_mode.height, vbe_mode.bpp);
 
 		DriverManager::Init();

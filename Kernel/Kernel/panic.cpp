@@ -1,13 +1,14 @@
 #include "panic.h"
 #include "string.h"
 #include "stdio.h"
+#include "HAL/hal.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
 
 void KernelPanic(char* err, char* msg, ...)
 {
-	asm volatile("cli");
+	disable();
 
 	char buffer[256];
 	memset(buffer, 0, 256);

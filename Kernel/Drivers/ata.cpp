@@ -66,7 +66,8 @@ int ATADriver::ReadSector(long pos, char* buf, size_t size)
 	outb(bus + ATA_LBA_HIGH, (ATA_SECTOR_SIZE >> 8));
 	outb(bus + ATA_LBA_COMMAND, 0xA0);
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x80) asm volatile("pause");
+	while (inb(bus + ATA_LBA_STATUS) & 0x80) 
+		pause();
 
 	read_cmd[9] = 1;
 	read_cmd[2] = (uint8)(sector >> 24);
@@ -77,7 +78,8 @@ int ATADriver::ReadSector(long pos, char* buf, size_t size)
 	for (int i = 0; i < 12; i += 2)
 		outw(bus + ATA_DATA, (uint16)((read_cmd[i + 1] << 8) | read_cmd[i]));
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x80) asm volatile("pause");
+	while (inb(bus + ATA_LBA_STATUS) & 0x80)
+		pause();
 
 	int read_size = (inb(bus + ATA_LBA_HIGH) << 8) | inb(bus + ATA_LBA_MID);
 
@@ -94,7 +96,8 @@ int ATADriver::ReadSector(long pos, char* buf, size_t size)
 		}
 	}
 
-	while (inb(bus + ATA_LBA_STATUS) & 0x88) asm volatile("pause");
+	while (inb(bus + ATA_LBA_STATUS) & 0x88)
+		pause();
 
 	return size;
 }

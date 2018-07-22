@@ -124,7 +124,7 @@ namespace Scheduler
 		while (1)
 		{
 			//debug_print("Idle");
-			asm volatile("pause");
+			pause();
 		}
 	}
 
@@ -315,7 +315,7 @@ namespace Scheduler
 
 	void StartThreading()
 	{
-		asm volatile("cli");
+		disable();
 		IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);
 
 		asm volatile(

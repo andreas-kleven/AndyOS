@@ -52,7 +52,7 @@ namespace PIT
 	void Sleep(uint32 time)
 	{
 		uint32 end = ticks + time;
-		while (ticks < end) asm volatile("pause");
+		while (ticks < end) pause();
 	}
 
 	STATUS Init()

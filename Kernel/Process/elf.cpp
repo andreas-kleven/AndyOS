@@ -1,4 +1,5 @@
 #include "elf.h"
+#include "HAL/hal.h"
 #include "FS/vfs.h"
 #include "Lib/debug.h"
 #include "string.h"
@@ -27,7 +28,7 @@ namespace ELF
 			return 0;
 		}
 
-		asm volatile("cli");
+		disable();
 
 		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
 		ADDRESS_SPACE addr_space = VMem::CreateAddressSpace();
@@ -65,7 +66,7 @@ namespace ELF
 
 		VMem::SwapAddressSpace(old_space);
 
-		asm volatile("sti");
+		enable();
 		return proc;
 	}
 }
