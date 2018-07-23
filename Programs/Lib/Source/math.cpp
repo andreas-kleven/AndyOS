@@ -23,7 +23,6 @@ float sqrt(float val)
     return val;
 }
 
-
 float sin(float val)
 {
 	asm("fsin" : "+t" (val));

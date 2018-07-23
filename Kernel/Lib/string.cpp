@@ -99,46 +99,6 @@ void* memcpy(void* dest, void* src, unsigned int n)
 	return dest;
 }
 
-/*void memcpy_fast_128(void* dest, void* src, unsigned int n)
-{
-	if (n % 128 != 0)
-		return;
-
-	__asm
-	{
-		mov esi, src;
-		mov edi, dest;
-
-		mov ebx, n;
-		shr ebx, 7;
-
-	loop_copy:
-		movdqa xmm0, 0[ESI]
-			movdqa xmm1, 16[ESI]
-			movdqa xmm2, 32[ESI]
-			movdqa xmm3, 48[ESI]
-			movdqa xmm4, 64[ESI]
-			movdqa xmm5, 80[ESI]
-			movdqa xmm6, 96[ESI]
-			movdqa xmm7, 112[ESI]
-
-			movntdq 0[EDI], xmm0
-			movntdq 16[EDI], xmm1
-			movntdq 32[EDI], xmm2
-			movntdq 48[EDI], xmm3
-			movntdq 64[EDI], xmm4
-			movntdq 80[EDI], xmm5
-			movntdq 96[EDI], xmm6
-			movntdq 112[EDI], xmm7
-
-			add esi, 128;
-		add edi, 128;
-		dec ebx;
-
-		jnz loop_copy;
-	}
-}*/
-
 void* memset(void* dest, int val, int n)
 {
 	unsigned char *temp = (unsigned char *)dest;
@@ -159,46 +119,6 @@ void* memset32(void *dest, unsigned int val, unsigned int n)
 	for (; n != 0; n--, temp[n] = val);
 	return dest;
 }
-
-/*void* memset_fast_128(void* dest, unsigned int val, unsigned int n)
-{
-	if (n % 128 != 0)
-		return 0;
-
-	_asm
-	{
-		mov edi, dest;
-
-		mov ebx, n;
-		shr ebx, 7;
-
-		movsd xmm0, [val]
-			movsd xmm1, [val]
-			movsd xmm2, [val]
-			movsd xmm3, [val]
-			movsd xmm4, [val]
-			movsd xmm5, [val]
-			movsd xmm6, [val]
-			movsd xmm7, [val]
-
-			loop_copy:
-		movntdq 0[EDI], xmm0
-			movntdq 16[EDI], xmm1
-			movntdq 32[EDI], xmm2
-			movntdq 48[EDI], xmm3
-			movntdq 64[EDI], xmm4
-			movntdq 80[EDI], xmm5
-			movntdq 96[EDI], xmm6
-			movntdq 112[EDI], xmm7
-
-			add edi, 128;
-		dec ebx;
-
-		jnz loop_copy;
-	}
-
-	return (unsigned char*)dest + n;
-}*/
 
 int memcmp(const void* a, const void* b, unsigned int n)
 {

@@ -19,21 +19,32 @@ float pow(float x, int n)
 
 float sqrt(float val)
 {
+	#ifdef __i386__
 	asm("fsqrt" : "+t" (val));
     return val;
-}
+	#endif
 
+	return 0;
+}
 
 float sin(float val)
 {
+	#ifdef __i386__
 	asm("fsin" : "+t" (val));
     return val;
+	#endif
+
+	return 0;
 }
 
 float cos(float val)
 {
+	#ifdef __i386__
 	asm("fcos" : "+t" (val));
     return val;
+	#endif
+
+	return 0;
 }
 
 float tan(float val)
@@ -107,12 +118,16 @@ int round(float val)
 
 float log(float val)
 {
+	#ifdef __i386__
 	//https://sites.google.com/site/akohlmey/news-and-announcements/twolinesofcode40faster
 	double result;
     __asm__ __volatile__ ("fldln2\nfxch\nfyl2x" 
                       : "=t" (result) 
                       : "0" (val) : "st(1)");
     return result;
+	#endif
+
+	return 0;
 }
 
 float log2(float val)
