@@ -1,6 +1,5 @@
 #pragma once
 #include "definitions.h"
-#include "Arch/regs.h"
 #include "Memory/memory.h"
 
 enum THREAD_STATE
@@ -19,7 +18,6 @@ struct PROCESS;
 struct THREAD
 {
 	uint32 stack;
-	REGS* regs;
 	uint32 kernel_esp;
 	ADDRESS_SPACE addr_space;
 	uint32 id;

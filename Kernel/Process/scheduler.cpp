@@ -5,25 +5,16 @@
 #include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
+#include "Arch/regs.h"
 
 namespace Scheduler
 {
-	THREAD* idle_thread;
 	THREAD* first_thread;
 	THREAD* last_thread;
 	THREAD* current_thread;
 
 	bool enabled = false;
 	int disableCount = 0;
-
-	void Idle()
-	{
-		while (1)
-		{
-			//debug_print("Idle");
-			pause();
-		}
-	}
 
 	void Enable()
 	{
@@ -178,10 +169,6 @@ namespace Scheduler
 				current_thread = next;
 			}
 			
-			//Skip idle thread
-			if (current_thread == idle_thread)
-				current_thread = current_thread->next;
-
 			//Waiting
 			if (current_thread->state == THREAD_STATE_SLEEPING)
 			{
@@ -207,8 +194,5 @@ namespace Scheduler
 		first_thread = 0;
 		last_thread = 0;
 		current_thread = 0;
-
-		idle_thread = Task::CreateKernelThread(Idle);
-		InsertThread(idle_thread);
 	}
 }

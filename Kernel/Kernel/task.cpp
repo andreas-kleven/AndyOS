@@ -4,22 +4,22 @@
 namespace Task
 {
 	THREAD* CreateKernelThread(void(*entry)())
-    {
+	{
 		Arch::CreateKernelThread(entry);
-    }
+	}
 
 	THREAD* CreateUserThread(void(*entry)(), void* stack)
-    {
+	{
 		Arch::CreateUserThread(entry, stack);
-    }
+	}
 
-    void Switch()
-    {
+	void Switch()
+	{
 		Arch::Switch();
-    }
+	}
 
-    void Start(void(*entry)())
-    {
+	void Start(void(*entry)())
+	{
 		Arch::Start(entry);
-    }
+	}
 }

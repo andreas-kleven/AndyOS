@@ -1,6 +1,7 @@
 #include "os.h"
 #include "panic.h"
 #include "stdio.h"
+#include "Arch/regs.h"
 #include "PCI/pci.h"
 #include "Drivers/ac97.h"
 #include "Drivers/e1000.h"
@@ -122,7 +123,7 @@ namespace OS
 	void GUI()
 	{
 		PROCESS* proc = ProcessManager::Load("1winman");
-		Timer::Sleep(100);
+		Scheduler::SleepThread(100, Scheduler::CurrentThread());
 		ProcessManager::Load("1term");
 		//ProcessManager::Load("1test");
 		//ProcessManager::Load("1mndlbrt");
@@ -148,9 +149,10 @@ namespace OS
 							{
 								THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->signal_handler);
 
-								uint32* stack_ptr = (uint32*)thread->regs->user_stack;
+								REGS* regs = (REGS*)thread->stack;
+								uint32* stack_ptr = (uint32*)regs->user_stack;
 								*--stack_ptr = msg->param;
-								thread->regs->user_stack -= 8;
+								regs->user_stack -= 8;
 								
 								Scheduler::InsertThread(thread);
 							}
@@ -161,7 +163,8 @@ namespace OS
 							{
 								THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
 
-								char* data_ptr = (char*)thread->regs->user_stack - msg->size - 4;
+								REGS* regs = (REGS*)thread->stack;
+								char* data_ptr = (char*)regs->user_stack - msg->size - 4;
 								memcpy(data_ptr, msg->data, msg->size);
 
 								uint32* stack_ptr = (uint32*)data_ptr;
@@ -170,7 +173,7 @@ namespace OS
 								*--stack_ptr = msg->param;
 								*--stack_ptr = msg->src_proc;
 								*--stack_ptr = msg->id;
-								thread->regs->user_stack -= 28 + msg->size;
+								regs->user_stack -= 28 + msg->size;
 
 								Scheduler::InsertThread(thread);
 							}

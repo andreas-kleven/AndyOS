@@ -24,38 +24,35 @@ namespace Task::Arch
         int stack_size = 0x1000;
 
 		THREAD* thread = (THREAD*)((uint32)(new char[stack_size]) + stack_size - sizeof(THREAD));
-		thread->regs = (REGS*)((uint32)thread - sizeof(REGS));
-		thread->regs->ebp = 0;
-		thread->regs->esp = 0;
-		thread->regs->edi = 0;
-		thread->regs->esi = 0;
-		thread->regs->edx = 0;
-		thread->regs->ecx = 0;
-		thread->regs->ebx = 0;
-		thread->regs->eax = 0;
-		thread->regs->user_stack = 0;
-		thread->regs->user_ss = 0;
+
+		thread->id = ++id_counter;
+		thread->stack = (uint32)(thread - 1) - sizeof(REGS);
+		thread->state = THREAD_STATE_INITIALIZED;
+		thread->addr_space = VMem::GetAddressSpace();
+		thread->fpu_state = new uint8[512];
 		thread->kernel_esp = 0;
-		thread->addr_space.ptr = 0;
 		thread->next = 0;
 		thread->procNext = 0;
 
-		thread->id = ++id_counter;
-		thread->state = THREAD_STATE_INITIALIZED;
-		thread->stack = (uint32)(thread - 1) - sizeof(REGS);
-		thread->regs = (REGS*)thread->stack;
-		thread->regs->esp = (uint32)&thread->regs;
-		thread->regs->eip = (uint32)entry;
-		thread->regs->eflags = 0x200;
-		thread->regs->cs = KERNEL_CS;
-		thread->regs->ds = KERNEL_SS;
-		thread->regs->es = KERNEL_SS;
-		thread->regs->fs = KERNEL_SS;
-		thread->regs->gs = KERNEL_SS;
-
-		thread->addr_space = VMem::GetAddressSpace();
-		thread->fpu_state = new uint8[512];
-
+		REGS* regs = (REGS*)thread->stack;
+		regs->ebp = 0;
+		regs->esp = 0;
+		regs->edi = 0;
+		regs->esi = 0;
+		regs->edx = 0;
+		regs->ecx = 0;
+		regs->ebx = 0;
+		regs->eax = 0;
+		regs->user_stack = 0;
+		regs->user_ss = 0;
+		regs->esp = thread->stack;
+		regs->eip = (uint32)entry;
+		regs->eflags = 0x200;
+		regs->cs = KERNEL_CS;
+		regs->ds = KERNEL_SS;
+		regs->es = KERNEL_SS;
+		regs->fs = KERNEL_SS;
+		regs->gs = KERNEL_SS;
 		return thread;
 	}
 
@@ -64,13 +61,14 @@ namespace Task::Arch
 		THREAD* thread = CreateKernelThread(entry);
 		thread->kernel_esp = thread->stack;
 
-		thread->regs->cs = USER_CS;
-		thread->regs->ds = USER_SS;
-		thread->regs->es = USER_SS;
-		thread->regs->fs = USER_SS;
-		thread->regs->gs = USER_SS;
-		thread->regs->user_stack = (uint32)stack;
-		thread->regs->user_ss = USER_SS;
+		REGS* regs = (REGS*)thread->stack;
+		regs->cs = USER_CS;
+		regs->ds = USER_SS;
+		regs->es = USER_SS;
+		regs->fs = USER_SS;
+		regs->gs = USER_SS;
+		regs->user_stack = (uint32)stack;
+		regs->user_ss = USER_SS;
 
 		return thread;
 	}
@@ -82,19 +80,26 @@ namespace Task::Arch
 
     void Schedule()
     {
-        THREAD* current_thread = Scheduler::CurrentThread();
-
 		PIT::ticks++;
+		
+        THREAD* current_thread = Scheduler::CurrentThread();
 
 		//Save stack
 		current_thread->stack = tmp_stack;
-		current_thread->regs = (REGS*)tmp_stack;
 
-		asm volatile("fxsave (%0)" :: "m" (fpu_state));
-		memcpy(current_thread->fpu_state, fpu_state, 512);
+		//Save fpu state
+		//asm volatile("fxsave (%0)" :: "m" (fpu_state));
+		//memcpy(current_thread->fpu_state, fpu_state, 512);
         
-        //
+        //Schedule
         current_thread = Scheduler::Schedule();
+
+		//Restore fpu state
+		/*if (current_thread->state != THREAD_STATE_INITIALIZED)
+		{
+			memcpy(fpu_state, current_thread->fpu_state, 512);
+			asm volatile("fxrstor (%0)" : "=m" (fpu_state));
+		}*/
 
 		//Restore stack
 		tmp_stack = current_thread->stack;
@@ -137,7 +142,7 @@ namespace Task::Arch
 	{
         THREAD* thread = CreateKernelThread(entry);
 		Scheduler::InsertThread(thread);
-
+		
 		disable();
 		IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);
 
