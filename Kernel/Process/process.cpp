@@ -1,6 +1,6 @@
 #include "process.h"
 #include "FS/vfs.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Memory/memory.h"
 #include "elf.h"
 #include "scheduler.h"

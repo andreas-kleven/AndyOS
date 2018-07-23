@@ -1,5 +1,5 @@
 #include "elf.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "FS/vfs.h"
 #include "Lib/debug.h"
 #include "string.h"

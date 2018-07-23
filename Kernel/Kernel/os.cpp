@@ -29,7 +29,7 @@ namespace OS
 		ProcessManager::Load("_Test.exe");
 	}
 
-	void T1()
+	/*void T1()
 	{
 		const char* text = "'";
 
@@ -67,7 +67,7 @@ namespace OS
 				"pause"
 				:: "c" (SYSCALL_COLOR), "d" (color));
 		}
-	}
+	}*/
 
 	void COM_Receive()
 	{

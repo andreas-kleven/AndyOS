@@ -1,5 +1,5 @@
 #include "scheduler.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Memory/memory.h"
 #include "Kernel/task.h"
 #include "Kernel/timer.h"

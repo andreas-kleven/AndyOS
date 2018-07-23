@@ -1,5 +1,5 @@
 #include "rtc.h"
-#include "HAL/hal.h"
+#include "hal.h"
 
 #define CURRENT_YEAR 2018
 

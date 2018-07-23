@@ -1,5 +1,5 @@
 #include "mouse.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "io.h"
 #include "irq.h"
 #include "circbuf.h"
@@ -134,7 +134,7 @@ static void mouse_init()
 
 	initialized = 1;
 
-	asm volatile("int $44");
+	CALL_INTERRUPT(44);
 }
 
 MouseDriver::MouseDriver()

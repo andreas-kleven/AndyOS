@@ -6,7 +6,7 @@
 
 #include "Process/thread.h"
 #include "Process/scheduler.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Memory/memory.h"
 #include "string.h"
 

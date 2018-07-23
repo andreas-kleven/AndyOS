@@ -1,5 +1,5 @@
 #include "keyboard.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "io.h"
 #include "irq.h"
 #include "string.h"

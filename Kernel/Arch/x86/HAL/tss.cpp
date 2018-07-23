@@ -1,7 +1,7 @@
 #include "Arch/tss.h"
 #include "Arch/gdt.h"
 #include "Arch/idt.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "string.h"
 
 #define GDT_FLAG 0xE9

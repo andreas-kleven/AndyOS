@@ -7,7 +7,7 @@
 #include "Arch/cpu.h"
 #include "Arch/syscalls.h"
 
-#include "HAL/hal.h"
+#include "hal.h"
 
 #include "exceptions.h"
 

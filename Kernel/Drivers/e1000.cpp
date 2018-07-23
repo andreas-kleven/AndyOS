@@ -1,7 +1,7 @@
 #include "e1000.h"
 #include "io.h"
 #include "irq.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Net/net.h"
 #include "Net/eth.h"
 #include "Memory/memory.h"

@@ -1,5 +1,5 @@
 #include "ac97.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "io.h"
 #include "irq.h"
 #include "Kernel/timer.h"

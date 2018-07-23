@@ -1,7 +1,7 @@
 #include "ata.h"
 #include "io.h"
 #include "irq.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "FS/iso.h"
 #include "string.h"
 #include "math.h"

@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
 #include "PCI/pci.h"
-#include "HAL/hal.h"
+#include "hal.h"
 
 struct AC97_BUFFER_ENTRY
 {

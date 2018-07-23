@@ -1,5 +1,5 @@
 #include "Arch/pit.h"
-#include "HAL/hal.h"
+#include "hal.h"
 
 namespace PIT
 {

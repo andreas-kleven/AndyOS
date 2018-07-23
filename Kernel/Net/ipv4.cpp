@@ -1,5 +1,5 @@
 #include "ipv4.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Kernel/timer.h"
 #include "net.h"
 #include "arp.h"

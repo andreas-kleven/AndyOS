@@ -1,7 +1,7 @@
 #include "http.h"
 #include "dns.h"
 #include "stdio.h"
-#include "HAL/hal.h"
+#include "hal.h"
 
 WebClient::WebClient()
 {

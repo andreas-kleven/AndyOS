@@ -1,7 +1,7 @@
 #include "tcpsession.h"
 #include "tcp.h"
 #include "math.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Kernel/timer.h"
 #include "Lib/debug.h"
 

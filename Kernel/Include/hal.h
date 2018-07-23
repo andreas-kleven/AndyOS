@@ -4,7 +4,7 @@
 void pause();
 void enable();
 void disable();
-void halt();
+void sys_halt();
 
 uint8 inb(uint16 port);
 uint16 inw(uint16 port);

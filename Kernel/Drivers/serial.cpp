@@ -1,5 +1,5 @@
 #include "serial.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Lib/debug.h"
 
 #define COM_REG_DATA			0

@@ -1,6 +1,6 @@
 #include "tcp.h"
 #include "Lib/debug.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "math.h"
 #include "tcpsession.h"
 

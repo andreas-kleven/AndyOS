@@ -1,5 +1,5 @@
 #include "tcpsocket.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Lib/debug.h"
 
 TcpSocket::TcpSocket()

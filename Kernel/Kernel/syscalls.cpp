@@ -1,6 +1,6 @@
 #include "syscalls.h"
 #include "Include/syscall_list.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "irq.h"
 #include "Kernel/timer.h"
 #include "string.h"
@@ -71,9 +71,7 @@ namespace Syscalls
 
 	void halt()
 	{
-		asm volatile(
-			"cli\n"
-			"hlt");
+		halt();
 	}
 
 	void print(char* text)

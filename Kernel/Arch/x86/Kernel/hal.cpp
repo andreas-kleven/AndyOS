@@ -1,4 +1,24 @@
-#include "HAL/hal.h"
+#include "definitions.h"
+
+void pause()
+{
+    asm volatile("pause");
+}
+
+void enable()
+{
+    asm volatile("sti");
+}
+
+void disable()
+{
+    asm volatile("cli");
+}
+
+void sys_halt()
+{
+    asm volatile("cli\nhlt");
+}
 
 //IO
 uint8 inb(uint16 port)

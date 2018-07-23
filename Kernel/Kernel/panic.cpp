@@ -1,7 +1,7 @@
 #include "panic.h"
 #include "string.h"
 #include "stdio.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
@@ -28,5 +28,5 @@ void panic(char* err, char* msg_fmt, ...)
 	if (thread && thread->process)
 		debug_print("Proc: %ux\n", Scheduler::CurrentThread()->process->id);
 
-	halt();
+	sys_halt();
 }

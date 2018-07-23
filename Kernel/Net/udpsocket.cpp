@@ -1,5 +1,5 @@
 #include "udpsocket.h"
-#include "HAL/hal.h"
+#include "hal.h"
 #include "math.h"
 
 UdpSocket::UdpSocket(uint16 src_port, uint16 dst_port)
