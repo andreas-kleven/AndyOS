@@ -12,32 +12,32 @@ namespace Exceptions
 {
 	void ISR0(REGS* regs)
 	{
-		KernelPanic("Division by zero");
+		panic("Division by zero");
 	}
 
 	void ISR1(REGS* regs)
 	{
-		KernelPanic("Debug");
+		panic("Debug");
 	}
 
 	void ISR2(REGS* regs)
 	{
-		KernelPanic("Non-Maskable interrupt");
+		panic("Non-Maskable interrupt");
 	}
 
 	void ISR3(REGS* regs)
 	{
-		KernelPanic("Breakpoint");
+		panic("Breakpoint");
 	}
 
 	void ISR4(REGS* regs)
 	{
-		KernelPanic("Overflow");
+		panic("Overflow");
 	}
 
 	void ISR5(REGS* regs)
 	{
-		KernelPanic("Bound range exceeded");
+		panic("Bound range exceeded");
 	}
 
 	void ISR6(REGS* regs)
@@ -48,42 +48,42 @@ namespace Exceptions
 		debug_print("0x%ux\t0x%ux\t0x%ux\t0x%ux\n", regs->esp, regs->cs, regs->eip, regs->eflags);
 		debug_dump((void*)regs->esp, 256);
 
-		KernelPanic("Invalid opcode");
+		panic("Invalid opcode");
 	}
 
 	void ISR7(REGS* regs)
 	{
-		KernelPanic("Device not available");
+		panic("Device not available");
 	}
 
 	void ISR8(REGS* regs)
 	{
-		KernelPanic("Double fault");
+		panic("Double fault");
 	}
 
 	void ISR9(REGS* regs)
 	{
-		KernelPanic("Coprocessor segment overrun");
+		panic("Coprocessor segment overrun");
 	}
 
 	void ISR10(REGS* regs)
 	{
-		KernelPanic("Invalid TSS");
+		panic("Invalid TSS");
 	}
 
 	void ISR11(REGS* regs)
 	{
-		KernelPanic("Segment not present");
+		panic("Segment not present");
 	}
 
 	void ISR12(REGS* regs)
 	{
-		KernelPanic("Stack-segment fault");
+		panic("Stack-segment fault");
 	}
 
 	void ISR13(REGS* regs)
 	{
-		KernelPanic("General protection fault");
+		panic("General protection fault");
 	}
 
 	void ISR14(REGS* regs)
@@ -103,33 +103,33 @@ namespace Exceptions
 		const char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
 		const char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
 
-		KernelPanic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s",
+		panic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s",
 			faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);
 	}
 
 	void ISR15(REGS* regs)
 	{
-		KernelPanic("15 (Reserved)");
+		panic("15 (Reserved)");
 	}
 
 	void ISR16(REGS* regs)
 	{
-		KernelPanic("x87 Floating-point exception");
+		panic("x87 Floating-point exception");
 	}
 
 	void ISR17(REGS* regs)
 	{
-		KernelPanic("Alignment check");
+		panic("Alignment check");
 	}
 
 	void ISR18(REGS* regs)
 	{
-		KernelPanic("Machine check");
+		panic("Machine check");
 	}
 
 	void ISR19(REGS* regs)
 	{
-		KernelPanic("SIMD floating-point exception");
+		panic("SIMD floating-point exception");
 	}
 
 	STATUS Init()

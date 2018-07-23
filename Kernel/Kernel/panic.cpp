@@ -6,7 +6,7 @@
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
 
-void KernelPanic(char* err, char* msg, ...)
+void panic(char* err, char* msg_fmt, ...)
 {
 	disable();
 
@@ -14,11 +14,9 @@ void KernelPanic(char* err, char* msg, ...)
 	memset(buffer, 0, 256);
 
 	va_list args;
-	va_start(args, msg);
+	va_start(args, msg_fmt);
 
-	vsprintf(buffer, msg, args);
-
-	int line = 0;
+	vsprintf(buffer, msg_fmt, args);
 
 	debug_clear(0xFF000000);
 	debug_color(0xFFFF0000);
@@ -30,7 +28,5 @@ void KernelPanic(char* err, char* msg, ...)
 	if (thread && thread->process)
 		debug_print("Proc: %ux\n", Scheduler::CurrentThread()->process->id);
 
-	asm volatile(
-		"cli\n"
-		"hlt");
+	halt();
 }

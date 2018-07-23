@@ -1,3 +1,3 @@
 #pragma once
 
-void KernelPanic(char* err, char* msg = "", ...);
+void panic(char* err, char* msg_fmt = "", ...);
