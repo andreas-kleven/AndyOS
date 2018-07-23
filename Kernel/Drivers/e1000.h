@@ -37,7 +37,7 @@ public:
 
 private:
 	uint32 io_base;
-	uint32 mem_base;
+	size_t mem_base;
 	uint32 irq;
 	uint8 mac[6];
 
@@ -46,7 +46,7 @@ private:
 	uint16 rx_cur;
 	uint16 tx_cur;
 
-	uint32 rx_virt_addr[E1000_NUM_RX_DESC];
+	size_t rx_virt_addr[E1000_NUM_RX_DESC];
 
 	E1000_RX_DESC* rx_descs[E1000_NUM_RX_DESC];
 	E1000_TX_DESC* tx_descs[E1000_NUM_TX_DESC];

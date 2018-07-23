@@ -137,7 +137,7 @@ namespace VFS
 			return 0;
 		}
 
-		return (int)file;
+		return (int)(size_t)file;
 	}
 
 	int Close(int fd)

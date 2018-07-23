@@ -225,7 +225,7 @@ namespace AC97
 		device.lvi = 2;
 		device.bdl[device.lvi].bup = 1;
 
-		outl(device.nabmbar + AC97_NABM_POBDBAR, (uint32)device.bdl);
+		outl(device.nabmbar + AC97_NABM_POBDBAR, (uint32)(size_t)device.bdl);
 		outb(device.nabmbar + AC97_NABM_POLVI, device.lvi);
 		outb(device.nabmbar + AC97_NABM_POCONTROL, inb(device.nabmbar + AC97_PO_CR) | 1); // Play, and then generate interrupt!
 

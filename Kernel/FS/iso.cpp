@@ -97,10 +97,10 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const Path* path)
 			}
 		}
 
-		dir = (ISO_DIRECTORY*)((int)dir + dir->length);
-		if ((int)dir - (int)start > ISO_SECTOR_SIZE - sizeof(ISO_DIRECTORY))
+		dir = (ISO_DIRECTORY*)((size_t)dir + dir->length);
+		if ((size_t)dir - (size_t)start > ISO_SECTOR_SIZE - sizeof(ISO_DIRECTORY))
 		{
-			dir = (ISO_DIRECTORY*)((int)start + ISO_SECTOR_SIZE);
+			dir = (ISO_DIRECTORY*)((size_t)start + ISO_SECTOR_SIZE);
 			start = dir;
 		}
 	}

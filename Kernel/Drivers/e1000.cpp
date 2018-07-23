@@ -68,7 +68,7 @@ E1000::E1000(PciDevice* pci_dev) : NetInterface(pci_dev)
 	dev->EnableBusMastering();
 
 	uint32 mmio_base = dev->config.bar0;
-	mem_base = (uint32)VMem::KernelMapFirstFree((void*)mmio_base, 6, PAGE_PRESENT | PAGE_WRITE);
+	mem_base = (size_t)VMem::KernelMapFirstFree((void*)mmio_base, 6, PAGE_PRESENT | PAGE_WRITE);
 
 	DetectEEPROM();
 	ReadMac();
@@ -85,7 +85,7 @@ E1000::E1000(PciDevice* pci_dev) : NetInterface(pci_dev)
 
 void E1000::Send(NetPacket* pkt)
 {
-	uint32 phys = VMem::GetAddress((uint32)pkt->start);
+	size_t phys = VMem::GetAddress((size_t)pkt->start);
 
 	tx_descs[tx_cur]->addr = (uint64)phys;
 	tx_descs[tx_cur]->length = pkt->length;
@@ -194,7 +194,7 @@ void E1000::InitRX()
 	E1000_RX_DESC* descs = (E1000_RX_DESC*)ptr;
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++)
 	{
-		uint32 addr = (uint32)VMem::KernelAlloc(BYTES_TO_BLOCKS(8192 + 16));
+		size_t addr = (size_t)VMem::KernelAlloc(BYTES_TO_BLOCKS(8192 + 16));
 		rx_virt_addr[i] = addr;
 
 		rx_descs[i] = &descs[i];
@@ -202,8 +202,9 @@ void E1000::InitRX()
 		rx_descs[i]->status = 0;
 	}
 
-	WriteCommand(REG_RXDESCLO, VMem::GetAddress((uint32)ptr));
-	WriteCommand(REG_RXDESCHI, 0);
+	size_t addr = VMem::GetAddress((size_t)ptr);
+	WriteCommand(REG_RXDESCLO, addr & 0xFFFFFFFF);
+	WriteCommand(REG_RXDESCHI, addr >> 32);
 
 	WriteCommand(REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(E1000_RX_DESC));
 
@@ -229,8 +230,9 @@ void E1000::InitTX()
 		tx_descs[i]->status = 0;
 	}
 
-	WriteCommand(REG_TXDESCLO, VMem::GetAddress((uint32)ptr));
-	WriteCommand(REG_TXDESCHI, 0);
+	size_t addr = VMem::GetAddress((size_t)ptr);
+	WriteCommand(REG_TXDESCLO, addr & 0xFFFFFFFF);
+	WriteCommand(REG_TXDESCHI, addr >> 32);
 
 	WriteCommand(REG_TXDESCLEN, E1000_NUM_TX_DESC * sizeof(E1000_TX_DESC));
 

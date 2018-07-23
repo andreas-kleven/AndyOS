@@ -5,7 +5,6 @@
 #include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
-#include "Arch/regs.h"
 
 namespace Scheduler
 {

@@ -3,7 +3,7 @@
 #ifdef __i386__
 typedef long unsigned int size_t;
 #else
-typedef unsigned long long size_t;
+typedef long unsigned int size_t;
 #endif
 
 

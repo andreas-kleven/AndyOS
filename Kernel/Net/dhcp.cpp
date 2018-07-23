@@ -84,7 +84,7 @@ namespace DHCP
 		options[i++] = OPT_DNS;
 
 		options[i++] = OPT_END;
-		int length = (int)&options[i] - (int)header;
+		int length = (size_t)&options[i] - (size_t)header;
 
 		NetPacket* pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8*)header, length);
 		intf->Send(pkt);
@@ -111,7 +111,7 @@ namespace DHCP
 		i += 4;
 
 		options[i++] = OPT_END;
-		int length = (int)&options[i] - (int)header;
+		int length = (size_t)&options[i] - (size_t)header;
 
 		NetPacket* pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8*)header, length);
 		intf->Send(pkt);
