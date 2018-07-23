@@ -1,6 +1,5 @@
 #pragma once
 #include "Net/netinterface.h"
-#include "HAL/idt.h"
 
 #define E1000_NUM_RX_DESC 128
 #define E1000_NUM_TX_DESC 128
@@ -56,7 +55,7 @@ private:
 	void Linkup();
 
 	void EnableIRQ();
-	static void E1000_Interrupt(REGS* regs);
+	static void E1000_Interrupt();
 
 	void InitRX();
 	void InitTX();

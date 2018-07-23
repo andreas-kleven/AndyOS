@@ -1,4 +1,6 @@
 #include "e1000.h"
+#include "io.h"
+#include "irq.h"
 #include "HAL/hal.h"
 #include "Net/net.h"
 #include "Net/eth.h"
@@ -159,14 +161,14 @@ void E1000::Poll()
 
 void E1000::EnableIRQ()
 {
-	IRQ::Install(0x20 + irq, (IRQ_HANDLER)E1000_Interrupt);
+	IRQ::Install(0x20 + irq, E1000_Interrupt);
 
 	WriteCommand(REG_IMASK, 0x1F6DC);
 	WriteCommand(REG_IMASK, 0xff & ~4);
 	ReadCommand(0xc0);
 }
 
-void E1000::E1000_Interrupt(REGS* regs)
+void E1000::E1000_Interrupt()
 {
 	uint32 status = instance->ReadCommand(0xc0);
 

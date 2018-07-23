@@ -5,13 +5,17 @@
 #include "Memory/memory.h"
 #include "string.h"
 
+#include "Arch/idt.h"
+#include "Arch/pit.h"
+#include "Arch/tss.h"
+#include "Arch/pic.h"
+
 #define TASK_SCHEDULE_IRQ 32
 
 namespace Task
 {
 	uint32 id_counter = 0;
 	uint32 tmp_stack;
-	IRQ_HANDLER pit_isr;
 
 	uint8 __attribute__((aligned(16))) fpu_state[512];
 
@@ -80,8 +84,7 @@ namespace Task
     {
         THREAD* current_thread = Scheduler::CurrentThread();
 
-		//Call original isr
-		pit_isr(0);
+		PIT::ticks++;
 
 		//Save stack
 		current_thread->stack = tmp_stack;
@@ -134,8 +137,6 @@ namespace Task
 	{
         THREAD* thread = CreateKernelThread(entry);
 		Scheduler::InsertThread(thread);
-
-		pit_isr = IDT::GetHandler(32);
 
 		disable();
 		IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);

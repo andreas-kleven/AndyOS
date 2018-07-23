@@ -1,6 +1,7 @@
 #include "syscalls.h"
 #include "Include/syscall_list.h"
 #include "HAL/hal.h"
+#include "irq.h"
 #include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
@@ -282,38 +283,6 @@ namespace Syscalls
 		return false;
 	}
 
-	//
-	void ISR(REGS* regs)
-	{
-		if (regs->eax > sizeof(syscalls))
-			return;
-
-		void* location = syscalls[regs->eax];
-
-		if (!location)
-			return;
-
-		uint32 ret;
-
-		asm volatile (
-			"push %1\n"
-			"push %2\n"
-			"push %3\n"
-			"push %4\n"
-			"push %5\n"
-			"push %6\n"
-			"call *%7\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			: "=a" (ret) : "g" (regs->ebp), "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
-
-		regs->eax = ret;
-	}
-
 	void InstallSyscall(int id, SYSCALL_HANDLER handler)
 	{
 		if (id >= MAX_SYSCALLS)
@@ -322,11 +291,13 @@ namespace Syscalls
 		syscalls[id] = (void*)handler;
 	}
 
-	STATUS Init()
+	SYSCALL_HANDLER GetSyscall(int id)
 	{
-		if (!IRQ::Install(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
-			return STATUS_FAILED;
+		return (SYSCALL_HANDLER)syscalls[id];
+	}
 
+	bool Init()
+	{
 		InstallSyscall(SYSCALL_OPEN, (SYSCALL_HANDLER)open);
 		InstallSyscall(SYSCALL_CLOSE, (SYSCALL_HANDLER)close);
 		InstallSyscall(SYSCALL_READ, (SYSCALL_HANDLER)read);
@@ -356,5 +327,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_SEND_MESSAGE, (SYSCALL_HANDLER)send_message);
 		InstallSyscall(SYSCALL_SEND_MESSAGE_RESPONSE, (SYSCALL_HANDLER)send_message_reponse);
 		InstallSyscall(SYSCALL_GET_MESSAGE_RESPONSE, (SYSCALL_HANDLER)get_message_reponse);
+
+		return true;
 	}
 }

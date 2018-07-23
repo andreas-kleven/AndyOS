@@ -1,12 +1,25 @@
-#include "idt.h"
-#include "hal.h"
+#include "Arch/idt.h"
+#include "Arch/pic.h"
+#include "syscall_list.h"
 #include "string.h"
-#include "pic.h"
+
+#define IDT_DESC_BIT16		0x06	//00000110
+#define IDT_DESC_BIT32		0x0E	//00001110
+#define IDT_DESC_RING1		0x40	//01000000
+#define IDT_DESC_RING2		0x20	//00100000
+#define IDT_DESC_RING3		0x60	//01100000
+#define IDT_DESC_PRESENT	0x80	//10000000
 
 namespace IDT
 {
+	struct ISR_DESC
+	{
+		void* handler;
+		bool pass_regs;
+	};
+
 	IDT_DESCRIPTOR idt[MAX_INTERRUPTS];
-	IRQ_HANDLER handlers[MAX_INTERRUPTS];
+	ISR_DESC handlers[MAX_INTERRUPTS];
 	IDT_REG idt_reg;
 
 	/*push eax; push irq; mov eax, addr; jmp eax*/
@@ -20,18 +33,17 @@ namespace IDT
 		return &idt[i];
 	}
 
-	void INTERRUPT EmptyISR()
-	{
-		asm volatile("pusha");
-		PIC::InterruptDone(0);
-		asm volatile("popa\n"
-			"iret");
-	}
-
 	void CommonHandler(int i, REGS* regs)
 	{
-		if (handlers[i])
-			handlers[i](regs);
+		ISR_DESC& desc = handlers[i];
+
+		if (desc.handler)
+		{
+			if (desc.pass_regs)
+				((void(*)(REGS*))desc.handler)(regs);
+			else
+				((void(*)())desc.handler)();
+		}
 
 		PIC::InterruptDone(i);
 	}
@@ -67,10 +79,10 @@ namespace IDT
 			"iret" :: "i" (CommonHandler));
 	}
 
-	STATUS SetISR(uint32 i, ISR isr, int flags)
+	bool SetISR(uint32 i, ISR isr, int flags)
 	{
 		if (i > MAX_INTERRUPTS || !isr)
-			return STATUS_FAILED;
+			return false;
 
 		uint32 uiBase = (uint32)isr;
 
@@ -80,24 +92,30 @@ namespace IDT
 		idt[i].flags = IDT_DESC_PRESENT | IDT_DESC_BIT32 | flags;
 		idt[i].sel = KERNEL_CS;
 
-		return STATUS_SUCCESS;
+		return true;
 	}
 
-	STATUS InstallIRQ(uint32 i, IRQ_HANDLER handler)
+	bool InstallIRQ(uint32 i, void(*handler)())
 	{
 		if (i > MAX_INTERRUPTS || !handler)
-			return STATUS_FAILED;
+			return false;
 
-		handlers[i] = handler;
-		return STATUS_SUCCESS;
+		handlers[i].handler = (void*)handler;
+		handlers[i].pass_regs = false;
+		return true;
 	}
 
-	IRQ_HANDLER GetHandler(uint32 i)
+	bool InstallIRQ(uint32 i, void(*handler)(REGS*))
 	{
-		return handlers[i];
+		if (i > MAX_INTERRUPTS || !handler)
+			return false;
+
+		handlers[i].handler = (void*)handler;
+		handlers[i].pass_regs = true;
+		return true;
 	}
 
-	STATUS Init()
+	bool Init()
 	{
 		idt_reg.base = (uint32)&idt;
 		idt_reg.limit = sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1;
@@ -119,23 +137,15 @@ namespace IDT
 			ptr[6] = (target_addr >> 16) & 0xFF;
 			ptr[7] = (target_addr >> 24) & 0xFF;
 
-			if (i == 0x80)
+			if (i == SYSCALL_IRQ)
 				SetISR(i, (ISR)ptr, IDT_DESC_RING3);
 			else
 				SetISR(i, (ISR)ptr, 0);
 
-			handlers[i] = 0;
+			handlers[i].handler = 0;
 		}
 
 		asm volatile("lidt (%0)" :: "r" (&idt_reg));
-		return STATUS_SUCCESS;
-	}
-}
-
-namespace IRQ::Arch
-{
-	bool Install(int num, IRQ_HANDLER handler)
-	{
-		return IDT::InstallIRQ(num, handler);
+		return true;
 	}
 }

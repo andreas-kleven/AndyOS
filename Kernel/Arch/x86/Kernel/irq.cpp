@@ -1,10 +1,10 @@
-#include "irq.h"
 #include "Arch/irq.h"
+#include "Arch/idt.h"
 
-namespace IRQ
+namespace IRQ::Arch
 {
     bool Install(int num, void(*handler)())
     {
-        return Arch::Install(num, handler);
+        IDT::InstallIRQ(num, handler);
     }
 }

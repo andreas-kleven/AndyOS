@@ -1,7 +1,7 @@
 #pragma once
 #include "definitions.h"
+#include "Arch/regs.h"
 #include "Memory/memory.h"
-#include "HAL/idt.h"
 
 enum THREAD_STATE
 {

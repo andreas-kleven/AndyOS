@@ -1,6 +1,8 @@
+#include "Arch/idt.h"
+
 #include "exceptions.h"
 #include "panic.h"
-#include "Lib/debug.h"
+#include "debug.h"
 
 #define PAGE_FAULT_PRESENT				(1 << 0)
 #define PAGE_FAULT_WRITE				(1 << 1)
@@ -132,29 +134,29 @@ namespace Exceptions
 		panic("SIMD floating-point exception");
 	}
 
-	STATUS Init()
+	bool Init()
 	{
-		IDT::InstallIRQ(0, (IRQ_HANDLER)ISR0);
-		IDT::InstallIRQ(1, (IRQ_HANDLER)ISR1);
-		IDT::InstallIRQ(2, (IRQ_HANDLER)ISR2);
-		IDT::InstallIRQ(3, (IRQ_HANDLER)ISR3);
-		IDT::InstallIRQ(4, (IRQ_HANDLER)ISR4);
-		IDT::InstallIRQ(5, (IRQ_HANDLER)ISR5);
-		IDT::InstallIRQ(6, (IRQ_HANDLER)ISR6);
-		IDT::InstallIRQ(7, (IRQ_HANDLER)ISR7);
-		IDT::InstallIRQ(8, (IRQ_HANDLER)ISR8);
-		IDT::InstallIRQ(9, (IRQ_HANDLER)ISR9);
-		IDT::InstallIRQ(10, (IRQ_HANDLER)ISR10);
-		IDT::InstallIRQ(11, (IRQ_HANDLER)ISR11);
-		IDT::InstallIRQ(12, (IRQ_HANDLER)ISR12);
-		IDT::InstallIRQ(13, (IRQ_HANDLER)ISR13);
-		IDT::InstallIRQ(14, (IRQ_HANDLER)ISR14);
-		IDT::InstallIRQ(15, (IRQ_HANDLER)ISR15);
-		IDT::InstallIRQ(16, (IRQ_HANDLER)ISR16);
-		IDT::InstallIRQ(17, (IRQ_HANDLER)ISR17);
-		IDT::InstallIRQ(18, (IRQ_HANDLER)ISR18);
-		IDT::InstallIRQ(19, (IRQ_HANDLER)ISR19);
+		IDT::InstallIRQ(0, ISR0);
+		IDT::InstallIRQ(1, ISR1);
+		IDT::InstallIRQ(2, ISR2);
+		IDT::InstallIRQ(3, ISR3);
+		IDT::InstallIRQ(4, ISR4);
+		IDT::InstallIRQ(5, ISR5);
+		IDT::InstallIRQ(6, ISR6);
+		IDT::InstallIRQ(7, ISR7);
+		IDT::InstallIRQ(8, ISR8);
+		IDT::InstallIRQ(9, ISR9);
+		IDT::InstallIRQ(10, ISR10);
+		IDT::InstallIRQ(11, ISR11);
+		IDT::InstallIRQ(12, ISR12);
+		IDT::InstallIRQ(13, ISR13);
+		IDT::InstallIRQ(14, ISR14);
+		IDT::InstallIRQ(15, ISR15);
+		IDT::InstallIRQ(16, ISR16);
+		IDT::InstallIRQ(17, ISR17);
+		IDT::InstallIRQ(18, ISR18);
+		IDT::InstallIRQ(19, ISR19);
 
-		return STATUS_SUCCESS;
+		return true;
 	}
 }

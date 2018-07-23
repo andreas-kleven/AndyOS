@@ -1,8 +1,10 @@
 #include "ata.h"
-#include "math.h"
+#include "io.h"
+#include "irq.h"
 #include "HAL/hal.h"
 #include "FS/iso.h"
 #include "string.h"
+#include "math.h"
 #include "Lib/debug.h"
 #include "Process/scheduler.h"
 
@@ -104,8 +106,8 @@ int ATADriver::ReadSector(long pos, char* buf, size_t size)
 
 STATUS ATADriver::Init()
 {
-	IRQ::Install(0x2E, (IRQ_HANDLER)ATA_Interrupt);
-	IRQ::Install(0x2F, (IRQ_HANDLER)ATA_Interrupt);
+	IRQ::Install(0x2E, ATA_Interrupt);
+	IRQ::Install(0x2F, ATA_Interrupt);
 
 	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
 	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));
@@ -115,6 +117,6 @@ STATUS ATADriver::Init()
 	return STATUS_SUCCESS;
 }
 
-void ATADriver::ATA_Interrupt(REGS* regs)
+void ATADriver::ATA_Interrupt()
 {
 }

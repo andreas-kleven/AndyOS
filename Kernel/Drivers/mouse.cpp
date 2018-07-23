@@ -1,5 +1,7 @@
 #include "mouse.h"
 #include "HAL/hal.h"
+#include "io.h"
+#include "irq.h"
 #include "circbuf.h"
 #include "math.h"
 #include "string.h"
@@ -87,7 +89,7 @@ static uint8 mouse_read()
 
 static void mouse_init()
 {
-	IRQ::Install(44, (IRQ_HANDLER)mouse_isr);
+	IRQ::Install(44, mouse_isr);
 
 	mouse_wait(1);
 	outb(MOUSE_PORT1, 0xA8);

@@ -11,16 +11,15 @@
 #include "Net/dhcp.h"
 #include "Net/http.h"
 #include "Process/scheduler.h"
-#include "task.h"
-#include "timer.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
-#include "API/syscalls.h"
-#include "Include/syscall_list.h"
 #include "FS/iso.h"
-#include "Lib/debug.h"
 #include "Process/process.h"
+#include "task.h"
+#include "timer.h"
+#include "syscall_list.h"
+#include "debug.h"
 
 namespace OS
 {

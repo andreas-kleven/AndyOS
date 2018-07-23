@@ -1,4 +1,4 @@
-#include "gdt.h"
+#include "Arch//gdt.h"
 #include "string.h"
 
 // Each define here is for a specific flag in the descriptor.

@@ -35,6 +35,8 @@
 
 namespace PIT
 {
+	extern size_t ticks;
+
 	uint32 Ticks();
 	void Sleep(uint32 time);
 	STATUS Init();

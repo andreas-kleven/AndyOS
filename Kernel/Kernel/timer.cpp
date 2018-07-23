@@ -1,5 +1,5 @@
 #include "timer.h"
-#include "HAL/pit.h"
+#include "Arch/pit.h"
 
 namespace Timer
 {

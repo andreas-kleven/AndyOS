@@ -1,9 +1,9 @@
-#include "pit.h"
+#include "Arch/pit.h"
 #include "HAL/hal.h"
 
 namespace PIT
 {
-	uint32 ticks;
+	size_t ticks;
 
 	void SendData(uint16 data, uint8 counter)
 	{
@@ -57,7 +57,7 @@ namespace PIT
 
 	STATUS Init()
 	{
-		IDT::InstallIRQ(32, (IRQ_HANDLER)PIT_ISR);
+		IDT::InstallIRQ(32, PIT_ISR);
 		return Start();
 	}
 }

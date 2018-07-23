@@ -1,19 +1,18 @@
 #include "kernel.h"
 #include "os.h"
-#include "API/syscalls.h"
+#include "Arch/init.h"
 #include "Boot/multiboot.h"
 #include "Drawing/vbe.h"
 #include "Drivers/serial.h"
 #include "Drivers/ata.h"
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
-#include "exceptions.h"
-#include "HAL/cpu.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
-#include "task.h"
 #include "FS/vfs.h"
-#include "Lib/debug.h"
+#include "task.h"
+#include "syscalls.h"
+#include "debug.h"
 
 extern size_t __KERNEL_START, __KERNEL_END;
 
@@ -36,14 +35,13 @@ namespace Kernel
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
 
-		CPU::Init();
-		HAL::Init();
-		Exceptions::Init();
-		Syscalls::Init();
+		Arch::Init();
 
 		PMem::Init(mem_size, (void*)kernel_end);
 		PMem::InitRegion((void*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
 		VMem::Init();
+
+		Syscalls::Init();
 
 		VBE::Init(&vbe_mode);
 		debug_print("Init VBE: %i %i %i\n", vbe_mode.width, vbe_mode.height, vbe_mode.bpp);

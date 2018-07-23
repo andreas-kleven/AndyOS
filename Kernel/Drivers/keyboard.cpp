@@ -1,5 +1,7 @@
 #include "keyboard.h"
 #include "HAL/hal.h"
+#include "io.h"
+#include "irq.h"
 #include "string.h"
 #include "ctype.h"
 #include "Lib/circbuf.h"
@@ -130,7 +132,7 @@ namespace Keyboard
 
 	CircularBuffer<KEY_ACTION> key_buffer;
 
-	void Keyboard_ISR(REGS* regs)
+	void Keyboard_ISR()
 	{
 		if (inb(0x64) & 1)
 		{
@@ -217,7 +219,7 @@ namespace Keyboard
 	{
 		key_buffer = CircularBuffer<KEY_ACTION>(KEY_BUFFER_SIZE);
 		SetupScancodes();
-		IRQ::Install(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
+		IRQ::Install(KEYBOARD_IRQ, Keyboard_ISR);
 		return STATUS_SUCCESS;
 	}
 }
