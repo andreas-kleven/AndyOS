@@ -104,8 +104,8 @@ int ATADriver::ReadSector(long pos, char* buf, size_t size)
 
 STATUS ATADriver::Init()
 {
-	IDT::InstallIRQ(0x2E, (IRQ_HANDLER)ATA_Interrupt);
-	IDT::InstallIRQ(0x2F, (IRQ_HANDLER)ATA_Interrupt);
+	IRQ::Install(0x2E, (IRQ_HANDLER)ATA_Interrupt);
+	IRQ::Install(0x2F, (IRQ_HANDLER)ATA_Interrupt);
 
 	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER));
 	//DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE));

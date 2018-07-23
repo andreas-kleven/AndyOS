@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "irq.h"
 
 #define MAX_INTERRUPTS 256
 
@@ -11,17 +12,6 @@
 #define IDT_DESC_PRESENT	0x80	//10000000
 
 #define INTERRUPT __attribute__((naked))
-
-struct REGS
-{
-	uint32 gs, fs, es, ds;
-	uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	uint32 eip, cs, eflags;
-	uint32 user_stack, user_ss;
-} __attribute__((packed));
-
-typedef void(*ISR)();
-typedef void(*IRQ_HANDLER)(REGS*);
 
 struct IDT_DESCRIPTOR
 {
@@ -45,3 +35,8 @@ namespace IDT
 	IRQ_HANDLER GetHandler(uint32 i);
 	STATUS Init();
 };
+
+namespace IRQ::Arch
+{
+	bool Install(int num, IRQ_HANDLER handler);
+}

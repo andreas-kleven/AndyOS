@@ -131,3 +131,11 @@ namespace IDT
 		return STATUS_SUCCESS;
 	}
 }
+
+namespace IRQ::Arch
+{
+	bool Install(int num, IRQ_HANDLER handler)
+	{
+		return IDT::InstallIRQ(num, handler);
+	}
+}

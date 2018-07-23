@@ -322,7 +322,7 @@ namespace Syscalls
 
 	STATUS Init()
 	{
-		if (!IDT::InstallIRQ(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
+		if (!IRQ::Install(SYSCALL_IRQ, (IRQ_HANDLER)ISR))
 			return STATUS_FAILED;
 
 		InstallSyscall(SYSCALL_OPEN, (SYSCALL_HANDLER)open);

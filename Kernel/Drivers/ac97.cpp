@@ -97,7 +97,7 @@ namespace AC97
 		memset(device.bdl, 0, AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY));
 
 		//Enable interrupts
-		IDT::InstallIRQ(0x20 + device.irq, (IRQ_HANDLER)AC97_ISR);
+		IRQ::Install(0x20 + device.irq, (IRQ_HANDLER)AC97_ISR);
 		outb(device.nabmbar + AC97_PO_CR, (1 << 3) | (1 << 4));
 
 		debug_print("0x%ux\n", device.nambar);

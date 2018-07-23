@@ -217,7 +217,7 @@ namespace Keyboard
 	{
 		key_buffer = CircularBuffer<KEY_ACTION>(KEY_BUFFER_SIZE);
 		SetupScancodes();
-		IDT::InstallIRQ(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
+		IRQ::Install(KEYBOARD_IRQ, (IRQ_HANDLER)Keyboard_ISR);
 		return STATUS_SUCCESS;
 	}
 }

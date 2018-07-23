@@ -159,7 +159,7 @@ void E1000::Poll()
 
 void E1000::EnableIRQ()
 {
-	IDT::InstallIRQ(0x20 + irq, (IRQ_HANDLER)E1000_Interrupt);
+	IRQ::Install(0x20 + irq, (IRQ_HANDLER)E1000_Interrupt);
 
 	WriteCommand(REG_IMASK, 0x1F6DC);
 	WriteCommand(REG_IMASK, 0xff & ~4);
