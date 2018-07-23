@@ -44,7 +44,7 @@ namespace Scheduler
 			Task::Switch();
 	}
 
-	void SleepThread(uint32 until, THREAD* thread)
+	void SleepThread(size_t until, THREAD* thread)
 	{
 		if (thread->state == THREAD_STATE_TERMINATED)
 			return;

@@ -17,14 +17,14 @@ struct PROCESS;
 
 struct THREAD
 {
-	uint32 stack;
-	uint32 kernel_esp;
+	size_t stack;
+	size_t kernel_esp;
 	ADDRESS_SPACE addr_space;
-	uint32 id;
+	int id;
 	THREAD_STATE state;
 	THREAD* next;
 	THREAD* procNext;
 	PROCESS* process;
-	uint8* fpu_state;
-	uint32 sleep_until;
+	void* fpu_state;
+	int sleep_until;
 };

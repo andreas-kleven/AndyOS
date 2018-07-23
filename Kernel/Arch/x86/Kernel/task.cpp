@@ -14,8 +14,8 @@
 
 namespace Task::Arch
 {
-    uint32 id_counter = 0;
-	uint32 tmp_stack;
+    int id_counter = 0;
+	size_t tmp_stack;
 
 	uint8 __attribute__((aligned(16))) fpu_state[512];
 
@@ -23,10 +23,10 @@ namespace Task::Arch
 	{
         int stack_size = 0x1000;
 
-		THREAD* thread = (THREAD*)((uint32)(new char[stack_size]) + stack_size - sizeof(THREAD));
+		THREAD* thread = (THREAD*)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
 
 		thread->id = ++id_counter;
-		thread->stack = (uint32)(thread - 1) - sizeof(REGS);
+		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->addr_space = VMem::GetAddressSpace();
 		thread->fpu_state = new uint8[512];
