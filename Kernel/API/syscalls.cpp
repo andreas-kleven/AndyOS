@@ -1,6 +1,7 @@
 #include "syscalls.h"
 #include "Include/syscall_list.h"
 #include "HAL/hal.h"
+#include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
 #include "Drawing/vbe.h"
@@ -109,12 +110,12 @@ namespace Syscalls
 
 	void sleep(uint32 ticks)
 	{
-		Scheduler::SleepThread(PIT::Ticks() + ticks, Scheduler::CurrentThread());
+		Scheduler::SleepThread(Timer::Ticks() + ticks, Scheduler::CurrentThread());
 	}
 
 	uint32 get_ticks()
 	{
-		return PIT::Ticks();
+		return Timer::Ticks();
 	}
 
 	bool get_last_key(KEYCODE& code, bool& pressed)

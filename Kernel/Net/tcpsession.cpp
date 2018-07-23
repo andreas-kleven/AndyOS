@@ -2,6 +2,7 @@
 #include "tcp.h"
 #include "math.h"
 #include "HAL/hal.h"
+#include "Kernel/timer.h"
 #include "Lib/debug.h"
 
 TcpSession::TcpSession()
@@ -114,8 +115,8 @@ void TcpSession::Connect(IPv4Address dst, uint16 port)
 
 	state = TCP_SYN_SENT;
 
-	int t_out = PIT::Ticks() + 1000;
-	while (state == TCP_SYN_SENT && PIT::Ticks() < t_out)
+	int t_out = Timer::Ticks() + 1000;
+	while (state == TCP_SYN_SENT && Timer::Ticks() < t_out)
 		pause();
 
 	if (state == TCP_SYN_SENT)
@@ -142,8 +143,8 @@ void TcpSession::Close()
 	Send(FIN);
 	state = TCP_FIN_WAIT_1;
 
-	int t_out = PIT::Ticks() + 1000;
-	while (state == TCP_FIN_WAIT_1 && PIT::Ticks() < t_out)
+	int t_out = Timer::Ticks() + 1000;
+	while (state == TCP_FIN_WAIT_1 && Timer::Ticks() < t_out)
 		pause();
 
 	if (state == TCP_FIN_WAIT_1)
@@ -154,8 +155,8 @@ void TcpSession::Close()
 		return;
 	}
 
-	t_out = PIT::Ticks() + 1000;
-	while (state == TCP_FIN_WAIT_2 && PIT::Ticks() < t_out)
+	t_out = Timer::Ticks() + 1000;
+	while (state == TCP_FIN_WAIT_2 && Timer::Ticks() < t_out)
 		pause();
 
 	if (state == TCP_TIME_WAIT)

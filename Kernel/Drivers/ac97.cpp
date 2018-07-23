@@ -1,5 +1,6 @@
 #include "ac97.h"
 #include "HAL/hal.h"
+#include "Kernel/timer.h"
 #include "Lib/debug.h"
 #include "string.h"
 #include "math.h"
@@ -110,7 +111,7 @@ namespace AC97
 		outw(device.nambar + AC97_NAM_RESET, 0); // resets (any value is possible here) 
 		outb(device.nabmbar + AC97_NABM_GLB_CTRL_STAT, 0x02); // Also here - 0x02 is however obligatory 
 
-		PIT::Sleep(100);
+		Timer::Sleep(100);
 
 		volume = 15;
 		outw(device.nambar + AC97_NAM_MASTER_VOLUME, (volume << 8) | volume); // General. Volume (left and right) 
@@ -118,7 +119,7 @@ namespace AC97
 		outw(device.nambar + AC97_NAM_PC_BEEP, volume); // volume for the PC loudspeaker (unnecessary if not used) 
 		outw(device.nambar + AC97_NAM_PCM_VOLUME, (volume << 8) | volume); // Volume for PCM (left and right) 
 
-		PIT::Sleep(10);
+		Timer::Sleep(10);
 
 		if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1))
 		{
@@ -129,7 +130,7 @@ namespace AC97
 		{
 			outw(device.nambar + AC97_NAM_EXT_AUDIO_STC, inw(device.nambar + AC97_NAM_EXT_AUDIO_STC) | 1); // Variable Rate Enable audio 
 
-			PIT::Sleep(10);
+			Timer::Sleep(10);
 			if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1))
 			{
 				/*Sample Rate fixed at 48kHz */
@@ -141,7 +142,7 @@ namespace AC97
 				outw(device.nambar + AC97_NAM_EXT_AUDIO_STC, inw(device.nambar + AC97_NAM_EXT_AUDIO_STC) | 1);
 				outw(device.nambar + AC97_NAM_FRONT_SPLRATE, 44100); // General. 
 				outw(device.nambar + AC97_NAM_LR_SPLRATE, 44100); // Stereo Samplerate: 44100 Hz 
-				PIT::Sleep(10);
+				Timer::Sleep(10);
 				//Actual Samplerate is now in AC97_NAM_FRONT_SPLRATE or AC97_NAM_LR_SPLRATE 
 				debug_print("Sample rate 44.1kHz\n");
 			}

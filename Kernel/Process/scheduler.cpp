@@ -2,6 +2,7 @@
 #include "HAL/hal.h"
 #include "Memory/memory.h"
 #include "Kernel/task.h"
+#include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
 
@@ -90,7 +91,7 @@ namespace Scheduler
 
 		if (thread->state != THREAD_STATE_TERMINATED)
 		{
-			if (PIT::Ticks() >= thread->sleep_until)
+			if (Timer::Ticks() >= thread->sleep_until)
 			{
 				thread->state = THREAD_STATE_READY;
 			}
@@ -184,7 +185,7 @@ namespace Scheduler
 			//Waiting
 			if (current_thread->state == THREAD_STATE_SLEEPING)
 			{
-				if (PIT::Ticks() >= current_thread->sleep_until)
+				if (Timer::Ticks() >= current_thread->sleep_until)
 				{
 					current_thread->sleep_until = 0;
 					current_thread->state = THREAD_STATE_READY;

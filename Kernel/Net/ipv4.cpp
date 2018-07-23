@@ -1,5 +1,6 @@
 #include "ipv4.h"
 #include "HAL/hal.h"
+#include "Kernel/timer.h"
 #include "net.h"
 #include "arp.h"
 #include "icmp.h"
@@ -47,7 +48,7 @@ namespace IPv4
 			if (mac == Net::NullMAC)
 			{
 				ARP::SendRequest(intf, dst);
-				PIT::Sleep(100);
+				Timer::Sleep(100);
 				//intf->Poll();
 				mac = ARP::LookupMac(dst);
 				

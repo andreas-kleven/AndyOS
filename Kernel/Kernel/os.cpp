@@ -12,6 +12,7 @@
 #include "Net/http.h"
 #include "Process/scheduler.h"
 #include "task.h"
+#include "timer.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
@@ -122,7 +123,7 @@ namespace OS
 	void GUI()
 	{
 		PROCESS* proc = ProcessManager::Load("1winman");
-		PIT::Sleep(100);
+		Timer::Sleep(100);
 		ProcessManager::Load("1term");
 		//ProcessManager::Load("1test");
 		//ProcessManager::Load("1mndlbrt");
@@ -200,7 +201,7 @@ namespace OS
 		debug_print("Found network card\n");
 
 		E1000* intf = new E1000(dev);
-		PIT::Sleep(1000);
+		Timer::Sleep(1000);
 
 		//DNS::Query(intf, "google.com");
 		IPv4Address addr(0xc0, 0xa8, 0x00, 0x7b);
