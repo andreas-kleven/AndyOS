@@ -11,6 +11,7 @@
 #include "Net/dhcp.h"
 #include "Net/http.h"
 #include "Process/scheduler.h"
+#include "task.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
@@ -84,7 +85,7 @@ namespace OS
 
 		debug_print("COM initialized\n");
 
-		THREAD* t = Scheduler::CreateKernelThread(COM_Receive);
+		THREAD* t = Task::CreateKernelThread(COM_Receive);
 		Scheduler::InsertThread(t);
 
 		while (1)

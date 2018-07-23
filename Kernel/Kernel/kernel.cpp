@@ -11,6 +11,7 @@
 #include "HAL/cpu.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
+#include "task.h"
 #include "FS/vfs.h"
 #include "Lib/debug.h"
 
@@ -59,8 +60,6 @@ namespace Kernel
 		Scheduler::Init();
 		debug_print("Init Scheduler\n");
 
-		THREAD* mainThread = Scheduler::CreateKernelThread(OS::Main);
-		Scheduler::InsertThread(mainThread);
-		Scheduler::StartThreading();
+		Task::Start(OS::Main);
 	}
 }

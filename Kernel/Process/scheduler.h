@@ -16,11 +16,8 @@ namespace Scheduler
 	void InsertThread(THREAD* thread);
 	void RemoveThread(THREAD* thread);
 
-	THREAD* CreateKernelThread(void(*main)());
-	THREAD* CreateUserThread(void(*main)(), void* stack);
-
 	THREAD* CurrentThread();
-	void StartThreading();
+	THREAD* Schedule();
 	
-	STATUS Init();
+	void Init();
 };

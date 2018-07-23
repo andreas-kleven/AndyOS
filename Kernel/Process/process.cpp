@@ -4,6 +4,7 @@
 #include "Memory/memory.h"
 #include "elf.h"
 #include "scheduler.h"
+#include "Kernel/task.h"
 #include "string.h"
 #include "Lib/debug.h"
 
@@ -70,13 +71,13 @@ namespace ProcessManager
 		switch (proc->flags)
 		{
 		case PROCESS_KERNEL:
-			thread = Scheduler::CreateKernelThread(entry);
+			thread = Task::CreateKernelThread(entry);
 			break;
 
 		case PROCESS_USER:
 			VMem::SwapAddressSpace(proc->addr_space);
 			uint8* stack = (uint8*)VMem::UserAlloc(2);
-			thread = Scheduler::CreateUserThread(entry, stack + BLOCK_SIZE);
+			thread = Task::CreateUserThread(entry, stack + BLOCK_SIZE);
 			break;
 		}
 

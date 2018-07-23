@@ -3,8 +3,6 @@
 #include "Memory/memory.h"
 #include "HAL/idt.h"
 
-#define TASK_SCHEDULE_IRQ 32
-
 enum THREAD_STATE
 {
 	THREAD_STATE_INITIALIZED,
