@@ -1,4 +1,4 @@
-#include "vmem.h"
+#include "Arch/memory.h"
 #include "string.h"
 
 #define PAGE_DIR_INDEX(x) 	((size_t(x) >> 22) & 0x3FF)
