@@ -12,3 +12,8 @@ void disable()
 {
     asm volatile("cli");
 }
+
+void halt()
+{
+    asm volatile("cli\nhlt");
+}

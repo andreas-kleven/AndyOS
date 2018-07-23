@@ -6,6 +6,7 @@
 #include "Drawing/vbe.h"
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
+#include "Drivers/rtc.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
 #include "Process/process.h"
