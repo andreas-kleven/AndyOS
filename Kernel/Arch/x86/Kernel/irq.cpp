@@ -5,6 +5,6 @@ namespace IRQ::Arch
 {
     bool Install(int num, void(*handler)())
     {
-        IDT::InstallIRQ(num, handler);
+        return IDT::InstallIRQ(num, handler);
     }
 }

@@ -1,7 +1,6 @@
 #include "os.h"
 #include "panic.h"
 #include "stdio.h"
-#include "Arch/regs.h"
 #include "PCI/pci.h"
 #include "Drivers/ac97.h"
 #include "Drivers/e1000.h"
@@ -29,46 +28,6 @@ namespace OS
 		ProcessManager::Load("Test.exe");
 		ProcessManager::Load("_Test.exe");
 	}
-
-	/*void T1()
-	{
-		const char* text = "'";
-
-		while (1)
-		{
-			asm("mov %0, %%eax\n"
-				"mov %1, %%ebx\n"
-				"int $0x80\n" 
-				"pause"
-				:: "c" (SYSCALL_PRINT), "d" (text));
-		}
-	}
-
-	void T2()
-	{
-		uint32 colors[] =
-		{
-			0xFFFF0000,
-			0xFF00FF00,
-			0xFF0000FF,
-			0xFF00FFFF,
-			0xFFFF00FF,
-			0xFFFFFF00
-		};
-
-		int t = 0;
-
-		while (1)
-		{
-			uint32 color = colors[(t++ / 10) % 6];
-
-			asm("mov %0, %%eax\n"
-				"mov %1, %%ebx\n"
-				"int $0x80\n" 
-				"pause"
-				:: "c" (SYSCALL_COLOR), "d" (color));
-		}
-	}*/
 
 	void COM_Receive()
 	{
@@ -128,7 +87,7 @@ namespace OS
 		//ProcessManager::Load("1test");
 		//ProcessManager::Load("1mndlbrt");
 
-		while (1)
+		/*while (1)
 		{
 			PROCESS* proc = ProcessManager::GetFirst();
 
@@ -185,7 +144,7 @@ namespace OS
 
 				proc = proc->next;
 			}
-		}
+		}*/
 	}
 
 	void _Net()

@@ -11,7 +11,7 @@ char* strncat(char* dest, const char* src, int n);
 void stoupper(char* s);
 void stolower(char* s);
 
-void* memcpy(void* dest, void* src, unsigned int n);
+extern "C" void* memcpy(void* dest, void* src, unsigned int n);
 int memcmp(const void* a, const void* b, unsigned int n);
 
 void* memset(void* dest, int val, int n);

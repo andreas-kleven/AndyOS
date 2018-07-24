@@ -5,12 +5,7 @@ SRC_DIR := .
 OBJ_DIR := obj
 ARCH_DIR := Arch/$(ARCH)
 
-ifeq ($(ARCH),x86)
 SRC_FILES := $(shell find $(SRC_DIR)/ -name '*.cpp' -not -path "$(SRC_DIR)/Arch/*")
-else ifeq ($(ARCH),aarch64)
-SRC_FILES := $(wildcard Memory/**/*.cpp)
-endif
-
 SRC_FILES += $(wildcard $(ARCH_DIR)/**/*.cpp)
 OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 			 
