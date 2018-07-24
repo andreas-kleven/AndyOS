@@ -44,17 +44,6 @@ namespace PIT
 		ticks++;
 	}
 
-	uint32 Ticks()
-	{
-		return ticks;
-	}
-
-	void Sleep(uint32 time)
-	{
-		uint32 end = ticks + time;
-		while (ticks < end) pause();
-	}
-
 	STATUS Init()
 	{
 		IDT::InstallIRQ(32, PIT_ISR);

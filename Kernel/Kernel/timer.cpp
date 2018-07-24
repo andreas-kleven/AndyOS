@@ -1,15 +1,17 @@
 #include "timer.h"
-#include "Arch/pit.h"
+#include "Arch/timer.h"
+#include "hal.h"
 
 namespace Timer
 {
     size_t Ticks()
     {
-        return PIT::Ticks();
+        return Arch::Ticks();
     }
-
+    
 	void Sleep(size_t time)
-    {
-        return PIT::Sleep(time);
-    }
+	{
+		size_t end = Ticks() + time;
+		while (Ticks() < end) pause();
+	}
 }
