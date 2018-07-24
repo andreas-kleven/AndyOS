@@ -1,11 +1,6 @@
 #pragma once
 
-#ifdef __i386__
 typedef long unsigned int size_t;
-#else
-typedef long unsigned int size_t;
-#endif
-
 
 typedef signed char			int8;
 typedef unsigned char		uint8;

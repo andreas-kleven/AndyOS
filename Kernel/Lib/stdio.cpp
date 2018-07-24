@@ -45,7 +45,7 @@ char* vsprintf(char* buf, const char* format, va_list args)
 
 			case 's':
 			{
-				int c = (int&)va_arg(args, char);
+				int c = (int)va_arg(args, char);
 				char str[64];
 				strcpy(str, (const char*)c);
 				strcpy(buf + retnum, str);

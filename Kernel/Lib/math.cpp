@@ -22,9 +22,10 @@ float sqrt(float val)
 	#ifdef __i386__
 	asm("fsqrt" : "+t" (val));
     return val;
+	#else
+	__asm__ ("fsqrt %s0, %s1" : "=w"(val) : "w"(val));
+    return val;
 	#endif
-
-	return 0;
 }
 
 float sin(float val)
