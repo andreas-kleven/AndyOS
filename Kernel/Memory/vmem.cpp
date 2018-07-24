@@ -4,7 +4,6 @@
 #include "Kernel/kernel.h"
 #include "string.h"
 #include "Lib/debug.h"
-#include "Drawing/vbe.h"
 #include "Process/scheduler.h"
 
 namespace VMem

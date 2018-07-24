@@ -10,6 +10,7 @@
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
 #include "FS/vfs.h"
+#include "video.h"
 #include "task.h"
 #include "syscalls.h"
 #include "debug.h"
@@ -44,7 +45,7 @@ namespace Kernel
 		Syscalls::Init();
 
 		VBE::Init(&vbe_mode);
-		debug_print("Init VBE: %i %i %i\n", vbe_mode.width, vbe_mode.height, vbe_mode.bpp);
+		debug_print("Init VBE: %i %i %i\n", Video::mode.width, Video::mode.height, Video::mode.depth);
 
 		DriverManager::Init();
 		debug_print("Init devices\n");

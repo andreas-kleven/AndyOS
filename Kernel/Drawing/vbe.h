@@ -42,9 +42,5 @@ struct VBE_MODE_INFO
 
 namespace VBE
 {
-	void Draw(uint32* framebuffer);
-	void SetPixel(int x, int y, uint32 col);
-	void DrawText(int x, int y, char* c, uint32 fg, uint32 bg);
-	VBE_MODE_INFO GetMode();
 	STATUS Init(VBE_MODE_INFO* info);
 };

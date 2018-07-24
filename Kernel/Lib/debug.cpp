@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "Drivers/serial.h"
-#include "Drawing/vbe.h"
+#include "Drawing/font.h"
+#include "video.h"
 #include "string.h"
 #include "stdio.h"
 #include "math.h"
@@ -20,6 +21,23 @@ STATUS debug_init(bool _serial)
 		Serial::Init(COM_PORT1, 115200);
 
 	return STATUS_SUCCESS;
+}
+
+void draw_text(int x, int y, char* c)
+{
+	for (int index = 0; index < strlen(c); index++)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
+					Video::SetPixel(x + index * 8 + (8 - j), y + i, color);
+				else
+					Video::SetPixel(x + index * 8 + (8 - j), y + i, bcolor);
+			}
+		}
+	}
 }
 
 void debug_pos(int _x, int _y)
@@ -59,9 +77,8 @@ void debug_putc(char c, bool escape)
 			Serial::Transmit(COM_PORT1, '\r');
 	}
 
-	VBE_MODE_INFO mode = VBE::GetMode();
-	int width = mode.width;
-	int height = mode.height;
+	int width = Video::mode.width;
+	int height = Video::mode.height;
 
 	if (escape)
 	{
@@ -84,12 +101,12 @@ void debug_putc(char c, bool escape)
 
 		case '\b':
 			x = clamp(x - 1, 0, width / 8);
-			VBE::DrawText(x * 8, y * 16, " ", color, bcolor);
+			draw_text(x * 8, y * 16, " ");
 			break;
 
 		default:
 			char str[] = { c, '\0' };
-			VBE::DrawText(x * 8, y * 16, str, color, bcolor);
+			draw_text(x * 8, y * 16, str);
 			x++;
 			break;
 		}
@@ -97,7 +114,7 @@ void debug_putc(char c, bool escape)
 	else
 	{
 		char str[] = { c, '\0' };
-		VBE::DrawText(x * 8, y * 16, str, color, bcolor);
+		draw_text(x * 8, y * 16, str);
 		x++;
 	}
 

@@ -2,10 +2,10 @@
 #include "Include/syscall_list.h"
 #include "hal.h"
 #include "irq.h"
+#include "video.h"
 #include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
-#include "Drawing/vbe.h"
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
 #include "Drivers/rtc.h"
@@ -94,7 +94,7 @@ namespace Syscalls
 
 	void draw(uint32* framebuffer)
 	{
-		VBE::Draw(framebuffer);
+		Video::Draw(framebuffer);
 	}
 
 	void exit(int code)
