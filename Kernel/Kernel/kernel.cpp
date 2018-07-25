@@ -1,8 +1,6 @@
 #include "kernel.h"
 #include "os.h"
 #include "Arch/init.h"
-#include "Boot/multiboot.h"
-#include "Drawing/vbe.h"
 #include "Drivers/serial.h"
 #include "Drivers/ata.h"
 #include "Drivers/mouse.h"
@@ -19,18 +17,12 @@ extern size_t __KERNEL_START, __KERNEL_END;
 
 namespace Kernel
 {
-	MULTIBOOT_INFO boot_info;
-	VBE_MODE_INFO vbe_mode;
-
-	void Setup(MULTIBOOT_INFO* bootinfo)
+	void Setup(size_t mem_start, size_t mem_end, VideoMode* video_mode)
 	{
-		boot_info = *bootinfo;
-		vbe_mode = *(VBE_MODE_INFO*)boot_info.vbe_mode_info;
-
 		size_t kernel_start = (size_t)&__KERNEL_START;
 		size_t kernel_end = (size_t)&__KERNEL_END;
-		size_t mem_end = boot_info.mem_upper * 0x400;
-		size_t mem_size = mem_end;
+
+		size_t mem_size = mem_end - mem_start;
 
 		debug_init(1);
 		debug_color(0xFF00FF00);
@@ -44,8 +36,8 @@ namespace Kernel
 
 		Syscalls::Init();
 
-		VBE::Init(&vbe_mode);
-		debug_print("Init VBE: %i %i %i\n", Video::mode.width, Video::mode.height, Video::mode.depth);
+		Video::SetMode(video_mode);
+		debug_print("Init video: %i %i %i\n", Video::mode->width, Video::mode->height, Video::mode->depth);
 
 		DriverManager::Init();
 		debug_print("Init devices\n");

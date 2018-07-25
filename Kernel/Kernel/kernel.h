@@ -1,7 +1,8 @@
 #pragma once
-#include "Boot/multiboot.h"
+#include "definitions.h"
+#include "video.h"
 
 namespace Kernel
 {
-	void Setup(MULTIBOOT_INFO* bootinfo);
+	void Setup(size_t mem_start, size_t mem_end, VideoMode* video_mode);
 };

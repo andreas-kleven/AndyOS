@@ -1,5 +1,6 @@
 #pragma once
 #include "definitions.h"
+#include "video.h"
 
 struct VBE_MODE_INFO
 {
@@ -40,7 +41,14 @@ struct VBE_MODE_INFO
 	uint8 reserved1[206];
 } __attribute__((packed));
 
-namespace VBE
+class VBEVideoMode : public VideoMode
 {
-	STATUS Init(VBE_MODE_INFO* info);
+private:
+	VBE_MODE_INFO info;
+
+public:
+	VBEVideoMode(VBE_MODE_INFO* info);
+
+	void Draw(void* pixels);
+    void SetPixel(int x, int y, unsigned int col);
 };

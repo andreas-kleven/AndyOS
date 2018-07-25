@@ -1,37 +1,41 @@
 #include "video.h"
+#include "Memory/memory.h"
 #include "string.h"
 
 namespace Video
 {
-    VIDEO_MODE mode;
-    int memsize;
+    VideoMode* mode;
 
-    void SetMode(VIDEO_MODE _mode)
+    void SetMode(VideoMode* _mode)
     {
         mode = _mode;
-        memsize = mode.width * mode.height * mode.depth / 8;
+
+		//Map framebuffer
+		mode->framebuffer = VMem::KernelMapFirstFree(
+			mode->framebuffer_phys, 
+			BYTES_TO_BLOCKS(mode->memsize), 
+			PAGE_PRESENT | PAGE_WRITE);
     }
 
     void Draw(void* pixels)
     {
-        if (mode.framebuffer == 0)
+        if (mode->framebuffer == 0 || pixels == 0)
             return;
 
-        memcpy(mode.framebuffer, pixels, memsize);
+        mode->Draw(pixels);
     }
 
 	void SetPixel(int x, int y, unsigned int col)
     {
-        if (mode.framebuffer == 0)
+        if (mode->framebuffer == 0)
             return;
 
-        if (x >= mode.width || x < 0)
+        if (x >= mode->width || x < 0)
 			return;
 
-		if (y >= mode.height || y < 0)
+		if (y >= mode->height || y < 0)
 			return;
 
-		unsigned int* a = (unsigned int*)mode.framebuffer + y * mode.width + x;
-		*a = col;
+		mode->SetPixel(x, y, col);
     }
 }

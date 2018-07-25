@@ -77,8 +77,8 @@ void debug_putc(char c, bool escape)
 			Serial::Transmit(COM_PORT1, '\r');
 	}
 
-	int width = Video::mode.width;
-	int height = Video::mode.height;
+	int width = Video::mode->width;
+	int height = Video::mode->height;
 
 	if (escape)
 	{

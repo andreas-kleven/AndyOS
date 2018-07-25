@@ -1,6 +1,5 @@
 #pragma once
 #include "definitions.h"
-#include "Boot/multiboot.h"
 
 #define PAGE_SIZE 4096
 
