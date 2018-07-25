@@ -53,7 +53,7 @@ MVideoMode::MVideoMode(int width, int height, int depth)
     {
         this->width = mbox[5];
         this->height = mbox[6];
-        this->depth = mbox[28];
+        this->depth = mbox[20];
         
         mbox[28] &= 0x3FFFFFFF;
         this->framebuffer_phys = (void*)mbox[28];
