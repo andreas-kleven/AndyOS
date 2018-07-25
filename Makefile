@@ -43,8 +43,10 @@ iso: all
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
-	cp $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin
-	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
+	@if [ $( cmp -s $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin) ]; then \
+		cp $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin; \
+		grub-mkrescue -o $(ISO_NAME) $(ISO_DIR); \
+	fi
 
 iso-programs: programs
 	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman

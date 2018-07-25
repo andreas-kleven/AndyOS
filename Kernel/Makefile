@@ -40,9 +40,11 @@ else ifeq ($(ARCH),aarch64)
 	$(OBJCOPY) -O binary $@ $(BUILD_DIR)/kernel8.img
 endif
 
+-include $(OBJ_FILES:.o=.d)
+
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CC) -MP -MD $(CPPFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%_.o: $(SRC_DIR)/%.S
 	$(CC) $(CPPFLAGS) -c -o $@ $<
@@ -51,5 +53,5 @@ $(OBJ_DIR)/%_.o: $(SRC_DIR)/%.asm
 	nasm -f elf32 -o $@ $<
 
 clean:
-	rm -f $(TARGET) $(OBJ_DIR)/**/*.o
+	rm -f $(TARGET) $(OBJ_DIR)/**/*.o $(OBJ_DIR)/**/*.d
 	find . -type d -empty -delete
