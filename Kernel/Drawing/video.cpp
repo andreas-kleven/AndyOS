@@ -10,11 +10,14 @@ namespace Video
     {
         mode = _mode;
 
-		//Map framebuffer
-		mode->framebuffer = VMem::KernelMapFirstFree(
-			mode->framebuffer_phys, 
-			BYTES_TO_BLOCKS(mode->memsize), 
-			PAGE_PRESENT | PAGE_WRITE);
+        if (mode->framebuffer_phys != 0 && mode->framebuffer == 0)
+        {
+            //Map framebuffer
+            mode->framebuffer = VMem::KernelMapFirstFree(
+                mode->framebuffer_phys, 
+                BYTES_TO_BLOCKS(mode->memsize), 
+                PAGE_PRESENT | PAGE_WRITE);
+        }
     }
 
     void Draw(void* pixels)

@@ -10,9 +10,6 @@ VBEVideoMode::VBEVideoMode(VBE_MODE_INFO* info)
 
 void VBEVideoMode::Draw(void* pixels)
 {
-	if (framebuffer == 0)
-		return;
-
 	memcpy(framebuffer, pixels, memsize);
 }
 

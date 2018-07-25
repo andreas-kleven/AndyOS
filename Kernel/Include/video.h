@@ -11,9 +11,6 @@ public:
     void* framebuffer_phys = 0;
     void* framebuffer = 0;
 
-    virtual void Draw(void* pixels) { }
-    virtual void SetPixel(int x, int y, unsigned int col) { }
-
     VideoMode()
     { }
 
@@ -26,6 +23,9 @@ public:
 
         this->memsize = width * height * depth / 8;
     }
+
+    virtual void Draw(void* pixels) { }
+    virtual void SetPixel(int x, int y, unsigned int col) { }
 };
 
 namespace Video
