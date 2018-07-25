@@ -126,9 +126,9 @@ namespace PMem
 		}
 	}
 
-	STATUS Init(size_t size, void* map)
+	STATUS Init(size_t mem_start, size_t mem_end, void* map)
 	{
-		mem_size = size;
+		mem_size = mem_end - mem_start;
 		mem_map = (uint32*)map;
 
 		num_blocks = BYTES_TO_BLOCKS(mem_size);

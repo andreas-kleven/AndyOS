@@ -22,15 +22,13 @@ namespace Kernel
 		size_t kernel_start = (size_t)&__KERNEL_START;
 		size_t kernel_end = (size_t)&__KERNEL_END;
 
-		size_t mem_size = mem_end - mem_start;
-
 		debug_init(false);
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
 
 		Arch::Init();
 
-		PMem::Init(mem_size, (void*)kernel_end);
+		PMem::Init(mem_start, mem_end, (void*)kernel_end);
 		PMem::InitRegion((void*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
 		VMem::Init();
 
