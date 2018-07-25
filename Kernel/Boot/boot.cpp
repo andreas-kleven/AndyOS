@@ -4,7 +4,7 @@
 #include "Drawing/vbe.h"
 #include "Lib/globals.h"
 
-extern "C" void kernel_main(uint32 magic, MULTIBOOT_INFO* bootinfo)
+extern "C" void grub_main(uint32 magic, MULTIBOOT_INFO* bootinfo)
 {
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
 		return;

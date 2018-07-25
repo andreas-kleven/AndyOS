@@ -31,14 +31,14 @@ multiboot_header:
 	dd	32
 
 section .text
-extern kernel_main
+extern grub_main
 
 _start:
 	mov	esp, stack + STACK_SIZE
 	
 	push	ebx					;Multiboot info 
 	push	eax					;Magic
-	call	kernel_main
+	call	grub_main
 
 	cli
 	hlt
