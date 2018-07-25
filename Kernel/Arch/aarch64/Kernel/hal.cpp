@@ -2,6 +2,7 @@
 
 void pause()
 {
+    asm ("yield");
 }
 
 void enable()

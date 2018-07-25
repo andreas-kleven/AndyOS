@@ -1,16 +1,14 @@
 #include "Arch/uart.h"
+#include "Arch/mailbox.h"
+#include "Arch/mvideo.h"
+#include "Kernel/kernel.h"
+#include "debug.h"
 
 extern "C" void aarch64_main()
 {
-    // set up serial console
     uart_init();
-    
-    // say hello
-    // say hello
-    uart_puts("Hello World!\n");
-    
-    // echo everything back
-    while(1) {
-        uart_send(uart_getc());
-    }
+    uart_puts("Hello\n");
+
+    MVideoMode video_mode(1024, 768, 32);
+    Kernel::Setup(0, 0x40000000, &video_mode);
 }

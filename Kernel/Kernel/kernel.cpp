@@ -24,7 +24,7 @@ namespace Kernel
 
 		size_t mem_size = mem_end - mem_start;
 
-		debug_init(1);
+		debug_init(false);
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
 
