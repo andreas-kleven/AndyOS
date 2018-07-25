@@ -13,11 +13,12 @@ SECTIONS
         *(.bss .bss.*)
         *(COMMON)
         __bss_end = .;
+		
+		__KERNEL_END = .;
     }
     _end = .;
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
    
-	__KERNEL_END = .; 
 }
 __bss_size = (__bss_end - __bss_start)>>3;
