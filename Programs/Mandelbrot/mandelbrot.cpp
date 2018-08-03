@@ -7,6 +7,7 @@ using namespace gui;
 
 const int iter_max = 256;
 int histogram[iter_max + 1];
+const int max_scale = 8;
 
 double zoom = 4;
 double ofx = 0;
@@ -123,6 +124,23 @@ rgb hsv2rgb(hsv in)
     return out;     
 }
 
+bool any_key_down()
+{
+	return InputManager::GetKeyDown(KEY_LCTRL)
+		|| InputManager::GetKeyDown(KEY_SPACE)
+		|| InputManager::GetKeyDown(KEY_R)
+		|| InputManager::GetKeyDown(KEY_W)
+		|| InputManager::GetKeyDown(KEY_A)
+		|| InputManager::GetKeyDown(KEY_S)
+		|| InputManager::GetKeyDown(KEY_D);
+
+	for (int i = 0; i < 100; i++)
+		if (InputManager::GetKeyDown((KEYCODE)i))
+			return true;
+
+	return false;
+}
+
 uint32 get_color(double hue)
 {
 	hsv c;
@@ -135,20 +153,96 @@ uint32 get_color(double hue)
 	return Color(rc.r, rc.g, rc.b).ToInt();
 }
 
+void render(GC& gc, int scale)
+{
+	int width = gc.width;
+	int height = gc.height;
+
+	double sens = zoom / width;
+
+	//Reset histogram
+	for (int i = 0; i <= iter_max; i++)
+		histogram[i] = 0;
+
+	for (int _y = 0; _y < height; _y += scale)
+	{
+		for (int _x = 0; _x < width; _x += scale)
+		{
+			double x = (_x - width / 2) * sens + ofx;
+			double y = (_y - height / 2) * sens + ofy;
+
+			double z2;
+			int iter = get_iteration(x, y, &z2);
+
+			histogram[iter]++;
+		}
+	}
+
+	for (int _y = 0; _y < height; _y += scale)
+	{
+		for (int _x = 0; _x < width; _x += scale)
+		{
+			double x = (_x - width / 2) * sens + ofx;
+			double y = (_y - height / 2) * sens + ofy;
+			
+			double z2;
+			int iter = get_iteration(x, y, &z2);
+
+			int total = width * height;
+
+			Color color = Color::Black;
+
+			if (iter != iter_max)
+			{
+				double zn = sqrt(z2);
+				uint32 c = clamp((int)((iter - log2(log(zn) / log(1 << 16))) * 5), 0, 0xFF);
+				color = Color(c);
+
+				//double hue = 0;
+				//for (int i = 0; i <= iter; i++)
+				//	hue += histogram[i] / (double)total;
+				//color = Color(get_color(hue));
+			}
+
+			Drawing::FillRect(_x, _y, scale, scale, color, gc);
+		}
+	}
+}
+
 void run(GC& gc)
 {
 	int ticks = get_ticks();
 	double delta = 1;
+	int scale = max_scale;
 
 	GC gc_buf;
 
 	while (1)
 	{
-		if (gc_buf.width != gc.width || gc_buf.height != gc.height);
+		if (gc_buf.width != gc.width || gc_buf.height != gc.height)
+		{
 			gc_buf = GC(gc.width, gc.height);
+			scale = max_scale;
+		}
 
 		double asd0 = zoom;
 		double asd1 = asd0 / gc_buf.width;
+
+		bool enable_render = true;
+
+		if (any_key_down())
+		{
+			scale = max_scale;
+		}
+		else if (scale > 1)
+		{
+			scale /= 2;
+		}
+		else
+		{
+			sleep(10);
+			enable_render = false;
+		}
 
 		if (InputManager::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
 		if (InputManager::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
@@ -163,67 +257,16 @@ void run(GC& gc)
 		Drawing::Clear(Color::Black, gc_buf);
 		debug_reset();
 
-		int index = 0;
-		uint32* buf = gc_buf.framebuffer + gc_buf.y * gc_buf.stride + gc_buf.x;
-
-		//Reset histogram
-		for (int i = 0; i <= iter_max; i++)
-			histogram[i] = 0;
-
-		for (int _y = 0; _y < gc_buf.height; _y++)
+		if (enable_render)
 		{
-			for (int _x = 0; _x < gc_buf.width; _x++)
-			{
-				double x = (_x - gc_buf.width / 2) * asd1 + ofx;
-				double y = (_y - gc_buf.height / 2) * asd1 + ofy;
-
-				double z2;
-				int iter = get_iteration(x, y, &z2);
-
-				histogram[iter]++;
-			}
+			render(gc_buf, scale);
+			Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
 		}
-
-		for (int _y = 0; _y < gc_buf.height; _y++)
-		{
-			for (int _x = 0; _x < gc_buf.width; _x++)
-			{
-				double x = (_x - gc_buf.width / 2) * asd1 + ofx;
-				double y = (_y - gc_buf.height / 2) * asd1 + ofy;
-				
-				double z2;
-				int iter = get_iteration(x, y, &z2);
-
-				int total = gc_buf.width * gc_buf.height;
-
-				double hue = 0;
-				for (int i = 0; i <= iter; i++)
-  					hue += histogram[i] / (double)total;
-
-				*buf++ = get_color(hue);
-
-				/*if (iter == iter_max)
-				{
-					*buf++ = 0;
-				}
-				else
-				{
-					double zn = sqrt(z2);
-					uint32 color = clamp((int)((iter - log2(log(zn) / log(1 << 16))) * 5), 0, 0xFF);
-					*buf++ = color;
-				}*/
-			}
-
-			index += gc_buf.stride - gc_buf.width;
-			buf += gc_buf.stride - gc_buf.width;
-		}
-
-		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
 
 		int delta_ticks = (get_ticks() - ticks);
 		delta = delta_ticks / 1000.0f;
 		ticks = get_ticks();
-		debug_print("Ticks: %i\tFPS: %i\n", delta_ticks, (int)(1 / delta));
+		debug_print("Ticks: %i\tFPS: %i\tScale: %i\n", delta_ticks, (int)(1 / delta), scale);
 		debug_print("Zoom: %f\n", zoom);
 	}
 }
