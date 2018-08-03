@@ -56,9 +56,9 @@ void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 
 	DrawTriangle2(v0, v1, v2, texture);
 
-	//Drawing::DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF, gc);
-	//Drawing::DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00, gc);
-	//Drawing::DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000, gc);
+	//gc.DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF);
+	//gc.DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00);
+	//gc.DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000);
 }
 
 void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)

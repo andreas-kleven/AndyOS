@@ -18,9 +18,9 @@ namespace gui
 	{
 		GC gc = CreateGC();
 
-		Drawing::Clear(background, gc);
-		Drawing::DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black, gc);
-		Drawing::DrawText(2, 2, text.ToChar(), foreground, background, gc);
+		gc.Clear(background);
+		gc.DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black);
+		gc.DrawText(2, 2, text.ToChar(), foreground, background);
 
         int time = get_ticks() - focusTime;
 
@@ -29,7 +29,7 @@ namespace gui
             if (time % blinkTime < blinkTime / 2)
             {
                 int x = text.Length() * 8 + 2;
-                Drawing::FillRect(x, 2, 1, 16, foreground, gc);
+                gc.FillRect(x, 2, 1, 16, foreground);
             }
         }
 	}

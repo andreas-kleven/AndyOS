@@ -22,9 +22,9 @@ namespace gui
 		if (isMouseDown)
 			bg_color = Color(0.6, 0.6, 0.6);
 
-		Drawing::Clear(bg_color, gc);
-		Drawing::DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black, gc);
-		Drawing::DrawText(2, 2, text.ToChar(), foreground, bg_color, gc);
+		gc.Clear(bg_color);
+		gc.DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black);
+		gc.DrawText(2, 2, text.ToChar(), foreground, bg_color);
 	}
 
 	void Button::MouseDown()

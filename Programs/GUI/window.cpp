@@ -25,7 +25,7 @@ namespace gui
             this->height = response.height;
             this->bounds = Rect(0, 0, width, height);
             this->gc = GC(response.width, response.height, response.framebuffer);
-	        Drawing::Clear(background, this->gc);
+	        this->gc.Clear(background);
 
             Client::AddWindow(this);
         }
@@ -147,7 +147,7 @@ namespace gui
             this->width = msg->width;
             this->height = msg->height;
             this->gc.Resize(msg->width, msg->height);
-	        Drawing::Clear(background, this->gc);
+	        this->gc.Clear(background);
 
             OnResize();
         }

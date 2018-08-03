@@ -292,7 +292,7 @@ void GEngine::DebugLine(Vector3 start, Vector3 end, Color& color)
 		while (1);
 	}
 
-	Drawing::DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color, gc);
+	gc.DrawLine(lpstart.x, lpstart.y, lpend.x, lpend.y, color);
 }
 
 void GEngine::DebugBox(Box& box, Color& color)
@@ -464,11 +464,11 @@ void GEngine::Collision()
 						colPoint += m.Point / count;
 
 						Vector3 sc = WorldToScreen(m.Point);
-						Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Red, gc);
+						gc.FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Red);
 					}
 
 					Vector3 sc = WorldToScreen(colPoint);
-					Drawing::FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue, gc);
+					gc.FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue);
 
 					Vector3 va;
 					Vector3 vb;

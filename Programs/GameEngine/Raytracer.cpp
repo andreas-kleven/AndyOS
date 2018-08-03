@@ -536,7 +536,7 @@ void Raytracer::Render()
 			Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
 
 			Color color = TraceColor(rayOrigin, rayDir);
-			Drawing::FillRect(x, y, resolution, resolution, color, gc);
+			gc.FillRect(x, y, resolution, resolution, color);
 		}
 	}
 
@@ -550,6 +550,6 @@ void Raytracer::Render()
 	{
 		Photon& photon = photonMap[i];
 		Vector3 p = GEngine::WorldToScreen(photon.position);
-		Drawing::SetPixel(p.x, p.y, photon.color, gc);
+		gc.SetPixel(p.x, p.y, photon.color);
 	}
 }

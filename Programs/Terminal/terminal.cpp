@@ -27,7 +27,7 @@ public:
 		color = Color::White;
 		bcolor = Color::Black;
 
-		Drawing::Clear(bcolor, gc);
+		gc.Clear(bcolor);
 		ResetCommand();
 	}
 
@@ -234,7 +234,7 @@ public:
 		else if (strcmp(arg1, "clear") == 0)
 		{
 			y = 0;
-			Drawing::Clear(bcolor, gc);
+			gc.Clear(bcolor);
 		}
 		else if (strcmp(arg1, "test") == 0)
 		{
@@ -338,12 +338,12 @@ public:
 
 		case '\b':
 			x = clamp(x - 1, 0, gc.width / 8);
-			Drawing::DrawText(x * 8, y * 16, " ", color, bcolor, gc);
+			gc.DrawText(x * 8, y * 16, " ", color, bcolor);
 			break;
 
 		default:
 			char str[] = { c, '\0' };
-			Drawing::DrawText(x * 8, y * 16, str, color, bcolor, gc);
+			gc.DrawText(x * 8, y * 16, str, color, bcolor);
 			x++;
 			break;
 		}
@@ -359,7 +359,7 @@ public:
 	{
 		if (y >= gc.height / 16 - 1)
 		{
-			Drawing::BitBlt(gc, 0, 16, width, 16 * (height / 16), gc, 0, 0);
+			gc.CopyTo(0, 16, width, 16 * (height / 16), gc, 0, 0);
 			ClearLine();
 		}
 
@@ -368,7 +368,7 @@ public:
 
 	void ClearLine()
 	{
-		Drawing::FillRect(0, y * 16, gc.width, 16, bcolor, gc);
+		gc.FillRect(0, y * 16, gc.width, 16, bcolor);
 	}
 };
 

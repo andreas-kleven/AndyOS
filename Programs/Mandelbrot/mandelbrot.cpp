@@ -106,7 +106,7 @@ void render(GC& gc, int scale)
 				color = colors[i % color_count];
 			}
 
-			Drawing::FillRect(_x, _y, scale, scale, color, gc);
+			gc.FillRect(_x, _y, scale, scale, color);
 		}
 	}
 }
@@ -215,9 +215,9 @@ void run(GC& gc)
 
 		if (enable_render)
 		{
-			Drawing::Clear(Color::Black, gc_buf);
+			gc_buf.Clear(Color::Black);
 			render(gc_buf, scale);
-			Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
+			gc_buf.CopyTo(0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
 		}
 
 		debug_reset();

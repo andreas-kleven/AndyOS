@@ -69,42 +69,13 @@ struct GC
 	int stride;
 	uint32* framebuffer;
 
-	GC()
-	{ }
+	GC();
+	GC(int width, int height, uint32* framebuffer);
+	GC(int width, int height);
+	GC(GC& gc, int x, int y, int width, int height);
+	GC(GC& gc, Rect bounds);
 
-	GC(int width, int height, uint32* framebuffer)
-	{
-		this->x = 0;
-		this->y = 0;
-		this->width = width;
-		this->height = height;
-		this->stride = width;
-		this->framebuffer = framebuffer;
-	}
-
-	GC(int width, int height) : GC(width, height, new uint32[width * height])
-	{ }
-
-	GC(GC& gc, int x, int y, int width, int height)
-	{
-		this->x = x + gc.x;
-		this->y = y + gc.y;
-		this->width = clamp(width, 0, gc.width - x);
-		this->height = clamp(height, 0, gc.height - y);
-
-		this->stride = gc.stride;
-		this->framebuffer = gc.framebuffer;
-	}
-
-	GC(GC& gc, Rect bounds) : GC(gc, bounds.x, bounds.y, bounds.width, bounds.height)
-	{ }
-
-	void Resize(int width, int height)
-	{
-		this->width = width;
-		this->height = height;
-		this->stride = width;
-	}
+	void Resize(int width, int height);
 
 	inline int memsize()
 	{
@@ -115,35 +86,32 @@ struct GC
 	{
 		return width * height;
 	}
-};
 
-class Drawing
-{
-public:
-	static void Init();
+	void Draw();
+	void Clear(Color& col);
+	void CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool alpha = 0);
+	void SetPixel(int x, int y, Color& col);
 
-	static void Draw(GC& gc);
-	static void Clear(Color& col, GC& gc);
+	void DrawLine(int x0, int y0, int x1, int y1, Color& col);
+	void DrawBezierQuad(Point* points, int count, Color& col);
+	void DrawBezierCube(Point* points, int count, Color& col);
 
-	static void BitBlt(GC& src, int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool alpha = 0);
+	void DrawRect(Rect& bounds, int width, Color& col);
+	void DrawRect(int x, int y, int w, int h, int width, Color& col);
+	void FillRect(Rect& bounds, Color& col);
+	void FillRect(int x, int y, int w, int h, Color& col);
 
-	static void SetPixel(int x, int y, Color& col, GC& gc);
+	void DrawImage(Rect& bounds, BMP* bmp);
+	void DrawImage(int x, int y, int w, int h, BMP* bmp);
 
-	static void DrawLine(int x0, int y0, int x1, int y1, Color& col, GC& gc);
-	static void DrawBezierQuad(Point* points, int count, Color& col, GC& gc);
-	static void DrawBezierCube(Point* points, int count, Color& col, GC& gc);
-
-	static void DrawRect(Rect& bounds, int width, Color& col, GC& gc);
-	static void DrawRect(int x, int y, int w, int h, int width, Color& col, GC& gc);
-	static void FillRect(Rect& bounds, Color& col, GC& gc);
-	static void FillRect(int x, int y, int w, int h, Color& col, GC& gc);
-
-	static void DrawImage(Rect& bounds, BMP* bmp, GC& gc);
-	static void DrawImage(int x, int y, int w, int h, BMP* bmp, GC& gc);
-
-	static void DrawText(int x, int y, char* c, Color& fg, GC& gc);
-	static void DrawText(int x, int y, char* c, Color& fg, Color& bg, GC& gc);
+	void DrawText(int x, int y, char* c, Color& fg);
+	void DrawText(int x, int y, char* c, Color& fg, Color& bg);
 
 private:
-	static inline uint32 BlendAlpha(uint32 src, uint32 dst);
+	inline uint32 BlendAlpha(uint32 src, uint32 dst);
 };
+
+namespace Drawing
+{
+	void Init();
+}

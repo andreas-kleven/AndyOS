@@ -215,6 +215,9 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 
 void WindowManager::UpdateLoop()
 {
+	int last_ticks = get_ticks();
+	float target_ticks = 1000.0f / 60;
+
 	while (1)
 	{
 		cursor_enabled = !active_window || !active_window->capture;
@@ -231,7 +234,14 @@ void WindowManager::UpdateLoop()
 			PaintCursor();
 		}
 
-		Drawing::Draw(gc);
+		gc.Draw();
+
+		int ticks = get_ticks();
+		float delta = ticks - last_ticks;
+		last_ticks = ticks;
+
+		if (delta < target_ticks)
+			sleep((int)(target_ticks - delta));
 	}
 }
 
@@ -241,7 +251,7 @@ void WindowManager::PaintBackground()
 	{
 		if (bmp_background)
 		{
-			Drawing::DrawImage(0, 0, bmp_background->width, bmp_background->height, bmp_background, gc_background);
+			gc_background.DrawImage(0, 0, bmp_background->width, bmp_background->height, bmp_background);
 			/*//Repeat
 
 			int x = 0;
@@ -250,7 +260,7 @@ void WindowManager::PaintBackground()
 				int  y = 0;
 				while (y < height)
 				{
-					Drawing::DrawImage(x, y, bmp_background->width, bmp_background->height, bmp_background, gc_background);
+					gc_background.DrawImage(x, y, bmp_background->width, bmp_background->height, bmp_background);
 					y += bmp_background->height;
 				}
 
@@ -259,13 +269,13 @@ void WindowManager::PaintBackground()
 		}
 		else
 		{
-			Drawing::FillRect(0, 0, gc.width, gc.height, col_desktop_bg, gc_background);
+			gc_background.FillRect(0, 0, gc.width, gc.height, col_desktop_bg);
 		}
 
 		background_dirty = false;
 	}
 
-	Drawing::BitBlt(gc_background, 0, 0, gc_background.width, gc_background.height, gc, 0, 0);
+	gc_background.CopyTo(0, 0, gc_background.width, gc_background.height, gc, 0, 0);
 }
 
 void WindowManager::PaintWindows()
@@ -307,9 +317,9 @@ void WindowManager::PaintTaskbar()
 	int height = gc_taskbar.height;
 	int y = gc.height - gc_taskbar.height;
 	
-	Drawing::FillRect(0, 0, gc_taskbar.width, gc_taskbar.height, col_taskbar, gc_taskbar);
+	gc_taskbar.FillRect(0, 0, gc_taskbar.width, gc_taskbar.height, col_taskbar);
 	PaintTaskbarWindows();
-	Drawing::BitBlt(gc_taskbar, 0, 0, gc_taskbar.width, gc_taskbar.height, gc, 0, y);
+	gc_taskbar.CopyTo(0, 0, gc_taskbar.width, gc_taskbar.height, gc, 0, y);
 }
 
 void WindowManager::PaintTaskbarWindows()
@@ -325,7 +335,7 @@ void WindowManager::PaintTaskbarWindows()
 	while (wnd)
 	{
 		Color col = wnd->focused ? Color::LightGray : Color::Gray;
-		Drawing::FillRect(x, y, size, size, col, gc_taskbar);
+		gc_taskbar.FillRect(x, y, size, size, col);
 
 		x += margin + size;
 
@@ -347,12 +357,12 @@ void WindowManager::PaintCursor()
 			if (c != 0)
 			{
 				Color col = Color(c);
-				Drawing::SetPixel(x, y, col, gc_cursor);
+				gc_cursor.SetPixel(x, y, col);
 			}
 		}
 	}
 
-	Drawing::BitBlt(gc_cursor, 0, 0, gc_cursor.width, gc_cursor.height, gc, (int)cursor_x, (int)cursor_y, 1);
+	gc_cursor.CopyTo(0, 0, gc_cursor.width, gc_cursor.height, gc, (int)cursor_x, (int)cursor_y, 1);
 }
 
 void WindowManager::HandleMouseInput()

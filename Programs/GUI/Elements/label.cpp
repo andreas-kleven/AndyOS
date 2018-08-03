@@ -14,7 +14,7 @@ namespace gui
 	{
 		GC gc = CreateGC();
 
-		Drawing::Clear(background, gc);
-		Drawing::DrawText(0, 0, text.ToChar(), foreground, background, gc);
+		gc.Clear(background);
+		gc.DrawText(0, 0, text.ToChar(), foreground, background);
 	}
 }

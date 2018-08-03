@@ -162,13 +162,13 @@ namespace GL
 
 	void Clear(Color color)
 	{
-		Drawing::Clear(color, gc_buf);
+		gc_buf.Clear(color);
 		rasterizer.Clear();
 	}
 
 	void SwapBuffers()
 	{
-		Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
+		gc_buf.CopyTo(0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 	}
 
 	STATUS Init(GC gc)
