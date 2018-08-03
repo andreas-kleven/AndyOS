@@ -6,13 +6,32 @@
 using namespace gui;
 
 const int iter_max = 256;
-int histogram[iter_max + 1];
-const int max_scale = 8;
+const int max_scale = 4;
+
+const int color_count = 256;
+Color* colors;
 
 double zoom = 4;
 double ofx = 0;
 double ofy = 0;
 double rot = 0;
+
+bool any_key_down()
+{
+	return InputManager::GetKeyDown(KEY_LCTRL)
+		|| InputManager::GetKeyDown(KEY_SPACE)
+		|| InputManager::GetKeyDown(KEY_R)
+		|| InputManager::GetKeyDown(KEY_W)
+		|| InputManager::GetKeyDown(KEY_A)
+		|| InputManager::GetKeyDown(KEY_S)
+		|| InputManager::GetKeyDown(KEY_D);
+
+	for (int i = 0; i < 100; i++)
+		if (InputManager::GetKeyDown((KEYCODE)i))
+			return true;
+
+	return false;
+}
 
 int get_iteration(double x, double y, double* z2)
 {
@@ -54,105 +73,6 @@ int get_iteration(double x, double y, double* z2)
 	return iter;
 }
 
-typedef struct {
-    double r;       // a fraction between 0 and 1
-    double g;       // a fraction between 0 and 1
-    double b;       // a fraction between 0 and 1
-} rgb;
-
-typedef struct {
-    double h;       // angle in degrees
-    double s;       // a fraction between 0 and 1
-    double v;       // a fraction between 0 and 1
-} hsv;
-
-rgb hsv2rgb(hsv in)
-{
-    double      hh, p, q, t, ff;
-    long        i;
-    rgb         out;
-
-    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        out.r = in.v;
-        out.g = in.v;
-        out.b = in.v;
-        return out;
-    }
-    hh = in.h;
-    if(hh >= 360.0) hh = 0.0;
-    hh /= 60.0;
-    i = (long)hh;
-    ff = hh - i;
-    p = in.v * (1.0 - in.s);
-    q = in.v * (1.0 - (in.s * ff));
-    t = in.v * (1.0 - (in.s * (1.0 - ff)));
-
-    switch(i) {
-    case 0:
-        out.r = in.v;
-        out.g = t;
-        out.b = p;
-        break;
-    case 1:
-        out.r = q;
-        out.g = in.v;
-        out.b = p;
-        break;
-    case 2:
-        out.r = p;
-        out.g = in.v;
-        out.b = t;
-        break;
-
-    case 3:
-        out.r = p;
-        out.g = q;
-        out.b = in.v;
-        break;
-    case 4:
-        out.r = t;
-        out.g = p;
-        out.b = in.v;
-        break;
-    case 5:
-    default:
-        out.r = in.v;
-        out.g = p;
-        out.b = q;
-        break;
-    }
-    return out;     
-}
-
-bool any_key_down()
-{
-	return InputManager::GetKeyDown(KEY_LCTRL)
-		|| InputManager::GetKeyDown(KEY_SPACE)
-		|| InputManager::GetKeyDown(KEY_R)
-		|| InputManager::GetKeyDown(KEY_W)
-		|| InputManager::GetKeyDown(KEY_A)
-		|| InputManager::GetKeyDown(KEY_S)
-		|| InputManager::GetKeyDown(KEY_D);
-
-	for (int i = 0; i < 100; i++)
-		if (InputManager::GetKeyDown((KEYCODE)i))
-			return true;
-
-	return false;
-}
-
-uint32 get_color(double hue)
-{
-	hsv c;
-	c.h = hue * 360;
-	c.s = 1;
-	c.v = 1;
-
-	rgb rc = hsv2rgb(c);
-
-	return Color(rc.r, rc.g, rc.b).ToInt();
-}
-
 void render(GC& gc, int scale)
 {
 	int width = gc.width;
@@ -160,10 +80,6 @@ void render(GC& gc, int scale)
 
 	double sens = zoom / width;
 
-	//Reset histogram
-	for (int i = 0; i <= iter_max; i++)
-		histogram[i] = 0;
-
 	for (int _y = 0; _y < height; _y += scale)
 	{
 		for (int _x = 0; _x < width; _x += scale)
@@ -173,35 +89,16 @@ void render(GC& gc, int scale)
 
 			double z2;
 			int iter = get_iteration(x, y, &z2);
-
-			histogram[iter]++;
-		}
-	}
-
-	for (int _y = 0; _y < height; _y += scale)
-	{
-		for (int _x = 0; _x < width; _x += scale)
-		{
-			double x = (_x - width / 2) * sens + ofx;
-			double y = (_y - height / 2) * sens + ofy;
-			
-			double z2;
-			int iter = get_iteration(x, y, &z2);
-
-			int total = width * height;
 
 			Color color = Color::Black;
 
 			if (iter != iter_max)
 			{
 				double zn = sqrt(z2);
-				uint32 c = clamp((int)((iter - log2(log(zn) / log(1 << 16))) * 5), 0, 0xFF);
-				color = Color(c);
-
-				//double hue = 0;
-				//for (int i = 0; i <= iter; i++)
-				//	hue += histogram[i] / (double)total;
-				//color = Color(get_color(hue));
+				double smooth = iter - log2(log(zn) / log(1 << 16));
+				double f = smooth / iter_max;
+				int i = (int)(f * 5000);
+				color = colors[i % color_count];
 			}
 
 			Drawing::FillRect(_x, _y, scale, scale, color, gc);
@@ -209,8 +106,50 @@ void render(GC& gc, int scale)
 	}
 }
 
+void init_colors()
+{
+	colors = new Color[color_count];
+	
+	const int res = color_count / 16;
+
+	int i = 0;
+	colors[i++ * res] = Color(66.f / 256, 30.f / 256, 15.f / 255);
+    colors[i++ * res] = Color(25.f / 256, 7.f / 256, 26.f / 255);
+    colors[i++ * res] = Color(9.f / 256, 1.f / 256, 47.f / 255);
+    colors[i++ * res] = Color(4.f / 256, 4.f / 256, 73.f / 255);
+    colors[i++ * res] = Color(0.f / 256, 7.f / 256, 100.f / 255);
+    colors[i++ * res] = Color(12.f / 256, 44.f / 256, 138.f / 255);
+    colors[i++ * res] = Color(24.f / 256, 82.f / 256, 177.f / 255);
+    colors[i++ * res] = Color(57.f / 256, 125.f / 256, 209.f / 255);
+    colors[i++ * res] = Color(134.f / 256, 181.f / 256, 229.f / 255);
+    colors[i++ * res] = Color(211.f / 256, 236.f / 256, 248.f / 255);
+    colors[i++ * res] = Color(241.f / 256, 233.f / 256, 191.f / 255);
+    colors[i++ * res] = Color(248.f / 256, 201.f / 256, 95.f / 255);
+    colors[i++ * res] = Color(255.f / 256, 170.f / 256, 0.f / 255);
+    colors[i++ * res] = Color(204.f / 256, 128.f / 256, 0.f / 255);
+    colors[i++ * res] = Color(153.f / 256, 87.f / 256, 0.f / 255);
+    colors[i++ * res] = Color(106.f / 256, 52.f / 256, 3.f / 255);
+
+	Color c0;
+	Color c1;
+
+	for (int i = 0; i <= 16; i++)
+	{
+		c0 = colors[i * res];
+		c1 = colors[((i+1) * res) % color_count];
+
+		for (int j = 1; j < res; j++)
+		{
+			double alpha = (double)j / res;
+			colors[i * res + j] = c1 * alpha + c0 * (1 - alpha);
+		}
+	}
+}
+
 void run(GC& gc)
 {
+	init_colors();
+
 	int ticks = get_ticks();
 	double delta = 1;
 	int scale = max_scale;
@@ -289,6 +228,7 @@ public:
 
 int main()
 {
+	Drawing::Init();
 	MainWindow wnd;
 	exit(0);
 }
