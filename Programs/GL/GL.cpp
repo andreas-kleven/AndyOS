@@ -105,7 +105,8 @@ namespace GL
 		SelectedMatrix() = mat_stack[--mat_stack_index];
 	}
 
-	void CameraDirection(Vector4 dir) {
+	void CameraDirection(Vector4 dir)
+	{
 		cam_dir = dir;
 	}
 

@@ -82,12 +82,10 @@ void GEngine::StartGame(Game* game, gui::Window* wnd)
 		
 		if (get_ticks() != ticks && totalFrames > 0)
 		{
-			debug_print("FPS: %i\tDT:%i\tAvgDT: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames);
+			debug_print("FPS: %i\tDT:%i\tAvgDT: %i\tTicks: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames, ticks);
 			char buf[20];
 			//debug_print("AVG: %i\n", frames * 1000 / get_ticks());
 		}
-
-		debug_print("Ticks: %i\n", ticks);
 
 		debug_print("Cam: %s\n", cam->transform.ToString(buf));
 		debug_print("P1: %s\n", thing->transform.ToString(buf));
@@ -134,8 +132,9 @@ void GEngine::Update()
 	float mouse_x = Input::GetAxis(AXIS_X);
 	float mouse_y = Input::GetAxis(AXIS_Y);
 
-	bool mouse_r, mouse_l, mouse_m;
-	//get_mouse_buttons(mouse_l, mouse_r, mouse_m);
+	bool mouse_l = Input::GetKey(KEY_LBUTTON);
+	bool mouse_r = Input::GetKey(KEY_RBUTTON);
+	bool mouse_m = Input::GetKey(KEY_MBUTTON);
 
 	Vector3 mouse_axis = Vector3(mouse_x, mouse_y, 0) * deltaTime;
 
