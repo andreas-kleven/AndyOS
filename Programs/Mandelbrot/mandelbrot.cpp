@@ -15,6 +15,7 @@ double zoom = 4;
 double ofx = 0;
 double ofy = 0;
 double rot = 0;
+bool juliaset = false;
 
 bool any_key_down()
 {
@@ -40,20 +41,24 @@ int get_iteration(double x, double y, double* z2)
 	double Zx2 = 0;
 	double Zy2 = 0;
 
-	//Julia set
-	//Zx = x;
-	//Zy = y;
-
-	//x = 0.7885 * cos(rot);
-	//y = 0.7885 * sin(rot);
-	
-	//Optimizations
-	double q = pow(x - 0.25, 2) + y*y;
-	if ((q * (q + (x - 0.25)) < y*y / 4) 	//Inside cardioid
-		|| ((x+1) * (x+1) + y*y) * 16 < 1)	//Inside period-2 bulb
+	if (juliaset)
 	{
-		*z2 = 0;
-		return iter_max;
+		Zx = x;
+		Zy = y;
+
+		x = 0.7885 * cos(rot);
+		y = 0.7885 * sin(rot);
+	}
+	else
+	{
+		//Optimizations
+		double q = pow(x - 0.25, 2) + y*y;
+		if ((q * (q + (x - 0.25)) < y*y / 4) 	//Inside cardioid
+			|| ((x+1) * (x+1) + y*y) * 16 < 1)	//Inside period-2 bulb
+		{
+			*z2 = 0;
+			return iter_max;
+		}
 	}
 
 	Zx2 = Zx*Zx;
@@ -154,6 +159,8 @@ void run(GC& gc)
 	double delta = 1;
 	int scale = max_scale;
 
+	bool julia_released = true;
+
 	GC gc_buf;
 
 	while (1)
@@ -174,6 +181,21 @@ void run(GC& gc)
 		if (InputManager::GetKeyDown(KEY_W)) ofy -= 1.0f * multiplier;
 		if (InputManager::GetKeyDown(KEY_S)) ofy += 1.0f * multiplier;
 		if (InputManager::GetKeyDown(KEY_R)) rot += 0.5f * multiplier;
+
+		//Toggle julia set
+		if (InputManager::GetKeyDown(KEY_J))
+		{
+			if (julia_released)
+			{
+				juliaset = !juliaset;
+				julia_released = false;
+				scale = max_scale;
+			}
+		}
+		else
+		{
+			julia_released = true;
+		}
 		
 		bool enable_render = true;
 
