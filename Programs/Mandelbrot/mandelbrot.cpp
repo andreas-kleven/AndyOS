@@ -164,9 +164,17 @@ void run(GC& gc)
 			scale = max_scale;
 		}
 
-		double asd0 = zoom;
-		double asd1 = asd0 / gc_buf.width;
+		double multiplier = zoom * clamp(delta, 0.0, 0.1);
+		if (InputManager::GetKeyDown(KEY_LSHIFT)) multiplier *= 4;
 
+		if (InputManager::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_A)) ofx -= 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_D)) ofx += 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_W)) ofy -= 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_S)) ofy += 1.0f * multiplier;
+		if (InputManager::GetKeyDown(KEY_R)) rot += 0.5f * multiplier;
+		
 		bool enable_render = true;
 
 		if (any_key_down())
@@ -183,25 +191,14 @@ void run(GC& gc)
 			enable_render = false;
 		}
 
-		if (InputManager::GetKeyDown(KEY_LCTRL)) zoom += 1.0f * delta * asd0;
-		if (InputManager::GetKeyDown(KEY_SPACE)) zoom -= 1.0f * delta * asd0;
-
-		if (InputManager::GetKeyDown(KEY_A)) ofx -= 1.0f * delta * asd0;
-		if (InputManager::GetKeyDown(KEY_D)) ofx += 1.0f * delta * asd0;
-		if (InputManager::GetKeyDown(KEY_W)) ofy -= 1.0f * delta * asd0;
-		if (InputManager::GetKeyDown(KEY_S)) ofy += 1.0f * delta * asd0;
-
-		if (InputManager::GetKeyDown(KEY_R)) rot += 0.5f * delta * asd0;
-
-		Drawing::Clear(Color::Black, gc_buf);
-		debug_reset();
-
 		if (enable_render)
 		{
+			Drawing::Clear(Color::Black, gc_buf);
 			render(gc_buf, scale);
 			Drawing::BitBlt(gc_buf, 0, 0, gc_buf.width, gc_buf.height, gc, 0, 0);
 		}
 
+		debug_reset();
 		int delta_ticks = (get_ticks() - ticks);
 		delta = delta_ticks / 1000.0f;
 		ticks = get_ticks();
