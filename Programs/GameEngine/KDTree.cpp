@@ -52,7 +52,7 @@ KDNode::~KDNode()
 }
 
 //https://blog.frogslayer.com/kd-trees-for-faster-ray-tracing-with-triangles/
-KDNode* KDNode::Build(Triangle* tri[], int count, int depth)
+KDNode* KDNode::Build(Triangle* tris[], int count, int depth)
 {
 	if (depth > 8)
 		return 0;
@@ -62,10 +62,7 @@ KDNode* KDNode::Build(Triangle* tri[], int count, int depth)
 
 	int right = count - 1;
 
-	Triangle** tris = new Triangle*[count];
-	memcpy(tris, tri, count * sizeof(Triangle*));
-
-	Box bounds = tri[0]->BoundingBox();
+	Box bounds = tris[0]->BoundingBox();
 	for (int i = 1; i < count; i++)
 		bounds.Expand(tris[i]->BoundingBox());
 
