@@ -187,6 +187,8 @@ namespace GEngine
 		deltaTime = (get_ticks() - ticks) / 1000.f;
 		ticks = get_ticks();
 
+		Input::Update();
+
 		float mouse_x = Input::GetAxis(AXIS_X);
 		float mouse_y = Input::GetAxis(AXIS_Y);
 

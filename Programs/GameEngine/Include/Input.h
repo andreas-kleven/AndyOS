@@ -9,6 +9,7 @@ enum INPUT_AXIS
 
 namespace Input
 {
+	void Update();
 	bool GetKey(KEYCODE key);
 	float GetAxis(INPUT_AXIS axis);
 };

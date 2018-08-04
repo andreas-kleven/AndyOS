@@ -3,8 +3,8 @@
 
 namespace Input
 {
-	float axes[4];
-	float last_axes[4];
+	static float axes[4];
+	static float last_axes[4];
 
 	void UpdateAxes()
 	{
@@ -16,6 +16,12 @@ namespace Input
 		axes[AXIS_Y] = -dy;
 	}
 
+	void Update()
+	{
+		memcpy(last_axes, axes, sizeof(float) * 4);
+		UpdateAxes();
+	}
+
 	bool GetKey(KEYCODE key)
 	{
 		return gui::InputManager::GetKeyDown(key);
@@ -23,10 +29,6 @@ namespace Input
 
 	float GetAxis(INPUT_AXIS axis)
 	{
-		UpdateAxes();
-
-		float delta = axes[axis] - last_axes[axis];
-		last_axes[axis] = axes[axis];
-		return delta;
+		return axes[axis] - last_axes[axis];
 	}
 }
