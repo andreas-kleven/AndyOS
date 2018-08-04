@@ -2,6 +2,7 @@
 #include <AndyOS.h>
 #include "GameEngine/Include/Engine.h"
 #include "GameEngine/Include/Input.h"
+#include "GameEngine/Include/Raymarcher.h"
 #include "GameEngine/Include/Raytracer.h"
 #include "GameEngine/Include/Model3D.h"
 #include "GameEngine/Include/ModelLoader.h"

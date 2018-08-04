@@ -2,7 +2,7 @@
 
 Camera::Camera()
 {
-
+	speed = 1;
 }
 
 void Camera::RotateEuler(const Vector3& rot)

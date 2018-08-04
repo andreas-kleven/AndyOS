@@ -29,6 +29,8 @@ namespace GEngine
 	Game* game;
 	gui::Window* window;
 
+	Raymarcher marcher;
+	
 	float err = 0;
 
 	Vector3 WorldToScreen(Vector3& point)
@@ -275,17 +277,17 @@ namespace GEngine
 			speed /= 4;
 
 		if (Input::GetKey(KEY_D))
-			cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime);
+			cam->transform.Translate(cam->transform.GetRightVector() * speed * deltaTime * cam->speed);
 		if (Input::GetKey(KEY_A))
-			cam->transform.Translate(-cam->transform.GetRightVector() * speed * deltaTime);
+			cam->transform.Translate(-cam->transform.GetRightVector() * speed * deltaTime * cam->speed);
 		if (Input::GetKey(KEY_W))
-			cam->transform.Translate(cam->transform.GetForwardVector() * speed * deltaTime);
+			cam->transform.Translate(cam->transform.GetForwardVector() * speed * deltaTime * cam->speed);
 		if (Input::GetKey(KEY_S))
-			cam->transform.Translate(-cam->transform.GetForwardVector() * speed * deltaTime);
+			cam->transform.Translate(-cam->transform.GetForwardVector() * speed * deltaTime * cam->speed);
 		if (Input::GetKey(KEY_E))
-			cam->transform.Translate(cam->transform.GetUpVector() * speed * deltaTime);
+			cam->transform.Translate(cam->transform.GetUpVector() * speed * deltaTime * cam->speed);
 		if (Input::GetKey(KEY_Q))
-			cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime);
+			cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime * cam->speed);
 
 		for (int i = 0; i < game->objects.Count(); i++)
 		{
@@ -572,9 +574,12 @@ namespace GEngine
 
 	void Render()
 	{
-		//Raytracer tracer(gc);
-		//tracer.Render();
-		//return;
+		marcher.Render(gc);
+		return;
+
+		Raytracer tracer(gc);
+		tracer.Render();
+		return;
 
 		Camera* cam = game->GetActiveCamera();
 		Matrix4 V = Matrix4::CreateView(
@@ -624,10 +629,10 @@ namespace GEngine
 		GL::SwapBuffers();
 	}
 
-	void StartGame(Game* _game, gui::Window* wnd)
+	void StartGame(Game* game, gui::Window* wnd)
 	{
-		game = _game;
-		window = wnd;
+		GEngine::game = game;
+		GEngine::window = wnd;
 
 		gc = wnd->gc;
 		GL::Init(gc);
@@ -672,6 +677,8 @@ namespace GEngine
 		Drawing::DrawBezierQuad(points, sizeof(points) / sizeof(Point));
 		Drawing::Draw(gc);
 		}*/
+
+		marcher = Raymarcher();
 
 		while (1)
 		{

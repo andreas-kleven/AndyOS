@@ -19,7 +19,6 @@ namespace Input
 	void Update()
 	{
 		memcpy(last_axes, axes, sizeof(float) * 4);
-		UpdateAxes();
 	}
 
 	bool GetKey(KEYCODE key)
@@ -29,6 +28,7 @@ namespace Input
 
 	float GetAxis(INPUT_AXIS axis)
 	{
+		UpdateAxes();
 		return axes[axis] - last_axes[axis];
 	}
 }
