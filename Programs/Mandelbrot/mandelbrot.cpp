@@ -102,7 +102,7 @@ void render(GC& gc, int scale)
 				double zn = sqrt(z2);
 				double smooth = iter - log2(log(zn) / log(1 << 16));
 				double f = smooth / iter_max;
-				int i = (int)(f * 5000);
+				int i = (int)(f * 2000);
 				color = colors[i % color_count];
 			}
 
