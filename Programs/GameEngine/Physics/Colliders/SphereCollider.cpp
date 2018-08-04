@@ -1,4 +1,4 @@
-#include "SphereCollider.h"
+#include "Components/SphereCollider.h"
 
 SphereCollider::SphereCollider()
 {

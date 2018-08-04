@@ -1,5 +1,5 @@
 #pragma once
-#include "Rigidbody.h"
+#include "Components/Rigidbody.h"
 
 struct Manifold
 {

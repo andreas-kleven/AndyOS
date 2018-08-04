@@ -1,4 +1,4 @@
-#include "DirectionalLight.h"
+#include "Lighting/DirectionalLight.h"
 
 DirectionalLight::DirectionalLight()
 {

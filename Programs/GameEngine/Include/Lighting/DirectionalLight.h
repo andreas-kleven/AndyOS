@@ -1,16 +1,15 @@
 #pragma once
-#include "Light.h"
+#include "Lighting.h"
 
-class PointLight : public LightSource
+class DirectionalLight : public LightSource
 {
 public:
-	PointLight();
+	DirectionalLight();
 
 	virtual float GetIntensityAtPoint(Vector3 point);
 	virtual Vector3 GetDirectionVector(Vector3 point);
 	virtual Color GetColor();
 
 	float intensity;
-	float maxDist;
 	Color color;
 };

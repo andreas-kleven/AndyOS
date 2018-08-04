@@ -1,4 +1,4 @@
-#include "PointLight.h"
+#include "Lighting/PointLight.h"
 
 PointLight::PointLight()
 {

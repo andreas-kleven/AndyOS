@@ -1,7 +1,7 @@
 #pragma once
 #include <AndyOS.h>
-#include "Box.h"
 #include "GL.h"
+#include "Shapes/Box.h"
 
 struct Triangle
 {

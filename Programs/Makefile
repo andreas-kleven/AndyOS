@@ -14,7 +14,7 @@ LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
 LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 LDFLAGS += $(BUILD_DIR)/andyos.a $(BUILD_DIR)/libc.a -T $(PROGRAMS_DIR)/link.ld
 
-export CPPFLAGS LDFLAGS INC_SRCH_PATH
+export CPPFLAGS LDFLAGS INC_SRCH_PATH PROGRAMS_DIR
 
 create_dir:
 	mkdir -p $(BUILD_DIR)

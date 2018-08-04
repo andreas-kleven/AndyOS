@@ -1,6 +1,6 @@
 #pragma once
 #include "Collider.h"
-#include "Box.h"
+#include "Shapes/Box.h"
 
 struct CollisionManifold
 {

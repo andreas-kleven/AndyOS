@@ -1,10 +1,9 @@
 #pragma once
 #include "Component.h"
 #include "Model3D.h"
-#include "Shader.h"
-#include "Box.h"
 #include "KDTree.h"
-#include "GL.h"
+#include "Shapes/Box.h"
+#include "Lighting/Shader.h"
 
 class MeshComponent : public Component
 {

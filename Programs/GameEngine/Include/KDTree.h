@@ -1,6 +1,6 @@
 #pragma once
-#include "Box.h"
 #include "Model3D.h"
+#include "Shapes/Box.h"
 
 struct KDNode
 {

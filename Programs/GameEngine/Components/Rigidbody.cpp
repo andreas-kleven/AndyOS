@@ -1,4 +1,4 @@
-#include "Rigidbody.h"
+#include "Components/Rigidbody.h"
 #include "GameObject.h"
 
 Rigidbody::Rigidbody()

@@ -2,8 +2,8 @@
 #include <AndyOS.h>
 #include "Transform.h"
 #include "Component.h"
-#include "MeshComponent.h"
-#include "Rigidbody.h"
+#include "Components/MeshComponent.h"
+#include "Components/Rigidbody.h"
 
 class GameObject
 {
