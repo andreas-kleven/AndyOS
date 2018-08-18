@@ -89,8 +89,9 @@ struct GC
 
 	void Draw();
 	void Clear(Color& col);
-	void CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool alpha = 0);
+	void CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool alpha = false);
 	void SetPixel(int x, int y, Color& col);
+	Color GetPixel(int x, int y);
 
 	void DrawLine(int x0, int y0, int x1, int y1, Color& col);
 	void DrawBezierQuad(Point* points, int count, Color& col);

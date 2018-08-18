@@ -121,7 +121,21 @@ void GC::SetPixel(int x, int y, Color& col)
 		return;
 
 	uint32* a = buffer + (y + this->y) * this->stride + (x + this->x);
-	*a = BlendAlpha(col.ToInt(), *a);
+	*a = col.ToInt();
+}
+
+Color GC::GetPixel(int x, int y)
+{
+	if ((x > 0 && x < this->width) && (y > 0  && y < this->height))
+	{
+		uint32* a = this->framebuffer + (y + this->y) * this->stride + (x + this->x);
+		return Color(*a);
+	}
+	else
+	{
+		//Todo: crash
+		return Color::Black;
+	}
 }
 
 void GC::DrawLine(int x0, int y0, int x1, int y1, Color& col)
@@ -295,7 +309,6 @@ void GC::FillRect(int x, int y, int w, int h, Color& col)
 	{
 		for (int _x = 0; _x < w; _x++)
 		{
-			//*buf++ = BlendAlpha(c, *buf);
 			*buf++ = _col;
 		}
 		buf += delta;
