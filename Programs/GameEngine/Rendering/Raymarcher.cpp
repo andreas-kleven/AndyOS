@@ -6,16 +6,17 @@ float DistanceEstimator(Vector3 pos)
 {
     const float Bailout = 2;
     const float Power = 8;
-    const int Iterations = 256;
+    const int Iterations = 1024;
 
     Vector3 z = pos;
 	float dr = 1.0;
 	float r = 0.0;
 
     int i;
-	for (i = 0; i < Iterations ; i++) {
+	for (i = 0; i < Iterations ; i++)
+    {
 		r = z.Magnitude();
-		if (r>Bailout) break;
+		if (r > Bailout) break;
 		
 		// convert to polar coordinates
 		float theta = acos(z.z / r);
@@ -23,31 +24,31 @@ float DistanceEstimator(Vector3 pos)
 		dr =  pow(r, Power-1.0)*Power*dr + 1.0;
 		
 		// scale and rotate the point
-		float zr = pow( r,Power);
-		theta = theta*Power;
-		phi = phi*Power;
+		float zr = pow(r ,Power);
+		theta *= Power;
+		phi *= Power;
 		
 		// convert back to cartesian coordinates
 		z = Vector3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta)) * zr;
-		z+=pos;
+		z += pos;
 	}
 
-	return 0.5*log(r)*r/dr;
+	return 0.5 * log(r) * r / dr;
 }
 
-float Trace(Vector3 start, Vector3 dir)
+float Trace(Vector3 start, Vector3 dir, Vector3& end)
 {
-    const float MinimumDistance = 0.0005;
-    const float MaximumDistance = 10;
-    const int MaximumRaySteps = 100;
+    const float MinimumDistance = 0.001;
+    const float MaximumDistance = 100;
+    const int MaximumRaySteps = 128;
 
     float totalDistance = 0.0;
 	int steps;
 
 	for (steps = 0; steps < MaximumRaySteps; steps++)
     {
-		Vector3 pos = start + dir * totalDistance;
-		float distance = DistanceEstimator(pos);
+		end = start + dir * totalDistance;
+		float distance = DistanceEstimator(end);
 		totalDistance += distance;
 
         if (distance >= MaximumDistance) return 0;
@@ -55,6 +56,25 @@ float Trace(Vector3 start, Vector3 dir)
 	}
 
 	return 1.0 - float(steps) / float(MaximumRaySteps);
+}
+
+float TraceColor(Vector3 start, Vector3 dir)
+{
+    Vector3 p0;
+    Vector3 p1;
+    Vector3 p2;
+
+    float offset = 0.001;
+
+    if (Trace(start, dir, p0) == 0) return 0;
+    if (Trace(start, Vector3(dir.x, dir.y + offset, dir.z).Normalized(), p1) == 0) return 0;
+    if (Trace(start, Vector3(dir.x + offset, dir.y, dir.z).Normalized(), p2) == 0) return 0;
+
+    Vector3 n = (p1 - p2).Cross(p2 - p0).Normalized();
+    //debug_print("[%f, %f, %f]\t[%f, %f, %f]\n", p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
+
+    float diff = n.Dot(-Vector3(0, 0, 1).Normalized());
+    return clamp(diff + 0.2f, 0.0f, 1.0f);
 }
 
 Raymarcher::Raymarcher()
@@ -75,7 +95,7 @@ void Raymarcher::Render(GC& gc)
         res /= 2;
 
     Camera* cam = GEngine::game->GetActiveCamera();
-    Vector3 _pos = cam->GetWorldPosition();
+    Vector3 _pos = cam->GetWorldPosition() + Vector3(0, 0, 5);
     cam->speed = _pos.Magnitude() / 10;
 
     float scale = tan(45 * M_PI / 180); 
@@ -106,8 +126,8 @@ void Raymarcher::Render(GC& gc)
             Vector3 dir = Vector3(cx, cy, 1).Normalized();
             dir = cam->GetWorldRotation() * dir;
 
-            float dist = Trace(_pos, dir);
-            Color col = Color(pow(dist, 5), pow(dist, 3), dist);
+            float dist = TraceColor(_pos, dir);
+            Color col = Color(1, 1, 1) * dist;
             
             //gc.SetPixel(x, y, col);
             gc.FillRect(x, y, res, res, col);
