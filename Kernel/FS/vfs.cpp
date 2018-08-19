@@ -119,43 +119,68 @@ namespace VFS
 		return node;
 	}
 
+	int AddFile(FILE* file)
+	{
+		PROCESS* proc = Scheduler::CurrentThread()->process;
+
+		//Find first empty
+		for (int i = 3; i < FILE_TABLE_SIZE; i++)
+		{
+			if (proc->file_table[i] == 0)
+			{
+				proc->file_table[i] = file;
+				return i;
+			}
+		}
+
+		return ERROR;
+	}
+
+	FILE* GetFile(int fd)
+	{
+		PROCESS* proc = Scheduler::CurrentThread()->process;
+
+		if (fd >= FILE_TABLE_SIZE)
+			return 0;
+
+		return proc->file_table[fd];
+	}
+
 	int Open(const char* filename)
 	{
 		Path* path = new Path(filename);
+		FNODE* node = GetNode(path);
 
-		FILE* file = new FILE;
-		file->thread = Scheduler::CurrentThread();
-		file->node = GetNode(path);
+		if (!node)
+			return ERROR;
 
-		if (!file->node)
-			return 0;
-
+		THREAD* thread = Scheduler::CurrentThread();
+		FILE* file = new FILE(node, thread);
 		FileIO* io = file->node->io;
 
-		if (io->Open(file->node, file) != SUCCESS)
-		{
-			return 0;
-		}
+		if (!io)
+			return ERROR;
 
-		return (int)(size_t)file;
+		if (io->Open(file->node, file) != SUCCESS)
+			return ERROR;
+
+		return AddFile(file);
 	}
 
 	int Close(int fd)
 	{
-		if (!fd)
-			return -1;
-
-		FILE* file = (FILE*)fd;
+		FILE* file = GetFile(fd);
 		delete file;
 		return 1;
 	}
 
 	size_t Read(int fd, char* dst, size_t size)
 	{
-		if (!fd)
-			return 0;
+		FILE* file = GetFile(fd);
 
-		FILE* file = (FILE*)fd;
+		if (!file)
+			return ERROR;
+
 		FNODE* node = file->node;
 
 		int read = node->io->Read(file, dst, size);
@@ -165,33 +190,31 @@ namespace VFS
 
 	size_t Write(int fd, const char* buf, size_t size)
 	{
-		if (!fd)
-			return 0;
 	}
 
 	int Seek(int fd, long int offset, int origin)
 	{
-		if (!fd)
-			return 0;
+		FILE* file = GetFile(fd);
 
-		FILE* file = (FILE*)fd;
+		if (!file)
+			return ERROR;
 
 		switch (origin)
 		{
 		case SEEK_SET:
 			file->pos = offset;
-			return 1;
+			return SUCCESS;
 
 		case SEEK_CUR:
 			file->pos += offset;
-			return 1;
+			return SUCCESS;
 
 		case SEEK_END:
 			file->pos = file->node->size + offset;
-			return 1;
+			return SUCCESS;
 
 		default:
-			return 0;
+			return ERROR;
 		}
 	}
 

@@ -1,9 +1,11 @@
 #pragma once
 #include "Memory/memory.h"
 #include "thread.h"
+#include "FS/file.h"
 #include "Lib/circbuf.h"
 
 #define PROC_MAX_MESSAGES 32
+#define FILE_TABLE_SIZE 256
 
 typedef void SIGNAL_HANDLER(int signo);
 typedef void MESSAGE_HANDLER(int id, int type, char* buf, int size);
@@ -67,6 +69,8 @@ struct PROCESS
 	ADDRESS_SPACE addr_space;
 	THREAD* main_thread;
 	PROCESS* next;
+
+	FILE* file_table[FILE_TABLE_SIZE];
 
 	SIGNAL_HANDLER* signal_handler;
 	MESSAGE_HANDLER* message_handler;

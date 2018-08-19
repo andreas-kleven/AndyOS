@@ -19,6 +19,8 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->next = 0;
 	this->main_thread = 0;
 
+	memset(this->file_table, 0, sizeof(this->file_table));
+
 	this->signal_handler = 0;
 	this->messages = CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
 }
