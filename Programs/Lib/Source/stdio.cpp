@@ -13,16 +13,16 @@ FILE* stdin = &_stdin;
 FILE* stdout = &_stdout;
 FILE* stderr = &_stderr;
 
-extern int sys_open(const char* filename, int flags);
-extern int sys_close(int fd);
-extern size_t sys_read(int fd, char* buf, size_t size);
-extern size_t sys_write(int fd, const char* buf, size_t size);
-extern int sys_seek(int fd, long int offset, int origin);
+extern int open(const char* filename, int flags);
+extern int close(int fd);
+extern size_t read(int fd, char* buf, size_t size);
+extern size_t write(int fd, const char* buf, size_t size);
+extern int seek(int fd, long int offset, int origin);
 
 FILE* fopen(const char* filename, const char* mode)
 {
 	FILE* stream = new FILE;
-	stream->fd = sys_open(filename, O_RDWR);
+	stream->fd = open(filename, O_RDWR);
 	
 	if (stream->fd == 0)
 	{
@@ -35,22 +35,22 @@ FILE* fopen(const char* filename, const char* mode)
 
 int fclose(FILE* stream)
 {
-	return sys_close(stream->fd);
+	return close(stream->fd);
 }
 
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_read(stream->fd, (char*)ptr, size);
+	return read(stream->fd, (char*)ptr, size);
 }
 
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return sys_write(stream->fd, (const char*)ptr, size);
+	return write(stream->fd, (const char*)ptr, size);
 }
 
 int fseek(FILE* stream, long int offset, int origin)
 {
-	return sys_seek(stream->fd, offset, origin);
+	return seek(stream->fd, offset, origin);
 }
 
 int printf(const char* format, ...)
@@ -61,7 +61,7 @@ int printf(const char* format, ...)
 	char buf[256];
 	vsprintf(buf, format, args);
 
-	sys_write(STDOUT_FILENO, buf, strlen(buf));
+	write(STDOUT_FILENO, buf, strlen(buf));
 }
 
 int vprintf(char* buf, const char* format, ...)
