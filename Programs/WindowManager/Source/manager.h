@@ -50,7 +50,8 @@ private:
 	static void HandleKeyInput();
 
 	static Window* GetWindowAtCursor();
-	static void SetFocusedWindow(Window* new_active);
+	static void SetFocusedWindow(Window* new_focused);
+	static void SetActiveWindow(Window* wnd);
 
 	static Window* GetWindow(int id);
 };

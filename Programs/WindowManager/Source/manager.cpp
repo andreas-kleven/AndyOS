@@ -187,6 +187,8 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 
 			Window* wnd = new Window(msg.src_proc, request->title, w, h, (uint32*)addr1);
 			WindowManager::AddWindow(wnd);
+			WindowManager::SetFocusedWindow(wnd);
+			WindowManager::SetActiveWindow(wnd);
 
 			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
 			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
@@ -660,6 +662,11 @@ void WindowManager::SetFocusedWindow(Window* new_focused)
 
 		wnd = wnd->next;
 	}
+}
+
+void WindowManager::SetActiveWindow(Window* wnd)
+{
+	active_window = wnd;
 }
 
 Window* WindowManager::GetWindow(int id)
