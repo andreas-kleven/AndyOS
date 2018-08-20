@@ -1,17 +1,14 @@
 #pragma once
 #include "definitions.h"
 #include "Drivers/driver.h"
+#include "circbuf.h"
 
 #define PIPE_BUF_SIZE 4096
 
 class Pipe : public FileIO
 {
 private:
-    int buf_size;
-    char* buffer;
-    bool empty;
-    size_t head;
-    size_t tail;
+    CircularDataBuffer buffer;
 
 public:
 	Pipe(int buf_size = PIPE_BUF_SIZE);

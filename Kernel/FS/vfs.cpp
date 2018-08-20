@@ -207,7 +207,16 @@ namespace VFS
 
 	size_t Write(int fd, const char* buf, size_t size)
 	{
-		return ERROR;
+		FILE* file = GetFile(fd);
+
+		if (!file)
+			return ERROR;
+
+		FNODE* node = file->node;
+
+		int written = node->io->Write(file, buf, size);
+		file->pos += written;
+		return written;
 	}
 
 	int Seek(int fd, long int offset, int origin)
@@ -242,6 +251,10 @@ namespace VFS
 
 		Pipe* pipe = new Pipe();
 		FNODE* node = new FNODE("/pipes/1", FILE_TYPE_PIPE, pipe);
+		
+		if (!AddNode(node))
+			return ERROR;
+
 		FILE* read = new FILE(node, thread);
 		FILE* write = new FILE(node, thread);
 
