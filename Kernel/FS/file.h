@@ -2,7 +2,7 @@
 #include "path.h"
 
 #define SUCCESS 0
-#define ERROR   1
+#define ERROR   -1
 
 class FileIO;
 
@@ -11,7 +11,8 @@ enum FILE_TYPE
 	FILE_TYPE_REGULAR,
 	FILE_TYPE_DIRECTORY,
 	FILE_TYPE_BLOCK,
-	FILE_TYPE_CHAR
+	FILE_TYPE_CHAR,
+    FILE_TYPE_PIPE
 };
 
 struct FNODE

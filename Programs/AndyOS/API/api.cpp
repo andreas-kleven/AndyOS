@@ -30,7 +30,7 @@ int sys_seek(int fd, long int offset, int origin)
 
 int sys_pipe(int pipefd[2])
 {
-	return Call(SYSCALL_PIPE, (int)&pipefd);
+	return Call(SYSCALL_PIPE, (int)pipefd);
 }
 
 void halt()

@@ -1,11 +1,12 @@
 #include "vfs.h"
+#include "filesystem.h"
+#include "pipe.h"
 #include "string.h"
 #include "iso.h"
 #include "Lib/debug.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Drivers/driver.h"
-#include "filesystem.h"
 
 #define NODE_COUNT 256
 
@@ -237,8 +238,19 @@ namespace VFS
 
 	int CreatePipes(int pipefd[2], int flags)
 	{
-		pipefd[0] = 1;
-		pipefd[1] = 2;
+		THREAD* thread = Scheduler::CurrentThread();
+
+		Pipe* pipe = new Pipe();
+		FNODE* node = new FNODE("/pipes/1", FILE_TYPE_PIPE, pipe);
+		FILE* read = new FILE(node, thread);
+		FILE* write = new FILE(node, thread);
+
+		pipefd[0] = AddFile(read);
+		pipefd[1] = AddFile(write);
+
+		if (pipefd[0] == -1 || pipefd[1] == -1)
+			return ERROR;
+
 		return SUCCESS;
 	}
 
