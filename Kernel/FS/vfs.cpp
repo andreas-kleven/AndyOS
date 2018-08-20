@@ -146,6 +146,17 @@ namespace VFS
 		return proc->file_table[fd];
 	}
 
+	bool SetFile(int fd, FILE* file)
+	{
+		PROCESS* proc = Scheduler::CurrentThread()->process;
+
+		if (fd >= FILE_TABLE_SIZE)
+			return false;
+
+		proc->file_table[fd] = file;
+		return true;
+	}
+
 	int Open(const char* filename)
 	{
 		Path* path = new Path(filename);
@@ -171,7 +182,12 @@ namespace VFS
 	{
 		FILE* file = GetFile(fd);
 		delete file;
-		return 1;
+
+		if (!file)
+			return ERROR;
+
+		SetFile(fd, 0);
+		return SUCCESS;
 	}
 
 	size_t Read(int fd, char* dst, size_t size)
@@ -190,6 +206,7 @@ namespace VFS
 
 	size_t Write(int fd, const char* buf, size_t size)
 	{
+		return ERROR;
 	}
 
 	int Seek(int fd, long int offset, int origin)
@@ -216,6 +233,13 @@ namespace VFS
 		default:
 			return ERROR;
 		}
+	}
+
+	int CreatePipes(int pipefd[2], int flags)
+	{
+		pipefd[0] = 1;
+		pipefd[1] = 2;
+		return SUCCESS;
 	}
 
 	uint32 ReadFile(const char* filename, char*& buffer)

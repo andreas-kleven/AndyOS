@@ -3,11 +3,11 @@
 #include "definitions.h"
 #include "keycodes.h"
 
-int open(const char* filename, int flags);
-int close(int fd);
-size_t read(int fd, char* buf, size_t size);
-size_t write(int fd, const char* buf, size_t size);
-int seek(int fd, long int offset, int origin);
+int sys_open(const char* filename, int flags);
+int sys_close(int fd);
+size_t sys_read(int fd, char* buf, size_t size);
+size_t sys_write(int fd, const char* buf, size_t size);
+int sys_pipe(int pipefd[2]);
 
 void halt();
 void print(const char* msg);

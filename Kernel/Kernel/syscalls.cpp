@@ -69,6 +69,11 @@ namespace Syscalls
 		return VFS::Seek(fd, offset, origin);
 	}
 
+	int pipe(int pipefd[2])
+	{
+		return VFS::CreatePipes(pipefd, 0);
+	}
+
 	void halt()
 	{
 		halt();
@@ -301,6 +306,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_READ, (SYSCALL_HANDLER)read);
 		InstallSyscall(SYSCALL_WRITE, (SYSCALL_HANDLER)write);
 		InstallSyscall(SYSCALL_SEEK, (SYSCALL_HANDLER)seek);
+		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);

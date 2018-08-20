@@ -7,9 +7,9 @@
 #define SEEK_CUR	1
 #define SEEK_END	2
 
-#define STDIN 0
-#define STDOUT 1
-#define STDERR 2
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
 
 #define O_ACCMODE	00000003
 #define O_RDONLY	00000000
