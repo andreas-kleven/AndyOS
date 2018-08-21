@@ -45,11 +45,9 @@ char* vsprintf(char* buf, const char* format, va_list args)
 
 			case 's':
 			{
-				int c = (int)va_arg(args, char);
-				char str[64];
-				strcpy(str, (const char*)c);
-				strcpy(buf + retnum, str);
-				retnum += strlen(str);
+				char* c = va_arg(args, char*);
+				strcpy(buf + retnum, c);
+				retnum += strlen(c);
 				i++;		// go to next character
 				break;
 			}
