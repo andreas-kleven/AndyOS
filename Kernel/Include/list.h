@@ -1,4 +1,5 @@
 #pragma once
+#include "panic.h"
 
 template <class T>
 struct Node
@@ -60,8 +61,8 @@ public:
 
 	void Insert(T value, int index)
     {
-        //if (index > count)
-        //	panic("Index out of range", "List::Insert");
+        if (index > count)
+        	panic("Index out of range", "List::Insert");
 
         if (index == count)
             return Add(value);
@@ -82,8 +83,8 @@ public:
 
 	void RemoveAt(int index)
     {
-        //if (index > count)
-        //	panic("Index out of range", "List::RemoveAt");
+        if (index > count)
+        	panic("Index out of range", "List::RemoveAt");
 
         if (index == 0)
         {
@@ -170,8 +171,8 @@ public:
 
 	T& operator[](int index)
     {
-        //if (index > count)
-        //	panic("Index out of range", "List::operator[]");
+        if (index > count)
+        	panic("Index out of range", "List::operator[]");
 
         Node<T>* node = NodeAt(index);
         return node->value;

@@ -1,4 +1,5 @@
 #pragma once
+#include "panic.h"
 
 template <class T>
 struct Queue_Node
@@ -61,8 +62,8 @@ public:
 
 	T Dequeue()
     {
-        //if (count == 0)
-        //    panic("Queue is empty", "Queue::Dequeue");
+        if (count == 0)
+            panic("Queue is empty", "Queue::Dequeue");
 
         T val = root->value;
 
@@ -108,8 +109,8 @@ public:
 
 	T& operator[](int index)
     {
-        //if (index >= count)
-        //    panic("Index out of range exception", "Queue::operator[]");
+        if (index >= count)
+            panic("Index out of range exception", "Queue::operator[]");
 
         Queue_Node<T>* node = NodeAt(index);
         return node->value;
