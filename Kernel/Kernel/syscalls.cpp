@@ -74,6 +74,16 @@ namespace Syscalls
 		return VFS::CreatePipes(pipefd, 0);
 	}
 
+	pid_t fork()
+	{
+		
+	}
+
+	pid_t getpid()
+	{
+		return Scheduler::CurrentThread()->process->id;
+	}
+
 	void halt()
 	{
 		halt();
@@ -155,7 +165,7 @@ namespace Syscalls
 		return size;
 	}
 
-	int create_process(char* filename)
+	pid_t create_process(char* filename)
 	{
 		PROCESS* proc = ProcessManager::Load(filename);
 
@@ -307,6 +317,8 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_WRITE, (SYSCALL_HANDLER)write);
 		InstallSyscall(SYSCALL_SEEK, (SYSCALL_HANDLER)seek);
 		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
+		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
+		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);

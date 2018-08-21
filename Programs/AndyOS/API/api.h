@@ -8,6 +8,8 @@ int close(int fd);
 size_t read(int fd, char* buf, size_t size);
 size_t write(int fd, const char* buf, size_t size);
 int pipe(int pipefd[2]);
+pid_t fork();
+pid_t getpid();
 
 void halt();
 void print(const char* msg);

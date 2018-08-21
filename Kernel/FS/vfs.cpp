@@ -88,7 +88,7 @@ namespace VFS
 				{
 					if (path->count == 4)
 					{
-						int pid = atoi(path->parts[1]);
+						pid_t pid = atoi(path->parts[1]);
 						int fd = atoi(path->parts[3]);
 
 						if (pid != 0 && strcmp(path->parts[2], "fd") == 0)

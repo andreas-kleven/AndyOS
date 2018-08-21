@@ -33,6 +33,16 @@ int pipe(int pipefd[2])
 	return Call(SYSCALL_PIPE, (int)pipefd);
 }
 
+pid_t fork()
+{
+	return Call(SYSCALL_FORK);
+}
+
+pid_t getpid()
+{
+	return Call(SYSCALL_GETPID);
+}
+
 void halt()
 {
 	Call(SYSCALL_HALT);

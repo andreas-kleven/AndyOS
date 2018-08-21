@@ -1,6 +1,7 @@
 #pragma once
 
 typedef long unsigned int size_t;
+typedef int pid_t;
 
 typedef signed char			int8;
 typedef unsigned char		uint8;
