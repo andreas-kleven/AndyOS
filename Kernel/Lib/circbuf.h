@@ -1,5 +1,6 @@
 #pragma once
 #include "Lib/debug.h"
+#include "sync.h"
 
 class CircularDataBuffer
 {
@@ -56,6 +57,11 @@ public:
 	bool IsEmpty()
 	{
 		return empty;
+	}
+
+	bool IsFull()
+	{
+		return !empty && head == tail;
 	}
 
 private:
@@ -154,5 +160,10 @@ public:
 	bool IsEmpty()
 	{
 		return empty;
+	}
+
+	bool IsFull()
+	{
+		return !empty && head == tail;
 	}
 };
