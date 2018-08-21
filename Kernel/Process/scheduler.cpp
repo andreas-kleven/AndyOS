@@ -11,9 +11,16 @@ namespace Scheduler
 	THREAD* first_thread;
 	THREAD* last_thread;
 	THREAD* current_thread;
+	THREAD* idle_thread;
 
 	bool enabled = false;
 	int disableCount = 0;
+
+	void idle()
+	{
+		while (1)
+			pause();
+	}
 
 	void Enable()
 	{
@@ -155,11 +162,25 @@ namespace Scheduler
 			current_thread->state = THREAD_STATE_READY;
 
 		//Schedule
+		if (current_thread == idle_thread && first_thread != 0)
+			current_thread = first_thread;
+
 		THREAD* first = current_thread;
 
-		while (current_thread->next != first)
+		while (1)
 		{
 			current_thread = current_thread->next;
+
+			if (current_thread == first)
+			{
+				if (current_thread->state != THREAD_STATE_READY
+					&& current_thread->state != THREAD_STATE_INITIALIZED
+					&& current_thread->state != THREAD_STATE_RUNNING)
+				{
+					current_thread = idle_thread;
+				}
+				break;
+			}
 
 			while (current_thread->state == THREAD_STATE_TERMINATED)
 			{
@@ -193,5 +214,7 @@ namespace Scheduler
 		first_thread = 0;
 		last_thread = 0;
 		current_thread = 0;
+
+		idle_thread = Task::CreateKernelThread(idle);
 	}
 }
