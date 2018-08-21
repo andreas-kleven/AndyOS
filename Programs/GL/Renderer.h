@@ -1,6 +1,6 @@
 #pragma once
 #include <AndyOS.h>
-#include "definitions.h"
+#include "sys/types.h"
 #include "Vertex.h"
 #include "Vector3.h"
 #include "Matrix3.h"
@@ -40,5 +40,5 @@ namespace GL
 	void Clear(Color color);
 	void SwapBuffers();
 	
-	STATUS Init(GC gc);
+	void Init(GC gc);
 };

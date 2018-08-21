@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "filesystem.h"
 
 #define ISO_SECTOR_SIZE 2048

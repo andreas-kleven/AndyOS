@@ -1,6 +1,6 @@
 #pragma once
 #include "syscalls.h"
-#include "definitions.h"
+#include "sys/types.h"
 #include "keycodes.h"
 
 int open(const char* filename, int flags);

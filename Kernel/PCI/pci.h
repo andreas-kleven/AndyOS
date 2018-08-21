@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 
 #define PCI_CONFIG_ADDR                 0xcf8
 #define PCI_CONFIG_DATA                 0xcfC

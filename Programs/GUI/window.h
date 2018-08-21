@@ -3,7 +3,7 @@
 #include <sys/drawing.h>
 #include <sys/msg.h>
 #include "Elements/element.h"
-#include "definitions.h"
+#include "sys/types.h"
 #include "guibase.h"
 
 namespace gui

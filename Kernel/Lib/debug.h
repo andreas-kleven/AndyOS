@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 
 STATUS debug_init(bool serial);
 void debug_pos(int x, int y);

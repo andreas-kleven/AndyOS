@@ -1,6 +1,6 @@
 #include "window.h"
 #include "GUI.h"
-#include "definitions.h"
+#include "sys/types.h"
 #include "string.h"
 
 using namespace gui::messages;

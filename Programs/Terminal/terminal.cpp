@@ -2,6 +2,7 @@
 #include <sys/msg.h>
 #include "GUI.h"
 #include "stdio.h"
+#include "unistd.h"
 #include "string.h"
 #include "math.h"
 
@@ -196,36 +197,7 @@ public:
 		}
 		else if (strcmp(arg1, "open") == 0)
 		{
-			int pid = create_process(arg2);
-			return;
-
-			if (pid)
-			{
-				char filename[32];
-				vprintf(filename, "/proc/%i/fd/0", pid);
-
-				FILE* out = fopen(filename, "r");
-
-				if (out)
-				{
-					while (true)
-					{
-						char buf[100];
-						if (fread(buf, 100, 1, out))
-						{
-							Print(buf);
-						}
-					}
-				}
-				else
-				{
-					Print("Could not open stdout\n");
-				}
-			}
-			else
-			{
-				Print("Could not create process\n");
-			}
+			Open(arg2);
 		}
 		else if (strcmp(arg1, "color") == 0)
 		{
@@ -245,7 +217,7 @@ public:
 			char data[len];
 			memset(data, 0, len);
 
-			if (fread(data, len, 1, file))
+			if (fread(data, len, 1, file) != -1)
 			{
 				for (int i = 0; i < len; i++)
 					Print("%c", data[i]);
@@ -282,7 +254,7 @@ public:
 
 				while (1)
 				{
-					if (fread(data, 4, 1, file))
+					if (fread(data, 4, 1, file) != -1)
 					{
 						for (int i = 0; i < 4; i++)
 							Print("%ux ", (uint8)data[i]);
@@ -297,9 +269,88 @@ public:
 				Print("Open error\n");
 			}
 		}
+		else if (strcmp(arg1, "pipe") == 0)
+		{
+			int pipefd[2];
+			pipe(pipefd);
+
+			Print("%i\t%i\n", pipefd[0], pipefd[1]);
+
+			int len = 6;
+			char buf[len];
+			memset(buf, 0, len);
+
+			const char* str = "Pipe data ...\n";
+			int written = write(pipefd[1], str, strlen(str));
+			Print("Written: %i\n", written);
+
+			int counter = 0;
+
+			while (1)
+			{
+				int l = read(pipefd[0], buf, len);
+
+				if (l > 0)
+				{
+					for (int i = 0; i < l; i++)
+						Print("%c", buf[i]);
+				}
+				else if (l == 0)
+				{
+					char sb[100];
+					itoa(counter++, 10, sb, 0);
+					write(pipefd[1], sb, strlen(sb));
+				}
+				else
+				{
+					Print("Read error");
+					//sleep(1000);
+				}
+			}
+
+			//close(pipefd[0]);
+			//close(pipefd[1]);
+		}
 		else
 		{
 			Print("Invalid command");
+		}
+	}
+
+	void Open(char* file)
+	{
+		int pid = create_process(file);
+		return;
+
+		if (pid)
+		{
+			char filename[32];
+			vprintf(filename, "/proc/%i/fd/0", pid);
+
+			FILE* out = fopen(filename, "r");
+
+			if (out)
+			{
+				char buf[256];
+
+				while (true)
+				{
+					if (fread(buf, 256, 1, out) != -1)
+					{
+						Print(buf);
+					}
+
+					sleep(100);
+				}
+			}
+			else
+			{
+				Print("Could not open stdout\n");
+			}
+		}
+		else
+		{
+			Print("Could not create process\n");
 		}
 	}
 
@@ -374,6 +425,8 @@ public:
 
 int main()
 {
+	//printf("Test");
+
 	Drawing::Init();
 	MainWindow* wnd = new MainWindow();
 

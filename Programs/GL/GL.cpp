@@ -172,7 +172,7 @@ namespace GL
 		gc_buf.CopyTo(0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 	}
 
-	STATUS Init(GC gc)
+	void Init(GC gc)
 	{
 		gc_buf = GC(gc.width, gc.height);
 		gc_out = gc;
@@ -192,6 +192,5 @@ namespace GL
 		mat_stack_index = 0;
 
 		rasterizer = Rasterizer(gc_buf);
-		return STATUS_SUCCESS;
 	}
 }

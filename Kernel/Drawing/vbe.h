@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "video.h"
 
 struct VBE_MODE_INFO

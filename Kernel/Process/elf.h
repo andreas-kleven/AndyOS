@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "process.h"
 
 struct ELF32_HEADER

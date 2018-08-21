@@ -1,6 +1,6 @@
 #pragma once
 #include <AndyOS.h>
-#include "definitions.h"
+#include "sys/types.h"
 #include "Vertex.h"
 
 class Rasterizer

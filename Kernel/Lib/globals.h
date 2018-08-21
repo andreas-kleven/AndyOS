@@ -1,7 +1,7 @@
 #pragma once
 #include "Memory/memory.h"
 #include "math.h"
-#include "definitions.h"
+#include "types.h"
 #include "string.h"
 #include "Lib/debug.h"
 

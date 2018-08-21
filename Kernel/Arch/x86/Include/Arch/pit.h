@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "idt.h"
 
 #define PIT_FREQUENCY 1000

@@ -1,5 +1,5 @@
 #include "color.h"
-#include "definitions.h"
+#include "sys/types.h"
 #include "math.h"
 
 Color Color::Red(1, 0, 0);

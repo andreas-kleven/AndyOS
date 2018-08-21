@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 
 typedef void(*SYSCALL_HANDLER)();
 

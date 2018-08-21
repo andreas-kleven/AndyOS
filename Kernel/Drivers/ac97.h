@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "PCI/pci.h"
 #include "hal.h"
 

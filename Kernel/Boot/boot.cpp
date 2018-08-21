@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include "types.h"
 #include "multiboot.h"
 #include "Kernel/kernel.h"
 #include "Drawing/vbe.h"

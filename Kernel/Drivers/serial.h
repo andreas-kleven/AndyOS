@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 
 #define COM_MAX_BAUD 115200
 

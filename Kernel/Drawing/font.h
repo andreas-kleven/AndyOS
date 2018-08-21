@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 
 static unsigned char DEFAULT_FONT[4096] =
 {

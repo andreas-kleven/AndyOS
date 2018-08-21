@@ -1,6 +1,6 @@
 #pragma once
 #include "driver.h"
-#include "definitions.h"
+#include "types.h"
 
 #define ATA_SECTOR_SIZE 2048
 

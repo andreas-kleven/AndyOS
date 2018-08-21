@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "sys/types.h"
 #include "math.h"
 #include "font.h"
 #include "color.h"

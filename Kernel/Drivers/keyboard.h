@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "keycodes.h"
 
 #define KEYBOARD_IRQ 33

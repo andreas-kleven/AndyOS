@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "Memory/memory.h"
 
 namespace VMem::Arch

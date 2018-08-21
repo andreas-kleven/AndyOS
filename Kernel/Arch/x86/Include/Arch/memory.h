@@ -1,5 +1,5 @@
 #pragma once
-#include "definitions.h"
+#include "types.h"
 #include "Memory/memory.h"
 
 #define PAGE_TABLE_LENGTH	1024
