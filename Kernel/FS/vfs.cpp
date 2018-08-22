@@ -56,7 +56,7 @@ namespace VFS
 
 			if (node)
 			{
-				if (node->path == path)
+				if (*node->path == *path)
 				{
 					return node;
 				}
