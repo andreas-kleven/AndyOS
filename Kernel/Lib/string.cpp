@@ -165,10 +165,8 @@ char* search(const char* str, const char* delim)
 }
 
 //Splits string
-char* strtok_r(const char* _str, const char* delim, char** saveptr)
+char* strtok_r(char* str, const char* delim, char** saveptr)
 {
-	char* str = (char*)_str;
-
 	if (!str)
 		str = *saveptr;
 

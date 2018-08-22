@@ -32,7 +32,6 @@
 
 struct FILE
 {
-    unsigned int fd;
 };
 
 extern FILE* stdin;

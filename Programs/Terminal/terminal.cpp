@@ -217,7 +217,7 @@ public:
 			char data[len];
 			memset(data, 0, len);
 
-			if (fread(data, len, 1, file) != -1)
+			if (fread(data, 1, len, file) != -1)
 			{
 				for (int i = 0; i < len; i++)
 					Print("%c", data[i]);
@@ -226,24 +226,6 @@ public:
 			{
 				Print("Read error\n");
 			}
-
-			/*Print("\n");
-			fseek(file, 2, SEEK_SET);
-			fread(data, 5, 1, file);
-			for (int i = 0; i < 5; i++)
-				Print("%c", data[i]);
-
-			Print("\n");
-			fseek(file, 4, SEEK_CUR);
-			fread(data, 5, 1, file);
-			for (int i = 0; i < 5; i++)
-				Print("%c", data[i]);
-
-			Print("\n");
-			fseek(file, -5, SEEK_END);
-			fread(data, 5, 1, file);
-			for (int i = 0; i < 5; i++)
-				Print("%c", data[i]);*/
 
 			fclose(file);
 
@@ -254,7 +236,7 @@ public:
 
 				while (1)
 				{
-					if (fread(data, 4, 1, file) != -1)
+					if (fread(data, 1, 4, file) != -1)
 					{
 						for (int i = 0; i < 4; i++)
 							Print("%ux ", (uint8)data[i]);
@@ -319,7 +301,7 @@ public:
 
 	void Open(char* file)
 	{
-		int pid = create_process(file);
+		pid_t pid = create_process(file);
 		return;
 
 		if (pid)
@@ -335,7 +317,7 @@ public:
 
 				while (true)
 				{
-					if (fread(buf, 256, 1, out) != -1)
+					if (fread(buf, 1, 256, out) != -1)
 					{
 						Print(buf);
 					}

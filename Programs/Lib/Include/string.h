@@ -18,7 +18,7 @@ void* memset(void* dest, int val, int n);
 void* memset16(void* dest, unsigned short val, unsigned int n);
 void* memset32(void* dest, unsigned int val, unsigned int n);
 
-char* search(char* str, const char* delim);
+char* search(const char* str, const char* delim);
 char* strtok_r(char* str, const char* delim, char** saveptr);
 
 class String

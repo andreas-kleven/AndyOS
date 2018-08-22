@@ -141,7 +141,7 @@ int memcmp(const void* a, const void* b, unsigned int n)
 //	return memset(dest, a, b);
 //}
 
-char* search(char* str, const char* delim)
+char* search(const char* str, const char* delim)
 {
 	char c = *str++;
 
@@ -153,7 +153,7 @@ char* search(char* str, const char* delim)
 		while (d)
 		{
 			if (c == d)
-				return str;
+				return (char*)str;
 
 			d = *del++;
 		}
@@ -189,22 +189,16 @@ loop:
 
 	char* end = search(str, delim);
 
-	if (!end)
+	if (end)
+	{
+		*(end - 1) = 0;
+		*saveptr = end;
+		return str;
+	}
+	else
 	{
 		*saveptr = 0;
 		return str;
-	}
-
-	if (end)
-	{
-		int len = end - str;
-		char* ret = new char[len];
-
-		memcpy(ret, str, len);
-		ret[len - 1] = 0;
-
-		*saveptr = end;
-		return ret;
 	}
 
 	return 0;

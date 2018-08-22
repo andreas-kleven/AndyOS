@@ -20,7 +20,7 @@ namespace Input
             return;
 
         unsigned char buf[128];
-        int size = fread(buf, 4, 1, mouse_file);
+        int size = fread(buf, 1, 4, mouse_file);
 
         if (size % 4 != 0)
             return;

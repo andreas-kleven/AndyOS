@@ -5,13 +5,13 @@
 #include "limits.h"
 #include "math.h"
 
-FILE _stdin;
-FILE _stdout;
-FILE _stderr;
+#define FILE_TABLE_SIZE 256
 
-FILE* stdin = &_stdin;
-FILE* stdout = &_stdout;
-FILE* stderr = &_stderr;
+FILE file_table[FILE_TABLE_SIZE];
+
+FILE* stdin = &file_table[0];
+FILE* stdout = &file_table[1];
+FILE* stderr = &file_table[2];
 
 extern int open(const char* filename, int flags);
 extern int close(int fd);
@@ -19,38 +19,48 @@ extern size_t read(int fd, char* buf, size_t size);
 extern size_t write(int fd, const char* buf, size_t size);
 extern int seek(int fd, long int offset, int origin);
 
+int get_fd(FILE* file)
+{
+	int fd = file - &file_table[0];
+
+	if (fd < 0 || fd >= FILE_TABLE_SIZE)
+		return -1;
+
+	return fd;
+}
+
 FILE* fopen(const char* filename, const char* mode)
 {
-	FILE* stream = new FILE;
-	stream->fd = open(filename, O_RDWR);
-	
-	if (stream->fd == 0)
-	{
-		delete stream;
-		return 0;
-	}
+	int fd = open(filename, O_RDWR);
 
-	return stream;
+	if (fd < 0 || fd >= FILE_TABLE_SIZE)
+		return 0;
+
+	return &file_table[fd];
 }
 
 int fclose(FILE* stream)
 {
-	return close(stream->fd);
+	int fd = get_fd(stream);
+	return close(fd);
 }
 
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return read(stream->fd, (char*)ptr, size);
+	int fd = get_fd(stream);
+	return read(fd, (char*)ptr, size*nmemb);
 }
 
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return write(stream->fd, (const char*)ptr, size);
+	int fd = get_fd(stream);
+	return write(fd, (const char*)ptr, size*nmemb);
 }
 
 int fseek(FILE* stream, long int offset, int origin)
 {
-	return seek(stream->fd, offset, origin);
+	int fd = get_fd(stream);
+	return seek(fd, offset, origin);
 }
 
 int printf(const char* format, ...)
