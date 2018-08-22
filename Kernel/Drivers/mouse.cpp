@@ -148,7 +148,7 @@ MouseDriver::MouseDriver()
 int MouseDriver::Open(FNODE* node, FILE* file)
 {
 	file->pos = buffer_pos;
-	return SUCCESS;
+	return 0;
 }
 
 int MouseDriver::Read(FILE* file, char* buf, size_t size)

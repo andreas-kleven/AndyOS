@@ -1,9 +1,6 @@
 #pragma once
 #include "path.h"
 
-#define SUCCESS 0
-#define ERROR   -1
-
 class FileIO;
 
 enum FILE_TYPE

@@ -33,7 +33,7 @@ int ISO_FS::Read(FILE* file, char* buf, size_t size)
 	return driver->Read(file->node->pos, buf, size);
 }
 
-int ISO_FS::GetFile(const Path* path, FNODE* node)
+bool ISO_FS::GetFile(const Path* path, FNODE* node)
 {
 	ISO_DIRECTORY* dir = FindDirectory(path);
 
@@ -47,10 +47,10 @@ int ISO_FS::GetFile(const Path* path, FNODE* node)
 		else
 			node->type = FILE_TYPE_DIRECTORY;
 
-		return 0;
+		return true;
 	}
 
-	return -1;
+	return false;
 }
 
 

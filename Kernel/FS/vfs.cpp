@@ -68,7 +68,7 @@ namespace VFS
 
 		if (fs)
 		{
-			if (fs->GetFile(path, node) == 0)
+			if (fs->GetFile(path, node))
 			{
 				node->io = fs;
 			}
@@ -115,7 +115,12 @@ namespace VFS
 		}
 
 		node->path = (Path*)path;
-		AddNode(node);
+
+		if (!AddNode(node))
+		{
+			delete node;
+			return 0;
+		}
 
 		return node;
 	}
@@ -134,7 +139,7 @@ namespace VFS
 			}
 		}
 
-		return ERROR;
+		return -1;
 	}
 
 	FILE* GetFile(int fd)
@@ -164,17 +169,17 @@ namespace VFS
 		FNODE* node = GetNode(path);
 
 		if (!node)
-			return ERROR;
+			return -1;
 
 		THREAD* thread = Scheduler::CurrentThread();
 		FILE* file = new FILE(node, thread);
 		FileIO* io = file->node->io;
 
 		if (!io)
-			return ERROR;
+			return -1;
 
-		if (io->Open(file->node, file) != SUCCESS)
-			return ERROR;
+		if (io->Open(file->node, file) != 0)
+			return -1;
 
 		return AddFile(file);
 	}
@@ -185,10 +190,10 @@ namespace VFS
 		delete file;
 
 		if (!file)
-			return ERROR;
+			return -1;
 
 		SetFile(fd, 0);
-		return SUCCESS;
+		return 0;
 	}
 
 	size_t Read(int fd, char* dst, size_t size)
@@ -196,7 +201,7 @@ namespace VFS
 		FILE* file = GetFile(fd);
 
 		if (!file)
-			return ERROR;
+			return 0;
 
 		FNODE* node = file->node;
 
@@ -210,7 +215,7 @@ namespace VFS
 		FILE* file = GetFile(fd);
 
 		if (!file)
-			return ERROR;
+			return 0;
 
 		FNODE* node = file->node;
 
@@ -224,24 +229,24 @@ namespace VFS
 		FILE* file = GetFile(fd);
 
 		if (!file)
-			return ERROR;
+			return -1;
 
 		switch (origin)
 		{
 		case SEEK_SET:
 			file->pos = offset;
-			return SUCCESS;
+			return 0;
 
 		case SEEK_CUR:
 			file->pos += offset;
-			return SUCCESS;
+			return 0;
 
 		case SEEK_END:
 			file->pos = file->node->size + offset;
-			return SUCCESS;
+			return 0;
 
 		default:
-			return ERROR;
+			return -1;
 		}
 	}
 
@@ -253,7 +258,7 @@ namespace VFS
 		FNODE* node = new FNODE("/pipes/1", FILE_TYPE_PIPE, pipe);
 		
 		if (!AddNode(node))
-			return ERROR;
+			return -1;
 
 		FILE* read = new FILE(node, thread);
 		FILE* write = new FILE(node, thread);
@@ -262,9 +267,9 @@ namespace VFS
 		pipefd[1] = AddFile(write);
 
 		if (pipefd[0] == -1 || pipefd[1] == -1)
-			return ERROR;
+			return -1;
 
-		return SUCCESS;
+		return 0;
 	}
 
 	uint32 ReadFile(const char* filename, char*& buffer)
