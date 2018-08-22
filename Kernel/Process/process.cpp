@@ -8,12 +8,8 @@
 #include "string.h"
 #include "Lib/debug.h"
 
-int procIdCounter = 0;
-PROCESS* first = 0;
-
 PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 {
-	this->id = ++procIdCounter;
 	this->flags = flags;
 	this->addr_space = addr_space;
 	this->next = 0;
@@ -27,12 +23,30 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 
 namespace ProcessManager
 {
+	PROCESS* first = 0;
+
+	pid_t pid_counter = 1;
+	pid_t AssignPid(PROCESS* proc)
+	{
+		if (!proc)
+			return 0;
+
+		proc->id = pid_counter++;
+		return proc->id;
+	}
+
 	PROCESS* Load(char* path)
 	{
 		PROCESS* proc = ELF::Load(path);
+		return AddProcess(proc);
+	}
 
+	PROCESS* AddProcess(PROCESS* proc)
+	{
 		if (!proc)
 			return 0;
+
+		AssignPid(proc);
 
 		proc->next = first;
 		first = proc;
@@ -109,8 +123,7 @@ namespace ProcessManager
 		return STATUS_FAILED;
 	}
 
-
-	PROCESS* GetProcess(int id)
+	PROCESS* GetProcess(pid_t id)
 	{
 		PROCESS* proc = first;
 

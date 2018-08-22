@@ -64,7 +64,7 @@ struct MESSAGE
 
 struct PROCESS
 {
-	uint16 id;
+	pid_t id;
 	PROCESS_FLAGS flags;
 	ADDRESS_SPACE addr_space;
 	THREAD* main_thread;
@@ -81,13 +81,16 @@ struct PROCESS
 
 namespace ProcessManager
 {
+	pid_t AssignPid(PROCESS* proc);
+
 	PROCESS* Load(char* path);
+	PROCESS* AddProcess(PROCESS* proc);
 	STATUS Terminate(PROCESS* proc);
 	STATUS Kill(PROCESS* proc);
 	THREAD* CreateThread(PROCESS* proc, void(*entry)());
 	STATUS RemoveThread(THREAD* thread);
 
-	PROCESS* GetProcess(int id);
+	PROCESS* GetProcess(pid_t id);
 	PROCESS* GetFirst();
 };
 
