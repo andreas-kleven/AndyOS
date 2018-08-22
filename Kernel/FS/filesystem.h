@@ -12,5 +12,5 @@ public:
 	FileSystem();
 	
 	virtual bool Mount(FNODE* node) { return false; }
-	virtual bool GetFile(const Path* path, FNODE*) { return false; }
+	virtual bool GetFile(const Path& path, FNODE*) { return false; }
 };

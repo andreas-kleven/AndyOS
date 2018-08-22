@@ -112,9 +112,9 @@ public:
 	ISO_FS(BlockDriver* driver);
 
     int Read(FILE* file, char* buf, size_t size);
-	bool GetFile(const Path* path, FNODE* node);
+	bool GetFile(const Path& path, FNODE* node);
 
 private:
-	ISO_DIRECTORY* FindDirectory(const Path* path);
+	ISO_DIRECTORY* FindDirectory(const Path& path);
 	void GetName(ISO_DIRECTORY* dir, char* buf);
 };

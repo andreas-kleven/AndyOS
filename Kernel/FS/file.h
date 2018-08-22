@@ -14,7 +14,7 @@ enum FILE_TYPE
 
 struct FNODE
 {
-	Path* path;
+	Path path;
 	size_t size = 0;
 	long pos = 0;
 	FILE_TYPE type;
@@ -29,7 +29,7 @@ struct FNODE
 
     FNODE(char* path, FILE_TYPE type, FileIO* io)
     {
-        this->path = new Path(path);
+        this->path = Path(path);
         this->type = type;
         this->io = io;
     }

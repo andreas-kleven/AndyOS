@@ -11,8 +11,9 @@ public:
 
 	Path();
 	Path(const char* path);
+	~Path();
 
-	Path* Parent() const;
+	Path Parent() const;
 
 	bool operator==(const Path& path) const;
 };

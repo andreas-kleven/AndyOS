@@ -40,14 +40,14 @@ namespace VFS
 		return false;
 	}
 
-	FileSystem* GetFS(const Path* path)
+	FileSystem* GetFS(const Path& path)
 	{
 		return primary_fs;
 	}
 
-	FNODE* GetNode(const Path* path)
+	FNODE* GetNode(const Path& path)
 	{
-		if (path->count == 0)
+		if (path.count == 0)
 			return 0;
 
 		for (int i = 0; i < NODE_COUNT; i++)
@@ -56,7 +56,7 @@ namespace VFS
 
 			if (node)
 			{
-				if (*node->path == *path)
+				if (node->path == path)
 				{
 					return node;
 				}
@@ -72,29 +72,16 @@ namespace VFS
 			{
 				node->io = fs;
 			}
-			else if (path->count >= 2)
+			else if (path.count >= 2)
 			{
-				if (strcmp(path->parts[0], "dev") == 0)
+				if (strcmp(path.parts[0], "dev") == 0)
 				{
-					Driver* drv = DriverManager::GetDriver(path->parts[1]);
+					Driver* drv = DriverManager::GetDriver(path.parts[1]);
 
 					if (drv && drv->type == DRIVER_TYPE_CHAR)
 					{
 						node->io = drv;
 						node->type = FILE_TYPE_CHAR;
-					}
-				}
-				else if (strcmp(path->parts[0], "proc") == 0)
-				{
-					if (path->count == 4)
-					{
-						pid_t pid = atoi(path->parts[1]);
-						int fd = atoi(path->parts[3]);
-
-						if (pid != 0 && strcmp(path->parts[2], "fd") == 0)
-						{
-							node->type = FILE_TYPE_CHAR;
-						}
 					}
 				}
 			}
@@ -106,7 +93,7 @@ namespace VFS
 			return 0;
 		}
 
-		node->parent = GetNode(path->Parent());
+		node->parent = GetNode(path.Parent());
 
 		if (node->parent)
 		{
@@ -114,7 +101,7 @@ namespace VFS
 			node->parent->first_child = node;
 		}
 
-		node->path = (Path*)path;
+		node->path = path;
 
 		if (!AddNode(node))
 		{
@@ -165,7 +152,7 @@ namespace VFS
 
 	int Open(const char* filename)
 	{
-		Path* path = new Path(filename);
+		Path path(filename);
 		FNODE* node = GetNode(path);
 
 		if (!node)
@@ -274,7 +261,7 @@ namespace VFS
 
 	uint32 ReadFile(const char* filename, char*& buffer)
 	{
-		Path* path = new Path(filename);
+		Path path(filename);
 
 		FILE file;
 		file.node = GetNode(path);

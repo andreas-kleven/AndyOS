@@ -33,7 +33,7 @@ int ISO_FS::Read(FILE* file, char* buf, size_t size)
 	return driver->Read(file->node->pos, buf, size);
 }
 
-bool ISO_FS::GetFile(const Path* path, FNODE* node)
+bool ISO_FS::GetFile(const Path& path, FNODE* node)
 {
 	ISO_DIRECTORY* dir = FindDirectory(path);
 
@@ -54,16 +54,16 @@ bool ISO_FS::GetFile(const Path* path, FNODE* node)
 }
 
 
-ISO_DIRECTORY* ISO_FS::FindDirectory(const Path* path)
+ISO_DIRECTORY* ISO_FS::FindDirectory(const Path& path)
 {
 	ISO_DIRECTORY* start = root;
 	ISO_DIRECTORY* dir = start;
 
-	if (!dir || path->count == 0)
+	if (!dir || path.count == 0)
 		return 0;
 
 	int pi = 0;
-	char* part = path->parts[pi++];
+	char* part = path.parts[pi++];
 
 	while (part && dir && dir->length)
 	{
@@ -81,7 +81,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const Path* path)
 					start = (ISO_DIRECTORY*)buffer;
 					dir = start;
 
-					part = path->parts[pi++];
+					part = path.parts[pi++];
 				}
 				else
 				{

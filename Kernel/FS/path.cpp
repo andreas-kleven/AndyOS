@@ -52,11 +52,17 @@ Path::Path(const char* _path)
 	}
 }
 
-Path* Path::Parent() const
+Path::~Path()
 {
-	Path* parent = new Path;
-	parent->count = this->count - 1;
-	parent->parts = this->parts;
+	for (int i = 0; i < this->count; i++)
+		delete[] this->parts[i];
+}
+
+Path Path::Parent() const
+{
+	Path parent;
+	parent.count = this->count - 1;
+	parent.parts = this->parts;
 	return parent;
 }
 
