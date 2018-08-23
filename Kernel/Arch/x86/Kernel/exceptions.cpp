@@ -47,7 +47,7 @@ namespace Exceptions
 		debug_pos(0, 1);
 		debug_color(0xFFFF0000);
 
-		debug_print("0x%ux\t0x%ux\t0x%ux\t0x%ux\n", regs->esp, regs->cs, regs->eip, regs->eflags);
+		debug_print("0x%X\t0x%X\t0x%X\t0x%X\n", regs->esp, regs->cs, regs->eip, regs->eflags);
 		debug_dump((void*)regs->esp, 256);
 
 		panic("Invalid opcode");
@@ -105,7 +105,7 @@ namespace Exceptions
 		const char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
 		const char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
 
-		panic("Page fault", "ADDR:%ux  ERR:%ux  EFLAGS:%ux  CS:%ux  EIP:%ux  %s%s%s%s%s",
+		panic("Page fault", "ADDR:%X  ERR:%X  EFLAGS:%X  CS:%X  EIP:%X  %s%s%s%s%s",
 			faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);
 	}
 

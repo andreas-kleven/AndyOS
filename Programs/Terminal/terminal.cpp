@@ -211,7 +211,7 @@ public:
 		else if (strcmp(arg1, "test") == 0)
 		{
 			FILE* file = fopen("text.txt", "");
-			Print("File: %ux\n", file);
+			Print("File: %X\n", file);
 
 			int len = 20;
 			char data[len];
@@ -239,7 +239,7 @@ public:
 					if (fread(data, 1, 4, file) != -1)
 					{
 						for (int i = 0; i < 4; i++)
-							Print("%ux ", (uint8)data[i]);
+							Print("%X ", (uint8)data[i]);
 						Print("\n");
 					}
 				}

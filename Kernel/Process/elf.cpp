@@ -59,7 +59,7 @@ namespace ELF
 			}
 		}
 
-		debug_print("Loaded image %ux\n", addr_space.ptr);
+		debug_print("Loaded image %X\n", addr_space.ptr);
 		
 		PROCESS* proc = new PROCESS(PROCESS_USER, addr_space);
 		ProcessManager::CreateThread(proc, (void(*)())header->e_entry);

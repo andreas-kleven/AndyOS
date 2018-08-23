@@ -29,7 +29,7 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 	//	return;
 	//}
 
-	debug_print("Flags: %ux\tACK: %ui\tSEQ: %ui\n", header->flags, header->ack, header->seq);
+	debug_print("Flags: %X\tACK: %ui\tSEQ: %ui\n", header->flags, header->ack, header->seq);
 
 	switch (state)
 	{

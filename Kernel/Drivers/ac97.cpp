@@ -103,9 +103,9 @@ namespace AC97
 		IRQ::Install(0x20 + device.irq, AC97_ISR);
 		outb(device.nabmbar + AC97_PO_CR, (1 << 3) | (1 << 4));
 
-		debug_print("0x%ux\n", device.nambar);
-		debug_print("0x%ux\n", device.nabmbar);
-		debug_print("0x%ux\n", device.irq);
+		debug_print("0x%X\n", device.nambar);
+		debug_print("0x%X\n", device.nabmbar);
+		debug_print("0x%X\n", device.irq);
 
 		int volume; //Volume; Attention: 0 is full volume, 63 is as good as mute!
 
