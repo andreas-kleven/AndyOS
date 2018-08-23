@@ -41,6 +41,13 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 					break;
 				}
 
+				case 'c':	//character
+				{
+					*ptr++ = va_arg(vlist, char);
+					*ptr = 0;
+					break;
+				}
+
 				case 'd':	//signed int
 				case 'i':
 				{
@@ -87,10 +94,12 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 					break;
 				}
 
-				case 'c':	//character
+				case 'p':
 				{
-					*ptr++ = va_arg(vlist, char);
-					*ptr = 0;
+					void* p = va_arg(vlist, void*);
+					*ptr++ = '0';
+					*ptr++ = 'x';
+					itoa((unsigned long long)p, 16, ptr, false);
 					break;
 				}
 
@@ -131,6 +140,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 	*ptr = 0;
 	return strlen(buffer);
 }
+
 //Converts a string to a long
 long strtol(const char* nptr, char** endptr, int base)
 {
