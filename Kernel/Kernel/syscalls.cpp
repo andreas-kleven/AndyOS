@@ -74,6 +74,19 @@ namespace Syscalls
 		return VFS::CreatePipes(pipefd, 0);
 	}
 
+	int dup(int oldfd)
+	{
+		return VFS::DuplicateFile(oldfd);
+	}
+
+	int dup2(int oldfd, int newfd)
+	{
+		if (newfd == -1)
+			return -1;
+
+		return VFS::DuplicateFile(oldfd, newfd);
+	}
+
 	pid_t fork()
 	{
 		
@@ -317,6 +330,8 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_WRITE, (SYSCALL_HANDLER)write);
 		InstallSyscall(SYSCALL_SEEK, (SYSCALL_HANDLER)seek);
 		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
+		InstallSyscall(SYSCALL_DUP, (SYSCALL_HANDLER)dup);
+		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 

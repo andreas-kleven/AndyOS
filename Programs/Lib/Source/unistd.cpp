@@ -31,6 +31,16 @@ int pipe(int pipefd[2])
 	return syscall(SYSCALL_PIPE, (int)pipefd);
 }
 
+int dup(int oldfd)
+{
+	return syscall(SYSCALL_DUP, oldfd);
+}
+
+int dup2(int oldfd, int newfd)
+{
+	return syscall(SYSCALL_DUP2, oldfd);
+}
+
 pid_t fork()
 {
 	return syscall(SYSCALL_FORK);
