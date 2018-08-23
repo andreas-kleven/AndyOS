@@ -5,117 +5,132 @@
 #include "limits.h"
 #include "math.h"
 
-//Writes formatted string to buffer
-char* vprintf(char* buf, const char* format, ...)
-{
-	va_list	args;
-	va_start(args, format);
+static char digitchars[] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
 
-	return vsprintf(buf, format, args);
+int sprintf(char* str, const char* format, ...)
+{
+	va_list	va;
+	va_start(va, format);
+	int ret = vsprintf(str, format, va);
+	va_end(va);
+	return ret;
 }
 
-char* vsprintf(char* buf, const char* format, va_list args)
+int vsprintf(char* buffer, const char* format, va_list vlist)
 {
-	if (!buf)
-		return 0;
-
-	if (!format)
-		return 0;
-
-	char nstr[256];
-	strcpy(nstr, format);
-	int retnum = 0;
-
-	bool sign = true;
-
-	for (int i = 0; i <= strlen(nstr); i++)
+	if (!buffer || !format)
 	{
-		switch (nstr[i])
-		{
-		case '%':
-			switch (nstr[i + 1])
-			{
-			case 'c':
-			{
-				char c = va_arg(args, char);
-				buf[retnum++] = c;
-				i++;		// go to next character
-				break;
-			}
-
-			case 's':
-			{
-				char* c = va_arg(args, char*);
-				strcpy(buf + retnum, c);
-				retnum += strlen(c);
-				i++;		// go to next character
-				break;
-			}
-
-			case 'd':
-			case 'i':
-			{
-				int c = va_arg(args, int);
-				char str[32] = { 0 };
-				itoa(c, 10, str, sign);
-				strcpy(buf + retnum, str);
-				retnum += strlen(str);
-				sign = true;
-				i++;		// go to next character
-				break;
-			}
-
-			case 'X':
-			case 'x':
-			{
-				int c = va_arg(args, int);
-				char str[32] = { 0 };
-				itoa(c, 16, str, sign);
-				strcpy(buf + retnum, str);
-				retnum += strlen(str);
-				sign = true;
-				i++;		// go to next character
-				break;
-			}
-
-			case 'f':
-			{
-				float c = va_arg(args, double);
-
-				char str[32] = { 0 };
-				ftoa(c, 10, str);
-				strcpy(buf + retnum, str);
-				retnum += strlen(str);
-				sign = true;
-				i++;		// go to next character
-				break;
-			}
-
-			case 'u':
-			{
-				sign = false;
-				nstr[i + 1] = '%';
-				break;
-			}
-
-			default:
-				va_end(args);
-				return buf;
-			}
-
-			break;
-
-		default:
-			buf[retnum++] = nstr[i];
-			break;
-		}
-
+		*buffer = 0;
+		return -1;
 	}
 
-	va_end(args);
-	return buf;
-}
+	char* ptr = buffer;
 
+	for (int i = 0; i <= strlen(format); i++)
+	{
+		if (format[i] == '%')
+		{
+			char specifier = format[++i];
+
+			switch (specifier)
+			{
+				case 's':	//string
+				{
+					char* s = va_arg(vlist, char*);
+					strcpy(ptr, s);
+					break;
+				}
+
+				case 'd':	//signed int
+				case 'i':
+				{
+					int num = va_arg(vlist, int);
+					itoa(num, 10, ptr);
+					break;
+				}
+
+				case 'u':	//unsigned int
+				{
+					int num = va_arg(vlist, int);
+					itoa(num, 10, ptr, false);
+					break;
+				}
+
+				case 'o':	//unsigned octal
+				{
+					int num = va_arg(vlist, int);
+					itoa(num, 8, ptr, false);
+					break;
+				}
+
+				case 'x':	//unsigned hexadecimal int
+				case 'X':
+				{
+					int num = va_arg(vlist, int);
+					itoa(num, 16, ptr, false);
+					break;
+				}
+
+				case 'f':	//floating point
+				case 'F':
+				{
+					double num = va_arg(vlist, double);
+					ftoa(num, 10, ptr);
+					break;
+				}
+
+				case 'a':	//hexadecimal floating point
+				case 'A':
+				{
+					double num = va_arg(vlist, double);
+					ftoa(num, 16, ptr);
+					break;
+				}
+
+				case 'c':	//character
+				{
+					*ptr++ = va_arg(vlist, char);
+					*ptr = 0;
+					break;
+				}
+
+				case '%':	//percent
+				{
+					*ptr++= '%';
+					*ptr = 0;
+					break;
+				}
+
+				default:	//invalid specifier
+				{
+					*ptr++ = '%';
+					*ptr++ = specifier;
+					*ptr = 0;
+					break;
+				}
+			}
+
+			switch (specifier)
+			{
+				case 'X':
+				case 'F':
+				case 'A':
+					stoupper(ptr);
+					break;
+			}
+
+			//Move to end of string
+			ptr += strlen(ptr);
+		}
+		else
+		{
+			*ptr++ = format[i];
+		}
+	}
+
+	*ptr = 0;
+	return strlen(buffer);
+}
 //Converts a string to a long
 long strtol(const char* nptr, char** endptr, int base)
 {
@@ -224,7 +239,6 @@ char* itoa(int i, unsigned base, char* buf, bool sign)
 	}
 
 	char tbuf[32];
-	char bchars[] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
 
 	int pos = 0;
 	int opos = 0;
@@ -237,7 +251,7 @@ char* itoa(int i, unsigned base, char* buf, bool sign)
 	}
 
 	while (i != 0) {
-		tbuf[pos] = bchars[i % base];
+		tbuf[pos] = digitchars[i % base];
 		pos++;
 		i /= base;
 	}
@@ -249,7 +263,6 @@ char* itoa(int i, unsigned base, char* buf, bool sign)
 
 	return buf;
 }
-
 
 //Converts string to float
 float atof(const char* s)
@@ -303,9 +316,9 @@ char* ftoa(float f, unsigned base, char* buf)
 	}
 	else
 	{
-		float l10 = log10(f);
+		float logbase = logn(f, base);
 
-		int m = (int)l10;
+		int m = (int)logbase;
 		int digit;
 
 		if (m < 1)
@@ -325,11 +338,11 @@ char* ftoa(float f, unsigned base, char* buf)
 				}
 				else
 				{
-					float weight = pow(10.0f, m);
+					float weight = pow(base, m);
 					digit = floor(f / weight);
 
 					f -= (digit * weight);
-					*(buf++) = '0' + digit;
+					*(buf++) = digitchars[digit];
 				}
 
 				if (m == 0)

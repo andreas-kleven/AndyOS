@@ -11,8 +11,9 @@
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
-char* vprintf(char* buf, const char* format, ...);
-char* vsprintf(char* buf, const char* format, va_list args);
+int sprintf(char* str, const char* format, ...);
+int vsprintf(char* buffer, const char* format, va_list vlist);
+
 long strtol(const char* nptr, char** endptr, int base);
 
 int atoi(const char * str);

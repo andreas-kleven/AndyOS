@@ -338,11 +338,12 @@ public:
 
 	void Print(char* format, ...)
 	{
-		va_list	args;
-		va_start(args, format);
-
 		char buf[256];
-		vsprintf(buf, format, args);
+
+		va_list	va;
+		va_start(va, format);
+		int ret = vsprintf(buf, format, va);
+		va_end(va);
 
 		for (int i = 0; i < strlen(buf); i++)
 		{

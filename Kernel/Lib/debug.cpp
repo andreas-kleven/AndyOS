@@ -55,12 +55,11 @@ void debug_color(uint32 foreground, uint32 background)
 void debug_print(char* str, ...)
 {
 	char buffer[256];
-	memset(buffer, 0, 256);
 
-	va_list args;
-	va_start(args, str);
-
-	vsprintf(buffer, str, args);
+	va_list va;
+	va_start(va, str);
+	int len = vsprintf(buffer, str, va);
+	va_end(va);
 
 	str = buffer;
 	while (*str)
