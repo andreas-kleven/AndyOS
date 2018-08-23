@@ -150,6 +150,16 @@ namespace VFS
 		return true;
 	}
 
+	int DuplicateFile(int oldfd)
+	{
+		FILE* file = GetFile(oldfd);
+
+		if (!file)
+			return -1;
+
+		return AddFile(file);
+	}
+
 	int DuplicateFile(int oldfd, int newfd)
 	{
 		FILE* file = GetFile(oldfd);
@@ -157,18 +167,11 @@ namespace VFS
 		if (!file)
 			return -1;
 
-		if (newfd == -1)
-		{
-			return AddFile(file);
-		}
-		else
-		{
-			//Close existing file if open
-			if (GetFile(newfd))
-				Close(newfd);
+		//Close existing file if open
+		if (GetFile(newfd))
+			Close(newfd);
 
-			return SetFile(newfd, file);
-		}
+		return SetFile(newfd, file);
 	}
 
 	int Open(const char* filename)

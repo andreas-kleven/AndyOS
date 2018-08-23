@@ -6,7 +6,8 @@
 
 namespace VFS
 {
-	int DuplicateFile(int oldfd, int newfd = -1);
+	int DuplicateFile(int oldfd);
+	int DuplicateFile(int oldfd, int newfd);
 	
 	int Open(const char* filename);
 	int Close(int fd);

@@ -81,9 +81,6 @@ namespace Syscalls
 
 	int dup2(int oldfd, int newfd)
 	{
-		if (newfd == -1)
-			return -1;
-
 		return VFS::DuplicateFile(oldfd, newfd);
 	}
 
