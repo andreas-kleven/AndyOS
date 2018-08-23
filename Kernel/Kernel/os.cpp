@@ -87,7 +87,9 @@ namespace OS
 		//ProcessManager::Load("1test");
 		//ProcessManager::Load("1mndlbrt");
 
-		/*while (1)
+		#ifdef __i386__
+		#include "Arch/regs.h"
+		while (1)
 		{
 			PROCESS* proc = ProcessManager::GetFirst();
 
@@ -144,7 +146,8 @@ namespace OS
 
 				proc = proc->next;
 			}
-		}*/
+		}
+		#endif
 	}
 
 	void _Net()
