@@ -35,12 +35,12 @@ public:
 
 	ATADriver(int bus, int drive);
 
-	int Read(long pos, char* buf, size_t size);
+	int Read(fpos_t pos, char* buf, size_t size);
 
 	static STATUS Init();
 
 private:
-	int ReadSector(long pos, char* buf, size_t size);
+	int ReadSector(fpos_t pos, char* buf, size_t size);
 
 	static void ATA_Interrupt();
 };

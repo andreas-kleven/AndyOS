@@ -15,7 +15,7 @@
 static bool initialized;
 static int mouse_cycle = 0;
 static char* mouse_byte;
-static size_t buffer_pos;
+static fpos_t buffer_pos;
 static char buffer[BUFFER_SIZE];
 
 void mouse_isr()

@@ -1,4 +1,5 @@
 #pragma once
+#include "stdio.h"
 #include "path.h"
 
 class FileIO;
@@ -16,7 +17,7 @@ struct FNODE
 {
 	Path path;
 	size_t size = 0;
-	long pos = 0;
+	fpos_t pos = 0;
 	FILE_TYPE type;
 	FileIO* io;
 
@@ -38,7 +39,7 @@ struct FNODE
 struct FILE
 {
 	FNODE* node;
-	long pos = 0;
+	fpos_t pos = 0;
 	THREAD* thread = 0;
 
     FILE()

@@ -36,8 +36,8 @@ public:
 class BlockDriver : public Driver
 {
 public:
-	virtual int Read(long pos, char* buf, size_t size) { return -1; }
-	virtual int Write(long pos, const char* buf, size_t size) { return -1; }
+	virtual int Read(fpos_t pos, char* buf, size_t size) { return -1; }
+	virtual int Write(fpos_t pos, const char* buf, size_t size) { return -1; }
 
 	BlockDriver()
 	{

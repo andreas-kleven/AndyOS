@@ -20,7 +20,7 @@ ATADriver::ATADriver(int bus, int drive)
 	this->status = DRIVER_STATUS_RUNNING;
 }
 
-int ATADriver::Read(long pos, char* buf, size_t length)
+int ATADriver::Read(fpos_t pos, char* buf, size_t length)
 {
 	if (length <= 0)
 		return -1;
@@ -52,10 +52,10 @@ inline void Delay(int bus)
 	inb(bus + ATA_LBA_STATUS);
 }
 
-int ATADriver::ReadSector(long pos, char* buf, size_t size)
+int ATADriver::ReadSector(fpos_t pos, char* buf, size_t size)
 {
-	int sector = pos / ATA_SECTOR_SIZE;
-	int offset = pos % ATA_SECTOR_SIZE;
+	fpos_t sector = pos / ATA_SECTOR_SIZE;
+	fpos_t offset = pos % ATA_SECTOR_SIZE;
 
 	uint8 read_cmd[12] = { 0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 

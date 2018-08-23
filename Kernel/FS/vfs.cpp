@@ -193,6 +193,10 @@ namespace VFS
 		FNODE* node = file->node;
 
 		int read = node->io->Read(file, dst, size);
+
+		if (read == -1)
+			return -1;
+
 		file->pos += read;
 		return read;
 	}
@@ -207,6 +211,10 @@ namespace VFS
 		FNODE* node = file->node;
 
 		int written = node->io->Write(file, buf, size);
+
+		if (written == -1)
+			return -1;
+
 		file->pos += written;
 		return written;
 	}
