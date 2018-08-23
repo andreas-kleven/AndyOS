@@ -2,6 +2,7 @@
 #include <AndyOS.h>
 #include "Obj.h"
 #include "A3D.h"
+#include "stdio.h"
 
 Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 {
@@ -25,7 +26,7 @@ Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
 	}
 	else
 	{
-		debug_print("File not found '%s'\n", filename);
+		printf("File not found '%s'\n", filename);
 		while (1);
 	}
 

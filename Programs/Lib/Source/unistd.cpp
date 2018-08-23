@@ -38,7 +38,7 @@ int dup(int oldfd)
 
 int dup2(int oldfd, int newfd)
 {
-	return syscall(SYSCALL_DUP2, oldfd);
+	return syscall(SYSCALL_DUP2, oldfd, newfd);
 }
 
 pid_t fork()

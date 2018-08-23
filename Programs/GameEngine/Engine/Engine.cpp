@@ -56,7 +56,7 @@ namespace GEngine
 
 		//if (isnan(screen.x) || isnan(screen.y))
 		//{
-		//	debug_print("%f\t%f\t%f\n", p.x, p.y, p.w);
+		//	printf("%f\t%f\t%f\n", p.x, p.y, p.w);
 		//}
 
 		return screen;
@@ -72,8 +72,8 @@ namespace GEngine
 		if (isnan(total))
 		{
 			return;
-			debug_print("%f\t%f\t%i\t%i\t%i\n", lpstart.x, lpstart.y, (int)start.x, (int)start.y, (int)start.z);
-			debug_print("%f\t%f\t%i\t%i\t%i\n", lpstart.y, lpstart.y, (int)end.x, (int)end.y, (int)end.z);
+			printf("%f\t%f\t%i\t%i\t%i\n", lpstart.x, lpstart.y, (int)start.x, (int)start.y, (int)start.z);
+			printf("%f\t%f\t%i\t%i\t%i\n", lpstart.y, lpstart.y, (int)end.x, (int)end.y, (int)end.z);
 			while (1);
 		}
 
@@ -111,15 +111,15 @@ namespace GEngine
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			debug_print("[");
+			printf("[");
 			for (int j = 0; j < 3; j++)
 			{
-				debug_print("%f", M[i * 3 + j]);
+				printf("%f", M[i * 3 + j]);
 
 				if (j < 2)
-					debug_print("\t");
+					printf("\t");
 			}
-			debug_print("]\n");
+			printf("]\n");
 		}
 	}
 
@@ -127,15 +127,15 @@ namespace GEngine
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			debug_print("[");
+			printf("[");
 			for (int j = 0; j < 3; j++)
 			{
-				debug_print("%f", M[i * 4 + j]);
+				printf("%f", M[i * 4 + j]);
 
 				if (j < 3)
-					debug_print("\t");
+					printf("\t");
 			}
-			debug_print("]\n");
+			printf("]\n");
 		}
 	}
 
@@ -331,7 +331,7 @@ namespace GEngine
 			}
 		}
 
-		debug_print("Energy: %f\n", energy);
+		printf("Energy: %f\n", energy);
 
 		for (int i = 0; i < all.Count(); i++)
 		{
@@ -427,7 +427,7 @@ namespace GEngine
 							Matrix3 MRA = rota.ToMatrix3();
 							Matrix3 MRB = rotb.ToMatrix3();
 							//Matrix3 MatR = Matrix3::CreateRotation(a->parent->transform.rotation.ToEuler());
-							//debug_print("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
+							//printf("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 							//Matrix3 MatR2 = Matrix3::CreateRotation(b->parent->transform.rotation.ToEuler());
 
 							Matrix3 invbA = IbodyA.Inverse();
@@ -472,9 +472,9 @@ namespace GEngine
 							float J = N / (t1 + t2 + t3 + t4);
 							Vector3 force = n * J;
 
-							debug_print("N %f\n", N);
-							debug_print("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
-							debug_print("Acc %f\n", force.y / a->mass);
+							printf("N %f\n", N);
+							printf("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
+							printf("Acc %f\n", force.y / a->mass);
 							//PIT::Sleep(100000);
 							//PIT::Sleep(100);
 
@@ -574,12 +574,12 @@ namespace GEngine
 
 	void Render()
 	{
-		marcher.Render(gc);
-		return;
+		//marcher.Render(gc);
+		//return;
 
-		Raytracer tracer(gc);
-		tracer.Render();
-		return;
+		//Raytracer tracer(gc);
+		//tracer.Render();
+		//return;
 
 		Camera* cam = game->GetActiveCamera();
 		Matrix4 V = Matrix4::CreateView(
@@ -686,18 +686,18 @@ namespace GEngine
 			
 			if (get_ticks() != ticks && totalFrames > 0)
 			{
-				debug_print("FPS: %i\tDT:%i\tAvgDT: %i\tTicks: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames, ticks);
+				printf("FPS: %i\tDT:%i\tAvgDT: %i\tTicks: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames, ticks);
 				char buf[20];
-				//debug_print("AVG: %i\n", frames * 1000 / get_ticks());
+				//printf("AVG: %i\n", frames * 1000 / get_ticks());
 			}
 
-			debug_print("Cam: %s\n", cam->transform.ToString(buf));
-			debug_print("P1: %s\n", thing->transform.ToString(buf));
+			printf("Cam: %s\n", cam->transform.ToString(buf));
+			printf("P1: %s\n", thing->transform.ToString(buf));
 
 			if (thing->rigidbody)
 			{
 				Vector3 vel = thing->rigidbody->velocity;
-				debug_print("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
+				printf("V1: [%f, %f, %f]\n", vel.x, vel.y, vel.z);
 			}
 
 			if (Input::GetKey(KEY_TAB))

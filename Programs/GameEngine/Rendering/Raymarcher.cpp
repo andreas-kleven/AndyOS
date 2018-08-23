@@ -71,7 +71,7 @@ float TraceColor(Vector3 start, Vector3 dir)
     if (Trace(start, Vector3(dir.x + offset, dir.y, dir.z).Normalized(), p2) == 0) return 0;
 
     Vector3 n = (p1 - p2).Cross(p2 - p0).Normalized();
-    //debug_print("[%f, %f, %f]\t[%f, %f, %f]\n", p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
+    //printf("[%f, %f, %f]\t[%f, %f, %f]\n", p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
 
     float diff = n.Dot(-Vector3(0, 0, 1).Normalized());
     return clamp(diff + 0.2f, 0.0f, 1.0f);

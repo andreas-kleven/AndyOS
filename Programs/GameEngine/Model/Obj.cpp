@@ -17,7 +17,7 @@ void Obj::ReadFile(char* file)
 	List<String> lines;
 	text.Split(lines, '\n');
 
-	debug_print("--START\n");
+	printf("--START\n");
 
 	for (int i = 0; i < lines.Count(); i++)
 	{
@@ -68,7 +68,7 @@ void Obj::ReadFile(char* file)
 		}
 	}
 
-	debug_print("--END\n");*/
+	printf("--END\n");*/
 }
 
 void Obj::CreateVertices()

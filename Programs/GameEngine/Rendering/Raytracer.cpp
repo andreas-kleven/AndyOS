@@ -2,6 +2,7 @@
 #include "GEngine.h"
 #include "GL.h"
 #include "limits.h"
+#include "stdio.h"
 
 const int numPhotons = 10000;
 static Photon* photonMap;
@@ -543,7 +544,7 @@ void Raytracer::Render()
 	int finishTime = get_ticks();
 
 	//Debug::y = gc.height / 16 - 4;
-	debug_print("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
+	printf("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
 	return;
 
 	for (int i = 0; i < currentNumPhotons; i++)
