@@ -46,7 +46,7 @@ int clicks = 0;
 void btnClick()
 {
 	char buf[100];
-	vprintf(buf, "Clicked %i", ++clicks);
+	sprintf(buf, "Clicked %i", ++clicks);
 	wnd->label->text = buf;
 }
 
@@ -55,7 +55,7 @@ int main()
 	Drawing::Init();
 
 	char title[256];
-	vprintf(title, "Test window: %i", get_ticks());
+	sprintf(title, "Test window: %i", get_ticks());
 	wnd = new MainWindow(title);
 
 	while (true) sleep(100);

@@ -307,7 +307,7 @@ public:
 		if (pid)
 		{
 			char filename[32];
-			vprintf(filename, "/proc/%i/fd/0", pid);
+			sprintf(filename, "/proc/%i/fd/0", pid);
 
 			FILE* out = fopen(filename, "r");
 

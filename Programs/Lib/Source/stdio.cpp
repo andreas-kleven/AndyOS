@@ -63,28 +63,64 @@ int fseek(FILE* stream, long int offset, int origin)
 	return seek(fd, offset, origin);
 }
 
+int fputc(int character, FILE* stream)
+{
+	fwrite(&character, 1, 1, stream);
+}
+
+int fputs(const char* str, FILE* stream)
+{
+	fwrite(str, 1, strlen(str), stream);
+}
+
+
 int printf(const char* format, ...)
 {
-	va_list	args;
-	va_start(args, format);
-
-	char buf[256];
-	vsprintf(buf, format, args);
-
-	write(STDOUT_FILENO, buf, strlen(buf));
+	va_list	va;
+	va_start(va, format);
+	int ret = vprintf(format, va);
+	va_end(va);
+	return ret;
 }
 
-int vprintf(char* buf, const char* format, ...)
+int fprintf(FILE* stream, const char* format, ...)
 {
-	va_list	args;
-	va_start(args, format);
-
-	return vsprintf(buf, format, args);
+	va_list	va;
+	va_start(va, format);
+	int ret = vfprintf(stream, format, va);
+	va_end(va);
+	return ret;
 }
 
-int vsprintf(char* buf, const char* format, va_list args)
+int sprintf(char* str, const char* format, ...)
 {
-	if (!buf)
+	va_list	va;
+	va_start(va, format);
+	int ret = vsprintf(str, format, va);
+	va_end(va);
+	return ret;
+}
+
+int vprintf(const char* format, va_list vlist)
+{
+	return vfprintf(stdout, format, vlist);
+}
+
+int vfprintf(FILE* stream, const char* format, va_list vlist)
+{
+	char buffer[256];
+	int ret = vsprintf(buffer, format, vlist);
+
+	if (ret == -1)
+		return -1;
+
+	fwrite(buffer, 1, ret, stream);
+	return ret;
+}
+
+int vsprintf(char* buffer, const char* format, va_list vlist)
+{
+	if (!buffer)
 		return -1;
 
 	if (!format)
@@ -103,16 +139,16 @@ int vsprintf(char* buf, const char* format, va_list args)
 			{
 			case 'c':
 			{
-				char c = va_arg(args, char);
-				buf[retnum++] = c;
+				char c = va_arg(vlist, char);
+				buffer[retnum++] = c;
 				i++;		// go to next character
 				break;
 			}
 
 			case 's':
 			{
-				char* c = va_arg(args, char*);
-				strcpy(buf + retnum, c);
+				char* c = va_arg(vlist, char*);
+				strcpy(buffer + retnum, c);
 				retnum += strlen(c);
 				i++;		// go to next character
 				break;
@@ -121,10 +157,10 @@ int vsprintf(char* buf, const char* format, va_list args)
 			case 'd':
 			case 'i':
 			{
-				int c = va_arg(args, int);
+				int c = va_arg(vlist, int);
 				char str[32] = { 0 };
 				itoa(c, 10, str, sign);
-				strcpy(buf + retnum, str);
+				strcpy(buffer + retnum, str);
 				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
@@ -134,10 +170,10 @@ int vsprintf(char* buf, const char* format, va_list args)
 			case 'X':
 			case 'x':
 			{
-				int c = va_arg(args, int);
+				int c = va_arg(vlist, int);
 				char str[32] = { 0 };
 				itoa(c, 16, str, sign);
-				strcpy(buf + retnum, str);
+				strcpy(buffer + retnum, str);
 				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
@@ -146,11 +182,11 @@ int vsprintf(char* buf, const char* format, va_list args)
 
 			case 'f':
 			{
-				float c = va_arg(args, double);
+				float c = va_arg(vlist, double);
 
 				char str[32] = { 0 };
 				ftoa(c, 10, str);
-				strcpy(buf + retnum, str);
+				strcpy(buffer + retnum, str);
 				retnum += strlen(str);
 				sign = true;
 				i++;		// go to next character
@@ -165,20 +201,18 @@ int vsprintf(char* buf, const char* format, va_list args)
 			}
 
 			default:
-				va_end(args);
 				return 0;
 			}
 
 			break;
 
 		default:
-			buf[retnum++] = format[i];
+			buffer[retnum++] = format[i];
 			break;
 		}
 	}
 
-	va_end(args);
-	return 0;
+	return retnum;
 }
 
 //Converts a string to a long

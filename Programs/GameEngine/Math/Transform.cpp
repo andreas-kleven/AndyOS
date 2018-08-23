@@ -107,7 +107,7 @@ Vector3 Transform::GetForwardVector()
 
 char* Transform::ToString(char* buf)
 {
-	vprintf(buf, "[%f, %f, %f] [%f, %f, %f, %f] [%f, %f, %f]",
+	sprintf(buf, "[%f, %f, %f] [%f, %f, %f, %f] [%f, %f, %f]",
 		position.x, position.y, position.z,
 		rotation.x, rotation.y, rotation.z, rotation.w,
 		scale.x, scale.y, scale.z);

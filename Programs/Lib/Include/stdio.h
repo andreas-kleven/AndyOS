@@ -30,6 +30,8 @@
 #define O_NOATIME	01000000
 #define O_CLOEXEC	02000000	/* set close_on_exec */
 
+typedef signed long long fpos_t;
+
 struct FILE
 {
 };
@@ -43,17 +45,21 @@ int fclose(FILE* stream);
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream);
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream);
 int fseek(FILE* stream, long int offset, int origin);
-//int fputc(unsigned char c, FILE* stream);
-//int fputs(const char* str, FILE* stream);
+int fputc(int character, FILE* stream);
+int fputs(const char* str, FILE* stream);
 //int fgetc(FILE* stream);
 //char* fgets(char* str, int count, FILE* stream);
 
 int printf(const char* format, ...);
-int vprintf(char* buf, const char* format, ...);
-int vsprintf(char* buf, const char* format, va_list args);
+int fprintf(FILE* stream, const char* format, ...);
+int sprintf(char* str, const char* format, ...);
+int vprintf(const char* format, va_list vlist);
+int vfprintf(FILE* stream, const char* format, va_list vlist);
+int vsprintf(char* buffer, const char* format, va_list vlist);
+
 long strtol(const char* nptr, char** endptr, int base);
 
-int atoi(const char * str);
+int atoi(const char* str);
 char* itoa(int i, unsigned base, char* buf, bool sign = 1);
 
 float atof(const char* s);
