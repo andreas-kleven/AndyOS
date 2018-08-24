@@ -28,7 +28,6 @@ namespace Task::Arch
 		thread->id = ++id_counter;
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
-		thread->addr_space = VMem::GetAddressSpace();
 		thread->fpu_state = new uint8[512];
 		thread->kernel_esp = 0;
 		thread->next = 0;

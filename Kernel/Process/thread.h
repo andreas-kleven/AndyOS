@@ -19,7 +19,6 @@ struct THREAD
 {
 	size_t stack;
 	size_t kernel_esp;
-	ADDRESS_SPACE addr_space;
 	int id;
 	THREAD_STATE state;
 	THREAD* next;

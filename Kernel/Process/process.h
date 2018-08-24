@@ -90,6 +90,9 @@ namespace ProcessManager
 	THREAD* CreateThread(PROCESS* proc, void(*entry)());
 	STATUS RemoveThread(THREAD* thread);
 
+	PROCESS* Fork(PROCESS* proc);
+
+	PROCESS* GetCurrent();
 	PROCESS* GetProcess(pid_t id);
 	PROCESS* GetFirst();
 };

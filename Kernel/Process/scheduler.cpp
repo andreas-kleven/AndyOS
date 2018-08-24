@@ -203,7 +203,9 @@ namespace Scheduler
 				break;
 		}
 
-		VMem::SwapAddressSpace(current_thread->addr_space);
+		if (current_thread->process)
+			VMem::SwapAddressSpace(current_thread->process->addr_space);
+
 		current_thread->state = THREAD_STATE_RUNNING;
 
 		return current_thread;

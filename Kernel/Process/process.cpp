@@ -100,7 +100,6 @@ namespace ProcessManager
 		if (!thread)
 			return 0;
 
-		thread->addr_space = proc->addr_space;
 		thread->process = proc;
 
 		//Insert into thread list
@@ -121,6 +120,11 @@ namespace ProcessManager
 	STATUS RemoveThread(THREAD* thread)
 	{
 		return STATUS_FAILED;
+	}
+
+	PROCESS* GetCurrent()
+	{
+		return Scheduler::CurrentThread()->process;
 	}
 
 	PROCESS* GetProcess(pid_t id)

@@ -38,6 +38,7 @@ namespace VMem
 	ADDRESS_SPACE GetAddressSpace();
     bool SwapAddressSpace(ADDRESS_SPACE& space);
     ADDRESS_SPACE CreateAddressSpace();
+	ADDRESS_SPACE CopyAddressSpace();
 
     size_t GetAddress(size_t virt);
     pflags_t GetFlags(size_t virt);

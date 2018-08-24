@@ -86,12 +86,17 @@ namespace Syscalls
 
 	pid_t fork()
 	{
-		
+		PROCESS* proc = ProcessManager::Fork(ProcessManager::GetCurrent());
+
+		if (proc)
+			return proc->id;
+
+		return -1;
 	}
 
 	pid_t getpid()
 	{
-		return Scheduler::CurrentThread()->process->id;
+		return ProcessManager::GetCurrent()->id;
 	}
 
 	void halt()
@@ -124,7 +129,7 @@ namespace Syscalls
 
 	void exit(int code)
 	{
-		ProcessManager::Terminate(Scheduler::CurrentThread()->process);
+		ProcessManager::Terminate(ProcessManager::GetCurrent());
 	}
 
 	void exit_thread(int code)
@@ -149,7 +154,7 @@ namespace Syscalls
 
 	void* alloc(uint32 blocks)
 	{
-		VMem::SwapAddressSpace(Scheduler::CurrentThread()->addr_space);
+		VMem::SwapAddressSpace(ProcessManager::GetCurrent()->addr_space);
 		return VMem::UserAlloc(blocks);
 	}
 
@@ -193,14 +198,14 @@ namespace Syscalls
 	//
 	int set_signal(SIGNAL_HANDLER handler)
 	{
-		Scheduler::CurrentThread()->process->signal_handler = handler;
+		ProcessManager::GetCurrent()->signal_handler = handler;
 		return 1;
 	}
 
 	void send_signal(int proc_id, int signo)
 	{
 		PROCESS* proc = ProcessManager::GetProcess(proc_id);
-		int src_proc = Scheduler::CurrentThread()->process->id;
+		int src_proc = ProcessManager::GetCurrent()->id;
 
 		if (proc)
 		{
@@ -211,7 +216,7 @@ namespace Syscalls
 
 	int set_message(MESSAGE_HANDLER handler)
 	{
-		Scheduler::CurrentThread()->process->message_handler = handler;
+		ProcessManager::GetCurrent()->message_handler = handler;
 		return 1;
 	}
 
@@ -222,7 +227,7 @@ namespace Syscalls
 		if (!proc)
 			return;
 
-		int src_proc = Scheduler::CurrentThread()->process->id;
+		int src_proc = ProcessManager::GetCurrent()->id;
 		id = ++msg_id;
 
 		MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, src_proc, type, size);
@@ -246,7 +251,7 @@ namespace Syscalls
 	void send_message_reponse(int msg_id, int type, char* buf, int size)
 	{
 		TMP_MSG* msg = first_msg;
-		int src_proc = Scheduler::CurrentThread()->process->id;
+		int src_proc = ProcessManager::GetCurrent()->id;
 
 		while (msg)
 		{

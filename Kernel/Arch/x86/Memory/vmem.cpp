@@ -5,8 +5,8 @@
 #define PAGE_TABLE_INDEX(x) ((size_t(x) >> 12) & 0x3FF)
 
 #define PAGE_DIR_ADDRESS 0xFFFFF000
-#define PAGE_TABLE_ADDRESS(index) (0xFFC00000 + ((index)) * PAGE_SIZE)
-
+#define FIRST_PAGE_ADDRESS 0xFFC00000
+#define PAGE_TABLE_ADDRESS(index) (FIRST_PAGE_ADDRESS + ((index)) * PAGE_SIZE)
 #define PAGE_TABLE_AT(virt) (PAGE_TABLE*)(PAGE_TABLE_ADDRESS(PAGE_DIR_INDEX((virt))));
 
 #define F_PF(flags) (pflags_t)((PAGE_PRESENT * (bool)((flags) & PTE_PRESENT)) | (PAGE_WRITE * (bool)((flags) & PTE_WRITABLE)) | (PAGE_USER * (bool)((flags) & PTE_USER)))
@@ -16,6 +16,37 @@ extern size_t __KERNEL_START, __KERNEL_END;
 
 namespace VMem::Arch
 {
+	struct ADDRESS_SPACE_MAPPING
+	{
+		PAGE_DIR* dir;
+		PAGE_TABLE* tables;
+		bool is_phys;
+
+		ADDRESS_SPACE_MAPPING()
+		{
+			this->dir = 0;
+			this->tables = 0;
+			this->is_phys = false;
+		}
+
+		~ADDRESS_SPACE_MAPPING()
+		{
+			/*if (this->dir)
+				FreePages(this->dir, 1);
+
+			if (this->tables)
+				FreePages(this->tables, PAGE_DIR_LENGTH);*/
+		}
+
+		PAGE_TABLE* GetTable(int index)
+		{
+			if (this->is_phys)
+				return dir->GetTable(index);
+
+			return &tables[index];
+		}
+	};
+
     PAGE_DIR* main_dir;
     ADDRESS_SPACE current_space;
 
@@ -27,85 +58,29 @@ namespace VMem::Arch
             "mov %eax, %cr0");
     }
 
-	PAGE_DIR* GetCurrentDirVirt()
-	{
-		if (!current_space.ptr)
-			return main_dir;
-
-		return (PAGE_DIR*)PAGE_DIR_ADDRESS;
-	}
-
     ADDRESS_SPACE GetAddressSpace()
     {
         return current_space;
     }
 
-    bool SwapAddressSpace(ADDRESS_SPACE& addr_space)
-    {
-        if (addr_space == current_space)
-			return true;
+	ADDRESS_SPACE_MAPPING CurrentMapping()
+	{
+		ADDRESS_SPACE_MAPPING mapping;
 
-		current_space = addr_space;
-
-		asm volatile(
-			"mov (%0), %%eax\n"
-			"mov %%eax, %%cr3" 
-			:: "r" (&addr_space.ptr));
-
-		return true;
-    }
-
-    ADDRESS_SPACE CreateAddressSpace()
-    {
-        pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
-		uint32 pt_flags = PF_F(flags);
-
-		//Dir
-		PAGE_DIR* phys = (PAGE_DIR*)PMem::AllocBlocks(1);
-		PAGE_DIR* dir = (PAGE_DIR*)KernelMapFirstFree(phys, 1, flags);
-		memset(dir, 0, sizeof(PAGE_DIR));
-
-		//Tables
-		PAGE_TABLE* tables_phys = (PAGE_TABLE*)PMem::AllocBlocks(768);
-		PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelMapFirstFree(tables_phys, 768, flags));
-		memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
-
-		tables_phys -= 256;
-		tables_virt -= 256;
-
-		for (int i = 0; i < 256; i++)
+		if (current_space.ptr)
 		{
-			dir->values[i] = main_dir->values[i];
+			mapping.dir = (PAGE_DIR*)PAGE_DIR_ADDRESS;
+			mapping.tables = (PAGE_TABLE*)FIRST_PAGE_ADDRESS;
+		}
+		else
+		{
+			mapping.dir = main_dir;
+			mapping.tables = 0;
+			mapping.is_phys = true;
 		}
 
-		for (int i = 256; i < PAGE_DIR_LENGTH; i++)
-		{
-			dir->SetTable(i, tables_phys + i);
-		}
-
-		//Map tables and directory to last table
-		PAGE_TABLE* cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
-		PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
-		dir->SetFlag(PAGE_DIR_LENGTH - 1, pt_flags);
-
-		for (int i = 0; i < 256; i++)
-		{
-			last_table->values[i] = cur_last_table->values[i];	
-		}
-
-		for (int i = 256; i < 1023; i++)
-		{
-			last_table->SetFlag(i, pt_flags);
-			last_table->SetAddr(i, tables_phys + i);
-		}
-
-		last_table->SetFlag(PAGE_TABLE_LENGTH - 1, pt_flags);
-		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, phys);
-
-        ADDRESS_SPACE as;
-        as.ptr = phys;
-		return as;
-    }
+		return mapping;
+	}
 
     size_t GetAddress(size_t virt)
     {
@@ -149,32 +124,25 @@ namespace VMem::Arch
 		}
     }
 
-    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags)
-    {
-        PAGE_DIR* dir = GetCurrentDirVirt();
+    bool _MapPages(void* _virt, void* _phys, size_t count, pflags_t flags, ADDRESS_SPACE_MAPPING mapping)
+	{
+		char* virt = (char*)_virt;
+		char* phys = (char*)_phys;
+
+		PAGE_DIR* dir = mapping.dir;
 		uint32 pt_flags = PF_F(flags);
 
 		for (int i = 0; i < count; i++)
 		{
-			int index = PAGE_DIR_INDEX(virt);
+			int dir_index = PAGE_DIR_INDEX(virt);
 			int table_index = PAGE_TABLE_INDEX(virt);
 
 			//if (dir->GetTable(index) == 0)
 			//	CreatePageTable(virt, pt_flags);
 
-			dir->SetFlag(index, pt_flags);
+			dir->SetFlag(dir_index, pt_flags);
 
-			PAGE_TABLE* table;
-
-			if (current_space.ptr)
-			{
-				table = PAGE_TABLE_AT(virt);
-			}
-			else
-			{
-				table = dir->GetTable(index);
-			}
-
+			PAGE_TABLE* table = mapping.GetTable(dir_index);
 			table->SetFlag(table_index, pt_flags);
 			table->SetAddr(table_index, phys);
 
@@ -185,12 +153,161 @@ namespace VMem::Arch
 		}
 
 		return 1;
+	}
+
+    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags)
+    {
+		return _MapPages(virt, phys, count, flags, CurrentMapping());
     }
 
     bool FreePages(void* virt, size_t count)
     {
 
     }
+
+	bool CreateMapping(ADDRESS_SPACE& space, ADDRESS_SPACE_MAPPING* mapping)
+	{
+		if (space.ptr == 0)
+			return false;
+
+        pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
+
+		mapping->dir = (PAGE_DIR*)KernelMapFirstFree(space.ptr, 1, flags);
+		mapping->tables = (PAGE_TABLE*)FirstFree(1024, KERNEL_BASE, KERNEL_END);
+
+		for (int i = 0; i < PAGE_DIR_LENGTH; i++)
+		{
+			void* phys_table = mapping->dir->GetTable(i);
+
+			if (!MapPages(&mapping->tables[i], phys_table, 1, flags))
+			{
+				//Todo: free memory
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool CopyMemoryTo(ADDRESS_SPACE& to)
+	{
+		pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
+
+		ADDRESS_SPACE_MAPPING mapping;
+
+		if (CreateMapping(to, &mapping))
+		{
+			size_t cb = 0;
+
+			//Count present pages
+			for (size_t virt = USER_BASE; virt < USER_END; virt += PAGE_SIZE)
+			{
+				if (GetFlags(virt) != 0)
+					cb++;
+			}
+
+			//Allocate physical memory and map temporary for copying data
+			char* phys = (char*)PMem::AllocBlocks(cb);
+			char* tmpvirt = (char*)KernelMapFirstFree(phys, cb, flags);
+
+			for (size_t virt = USER_BASE; virt < USER_END; virt += PAGE_SIZE)
+			{
+				pflags_t pf = GetFlags(virt);
+
+				if (pf != 0)
+				{
+					_MapPages((void*)virt, phys, 1, pf, mapping);
+					memcpy(tmpvirt, (void*)virt, PAGE_SIZE);
+
+					phys += PAGE_SIZE;
+					tmpvirt += PAGE_SIZE;
+				}
+			}
+
+			//Free temp pages
+			VMem::FreePages(tmpvirt, cb);
+
+			return true;
+		}
+
+		return false;
+	}
+
+    bool SwapAddressSpace(ADDRESS_SPACE& addr_space)
+    {
+        if (addr_space == current_space)
+			return true;
+
+		current_space = addr_space;
+
+		asm volatile(
+			"mov (%0), %%eax\n"
+			"mov %%eax, %%cr3" 
+			:: "r" (&addr_space.ptr));
+
+		return true;
+    }
+
+    ADDRESS_SPACE CreateAddressSpace()
+    {
+        pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
+		uint32 pt_flags = PF_F(flags);
+
+		//Dir
+		PAGE_DIR* dir_phys = (PAGE_DIR*)PMem::AllocBlocks(1);
+		PAGE_DIR* dir_virt = (PAGE_DIR*)KernelMapFirstFree(dir_phys, 1, flags);
+		memset(dir_virt, 0, sizeof(PAGE_DIR));
+
+		//Tables
+		PAGE_TABLE* tables_phys = (PAGE_TABLE*)PMem::AllocBlocks(768);
+		PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelMapFirstFree(tables_phys, 768, flags));
+		memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
+
+		tables_phys -= 256;
+		tables_virt -= 256;
+
+		for (int i = 0; i < 256; i++)
+		{
+			dir_virt->values[i] = main_dir->values[i];
+		}
+
+		for (int i = 256; i < PAGE_DIR_LENGTH; i++)
+		{
+			dir_virt->SetTable(i, tables_phys + i);
+		}
+
+		//Map tables and directory to last table
+		PAGE_TABLE* cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
+		PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
+		PAGE_TABLE* last_table_phys = &tables_phys[PAGE_DIR_LENGTH - 1];
+
+		dir_virt->SetFlag(PAGE_DIR_LENGTH - 1, pt_flags);
+
+		for (int i = 0; i < 256; i++)
+		{
+			last_table->values[i] = cur_last_table->values[i];	
+		}
+
+		for (int i = 256; i < 1023; i++)
+		{
+			last_table->SetFlag(i, pt_flags);
+			last_table->SetAddr(i, tables_phys + i);
+		}
+
+		last_table->SetFlag(PAGE_TABLE_LENGTH - 1, pt_flags);
+		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, dir_phys);
+
+        ADDRESS_SPACE as;
+        as.ptr = dir_phys;
+		return as;
+    }
+
+	ADDRESS_SPACE CopyAddressSpace()
+	{
+		ADDRESS_SPACE space = CreateAddressSpace();
+		CopyMemoryTo(space);
+		return space;
+	}
 
     bool Init()
     {

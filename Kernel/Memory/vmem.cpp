@@ -121,6 +121,14 @@ namespace VMem
 		return ret;
 	}
 
+	ADDRESS_SPACE CopyAddressSpace()
+	{
+		Scheduler::Disable();
+		ADDRESS_SPACE ret = Arch::CopyAddressSpace();
+		Scheduler::Enable();
+		return ret;
+	}
+
     size_t GetAddress(size_t virt)
 	{
 		Scheduler::Disable();
