@@ -155,15 +155,12 @@ void debug_dump(void* addr, int length, bool str)
 		{
 			if (num > 15)
 			{
-				itoa(num, 16, buf, 0);
+				debug_print("%X ", num);
 			}
 			else
 			{
-				buf[0] = '0';
-				itoa(num, 16, buf + 1, 0);
+				debug_print("0%X ", num);
 			}
-
-			debug_print("%s ", buf);
 		}
 
 		if (!str)
