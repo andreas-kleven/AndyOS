@@ -14,9 +14,7 @@
 
 namespace Task::Arch
 {
-    int id_counter = 0;
 	size_t tmp_stack;
-
 	uint8 __attribute__((aligned(16))) fpu_state[512];
 
 	THREAD* CreateKernelThread(void(*entry)())
@@ -25,7 +23,6 @@ namespace Task::Arch
 
 		THREAD* thread = (THREAD*)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
 
-		thread->id = ++id_counter;
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];

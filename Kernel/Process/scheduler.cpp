@@ -41,6 +41,16 @@ namespace Scheduler
 		disableCount++;
 	}
 
+	int id_counter = 1;
+	int AssignId(THREAD* thread)
+	{
+		if (!thread)
+			return 0;
+
+		thread->id = id_counter++;
+		return thread->id;
+	}
+
 	void ExitThread(int code, THREAD* thread)
 	{
 		thread->state = THREAD_STATE_TERMINATED;
@@ -102,6 +112,7 @@ namespace Scheduler
 	void InsertThread(THREAD* thread)
 	{
 		Disable();
+		AssignId(thread);
 
 		if (first_thread)
 		{
