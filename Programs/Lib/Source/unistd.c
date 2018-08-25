@@ -1,5 +1,8 @@
 #include "unistd.h"
 #include "syscall.h"
+#include "stdarg.h"
+
+char** environ = 0;
 
 int open(const char* filename, int flags)
 {
@@ -49,4 +52,43 @@ pid_t fork()
 pid_t getpid()
 {
 	return syscall(SYSCALL_GETPID);
+}
+
+int execl(char const *path, char const *arg, ...)
+{
+	int argc = 1;
+	va_list	ap;
+	va_start(ap, arg);
+	while (va_arg(ap, const char*))
+		argc++;
+	va_end(ap);
+
+	char* argv[argc + 1];
+	va_start(ap, arg);
+	argv[0] = arg;
+	for (int i = 1; i <= argc; i++)
+		argv[i] = va_arg(ap, char*);
+	va_end(ap);
+
+	return execve(path, argv, environ);
+}
+
+int execlp(char const *file, char const *arg, ...)
+{
+	return -1;
+}
+
+int execv(char const *path, char const *argv[])
+{
+	return -1;
+}
+
+int execvp(char const *file, char const *argv[])
+{
+	return -1;
+}
+
+int execve(char const *path, char const *argv[], char const *envp[])
+{
+	syscall(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp);
 }
