@@ -86,12 +86,8 @@ namespace Syscalls
 
 	pid_t fork()
 	{
-		PROCESS* proc = ProcessManager::Fork(ProcessManager::GetCurrent());
-
-		if (proc)
-			return proc->id;
-
-		return -1;
+		PROCESS* newproc = ProcessManager::Fork(ProcessManager::GetCurrent());
+		return newproc == 0 ? -1 : 0;
 	}
 
 	pid_t getpid()
@@ -336,7 +332,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
-
+		
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);
 		InstallSyscall(SYSCALL_COLOR, (SYSCALL_HANDLER)color);

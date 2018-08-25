@@ -88,7 +88,8 @@ namespace ProcessManager
 	STATUS Terminate(PROCESS* proc);
 	STATUS Kill(PROCESS* proc);
 	THREAD* CreateThread(PROCESS* proc, void(*entry)());
-	STATUS RemoveThread(THREAD* thread);
+	bool AddThread(PROCESS* proc, THREAD* thread);
+	bool RemoveThread(THREAD* thread);
 
 	PROCESS* Fork(PROCESS* proc);
 

@@ -46,7 +46,8 @@ namespace ProcessManager
 		if (!proc)
 			return 0;
 
-		AssignPid(proc);
+		if (proc->id <= 0)
+			AssignPid(proc);
 
 		proc->next = first;
 		first = proc;
@@ -97,9 +98,14 @@ namespace ProcessManager
 			break;
 		}
 
-		if (!thread)
-			return 0;
+		if (AddThread(proc, thread))
+			return thread;
 
+		return 0;
+	}
+
+	bool AddThread(PROCESS* proc, THREAD* thread)
+	{
 		thread->process = proc;
 
 		//Insert into thread list
@@ -114,12 +120,12 @@ namespace ProcessManager
 			proc->main_thread->procNext = thread;
 		}
 
-		return thread;
+		return true;
 	}
 
-	STATUS RemoveThread(THREAD* thread)
+	bool RemoveThread(THREAD* thread)
 	{
-		return STATUS_FAILED;
+		return false;
 	}
 
 	PROCESS* GetCurrent()

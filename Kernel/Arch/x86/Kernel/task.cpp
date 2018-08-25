@@ -3,24 +3,24 @@
 #include "Arch/pit.h"
 #include "Arch/tss.h"
 #include "Arch/pic.h"
-
 #include "Process/thread.h"
 #include "Process/scheduler.h"
-#include "hal.h"
 #include "Memory/memory.h"
+#include "syscall_list.h"
+#include "hal.h"
 #include "string.h"
 
 #define TASK_SCHEDULE_IRQ 32
 
 namespace Task::Arch
 {
+	const int stack_size = 0x1000;
+
 	size_t tmp_stack;
 	uint8 __attribute__((aligned(16))) fpu_state[512];
 
 	THREAD* CreateKernelThread(void(*entry)())
 	{
-        int stack_size = 0x1000;
-
 		THREAD* thread = (THREAD*)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
 
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
@@ -32,7 +32,6 @@ namespace Task::Arch
 
 		REGS* regs = (REGS*)thread->stack;
 		regs->ebp = 0;
-		regs->esp = 0;
 		regs->edi = 0;
 		regs->esi = 0;
 		regs->edx = 0;
@@ -65,6 +64,32 @@ namespace Task::Arch
 		regs->gs = USER_SS;
 		regs->user_stack = (uint32)stack;
 		regs->user_ss = USER_SS;
+
+		return thread;
+	}
+
+	THREAD* CopyThread(THREAD* old, pid_t newpid)
+	{
+		//Copy stack
+		char* old_stack = (char*)old - stack_size + sizeof(THREAD);
+		char* new_stack = new char[stack_size];
+		memcpy(new_stack, old_stack, stack_size);
+
+		THREAD* thread = (THREAD*)((size_t)(new_stack) + stack_size - sizeof(THREAD));
+		thread->stack = old->stack + (signed long)thread - (signed long)old;
+		thread->kernel_esp = old->kernel_esp + (signed long)thread - (signed long)old;
+
+		//Copy fpu state
+		thread->fpu_state = new uint8[512];
+		memcpy(thread->fpu_state, old->fpu_state, 512);
+
+		if (newpid > 0)
+		{
+			//Used for fork() syscall
+			thread->stack -= sizeof(REGS);
+			REGS* regs = (REGS*)thread->stack;
+			regs->eax = newpid;
+		}
 
 		return thread;
 	}
