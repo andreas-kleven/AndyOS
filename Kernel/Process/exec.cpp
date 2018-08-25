@@ -39,9 +39,15 @@ namespace ProcessManager
         return 0;
     }
 
-    bool Exec(PROCESS* proc, char const *path, char const *argv[], char const *envp[])
+    bool Exec(PROCESS* proc, char const *_path, char const *argv[], char const *envp[])
     {
-        StopThreads(proc, false);
+        if (!_path)
+            return false;
+
+        char path[strlen(_path) + 1];
+        strcpy(path, _path);
+
+        StopThreads(proc);
         FreeMemory(proc);
 
         size_t entry = ELF::Load(path, proc);

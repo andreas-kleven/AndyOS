@@ -59,10 +59,10 @@ namespace ProcessManager
 
 	STATUS Terminate(PROCESS* proc)
 	{
-		StopThreads(proc, true);
 		FreeMemory(proc);
 		CloseFiles(proc);
-		return STATUS_SUCCESS;
+		StopThreads(proc);
+		Task::Switch(); //execution stops here
 	}
 
 	STATUS Kill(PROCESS* proc)
@@ -118,12 +118,12 @@ namespace ProcessManager
 		return false;
 	}
 
-	bool StopThreads(PROCESS* proc, bool auto_switch)
+	bool StopThreads(PROCESS* proc)
 	{
 		THREAD* thread = proc->main_thread;
 		while (thread)
 		{
-			Scheduler::ExitThread(0, thread, auto_switch);
+			Scheduler::ExitThread(0, thread, false);
 			thread = thread->procNext;
 		}
 
@@ -132,6 +132,8 @@ namespace ProcessManager
 
 	bool FreeMemory(PROCESS* proc)
 	{
+		size_t count = (USER_END - USER_BASE) / PAGE_SIZE;
+		VMem::FreePages((void*)USER_BASE, count);
 		return true;
 	}
 

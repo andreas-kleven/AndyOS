@@ -89,7 +89,7 @@ namespace ProcessManager
 	THREAD* CreateThread(PROCESS* proc, void(*entry)());
 	bool AddThread(PROCESS* proc, THREAD* thread);
 	bool RemoveThread(THREAD* thread);
-	bool StopThreads(PROCESS* proc, bool auto_switch);
+	bool StopThreads(PROCESS* proc);
 	bool FreeMemory(PROCESS* proc);
 	bool CloseFiles(PROCESS* proc);
 
