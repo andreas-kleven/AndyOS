@@ -1,6 +1,7 @@
 #include <AndyOS.h>
 #include <sys/drawing.h>
 #include "GUI.h"
+#include "stdio.h"
 #include "math.h"
 
 using namespace gui;
@@ -224,8 +225,8 @@ void run(GC& gc)
 		int delta_ticks = (get_ticks() - ticks);
 		delta = delta_ticks / 1000.0f;
 		ticks = get_ticks();
-		debug_print("Ticks: %i\tFPS: %i\tScale: %i\n", delta_ticks, (int)(1 / delta), scale);
-		debug_print("Zoom: %f\n", zoom);
+		printf("Ticks: %i\tFPS: %i\tScale: %i\n", delta_ticks, (int)(1 / delta), scale);
+		printf("Zoom: %f\n", zoom);
 	}
 }
 
