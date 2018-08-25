@@ -1,4 +1,4 @@
-#include "os.h"
+#include "test.h"
 #include "panic.h"
 #include "stdio.h"
 #include "PCI/pci.h"
@@ -21,14 +21,8 @@
 #include "syscall_list.h"
 #include "debug.h"
 
-namespace OS
+namespace Test
 {
-	void _Process()
-	{
-		ProcessManager::Exec("Test.exe");
-		ProcessManager::Exec("_Test.exe");
-	}
-
 	void COM_Receive()
 	{
 		while (1)
@@ -198,14 +192,13 @@ namespace OS
 		}
 	}
 
-	void Main()
+	void Start()
 	{
 		GUI();
 		//File();
 		//_Net();
 		//Audio();
 		//COM();
-		//_Process();
 		while (1) pause();
 	}
 }
