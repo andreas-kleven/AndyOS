@@ -1,10 +1,10 @@
 #include <AndyOS.h>
 #include <sys/msg.h>
 #include "GUI.h"
-#include "stdio.h"
+#include <stdio.h>
 #include "unistd.h"
-#include "string.h"
-#include "math.h"
+#include <string.h>
+#include <math.h>
 
 using namespace gui;
 
@@ -301,38 +301,55 @@ public:
 
 	void Open(char* file)
 	{
-		pid_t pid = create_process(file);
-		return;
+		int pipefd[2];
+		pid_t pid;
 
-		if (pid)
+		if (pipe(pipefd) == -1)
 		{
-			char filename[32];
-			sprintf(filename, "/proc/%i/fd/0", pid);
+			Print("Error\n");
+			return;
+		}
 
-			FILE* out = fopen(filename, "r");
+		if ((pid = fork()) == -1)
+		{
+			Print("Error\n");
+			return;
+		}
 
-			if (out)
+		debug_print("pid: %i\n", pid);
+
+		if (pid == 0)
+		{
+			close(pipefd[1]);
+
+			char buf[256];
+
+			while (true)
 			{
-				char buf[256];
+				int len = read(pipefd[0], buf, 256);
 
-				while (true)
-				{
-					if (fread(buf, 1, 256, out) != -1)
-					{
-						Print(buf);
-					}
+				if (len != -1)
+					Print(buf);
 
-					sleep(100);
-				}
-			}
-			else
-			{
-				Print("Could not open stdout\n");
+				sleep(10);
 			}
 		}
 		else
 		{
-			Print("Could not create process\n");
+			int fd = dup2(pipefd[1], STDOUT_FILENO);
+			close(pipefd[0]);
+			close(pipefd[1]);
+
+			if (fd == STDOUT_FILENO)
+			{
+				execl(file, file, 0);
+			}
+			else
+			{
+				debug_print("Error\n");
+			}
+
+			while (1);
 		}
 	}
 
@@ -408,8 +425,6 @@ public:
 
 int main()
 {
-	//printf("Test");
-
 	Drawing::Init();
 	MainWindow* wnd = new MainWindow();
 
