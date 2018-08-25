@@ -147,7 +147,9 @@ namespace VMem::Arch
 			int table_index = PAGE_TABLE_INDEX(virt);
 
 			size_t phys = mapping.GetAddress(virt);
-			PMem::FreeBlocks((void*)phys, 1);
+
+			if (phys)
+				PMem::FreeBlocks((void*)phys, 1);
 
 			PAGE_TABLE* table = mapping.GetTable(virt);
 			table->SetFlags(table_index, 0);
@@ -272,7 +274,7 @@ namespace VMem::Arch
 			}
 
 			//Free temp pages
-			VMem::FreePages(tmpvirt, cb);
+			FreePages(tmpvirt, cb);
 
 			return true;
 		}
