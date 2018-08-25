@@ -192,9 +192,30 @@ namespace Test
 		}
 	}
 
+	void _Memory()
+	{
+		debug_print("Free: %i\n", PMem::NumFree());
+
+		int* ptr1 = (int*)VMem::KernelAlloc(1);
+		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr1);
+
+		int* ptr2 = (int*)VMem::KernelAlloc(1);
+		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr2);
+
+		int* ptr3 = (int*)VMem::KernelAlloc(1);
+		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr3);
+
+		VMem::FreePages(ptr2, 2);
+		debug_print("Free: %i\n", PMem::NumFree());
+
+		int* _ptr1 = (int*)VMem::KernelAlloc(2);
+		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), _ptr1);
+	}
+
 	void Start()
 	{
 		GUI();
+		//_Memory();
 		//File();
 		//_Net();
 		//Audio();
