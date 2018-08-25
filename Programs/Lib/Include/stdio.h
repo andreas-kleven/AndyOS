@@ -32,9 +32,7 @@
 
 typedef signed long long fpos_t;
 
-struct FILE
-{
-};
+struct FILE;
 
 extern FILE* stdin;
 extern FILE* stdout;

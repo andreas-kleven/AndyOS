@@ -7,6 +7,10 @@
 
 #define FILE_TABLE_SIZE 256
 
+struct FILE
+{
+};
+
 FILE file_table[FILE_TABLE_SIZE];
 
 FILE* stdin = &file_table[0];
