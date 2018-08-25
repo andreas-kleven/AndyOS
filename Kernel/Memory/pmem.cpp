@@ -65,6 +65,21 @@ namespace PMem
 		return 0;
 	}
 
+	size_t NumBlocks()
+	{
+		return num_blocks;
+	}
+
+	size_t NumFree()
+	{
+		return num_free;
+	}
+
+	size_t NumUsed()
+	{
+		return num_blocks - num_free;
+	}
+
 	void InitRegion(void* addr, size_t size)
 	{
 		int align = (size_t)addr / BLOCK_SIZE;

@@ -3,6 +3,10 @@
 
 namespace PMem
 {
+	size_t NumBlocks();
+	size_t NumFree();
+	size_t NumUsed();
+
 	void InitRegion(void* addr, size_t size);
 	void DeInitRegion(void* addr, size_t size);
 	void* AllocBlocks(size_t size);
