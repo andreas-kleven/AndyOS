@@ -4,6 +4,7 @@
 #include "ctype.h"
 #include "limits.h"
 #include "math.h"
+#include "unistd.h"
 
 #define FILE_TABLE_SIZE 256
 
@@ -18,12 +19,6 @@ FILE* stdout = &file_table[1];
 FILE* stderr = &file_table[2];
 
 static char digitchars[] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
-
-extern int open(const char* filename, int flags);
-extern int close(int fd);
-extern size_t read(int fd, char* buf, size_t size);
-extern size_t write(int fd, const char* buf, size_t size);
-extern int seek(int fd, long int offset, int origin);
 
 int get_fd(FILE* file)
 {

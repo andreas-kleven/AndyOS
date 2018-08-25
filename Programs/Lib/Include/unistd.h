@@ -9,6 +9,7 @@ int open(const char* filename, int flags);
 int close(int fd);
 ssize_t read(int fd, char* buf, size_t size);
 ssize_t write(int fd, const char* buf, size_t size);
+int seek(int fd, long int offset, int origin);
 int pipe(int pipefd[2]);
 
 int dup(int oldfd);
