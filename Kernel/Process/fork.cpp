@@ -35,16 +35,15 @@ namespace ProcessManager
 
 	PROCESS* Fork(PROCESS* proc)
 	{
-		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
 		VMem::SwapAddressSpace(proc->addr_space);
-		ADDRESS_SPACE newspace = VMem::CopyAddressSpace();
-
-		if (newspace.ptr == 0)
+		ADDRESS_SPACE space;
+		
+		if (!VMem::CopyAddressSpace(&space))
 			return 0;
 
-		VMem::SwapAddressSpace(newspace);
+		VMem::SwapAddressSpace(space);
 
-		PROCESS* newproc = new PROCESS(proc->flags, newspace);
+		PROCESS* newproc = new PROCESS(proc->flags, space);
 		AssignPid(newproc);
 
 		memcpy(newproc->file_table, proc->file_table, sizeof(proc->file_table));
@@ -58,7 +57,7 @@ namespace ProcessManager
 			return 0;
 		}
 
-		VMem::SwapAddressSpace(old_space);
+		VMem::SwapAddressSpace(proc->addr_space);
 
 		if (!AddProcess(newproc))
 			return 0;

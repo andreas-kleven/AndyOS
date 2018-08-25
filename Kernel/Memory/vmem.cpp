@@ -57,6 +57,77 @@ namespace VMem
 		return virt;*/
 	}
 
+	///
+
+    size_t GetAddress(size_t virt)
+	{
+		Scheduler::Disable();
+		size_t ret = Arch::GetAddress(virt);
+		Scheduler::Enable();
+		return ret;
+	}
+
+    pflags_t GetFlags(size_t virt)
+	{
+		Scheduler::Disable();
+		pflags_t ret = Arch::GetFlags(virt);
+		Scheduler::Enable();
+		return ret;
+	}
+
+	ADDRESS_SPACE GetAddressSpace()
+	{
+		return Arch::GetAddressSpace();
+	}
+
+    bool SwapAddressSpace(ADDRESS_SPACE& space)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::SwapAddressSpace(space);
+		Scheduler::Enable();
+		return ret;
+	}
+
+    bool CreateAddressSpace(ADDRESS_SPACE* space)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::CreateAddressSpace(space);
+		Scheduler::Enable();
+		return ret;
+	}
+
+	bool CopyAddressSpace(ADDRESS_SPACE* space)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::CopyAddressSpace(space);
+		Scheduler::Enable();
+		return ret;
+	}
+
+    void* FirstFree(size_t count, size_t start, size_t end)
+	{
+		Scheduler::Disable();
+		void* ret = Arch::FirstFree(count, start, end);
+		Scheduler::Enable();
+		return ret;
+	}
+
+    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::MapPages(virt, phys, count, flags);
+		Scheduler::Enable();
+		return ret;
+	}
+
+    bool FreePages(void* virt, size_t count)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::FreePages(virt, count);
+		Scheduler::Enable();
+		return ret;
+	}
+
 	void* KernelAlloc(size_t count)
 	{
 		return Alloc(count, PAGE_PRESENT | PAGE_WRITE, KERNEL_BASE, KERNEL_END);
@@ -96,77 +167,6 @@ namespace VMem
 
 		Scheduler::Enable();
 		return true;
-	}
-
-	//
-
-	ADDRESS_SPACE GetAddressSpace()
-	{
-		return Arch::GetAddressSpace();
-	}
-
-    bool SwapAddressSpace(ADDRESS_SPACE& space)
-	{
-		Scheduler::Disable();
-		bool ret = Arch::SwapAddressSpace(space);
-		Scheduler::Enable();
-		return ret;
-	}
-
-    ADDRESS_SPACE CreateAddressSpace()
-	{
-		Scheduler::Disable();
-		ADDRESS_SPACE ret = Arch::CreateAddressSpace();
-		Scheduler::Enable();
-		return ret;
-	}
-
-	ADDRESS_SPACE CopyAddressSpace()
-	{
-		Scheduler::Disable();
-		ADDRESS_SPACE ret = Arch::CopyAddressSpace();
-		Scheduler::Enable();
-		return ret;
-	}
-
-    size_t GetAddress(size_t virt)
-	{
-		Scheduler::Disable();
-		size_t ret = Arch::GetAddress(virt);
-		Scheduler::Enable();
-		return ret;
-	}
-
-    pflags_t GetFlags(size_t virt)
-	{
-		Scheduler::Disable();
-		pflags_t ret = Arch::GetFlags(virt);
-		Scheduler::Enable();
-		return ret;
-	}
-
-    void* FirstFree(size_t count, size_t start, size_t end)
-	{
-		Scheduler::Disable();
-		void* ret = Arch::FirstFree(count, start, end);
-		Scheduler::Enable();
-		return ret;
-	}
-
-    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags)
-	{
-		Scheduler::Disable();
-		bool ret = Arch::MapPages(virt, phys, count, flags);
-		Scheduler::Enable();
-		return ret;
-	}
-
-    bool FreePages(void* virt, size_t count)
-	{
-		Scheduler::Disable();
-		bool ret = Arch::FreePages(virt, count);
-		Scheduler::Enable();
-		return ret;
 	}
 
     bool Init()

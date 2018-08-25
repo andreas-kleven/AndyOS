@@ -13,9 +13,9 @@ namespace ProcessManager
 		disable();
 
         ADDRESS_SPACE old_space = VMem::GetAddressSpace();
-		ADDRESS_SPACE addr_space = VMem::CreateAddressSpace();
+		ADDRESS_SPACE addr_space;
 
-        if (addr_space.ptr == 0)
+        if (!VMem::CreateAddressSpace(&addr_space))
             return 0;
 
 		VMem::SwapAddressSpace(addr_space);
