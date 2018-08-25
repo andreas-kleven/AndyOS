@@ -1,18 +1,28 @@
 #include "Arch/syscalls.h"
 #include "Arch/idt.h"
-
+#include "Process/process.h"
+#include "Process/scheduler.h"
 #include "panic.h"
 #include "syscalls.h"
 #include "syscall_list.h"
+#include "debug.h"
 
 namespace Syscalls::Arch
 {
+	void UpdateStack(REGS* regs)
+	{
+		THREAD* t = Scheduler::CurrentThread();
+		t->stack = regs->esp + 20 - sizeof(REGS);
+	}
+
     void Handler(REGS* regs)
     {
 		void* location = (void*)Syscalls::GetSyscall(regs->eax);
 
 		if (!location)
 			panic("Invalid syscall", "IRQ: %i", regs->eax);
+
+		UpdateStack(regs);
 
 		uint32 ret;
 

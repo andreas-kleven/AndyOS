@@ -85,8 +85,7 @@ namespace Task::Arch
 
 		if (newpid > 0)
 		{
-			//Used for fork() syscall
-			thread->stack -= sizeof(REGS);
+			//Set return value of fork()
 			REGS* regs = (REGS*)thread->stack;
 			regs->eax = newpid;
 		}
