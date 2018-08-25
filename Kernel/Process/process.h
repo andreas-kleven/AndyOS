@@ -91,6 +91,7 @@ namespace ProcessManager
 	bool RemoveThread(THREAD* thread);
 	bool StopThreads(PROCESS* proc, bool auto_switch);
 	bool FreeMemory(PROCESS* proc);
+	bool CloseFiles(PROCESS* proc);
 
 	PROCESS* Exec(const char* path);
 	bool Exec(PROCESS* proc, char const *path, char const *argv[], char const *envp[]);

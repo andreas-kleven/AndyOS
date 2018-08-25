@@ -59,8 +59,10 @@ namespace ProcessManager
 
 	STATUS Terminate(PROCESS* proc)
 	{
+		StopThreads(proc, true);
 		FreeMemory(proc);
-		return StopThreads(proc, true);
+		CloseFiles(proc);
+		return STATUS_SUCCESS;
 	}
 
 	STATUS Kill(PROCESS* proc)
@@ -130,6 +132,22 @@ namespace ProcessManager
 
 	bool FreeMemory(PROCESS* proc)
 	{
+		return true;
+	}
+
+	bool CloseFiles(PROCESS* proc)
+	{
+		for (int fd = 0; fd < FILE_TABLE_SIZE; fd++)
+		{
+			FILE* file = proc->file_table[fd];
+
+			if (file)
+			{
+				if (VFS::Close(fd) == -1)
+					return false;
+			}
+		}
+
 		return true;
 	}
 
