@@ -63,14 +63,14 @@ int execl(char const *path, char const *arg, ...)
 		argc++;
 	va_end(ap);
 
-	char* argv[argc + 1];
+	const char* argv[argc + 1];
 	va_start(ap, arg);
 	argv[0] = arg;
 	for (int i = 1; i <= argc; i++)
-		argv[i] = va_arg(ap, char*);
+		argv[i] = va_arg(ap, const char*);
 	va_end(ap);
 
-	return execve(path, argv, environ);
+	return execve(path, argv, (const char**)environ);
 }
 
 int execlp(char const *file, char const *arg, ...)
