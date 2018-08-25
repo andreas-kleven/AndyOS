@@ -1,5 +1,6 @@
 #include "Arch/memory.h"
 #include "string.h"
+#include "debug.h"
 
 #define PAGE_DIR_INDEX(x) 	((size_t(x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) ((size_t(x) >> 12) & 0x3FF)
@@ -38,8 +39,10 @@ namespace VMem::Arch
 				FreePages(this->tables, PAGE_DIR_LENGTH);*/
 		}
 
-		PAGE_TABLE* GetTable(int index) const
+		PAGE_TABLE* GetTable(size_t virt) const
 		{
+			int index = PAGE_DIR_INDEX(virt);
+
 			if (this->is_phys)
 				return dir->GetTable(index);
 
@@ -48,13 +51,13 @@ namespace VMem::Arch
 
 		size_t GetAddress(size_t virt) const
 		{
-			PAGE_TABLE* table = PAGE_TABLE_AT(virt);
+			PAGE_TABLE* table = GetTable(virt);
 			return (size_t)table->GetAddr(PAGE_TABLE_INDEX(virt));
 		}
 
 		uint32 GetPTFlags(size_t virt) const
 		{
-			PAGE_TABLE* table = PAGE_TABLE_AT(virt);
+			PAGE_TABLE* table = GetTable(virt);
 			return table->GetFlags(PAGE_TABLE_INDEX(virt));
 		}
 
@@ -116,10 +119,10 @@ namespace VMem::Arch
 			//if (dir->GetTable(index) == 0)
 			//	CreatePageTable(virt, pt_flags);
 
-			dir->SetFlag(dir_index, pt_flags);
+			dir->SetFlags(dir_index, pt_flags);
 
-			PAGE_TABLE* table = mapping.GetTable(dir_index);
-			table->SetFlag(table_index, pt_flags);
+			PAGE_TABLE* table = mapping.GetTable(virt);
+			table->SetFlags(table_index, pt_flags);
 			table->SetAddr(table_index, (void*)phys);
 
 			phys += PAGE_SIZE;
@@ -133,22 +136,21 @@ namespace VMem::Arch
 
 	bool _FreePages(void* _virt, size_t count, const ADDRESS_SPACE_MAPPING& mapping)
     {
-		size_t virt = (size_t)_virt;
+		//Todo: don't free shared physical memory
 
+		size_t virt = (size_t)_virt;
 		PAGE_DIR* dir = mapping.dir;
-		pflags_t flags = PAGE_NONE;
 
 		for (int i = 0; i < count; i++)
 		{
 			int dir_index = PAGE_DIR_INDEX(virt);
 			int table_index = PAGE_TABLE_INDEX(virt);
 
-			PAGE_TABLE* table = mapping.GetTable(dir_index);
-			
-			void* phys = table->GetAddr(table_index);
-			PMem::FreeBlocks(phys, 1);
+			size_t phys = mapping.GetAddress(virt);
+			PMem::FreeBlocks((void*)phys, 1);
 
-			table->SetFlag(table_index, flags);
+			PAGE_TABLE* table = mapping.GetTable(virt);
+			table->SetFlags(table_index, 0);
 			table->SetAddr(table_index, 0);
 
 			virt += PAGE_SIZE;
@@ -159,24 +161,7 @@ namespace VMem::Arch
 		return true;
     }
 
-	uint32 GetPTFlags(size_t virt)
-	{
-		PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-		return table->GetFlags(PAGE_TABLE_INDEX(virt));
-	}
-
 	///
-
-	size_t GetAddress(size_t virt)
-	{
-		PAGE_TABLE* table = PAGE_TABLE_AT(virt);
-		return (size_t)table->GetAddr(PAGE_TABLE_INDEX(virt));
-	}
-
-	pflags_t GetFlags(size_t virt)
-	{        
-		return F_PF(GetPTFlags(virt));
-	}
 
     ADDRESS_SPACE GetAddressSpace()
     {
@@ -200,6 +185,16 @@ namespace VMem::Arch
 		}
 
 		return mapping;
+	}
+
+	size_t GetAddress(size_t virt)
+	{
+		return CurrentMapping().GetAddress(virt);
+	}
+
+	pflags_t GetFlags(size_t virt)
+	{        
+		return CurrentMapping().GetFlags(virt);
 	}
 
     void* FirstFree(size_t count, size_t start, size_t end)
@@ -333,7 +328,7 @@ namespace VMem::Arch
 		PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
 		PAGE_TABLE* last_table_phys = &tables_phys[PAGE_DIR_LENGTH - 1];
 
-		dir_virt->SetFlag(PAGE_DIR_LENGTH - 1, pt_flags);
+		dir_virt->SetFlags(PAGE_DIR_LENGTH - 1, pt_flags);
 
 		for (int i = 0; i < 256; i++)
 		{
@@ -342,11 +337,11 @@ namespace VMem::Arch
 
 		for (int i = 256; i < 1023; i++)
 		{
-			last_table->SetFlag(i, pt_flags);
+			last_table->SetFlags(i, pt_flags);
 			last_table->SetAddr(i, tables_phys + i);
 		}
 
-		last_table->SetFlag(PAGE_TABLE_LENGTH - 1, pt_flags);
+		last_table->SetFlags(PAGE_TABLE_LENGTH - 1, pt_flags);
 		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, dir_phys);
 
         space->ptr = dir_phys;
@@ -381,7 +376,7 @@ namespace VMem::Arch
 		for (int i = 0; i < PAGE_DIR_LENGTH; i++)
 		{
 			PAGE_TABLE* table = tables + i;
-			main_dir->SetFlag(i, flags);
+			main_dir->SetFlags(i, flags);
 			main_dir->SetTable(i, table);
 		}
 

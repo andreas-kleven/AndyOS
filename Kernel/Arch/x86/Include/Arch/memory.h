@@ -39,14 +39,9 @@ struct PAGE_TABLE
 {
 	uint32 values[PAGE_TABLE_LENGTH];
 
-	void SetFlag(uint32 index, uint32 flag)
+	void SetFlags(uint32 index, uint32 flags)
 	{
-		values[index] |= flag;
-	}
-
-	void UnsetFlag(uint32 index, uint32 flag)
-	{
-		values[index] &= ~flag;
+		values[index] = (values[index] & PTE_FRAME) | flags;
 	}
 
 	uint32 GetFlags(uint32 index)
@@ -69,19 +64,14 @@ struct PAGE_DIR
 {
 	uint32 values[PAGE_DIR_LENGTH];
 
-	void SetFlag(uint32 index, uint32 flag)
+	void SetFlags(uint32 index, uint32 flags)
 	{
-		values[index] |= flag;
+		values[index] = (values[index] & PDE_FRAME) | flags;
 	}
 
-	void UnsetFlag(uint32 index, uint32 flag)
+	uint32 GetFlags(uint32 index)
 	{
-		values[index] &= ~flag;
-	}
-
-	bool GetFlag(uint32 index, uint32 flag)
-	{
-		return values[index] & flag;
+		return values[index] & ~PDE_FRAME;
 	}
 
 	void SetTable(uint32 index, PAGE_TABLE* table)
