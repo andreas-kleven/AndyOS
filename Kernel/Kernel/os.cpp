@@ -25,8 +25,8 @@ namespace OS
 {
 	void _Process()
 	{
-		ProcessManager::Load("Test.exe");
-		ProcessManager::Load("_Test.exe");
+		ProcessManager::Exec("Test.exe");
+		ProcessManager::Exec("_Test.exe");
 	}
 
 	void COM_Receive()
@@ -81,11 +81,11 @@ namespace OS
 
 	void GUI()
 	{
-		PROCESS* proc = ProcessManager::Load("1winman");
+		PROCESS* proc = ProcessManager::Exec("1winman");
 		Scheduler::SleepThread(100, Scheduler::CurrentThread());
-		ProcessManager::Load("1term");
-		//ProcessManager::Load("1test");
-		//ProcessManager::Load("1mndlbrt");
+		ProcessManager::Exec("1term");
+		//ProcessManager::Exec("1test");
+		//ProcessManager::Exec("1mndlbrt");
 
 		#ifdef __i386__
 		#include "Arch/regs.h"

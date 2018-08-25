@@ -83,14 +83,18 @@ namespace ProcessManager
 {
 	pid_t AssignPid(PROCESS* proc);
 
-	PROCESS* Load(char* path);
 	PROCESS* AddProcess(PROCESS* proc);
 	STATUS Terminate(PROCESS* proc);
 	STATUS Kill(PROCESS* proc);
 	THREAD* CreateThread(PROCESS* proc, void(*entry)());
 	bool AddThread(PROCESS* proc, THREAD* thread);
 	bool RemoveThread(THREAD* thread);
+	bool StopThreads(PROCESS* proc, bool auto_switch);
+	bool FreeMemory(PROCESS* proc);
 
+	PROCESS* Exec(const char* path);
+	bool Exec(PROCESS* proc, char const *path, char const *argv[], char const *envp[]);
+	
 	PROCESS* Fork(PROCESS* proc);
 
 	PROCESS* GetCurrent();

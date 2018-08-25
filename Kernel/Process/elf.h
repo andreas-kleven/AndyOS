@@ -70,5 +70,5 @@ struct ELF32_SHEADER {
 
 namespace ELF
 {
-    PROCESS* Load(char* path);
+    size_t Load(const char* path, PROCESS* proc);
 };

@@ -6,7 +6,7 @@
 
 namespace ELF
 {
-	PROCESS* Load(char* path)
+	size_t Load(const char* path, PROCESS* proc)
 	{
 		char* image;
 		int size = VFS::ReadFile(path, image);
@@ -27,12 +27,6 @@ namespace ELF
 			debug_print("Invalid signature\n");
 			return 0;
 		}
-
-		disable();
-
-		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
-		ADDRESS_SPACE addr_space = VMem::CreateAddressSpace();
-		VMem::SwapAddressSpace(addr_space);
 
 		pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 
@@ -58,15 +52,7 @@ namespace ELF
 				memset((void*)sheader->sh_addr, 0, sheader->sh_size);
 			}
 		}
-
-		debug_print("Loaded image %X\n", addr_space.ptr);
 		
-		PROCESS* proc = new PROCESS(PROCESS_USER, addr_space);
-		ProcessManager::CreateThread(proc, (void(*)())header->e_entry);
-
-		VMem::SwapAddressSpace(old_space);
-
-		enable();
-		return proc;
+		return header->e_entry;
 	}
 }

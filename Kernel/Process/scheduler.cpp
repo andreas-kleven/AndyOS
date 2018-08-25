@@ -51,13 +51,16 @@ namespace Scheduler
 		return thread->id;
 	}
 
-	void ExitThread(int code, THREAD* thread)
+	void ExitThread(int code, THREAD* thread, bool auto_switch)
 	{
 		thread->state = THREAD_STATE_TERMINATED;
 
-		//Switch thread
-		if (thread == current_thread)
-			Task::Switch();
+		if (auto_switch)
+		{
+			//Switch thread
+			if (thread == current_thread)
+				Task::Switch();
+		}
 	}
 
 	void SleepThread(size_t until, THREAD* thread)

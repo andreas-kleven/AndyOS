@@ -95,6 +95,12 @@ namespace Syscalls
 		return ProcessManager::GetCurrent()->id;
 	}
 
+	int execve(char const *path, char const *argv[], char const *envp[])
+	{
+		PROCESS* proc = ProcessManager::GetCurrent();
+		return ProcessManager::Exec(proc, path, argv, envp);
+	}
+
 	void halt()
 	{
 		halt();
@@ -130,7 +136,7 @@ namespace Syscalls
 
 	void exit_thread(int code)
 	{
-		Scheduler::ExitThread(code, Scheduler::CurrentThread());
+		Scheduler::ExitThread(code, Scheduler::CurrentThread(), true);
 	}
 
 	void sleep(uint32 ticks)
@@ -178,7 +184,7 @@ namespace Syscalls
 
 	pid_t create_process(char* filename)
 	{
-		PROCESS* proc = ProcessManager::Load(filename);
+		PROCESS* proc = ProcessManager::Exec(filename);
 
 		if (proc)
 			return proc->id;
@@ -332,6 +338,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
+		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);
 		
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);

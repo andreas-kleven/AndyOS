@@ -35,12 +35,6 @@ namespace ProcessManager
 		return proc->id;
 	}
 
-	PROCESS* Load(char* path)
-	{
-		PROCESS* proc = ELF::Load(path);
-		return AddProcess(proc);
-	}
-
 	PROCESS* AddProcess(PROCESS* proc)
 	{
 		if (!proc)
@@ -65,14 +59,8 @@ namespace ProcessManager
 
 	STATUS Terminate(PROCESS* proc)
 	{
-		THREAD* thread = proc->main_thread;
-		while (thread)
-		{
-			Scheduler::ExitThread(0, thread);
-			thread = thread->procNext;
-		}
-
-		return STATUS_SUCCESS;
+		FreeMemory(proc);
+		return StopThreads(proc, true);
 	}
 
 	STATUS Kill(PROCESS* proc)
@@ -126,6 +114,23 @@ namespace ProcessManager
 	bool RemoveThread(THREAD* thread)
 	{
 		return false;
+	}
+
+	bool StopThreads(PROCESS* proc, bool auto_switch)
+	{
+		THREAD* thread = proc->main_thread;
+		while (thread)
+		{
+			Scheduler::ExitThread(0, thread, auto_switch);
+			thread = thread->procNext;
+		}
+
+		return true;
+	}
+
+	bool FreeMemory(PROCESS* proc)
+	{
+		return true;
 	}
 
 	PROCESS* GetCurrent()
