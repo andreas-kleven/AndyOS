@@ -3,6 +3,7 @@
 #include "GUI.h"
 #include <stdio.h>
 #include "unistd.h"
+#include "stdlib.h"
 #include <string.h>
 #include <math.h>
 
@@ -280,7 +281,7 @@ public:
 				else if (l == 0)
 				{
 					char sb[100];
-					itoa(counter++, 10, sb, 0);
+					itoa(counter++, 10, sb);
 					write(pipefd[1], sb, strlen(sb));
 				}
 				else

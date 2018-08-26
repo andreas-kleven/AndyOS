@@ -1,6 +1,10 @@
 #pragma once
 #include "sys/types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef int ssize_t;
 typedef uint32 useconds_t;
 
@@ -29,3 +33,7 @@ int execve(char const *path, char const *argv[], char const *envp[]);
 void _exit(int status);
 void sleep(unsigned int seconds);
 void usleep(useconds_t usec);
+
+#ifdef __cplusplus
+}
+#endif

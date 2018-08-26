@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int strcmp(const char* str1, const char* str2);
 int strcicmp(char const *a, char const *b);
 char* strcpy(char *dest, const char *src);
@@ -20,6 +24,12 @@ void* memset32(void* dest, unsigned int val, unsigned int n);
 
 char* search(const char* str, const char* delim);
 char* strtok_r(char* str, const char* delim, char** saveptr);
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
 
 class String
 {
@@ -174,3 +184,5 @@ public:
 private:
 	char* buffer;
 };
+
+#endif

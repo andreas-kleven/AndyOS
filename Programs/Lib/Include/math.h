@@ -5,6 +5,10 @@
 #define M_PI_4	M_PI / 4
 #define M_E		2.71828182845904523536
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 float fact(float number);
 float pow(float x, int n);
 float sqrt(float square);
@@ -31,7 +35,11 @@ unsigned int rand();
 float frand();
 void srand(unsigned int seed);
 
+#ifdef __cplusplus
+}
+#endif
 
+#ifdef __cplusplus
 template <class T>
 inline T clamp(T val, T min, T max)
 {
@@ -42,12 +50,6 @@ inline T clamp(T val, T min, T max)
 		return max;
 
 	return val;
-}
-
-template <class T>
-inline T abs(T val)
-{
-	return (val > 0) ? val : -val;
 }
 
 template <class T>
@@ -83,3 +85,5 @@ inline T copysign(T a, T b)
 {
 	return (a < 0) == (b < 0) ? a : -a;
 }
+
+#endif

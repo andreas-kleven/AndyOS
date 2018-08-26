@@ -176,8 +176,11 @@ char* strtok_r(char* str, const char* delim, char** saveptr)
 		return 0;
 
 	//Remove delimiters characters at beginning
+	char* d;
+
 loop:
-	const char* d = delim;
+	d = delim;
+
 	while (*d++ == *str)
 	{
 		str++;

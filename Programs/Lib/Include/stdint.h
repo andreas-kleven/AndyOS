@@ -145,6 +145,10 @@ typedef unsigned long long   uintmax_t;
 
 #endif  /* !defined ( __cplusplus) || defined __STDC_CONSTANT_MACROS */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //! Set bit
 inline uint8_t SetBit(uint8_t word, uint8_t mask) {
 	return word | mask;
@@ -159,3 +163,7 @@ inline uint8_t ClrBit(uint8_t word, uint8_t mask) {
 inline uint8_t AssignBit(uint8_t word, uint8_t mask, bool value) {
 	return value ? SetBit(word, mask) : ClrBit(word, mask);
 }
+
+#ifdef __cplusplus
+}
+#endif

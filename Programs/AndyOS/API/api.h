@@ -10,7 +10,6 @@ void draw(uint32* framebuffer);
 void gettime(int& hours, int& minutes, int& seconds);
 uint32 get_ticks();
 
-void exit(int code);
 void exit_thread(int code);
 
 bool get_last_key(KEYCODE& code, bool& pressed);

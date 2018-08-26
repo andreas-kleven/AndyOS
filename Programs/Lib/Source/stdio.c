@@ -8,10 +8,6 @@
 
 #define FILE_TABLE_SIZE 256
 
-struct FILE
-{
-};
-
 FILE file_table[FILE_TABLE_SIZE];
 
 FILE* stdin = &file_table[0];
@@ -22,7 +18,7 @@ static char digitchars[] = { '0','1','2','3','4','5','6','7','8','9','a','b','c'
 
 int get_fd(FILE* file)
 {
-	int fd = file - &file_table[0];
+	int fd = ((unsigned long)file - (unsigned long)&file_table[0]) / sizeof(FILE);
 
 	if (fd < 0 || fd >= FILE_TABLE_SIZE)
 		return -1;
@@ -108,7 +104,7 @@ int vprintf(const char* format, va_list vlist)
 
 int vfprintf(FILE* stream, const char* format, va_list vlist)
 {
-	char buffer[256];
+	char buffer[512];
 	int ret = vsprintf(buffer, format, vlist);
 
 	if (ret == -1)
@@ -161,14 +157,14 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'u':	//unsigned int
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 10, ptr, false);
+					itoa(num, 10, ptr);
 					break;
 				}
 
 				case 'o':	//unsigned octal
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 8, ptr, false);
+					itoa(num, 8, ptr);
 					break;
 				}
 
@@ -176,7 +172,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'X':
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 16, ptr, false);
+					itoa(num, 16, ptr);
 					break;
 				}
 
@@ -201,7 +197,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 					void* p = va_arg(vlist, void*);
 					*ptr++ = '0';
 					*ptr++ = 'x';
-					itoa((unsigned long long)p, 16, ptr, false);
+					itoa((unsigned long long)p, 16, ptr);
 					break;
 				}
 
@@ -336,14 +332,14 @@ int atoi(const char * str) {
 }
 
 //Converts int to string
-char* itoa(int i, unsigned base, char* buf, bool sign)
+char* itoa(int i, unsigned base, char* buf)
 {
 	if (base > 16)
 		return buf;
 
 	if (i < 0)
 	{
-		if (sign)
+		if (base == 10)
 		{
 			*buf++ = '-';
 			i *= -1;
@@ -443,11 +439,13 @@ char* ftoa(float f, unsigned base, char* buf)
 		}
 		else
 		{
-			while (f > 0 + PRECISION || m >= 0)
+			while (abs(f) < PRECISION || m >= 0)
 			{
 				if (abs(f) < PRECISION)
 				{
+					//Todo: fix this
 					*(buf++) = '0';
+					break;
 				}
 				else
 				{

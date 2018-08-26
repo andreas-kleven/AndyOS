@@ -1,5 +1,6 @@
 #pragma once
 #include "GL.h"
+#include "stdlib.h"
 
 struct Quaternion
 {

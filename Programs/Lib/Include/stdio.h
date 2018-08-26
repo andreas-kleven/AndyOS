@@ -1,6 +1,7 @@
 #pragma once
 #include "stdarg.h"
 #include "sys/types.h"
+#include "stdbool.h"
 
 #define EOF         (-1)
 #define SEEK_SET	0
@@ -32,7 +33,15 @@
 
 typedef signed long long fpos_t;
 
-struct FILE;
+typedef struct _FILE
+{
+    int var;
+} FILE;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern FILE* stdin;
 extern FILE* stdout;
@@ -58,7 +67,11 @@ int vsprintf(char* buffer, const char* format, va_list vlist);
 long strtol(const char* nptr, char** endptr, int base);
 
 int atoi(const char* str);
-char* itoa(int i, unsigned base, char* buf, bool sign = 1);
+char* itoa(int i, unsigned base, char* buf);
 
 float atof(const char* s);
 char* ftoa(float f, unsigned base, char* buf);
+
+#ifdef __cplusplus
+}
+#endif
