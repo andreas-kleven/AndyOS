@@ -7,7 +7,7 @@ class FileSystem : public Driver
 {
 public:
 	char* name;
-	char* mount_point;
+	const char* mount_point;
 
 	FileSystem();
 	

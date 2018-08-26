@@ -5,12 +5,12 @@ namespace Task
 {
 	THREAD* CreateKernelThread(void(*entry)())
 	{
-		Arch::CreateKernelThread(entry);
+		return Arch::CreateKernelThread(entry);
 	}
 
 	THREAD* CreateUserThread(void(*entry)(), void* stack)
 	{
-		Arch::CreateUserThread(entry, stack);
+		return Arch::CreateUserThread(entry, stack);
 	}
 
 	THREAD* CopyThread(THREAD* thread, pid_t newpid)

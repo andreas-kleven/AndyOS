@@ -82,7 +82,7 @@ namespace VMem::Arch
     {
         for (size_t i = start; i < end; i += PAGE_SIZE)
 		{
-			if (!mapping.GetPTFlags(i) & PTE_PRESENT)
+			if ((mapping.GetPTFlags(i) & PTE_PRESENT) == 0)
 			{
 				bool found = true;
 
@@ -101,6 +101,8 @@ namespace VMem::Arch
 				}
 			}
 		}
+
+		return 0;
     }
 
     bool _MapPages(void* _virt, void* _phys, size_t count, pflags_t flags, const ADDRESS_SPACE_MAPPING& mapping)
@@ -111,7 +113,7 @@ namespace VMem::Arch
 		PAGE_DIR* dir = mapping.dir;
 		uint32 pt_flags = PF_F(flags);
 
-		for (int i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 		{
 			int dir_index = PAGE_DIR_INDEX(virt);
 			int table_index = PAGE_TABLE_INDEX(virt);
@@ -141,7 +143,7 @@ namespace VMem::Arch
 		size_t virt = (size_t)_virt;
 		PAGE_DIR* dir = mapping.dir;
 
-		for (int i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 		{
 			int dir_index = PAGE_DIR_INDEX(virt);
 			int table_index = PAGE_TABLE_INDEX(virt);
@@ -328,7 +330,6 @@ namespace VMem::Arch
 		//Map tables and directory to last table
 		PAGE_TABLE* cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
 		PAGE_TABLE* last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
-		PAGE_TABLE* last_table_phys = &tables_phys[PAGE_DIR_LENGTH - 1];
 
 		dir_virt->SetFlags(PAGE_DIR_LENGTH - 1, pt_flags);
 

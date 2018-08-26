@@ -34,7 +34,7 @@ public:
 
 	int Write(const char* data, size_t length)
 	{
-		for (int i = 0; i < length; i++)
+		for (size_t i = 0; i < length; i++)
 		{
 			if (!WriteOne(data[i]))
 				return i;

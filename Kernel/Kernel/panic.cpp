@@ -6,7 +6,7 @@
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
 
-void panic(char* err, char* msg_fmt, ...)
+void panic(const char* err, const char* msg_fmt, ...)
 {
 	disable();
 

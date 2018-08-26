@@ -21,8 +21,8 @@ enum DRIVER_STATUS
 class Driver : public FileIO
 {
 public:
-	char* name;
-	char* id;
+	const char* name;
+	const char* id;
 	DRIVER_TYPE type;
 	DRIVER_STATUS status;
 	Driver* next;

@@ -26,7 +26,7 @@ namespace PMem
 
 	size_t FirstFree()
 	{
-		for (int i = 0; i < num_blocks; i++)
+		for (size_t i = 0; i < num_blocks; i++)
 			if (!GetBit(i))
 				return i;
 
@@ -41,7 +41,7 @@ namespace PMem
 		if (size == 1)
 			return FirstFree();
 
-		int i, j;
+		size_t i, j;
 
 		for (i = 1; i <= num_blocks - size; i++)
 		{
@@ -115,7 +115,7 @@ namespace PMem
 		if (frame == 0)
 			return 0;
 
-		for (int i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			SetBit(frame + i);
 			num_free--;
@@ -131,7 +131,7 @@ namespace PMem
 		if (frame == 0 || size == 0)
 			return;
 
-		for (int i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			if (GetBit(frame + i))
 			{

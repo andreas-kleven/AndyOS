@@ -23,9 +23,9 @@ STATUS debug_init(bool _serial)
 	return STATUS_SUCCESS;
 }
 
-void draw_text(int x, int y, char* c)
+void draw_text(int x, int y, const char* c)
 {
-	for (int index = 0; index < strlen(c); index++)
+	for (size_t index = 0; index < strlen(c); index++)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -52,7 +52,7 @@ void debug_color(uint32 foreground, uint32 background)
 	bcolor = background;
 }
 
-void debug_print(char* str, ...)
+void debug_print(const char* str, ...)
 {
 	char buffer[256];
 
@@ -136,7 +136,7 @@ void debug_clear(uint32 c)
 	y = 0;
 }
 
-void debug_dump(void* addr, int length, bool str)
+void debug_dump(const void* addr, int length, bool str)
 {
 	uint8* ptr = (uint8*)addr;
 

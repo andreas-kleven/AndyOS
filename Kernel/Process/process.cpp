@@ -63,6 +63,7 @@ namespace ProcessManager
 		CloseFiles(proc);
 		StopThreads(proc);
 		Task::Switch(); //execution stops here
+		return STATUS_SUCCESS;
 	}
 
 	STATUS Kill(PROCESS* proc)

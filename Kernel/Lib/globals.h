@@ -5,7 +5,7 @@
 #include "string.h"
 #include "Lib/debug.h"
 
-int mem_left = 0;
+size_t mem_left = 0;
 uint8* mem_ptr = 0;
 
 void* operator new(size_t size)

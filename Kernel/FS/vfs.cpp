@@ -17,13 +17,14 @@ namespace VFS
 
 	FNODE* nodes[NODE_COUNT];
 
-	int Mount(BlockDriver* driver, char* mount_point)
+	bool Mount(BlockDriver* driver, const char* mount_point)
 	{
 		FileSystem* fs = new ISO_FS(driver);
 		fs->mount_point = mount_point;
 
 		first_fs = fs;
 		primary_fs = fs;
+		return true;
 	}
 
 	bool AddNode(FNODE* node)

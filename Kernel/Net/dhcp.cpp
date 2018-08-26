@@ -54,7 +54,7 @@ namespace DHCP
 		header->magic = htonl(DHCP_MAGIC);
 
 		//Options
-		char* hostname = "AndyOS";
+		const char* hostname = "AndyOS";
 		int hostlen = strlen(hostname);
 
 		int i = 0;

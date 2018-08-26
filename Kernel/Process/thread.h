@@ -25,5 +25,5 @@ struct THREAD
 	THREAD* procNext;
 	PROCESS* process;
 	void* fpu_state;
-	int sleep_until;
+	size_t sleep_until;
 };

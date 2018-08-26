@@ -14,8 +14,10 @@ ATADriver::ATADriver(int bus, int drive)
 	this->drive = drive;
 
 	int num = ((bus == ATA_BUS_SECONDARY) << 1) | (drive == ATA_DRIVE_SLAVE);
-	this->id = "hd_";
+
+	char id[] = { 'h', 'd', ' ' };
 	id[2] = 'a' + num;
+	this->id = id;
 
 	this->status = DRIVER_STATUS_RUNNING;
 }
@@ -83,9 +85,9 @@ int ATADriver::ReadSector(fpos_t pos, char* buf, size_t size)
 	while (inb(bus + ATA_LBA_STATUS) & 0x80)
 		pause();
 
-	int read_size = (inb(bus + ATA_LBA_HIGH) << 8) | inb(bus + ATA_LBA_MID);
+	size_t read_size = (inb(bus + ATA_LBA_HIGH) << 8) | inb(bus + ATA_LBA_MID);
 
-	for (int i = 0; i < read_size; i += 2)
+	for (size_t i = 0; i < read_size; i += 2)
 	{
 		uint16 w = inw(bus + ATA_DATA);
 

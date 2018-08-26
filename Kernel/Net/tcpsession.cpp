@@ -115,7 +115,7 @@ void TcpSession::Connect(IPv4Address dst, uint16 port)
 
 	state = TCP_SYN_SENT;
 
-	int t_out = Timer::Ticks() + 1000;
+	size_t t_out = Timer::Ticks() + 1000;
 	while (state == TCP_SYN_SENT && Timer::Ticks() < t_out)
 		pause();
 
@@ -143,7 +143,7 @@ void TcpSession::Close()
 	Send(FIN);
 	state = TCP_FIN_WAIT_1;
 
-	int t_out = Timer::Ticks() + 1000;
+	size_t t_out = Timer::Ticks() + 1000;
 	while (state == TCP_FIN_WAIT_1 && Timer::Ticks() < t_out)
 		pause();
 

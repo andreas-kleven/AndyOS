@@ -28,7 +28,7 @@ struct FNODE
     FNODE()
     { }
 
-    FNODE(char* path, FILE_TYPE type, FileIO* io)
+    FNODE(const char* path, FILE_TYPE type, FileIO* io)
     {
         this->path = Path(path);
         this->type = type;

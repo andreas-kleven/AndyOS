@@ -31,7 +31,7 @@ int stricmp(char const *a, char const *b)
 char* strcpy(char* dest, const char* src)
 {
 	char *s1_p = dest;
-	while (*dest++ = *src++);
+	while ((*dest++ = *src++) != 0);
 	return s1_p;
 }
 
@@ -59,7 +59,7 @@ char* strcat(char* dest, const char* src)
 	while (*dest)
 		dest++;
 
-	while (*dest++ = *src++);
+	while ((*dest++ = *src++) != 0);
 	return rdest;
 }
 
@@ -88,7 +88,7 @@ void stolower(char* s)
             *s = 'a' + (*s - 'A');
 }
 
-void* memcpy(void* dest, void* src, unsigned int n)
+void* memcpy(void* dest, const void* src, unsigned int n)
 {
 	char* a = (char*)src;
 	char* b = (char*)dest;
@@ -125,7 +125,7 @@ int memcmp(const void* a, const void* b, unsigned int n)
 	const unsigned char* cs = (const unsigned char*)a;
 	const unsigned char* ct = (const unsigned char*)b;
 
-	for (int i = 0; i < n; i++, cs++, ct++)
+	for (unsigned int i = 0; i < n; i++, cs++, ct++)
 	{
 		if (*cs < *ct)
 			return -1;

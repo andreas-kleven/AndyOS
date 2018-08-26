@@ -1,3 +1,3 @@
 #pragma once
 
-void panic(char* err, char* msg_fmt = "", ...);
+void panic(const char* err, const char* msg_fmt = "", ...);

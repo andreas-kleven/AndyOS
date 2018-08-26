@@ -20,6 +20,6 @@ namespace Net
 	uint16 Checksum(void* data, int length);
 	uint16 ChecksumDouble(void* d0, int l0, void* d1, int l1);
 
-	void PrintIP(char* str, IPv4Address ip);
-	void PrintMac(char* str, MacAddress mac);
+	void PrintIP(const char* str, IPv4Address ip);
+	void PrintMac(const char* str, MacAddress mac);
 }
