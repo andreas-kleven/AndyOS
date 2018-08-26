@@ -1,5 +1,5 @@
 #include "unistd.h"
-#include "syscall.h"
+#include "sys/syscall.h"
 #include "stdarg.h"
 
 char** environ = 0;
