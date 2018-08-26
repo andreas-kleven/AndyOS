@@ -34,7 +34,7 @@ kernel: create_dir
 all: kernel programs
 
 iso: all
-	cp $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin
+	cp $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel
 	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman
 	cp $(BUILD_DIR)/terminal $(ISO_DIR)/1term
 	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
@@ -44,8 +44,8 @@ iso: all
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
-	@if [ $( cmp -s $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin) ]; then \
-		cp $(BUILD_DIR)/kernel.bin $(BOOT_DIR)/kernel.bin; \
+	@if [ $( cmp -s $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel) ]; then \
+		cp $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel; \
 		grub-mkrescue -o $(ISO_NAME) $(ISO_DIR); \
 	fi
 
@@ -60,5 +60,5 @@ iso-programs: programs
 clean:
 	$(MAKE) -C Kernel clean
 	$(MAKE) -C $(PROGRAMS_DIR) clean
-	rm -f $(BOOT_DIR)/kernel.bin
+	rm -f $(BOOT_DIR)/kernel
 	rm -f $(BUILD_DIR)/*

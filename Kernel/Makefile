@@ -1,5 +1,5 @@
 MAKE_DIR = $(CURDIR)
-TARGET := $(BUILD_DIR)/kernel.bin
+TARGET := $(BUILD_DIR)/kernel
 
 SRC_DIR := .
 OBJ_DIR := obj
