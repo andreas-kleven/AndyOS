@@ -29,6 +29,7 @@ namespace Task::Arch
 		thread->kernel_esp = 0;
 		thread->next = 0;
 		thread->procNext = 0;
+		thread->sleep_until = 0;
 
 		REGS* regs = (REGS*)thread->stack;
 		regs->ebp = 0;
