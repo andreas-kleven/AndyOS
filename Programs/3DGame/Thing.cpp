@@ -5,10 +5,10 @@ Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* model = ModelLoader::LoadModel("cylinder.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("gamedata/cylinder.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
-	if (!read_file(img_buf, "earth.bmp"))
+	if (!read_file(img_buf, "gamedata/earth.bmp"))
 	{
 		debug_print("bmp not found");
 		while (1);

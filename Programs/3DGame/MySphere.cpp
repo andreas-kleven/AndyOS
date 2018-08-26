@@ -3,7 +3,7 @@
 
 MySphere::MySphere()
 {
-	Model3D* model = ModelLoader::LoadModel("bunny.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("gamedata/bunny.a3d", Format3D::FORMAT_A3D);
 
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->SetModel(model);

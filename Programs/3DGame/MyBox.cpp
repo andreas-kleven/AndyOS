@@ -6,11 +6,11 @@ BMP* bmp = 0;
 
 MyBox::MyBox()
 {
-	Model3D* model = ModelLoader::LoadModel("1plane.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("gamedata/1plane.a3d", Format3D::FORMAT_A3D);
 
 	if (!img_buf)
 	{
-		if (!read_file(img_buf, "img.bmp"))
+		if (!read_file(img_buf, "gamedata/img.bmp"))
 		{
 			debug_print("bmp not found");
 			while (1);
