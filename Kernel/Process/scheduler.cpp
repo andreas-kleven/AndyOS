@@ -94,7 +94,7 @@ namespace Scheduler
 		}
 	}
 
-	void AwakeThread(THREAD* thread)
+	void WakeThread(THREAD* thread)
 	{
 		if (thread->state == THREAD_STATE_TERMINATED)
 			return;

@@ -11,7 +11,7 @@ namespace Scheduler
 	void ExitThread(int code, THREAD* thread, bool auto_switch);
 	void SleepThread(size_t until, THREAD* thread);
 	void BlockThread(THREAD* thread);
-	void AwakeThread(THREAD* thread);
+	void WakeThread(THREAD* thread);
 	
 	void InsertThread(THREAD* thread);
 	void RemoveThread(THREAD* thread);

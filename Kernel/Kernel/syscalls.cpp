@@ -263,7 +263,7 @@ namespace Syscalls
 				msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, src_proc, type, size);
 				memcpy(msg->response.data, buf, size);
 
-				Scheduler::AwakeThread(msg->thread);
+				Scheduler::WakeThread(msg->thread);
 				break;
 			}
 

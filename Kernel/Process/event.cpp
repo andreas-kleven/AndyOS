@@ -21,7 +21,7 @@ void Event::Set()
     while (waiting.Count() > 0)
     {
         THREAD* thread = waiting.Dequeue();
-        Scheduler::AwakeThread(thread);
+        Scheduler::WakeThread(thread);
     }
 
     this->set = true;
