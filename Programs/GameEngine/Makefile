@@ -16,4 +16,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 .PHONY: clean
 clean:
-	$(RM) -f $(TARGET) $(OBJS)
+	$(RM) -f $(TARGET) $(OBJ_FILES)

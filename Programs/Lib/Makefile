@@ -2,10 +2,10 @@ TARGET = $(BUILD_DIR)/libc.a
 
 SRC_DIR := Source
 OBJ_DIR := obj
-SRCS := $(wildcard $(SRC_DIR)/*.cpp)
-OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJ_FILES)
 	$(AR) cr $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
@@ -14,4 +14,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 .PHONY: clean
 clean:
-	$(RM) -f $(TARGET) $(OBJS)
+	$(RM) -f $(TARGET) $(OBJ_FILES)
