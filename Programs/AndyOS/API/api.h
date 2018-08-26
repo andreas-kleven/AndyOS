@@ -12,7 +12,6 @@ uint32 get_ticks();
 
 void exit(int code);
 void exit_thread(int code);
-void sleep(uint32 ticks);
 
 bool get_last_key(KEYCODE& code, bool& pressed);
 

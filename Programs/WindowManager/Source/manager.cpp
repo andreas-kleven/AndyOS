@@ -1,6 +1,7 @@
 #include <AndyOS.h>
 #include <sys/drawing.h>
 #include <sys/msg.h>
+#include "unistd.h"
 #include "GUI.h"
 #include "manager.h"
 #include "window.h"
@@ -243,7 +244,7 @@ void WindowManager::UpdateLoop()
 		last_ticks = ticks;
 
 		if (delta < target_ticks)
-			sleep((int)(target_ticks - delta));
+			usleep((int)(target_ticks - delta));
 	}
 }
 

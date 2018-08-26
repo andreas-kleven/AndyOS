@@ -2,6 +2,7 @@
 #include "math.h"
 #include "stdio.h"
 #include "ctype.h"
+#include "unistd.h"
 
 namespace GEngine
 {
@@ -528,7 +529,7 @@ namespace GEngine
 
 								a->AddImpulse(ffa * deltaTime);
 								b->AddImpulse(ffb * deltaTime);
-								sleep(10);
+								usleep(10);
 							}
 						}
 					}

@@ -1,6 +1,7 @@
 #include <AndyOS.h>
 #include <sys/msg.h>
 #include "GUI.h"
+#include "unistd.h"
 #include "stdio.h"
 #include "string.h"
 #include "math.h"
@@ -58,6 +59,6 @@ int main()
 	sprintf(title, "Test window: %i", get_ticks());
 	wnd = new MainWindow(title);
 
-	while (true) sleep(100);
+	while (true) usleep(100);
 	exit(0);
 }

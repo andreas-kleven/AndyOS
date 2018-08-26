@@ -92,3 +92,18 @@ int execve(char const *path, char const *argv[], char const *envp[])
 {
 	syscall(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp);
 }
+
+void _exit(int status)
+{
+    syscall(SYSCALL_EXIT, status);
+}
+
+void sleep(unsigned int seconds)
+{
+	usleep(seconds * 1000);
+}
+
+void usleep(useconds_t usec)
+{
+	syscall(SYSCALL_SLEEP, usec);
+}

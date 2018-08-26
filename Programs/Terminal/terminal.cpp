@@ -286,7 +286,7 @@ public:
 				else
 				{
 					Print("Read error");
-					//sleep(1000);
+					//usleep(1000);
 				}
 			}
 
@@ -334,7 +334,7 @@ public:
 				for (int i = 0; i < len; i++)
 					Print("%c", buf[i]);
 
-				sleep(10);
+				usleep(10);
 			}
 		}
 		else
@@ -431,6 +431,6 @@ int main()
 	Drawing::Init();
 	MainWindow* wnd = new MainWindow();
 
-	while (true) sleep(100);
+	while (true) usleep(100);
 	exit(0);
 }

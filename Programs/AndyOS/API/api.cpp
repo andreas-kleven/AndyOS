@@ -34,19 +34,9 @@ uint32 get_ticks()
 	return syscall(SYSCALL_GET_TICKS);
 }
 
-void exit(int code)
-{
-	syscall(SYSCALL_EXIT, code);
-}
-
 void exit_thread(int code)
 {
 	syscall(SYSCALL_EXIT_THREAD, code);
-}
-
-void sleep(uint32 ticks)
-{
-	syscall(SYSCALL_SLEEP, ticks);
 }
 
 bool get_last_key(KEYCODE& code, bool& pressed)

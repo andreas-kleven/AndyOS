@@ -3,6 +3,7 @@
 #include "GUI.h"
 #include "stdio.h"
 #include "math.h"
+#include "unistd.h"
 
 using namespace gui;
 
@@ -210,7 +211,7 @@ void run(GC& gc)
 		}
 		else
 		{
-			sleep(10);
+			usleep(10);
 			enable_render = false;
 		}
 

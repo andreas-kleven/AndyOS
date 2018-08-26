@@ -2,6 +2,7 @@
 #include "sys/types.h"
 
 typedef int ssize_t;
+typedef uint32 useconds_t;
 
 extern char** environ;
 
@@ -24,3 +25,7 @@ int execlp(char const *file, char const *arg, ...);
 int execv(char const *path, char const *argv[]);
 int execvp(char const *file, char const *argv[]);
 int execve(char const *path, char const *argv[], char const *envp[]);
+
+void _exit(int status);
+void sleep(unsigned int seconds);
+void usleep(useconds_t usec);
