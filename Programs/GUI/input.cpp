@@ -57,7 +57,7 @@ namespace gui
 
 	void InputManager::DecodeCharacter(KEY_PACKET& packet)
 	{
-		uint8 key = packet.code;
+		int key = packet.code;
 		packet.character = 0;
 
 		if (packet.ctrl)

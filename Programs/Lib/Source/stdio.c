@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "string.h"
-#include "stdio.h"
+#include "stdlib.h"
 #include "ctype.h"
 #include "limits.h"
 #include "math.h"
@@ -62,12 +62,12 @@ int fseek(FILE* stream, long int offset, int origin)
 
 int fputc(int character, FILE* stream)
 {
-	fwrite(&character, 1, 1, stream);
+	return fwrite(&character, 1, 1, stream);
 }
 
 int fputs(const char* str, FILE* stream)
 {
-	fwrite(str, 1, strlen(str), stream);
+	return fwrite(str, 1, strlen(str), stream);
 }
 
 int printf(const char* format, ...)
@@ -197,7 +197,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 					void* p = va_arg(vlist, void*);
 					*ptr++ = '0';
 					*ptr++ = 'x';
-					itoa((unsigned long long)p, 16, ptr);
+					itoa((size_t)p, 16, ptr);
 					break;
 				}
 
@@ -306,7 +306,7 @@ long strtol(const char* nptr, char** endptr, int base)
 			break;
 		if (c >= base)
 			break;
-		if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
+		if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
 			any = -1;
 		else {
 			any = 1;

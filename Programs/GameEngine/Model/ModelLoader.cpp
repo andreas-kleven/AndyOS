@@ -4,7 +4,7 @@
 #include "A3D.h"
 #include "stdio.h"
 
-Model3D* ModelLoader::LoadModel(char* filename, Format3D format)
+Model3D* ModelLoader::LoadModel(const char* filename, Format3D format)
 {
 	char* buffer;
 

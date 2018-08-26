@@ -231,7 +231,7 @@ public:
 			fclose(file);
 
 			Print("\n");
-			if (file = fopen("/dev/mouse", ""))
+			if ((file = fopen("/dev/mouse", "")) != 0)
 			{
 				memset(data, 0, 4);
 
@@ -357,7 +357,7 @@ public:
 		}
 	}
 
-	void Print(char* format, ...)
+	void Print(const char* format, ...)
 	{
 		char buf[256];
 

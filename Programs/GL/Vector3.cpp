@@ -44,11 +44,12 @@ float& Vector3::operator[](int axis)
 		return z;
 
 	default:
+		//Todo: crash
 		//Exceptions::ThrowException("Index out of range exception", "Vector3::operator[]");
 		print("Index out of range exception");
 		print("Vector3::operator[]");
 		halt();
-		break;
+		return x;
 	}
 }
 

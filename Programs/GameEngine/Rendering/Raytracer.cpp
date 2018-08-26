@@ -226,7 +226,6 @@ bool Trace(
 	for (int i = 0; i < game->objects.Count(); i++)
 	{
 		GameObject* obj = game->objects[i];
-		Transform transform = obj->GetWorldTransform();
 
 		for (int j = 0; j < obj->meshComponents.Count(); j++)
 		{
@@ -297,6 +296,7 @@ bool TracePhoton(
 		//Absorb
 		photon.position = hit;
 		photon.direction = rayDir;
+		return true;
 	}
 	else
 	{

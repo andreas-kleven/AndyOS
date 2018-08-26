@@ -17,7 +17,7 @@ namespace gui
         int width;
         int height;
 
-        Window(char* title, int width = 400, int height = 300, Color background = Color::White);
+        Window(const char* title, int width = 400, int height = 300, Color background = Color::White);
         ~Window();
 
         void Paint();

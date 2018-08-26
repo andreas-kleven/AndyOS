@@ -50,20 +50,20 @@ public:
 	void Normalize()
 	{
 		float inv = 1 / Magnitude();
-		x * inv;
-		y * inv;
-		z * inv;
-		w * inv;
+		x *= inv;
+		y *= inv;
+		z *= inv;
+		w *= inv;
 	}
 
 	Quaternion Normalized() const
 	{
 		Quaternion q = *this;
 		float inv = 1 / Magnitude();
-		q.x * inv;
-		q.y * inv;
-		q.z * inv;
-		q.w * inv;
+		q.x *= inv;
+		q.y *= inv;
+		q.z *= inv;
+		q.w *= inv;
 		return q;
 	}
 

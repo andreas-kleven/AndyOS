@@ -59,12 +59,12 @@ void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
 	syscall4(SYSCALL_ALLOC_SHARED, proc_id, (int)&addr1, (int)&addr2, blocks);
 }
 
-int read_file(char*& buffer, char* filename)
+int read_file(char*& buffer, const char* filename)
 {
     return syscall2(SYSCALL_READ_FILE, (int)&buffer, (int)filename);
 }
 
-int create_process(char* filename)
+int create_process(const char* filename)
 {
 	return syscall1(SYSCALL_CREATE_PROCESS, (int)filename);
 }
@@ -75,7 +75,7 @@ void debug_reset()
 	syscall0(SYSCALL_DEBUG_RESET);
 }
 
-void debug_print(char* str, ...)
+void debug_print(const char* str, ...)
 {
     char buffer[256];
 	memset(buffer, 0, 256);

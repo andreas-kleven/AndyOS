@@ -12,7 +12,7 @@ namespace GEngine
 	float p4 = 1;
 	float p5 = 60;
 
-	int ticks;
+	unsigned int ticks;
 	int totalFrames = 0;
 	int startTicks = 0;
 

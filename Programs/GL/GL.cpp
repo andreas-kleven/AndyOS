@@ -42,6 +42,10 @@ namespace GL
 
 		case GL_PROJECTION:
 			return mat_projection;
+
+		default:
+			//Todo: crash
+			return mat_model;
 		}
 	}
 

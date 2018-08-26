@@ -90,7 +90,7 @@ int execvp(char const *file, char const *argv[])
 
 int execve(char const *path, char const *argv[], char const *envp[])
 {
-	syscall3(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp);
+	return syscall3(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp);
 }
 
 void _exit(int status)

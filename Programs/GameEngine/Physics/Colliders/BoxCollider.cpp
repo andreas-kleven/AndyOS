@@ -27,10 +27,10 @@ Vector3 SupportFunction(Vector3 axis, Transform trans)
 
 	int n_points = 8;
 
-	unsigned int best = 0;
+	int best = 0;
 	float best_dot = Vector3::Dot(points[0], axis);
 
-	for (unsigned int i = 1; i < n_points; i++)
+	for (int i = 1; i < n_points; i++)
 	{
 		float d = Vector3::Dot(points[i], axis);
 		if (d > best_dot)
@@ -318,6 +318,8 @@ bool update(Vector3 a)
 
 		goto check_one_face_part_2;
 	}
+
+	return false;
 }
 
 

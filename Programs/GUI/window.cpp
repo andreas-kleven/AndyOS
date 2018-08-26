@@ -11,7 +11,7 @@ namespace gui
     static int mouse_x = 0;
     static int mouse_y = 0;
 
-    Window::Window(char* title, int width, int height, Color background)
+    Window::Window(const char* title, int width, int height, Color background)
     {
         this->background = background;
 

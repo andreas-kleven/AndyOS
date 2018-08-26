@@ -15,7 +15,7 @@ char* strncat(char* dest, const char* src, int n);
 void stoupper(char* s);
 void stolower(char* s);
 
-void* memcpy(void* dest, void* src, unsigned int n);
+void* memcpy(void* dest, const void* src, unsigned int n);
 int memcmp(const void* a, const void* b, unsigned int n);
 
 void* memset(void* dest, int val, int n);
@@ -40,7 +40,7 @@ public:
 		buffer[0] = 0;
 	}
 
-	String(char* str)
+	String(const char* str)
 	{
 		int length = strlen(str);
 		buffer = new char[length + 1];
@@ -82,7 +82,7 @@ public:
 		return 0;
 	}
 
-	String Remove(const int index) const
+	String Remove(int index) const
 	{
 		int length = index + 1;
 
@@ -111,7 +111,7 @@ public:
 		}
 	}*/
 
-	String& operator+=(String& str)
+	String& operator+=(const String& str)
 	{
 		strcat(buffer, str.buffer);
 		return *this;
@@ -129,12 +129,6 @@ public:
 	return *this;
 	}*/
 
-	String& operator+=(const char str[])
-	{
-		strcat(buffer, str);
-		return *this;
-	}
-
 	String& operator+=(const char c)
 	{
 		int len = Length();
@@ -143,11 +137,10 @@ public:
 		return *this;
 	}
 
-	String& operator+(String& str)
+	String& operator+=(const char str[])
 	{
-		String* ns = new String(buffer);
-		*ns += str;
-		return *ns;
+		strcat(buffer, str);
+		return *this;
 	}
 
 	String& operator+(const char*& str)
@@ -157,7 +150,7 @@ public:
 		return *ns;
 	}
 
-	String& operator+(char*& str)
+	String& operator+(const String& str)
 	{
 		String* ns = new String(buffer);
 		*ns += str;

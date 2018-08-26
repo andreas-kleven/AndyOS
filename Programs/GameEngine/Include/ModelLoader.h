@@ -10,5 +10,5 @@ enum Format3D
 class ModelLoader
 {
 public:
-	static Model3D* LoadModel(char* filename, Format3D format);
+	static Model3D* LoadModel(const char* filename, Format3D format);
 };

@@ -88,7 +88,8 @@ void GC::CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool al
 		{
 			for (int _x = 0; _x < w0; _x++)
 			{
-				*dstPtr++ = BlendAlpha(*srcPtr++, *dstPtr);
+				uint32 c = *dstPtr;
+				*dstPtr++ = BlendAlpha(*srcPtr++, c);
 			}
 
 			srcPtr += d0;
@@ -360,7 +361,7 @@ void GC::DrawImage(Rect& bounds, BMP* bmp)
 	GC::DrawImage(bounds.x, bounds.y, bounds.width, bounds.height, bmp);
 }
 
-void GC::DrawText(int x, int y, char* c, Color& fg)
+void GC::DrawText(int x, int y, const char* c, Color& fg)
 {
 	for (int index = 0; index < strlen(c); index++)
 	{
@@ -375,7 +376,7 @@ void GC::DrawText(int x, int y, char* c, Color& fg)
 	}
 }
 
-void GC::DrawText(int x, int y, char* c, Color& fg, Color& bg)
+void GC::DrawText(int x, int y, const char* c, Color& fg, Color& bg)
 {
 	for (int index = 0; index < strlen(c); index++)
 	{

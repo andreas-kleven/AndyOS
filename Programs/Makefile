@@ -9,7 +9,7 @@ LIB_SRCH_PATH := -L$(BUILD_DIR)
 
 CRT_FILES := $(BUILD_DIR)/crt0.o
 
-CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH) -w
+CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH) -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wall
 CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 
 LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)

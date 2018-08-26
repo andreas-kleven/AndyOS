@@ -46,7 +46,7 @@ namespace gui
             int width;
             int height;
 
-            CREATE_WINDOW_REQUEST(char* title, int width, int height)
+            CREATE_WINDOW_REQUEST(const char* title, int width, int height)
             { 
                 this->type = REQUEST_TYPE_CREATE_WINDOW; 
                 strcpy(this->title, title);

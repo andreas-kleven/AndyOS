@@ -1,4 +1,3 @@
-#pragma once
 #include "API/api.h"
 #include "globals.h"
 

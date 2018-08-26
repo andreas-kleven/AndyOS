@@ -70,11 +70,15 @@ public:
 		case 2:
 			return Vector3(0, 0, 1);
 		}
+
+		//Todo: crash
+		return Vector3();
 	}
 
 	virtual Vector3* GetEdge(int vertex) 
 	{
-		Vector3 edges[2];
+		//Todo:
+		Vector3* edges = new Vector3[2];
 
 		switch (vertex) {
 		case 0: edges[0] = GetVertex(0); edges[1] = GetVertex(1); break;
@@ -107,6 +111,9 @@ public:
 		case 6: return Vector3(-size.x, -size.y, size.z);
 		case 7: return Vector3(-size.x, -size.y, -size.z);
 		}
+
+		//Todo: crash
+		return Vector3();
 	}
 
 protected:

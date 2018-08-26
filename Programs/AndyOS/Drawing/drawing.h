@@ -105,8 +105,8 @@ struct GC
 	void DrawImage(Rect& bounds, BMP* bmp);
 	void DrawImage(int x, int y, int w, int h, BMP* bmp);
 
-	void DrawText(int x, int y, char* c, Color& fg);
-	void DrawText(int x, int y, char* c, Color& fg, Color& bg);
+	void DrawText(int x, int y, const char* c, Color& fg);
+	void DrawText(int x, int y, const char* c, Color& fg, Color& bg);
 
 private:
 	inline uint32 BlendAlpha(uint32 src, uint32 dst);

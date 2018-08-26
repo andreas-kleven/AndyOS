@@ -227,7 +227,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 
 			closest_Point(pointsEd1[0], pointsEd1[1], pointsEd2[0], pointsEd2[1], colisionPoint1, colisionPoint2);
 
-			Vector3 po = (colisionPoint2 - colisionPoint1);
+			//Vector3 po = (colisionPoint2 - colisionPoint1);
 			//printf("%f\t%f\t%f\n", po.x, po.y, po.z);
 			printf("%f\n", colisionPoint1.Magnitude() * 10000);
 			//PIT::Sleep(1000);
