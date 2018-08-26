@@ -1,10 +1,15 @@
 .vscode/
 Build/
-Root/
 *.iso
 *.code-workspace
 Tools/*/*
 **/.DS_Store
+
+### iso dir
+Root/*
+!Root/boot/
+Root/boot/*
+!Root/boot/grub/
 
 ### C++ ###
 # Prerequisites
