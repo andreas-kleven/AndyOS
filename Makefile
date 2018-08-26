@@ -40,6 +40,7 @@ iso: all
 	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
 	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
 	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/1mndlbrt
+	cp $(BUILD_DIR)/info $(ISO_DIR)/1info
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel

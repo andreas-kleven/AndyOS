@@ -32,6 +32,7 @@ all: libs
 	$(MAKE) -C GameEngine
 	$(MAKE) -C 3DGame
 	$(MAKE) -C Mandelbrot
+	$(MAKE) -C Info
 
 .PHONY: clean
 clean:
@@ -45,4 +46,5 @@ clean:
 	$(MAKE) -C GameEngine clean
 	$(MAKE) -C 3DGame clean
 	$(MAKE) -C Mandelbrot clean
+	$(MAKE) -C Info clean
 	rm -f $(BUILD_DIR)/*
