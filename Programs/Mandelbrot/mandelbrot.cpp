@@ -252,5 +252,4 @@ int main()
 {
 	Drawing::Init();
 	MainWindow wnd;
-	exit(0);
 }

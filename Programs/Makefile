@@ -7,12 +7,14 @@ INC_SRCH_PATH += -I$(PROGRAMS_DIR)/Lib/Include
 
 LIB_SRCH_PATH := -L$(BUILD_DIR)
 
+CRT_FILES := $(BUILD_DIR)/crt0.o
+
 CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH) -w
 CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 
 LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
 LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
-LDFLAGS += $(BUILD_DIR)/andyos.a $(BUILD_DIR)/libc.a -T $(PROGRAMS_DIR)/link.ld
+LDFLAGS += $(CRT_FILES) $(BUILD_DIR)/andyos.a $(BUILD_DIR)/libc.a -T $(PROGRAMS_DIR)/link.ld
 
 export CPPFLAGS LDFLAGS INC_SRCH_PATH PROGRAMS_DIR
 
@@ -21,6 +23,7 @@ create_dir:
 
 libs: create_dir
 	$(MAKE) -C Lib
+	$(MAKE) -C RT
 	$(MAKE) -C AndyOS
 
 all: libs
@@ -37,6 +40,7 @@ all: libs
 .PHONY: clean
 clean:
 	$(MAKE) -C Lib clean
+	$(MAKE) -C RT clean
 	$(MAKE) -C AndyOS clean
 	$(MAKE) -C GUI clean
 	$(MAKE) -C WindowManager clean

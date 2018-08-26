@@ -61,5 +61,4 @@ int main()
 	wnd = new MainWindow(title);
 
 	while (true) usleep(100);
-	exit(0);
 }

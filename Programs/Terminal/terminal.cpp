@@ -433,5 +433,4 @@ int main()
 	MainWindow* wnd = new MainWindow();
 
 	while (true) usleep(100);
-	exit(0);
 }

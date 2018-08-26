@@ -25,6 +25,4 @@ int main()
 {
     Drawing::Init();
     GameWindow wnd;
-
-    exit(0);
 }

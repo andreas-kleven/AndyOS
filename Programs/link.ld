@@ -1,4 +1,3 @@
-ENTRY(main)
 SECTIONS
 {
 	. = 0x40000000;
