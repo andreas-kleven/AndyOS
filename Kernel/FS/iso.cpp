@@ -70,7 +70,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const Path& path)
 		char name[32];
 		GetName(dir, name);
 
-		if (strcicmp(name, part) == 0)
+		if (stricmp(name, part) == 0)
 		{
 			if (dir->flags & FILE_FLAG_DIRECTORY)
 			{

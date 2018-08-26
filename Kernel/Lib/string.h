@@ -1,7 +1,7 @@
 #pragma once
 
 int strcmp(const char* str1, const char* str2);
-int strcicmp(char const *a, char const *b);
+int stricmp(char const *a, char const *b);
 char* strcpy(char *dest, const char *src);
 char* strncpy(char *dest, const char *src, int length);
 unsigned int strlen(const char* str);

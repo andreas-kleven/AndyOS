@@ -19,7 +19,7 @@ int strcmp(const char* str1, const char* str2)
 	return res;
 }
 
-int strcicmp(char const *a, char const *b)
+int stricmp(char const *a, char const *b)
 {
     for (;; a++, b++) {
         int d = tolower(*a) - tolower(*b);
