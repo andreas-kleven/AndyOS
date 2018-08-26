@@ -328,8 +328,11 @@ public:
 			{
 				int len = read(pipefd[0], buf, 256);
 
-				if (len != -1)
-					Print(buf);
+				if (len == -1)
+					break;
+
+				for (int i = 0; i < len; i++)
+					Print("%c", buf[i]);
 
 				sleep(10);
 			}
