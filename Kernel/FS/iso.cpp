@@ -74,7 +74,7 @@ ISO_DIRECTORY* ISO_FS::FindDirectory(const Path& path)
 		{
 			if (dir->flags & FILE_FLAG_DIRECTORY)
 			{
-				if (next)
+				if (pi < path.count)
 				{
 					char* buffer = new char[dir->filesize_LSB];
 					driver->Read(dir->locationLBA_LSB * ISO_SECTOR_SIZE, buffer, dir->filesize_LSB);
