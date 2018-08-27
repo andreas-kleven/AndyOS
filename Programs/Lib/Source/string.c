@@ -45,9 +45,9 @@ char* strncpy(char* dest, const char* src, int length)
 	return s1_p;
 }
 
-unsigned int strlen(const char* str)
+size_t strlen(const char* str)
 {
-	unsigned int len = 0;
+	size_t len = 0;
 	while (str[len++]);
 	return len - 1;
 }
@@ -88,7 +88,7 @@ void stolower(char* s)
             *s = 'a' + (*s - 'A');
 }
 
-void* memcpy(void* dest, const void* src, unsigned int n)
+void* memcpy(void* dest, const void* src, size_t n)
 {
 	char* a = (char*)src;
 	char* b = (char*)dest;
@@ -106,21 +106,21 @@ void* memset(void* dest, int val, int n)
 	return dest;
 }
 
-void* memset16(void *dest, unsigned short val, unsigned int n)
+void* memset16(void *dest, unsigned short val, size_t n)
 {
 	unsigned short *temp = (unsigned short *)dest;
 	for (; n != 0; n--, temp[n] = val);
 	return dest;
 }
 
-void* memset32(void *dest, unsigned int val, unsigned int n)
+void* memset32(void *dest, unsigned int val, size_t n)
 {
-	unsigned int *temp = (unsigned int *)dest;
+	unsigned int* temp = (unsigned int *)dest;
 	for (; n != 0; n--, temp[n] = val);
 	return dest;
 }
 
-int memcmp(const void* a, const void* b, unsigned int n)
+int memcmp(const void* a, const void* b, size_t n)
 {
 	const unsigned char* cs = (const unsigned char*)a;
 	const unsigned char* ct = (const unsigned char*)b;

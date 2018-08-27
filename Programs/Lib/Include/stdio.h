@@ -1,6 +1,6 @@
 #pragma once
 #include "stdarg.h"
-#include "sys/types.h"
+#include "size_t.h"
 #include "stdbool.h"
 
 #define EOF         (-1)
@@ -52,6 +52,10 @@ int fclose(FILE* stream);
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream);
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream);
 int fseek(FILE* stream, long int offset, int origin);
+long ftell(FILE* stream);
+int fflush(FILE* stream);
+void setbuf(FILE* stream, char* buf);
+
 int fputc(int character, FILE* stream);
 int fputs(const char* str, FILE* stream);
 //int fgetc(FILE* stream);
@@ -66,10 +70,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist);
 
 long strtol(const char* nptr, char** endptr, int base);
 
-int atoi(const char* str);
 char* itoa(int i, unsigned base, char* buf);
-
-float atof(const char* s);
 char* ftoa(float f, unsigned base, char* buf);
 
 #ifdef __cplusplus

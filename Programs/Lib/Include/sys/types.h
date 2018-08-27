@@ -1,6 +1,6 @@
 #pragma once
+#include "size_t.h"
 
-typedef long unsigned int size_t;
 typedef int pid_t;
 
 typedef signed char			int8;
