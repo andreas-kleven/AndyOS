@@ -12,6 +12,7 @@ extern "C" {
 
 int abs(int n);
 long labs(long n);
+float fabs(float n);
 char* getenv(const char* name);
 int atoi(const char* str);
 float atof(const char* s);

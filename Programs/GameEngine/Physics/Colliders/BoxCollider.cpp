@@ -395,15 +395,15 @@ bool BoxCollider::IsColliding(BoxCollider* other, Vector3& mtv)
 	{
 		Vector3 L = axes[i];
 
-		float R = abs(Vector3::Dot(T, L));
+		float R = fabs(Vector3::Dot(T, L));
 
-		float P1a = abs(Vector3::Dot(axes[0] * parent->transform.scale.x, L));
-		float P1b = abs(Vector3::Dot(axes[1] * parent->transform.scale.y, L));
-		float P1c = abs(Vector3::Dot(axes[2] * parent->transform.scale.z, L));
+		float P1a = fabs(Vector3::Dot(axes[0] * parent->transform.scale.x, L));
+		float P1b = fabs(Vector3::Dot(axes[1] * parent->transform.scale.y, L));
+		float P1c = fabs(Vector3::Dot(axes[2] * parent->transform.scale.z, L));
 
-		float P2a = abs(Vector3::Dot(axes[3] * other->parent->transform.scale.x, L));
-		float P2b = abs(Vector3::Dot(axes[4] * other->parent->transform.scale.y, L));
-		float P2c = abs(Vector3::Dot(axes[5] * other->parent->transform.scale.z, L));
+		float P2a = fabs(Vector3::Dot(axes[3] * other->parent->transform.scale.x, L));
+		float P2b = fabs(Vector3::Dot(axes[4] * other->parent->transform.scale.y, L));
+		float P2c = fabs(Vector3::Dot(axes[5] * other->parent->transform.scale.z, L));
 
 		float sum = P1a + P1b + P1c + P2a + P2b + P2c;
 

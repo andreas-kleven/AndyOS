@@ -141,7 +141,7 @@ public:
 		// pitch (y-axis rotation)
 		double sinp = 2.0 * (w * y - z * x);
 
-		if (abs(sinp) >= 1)
+		if (fabs(sinp) >= 1)
 			euler.y = copysign(M_PI_2, sinp); // use 90 degrees if out of range
 		else
 			euler.y = asin(sinp);
@@ -156,7 +156,7 @@ public:
 
 	void ToAxisAngle(Vector3& axis, float& ang)
 	{
-		if (abs(w) > 1.0f)
+		if (fabs(w) > 1.0f)
 			Normalize();
 
 		ang = 2.0f * (float)acos(w);

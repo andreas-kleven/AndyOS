@@ -12,6 +12,11 @@ long labs(long n)
 	return (n > 0) ? n : -n;
 }
 
+float fabs(float n)
+{
+	return (n > 0) ? n : -n;
+}
+
 char* getenv(const char* name)
 {
 	return 0;

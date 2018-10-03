@@ -152,9 +152,9 @@ namespace GEngine
 
 		Vector3 t;
 
-		if (abs(vrel.Dot(normal)) < 0.1)
+		if (fabs(vrel.Dot(normal)) < 0.1)
 		{
-			if (abs(netForce.Dot(normal)) > 0.1)
+			if (fabs(netForce.Dot(normal)) > 0.1)
 			{
 				//t = (netForce - (normal * netForce.Dot(normal))).Normalized();
 			}

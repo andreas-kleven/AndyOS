@@ -90,7 +90,7 @@ float Fresnel(Vector3 &I, Vector3 &N, const float& ior)
 	else
 	{
 		float cost = sqrt(max(0.f, 1 - sint * sint));
-		cosi = abs(cosi);
+		cosi = fabs(cosi);
 		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
 		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
 		return (Rs * Rs + Rp * Rp) / 2;

@@ -401,7 +401,7 @@ char* ftoa(float f, unsigned base, char* buf)
 	{
 		strcpy(buf, "inf");
 	}
-	else if (abs(f) < PRECISION)
+	else if (fabs(f) < PRECISION)
 	{
 		strcpy(buf, "0");
 	}
@@ -421,9 +421,9 @@ char* ftoa(float f, unsigned base, char* buf)
 		}
 		else
 		{
-			while (abs(f) < PRECISION || m >= 0)
+			while (fabs(f) < PRECISION || m >= 0)
 			{
-				if (abs(f) < PRECISION)
+				if (fabs(f) < PRECISION)
 				{
 					//Todo: fix this
 					*(buf++) = '0';

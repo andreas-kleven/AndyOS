@@ -65,7 +65,7 @@ float atan2(float y, float x)
 	}
 	float atan;
 	float z = y / x;
-	if (abs(z) < 1.0f)
+	if (fabs(z) < 1.0f)
 	{
 		atan = z / (1.0f + 0.28f*z*z);
 		if (x < 0.0f)

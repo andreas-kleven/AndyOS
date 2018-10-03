@@ -49,12 +49,12 @@ Quaternion Quaternion::LookAt(const Vector3& from, const Vector3& to)
 
 	float dot = Vector3::Dot(Vector3::forward, forwardVector);
 
-	if (abs(dot - (-1.0f)) < 0.000001f)
+	if (fabs(dot - (-1.0f)) < 0.000001f)
 	{
 		return Quaternion(Vector3::up, M_PI);
 	}
 
-	if (abs(dot - (1.0f)) < 0.000001f)
+	if (fabs(dot - (1.0f)) < 0.000001f)
 	{
 		return Quaternion();
 	}

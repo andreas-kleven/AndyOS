@@ -78,7 +78,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 		if (dist > 0)
 			return 0;
 
-		dist = abs(dist);
+		dist = fabs(dist);
 
 		if (dist < lowest)
 		{
@@ -104,7 +104,7 @@ bool Collision::TestIntersection(Rigidbody& o1, Rigidbody& o2, Vector3* mtv, Man
 			if (dist > 0)
 				return 0;
 
-			dist = abs(dist);
+			dist = fabs(dist);
 
 			if (dist < lowest)
 			{
@@ -229,7 +229,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 
 			//Vector3 po = (colisionPoint2 - colisionPoint1);
 			//printf("%f\t%f\t%f\n", po.x, po.y, po.z);
-			printf("%f\n", colisionPoint1.Magnitude() * 10000);
+			//printf("%f\n", colisionPoint1.Magnitude() * 10000);
 			//PIT::Sleep(1000);
 
 			if ((colisionPoint2 - colisionPoint1).Magnitude() < 0.1f)
@@ -330,18 +330,18 @@ Vector3 Collision::getNormalFace(Rigidbody& obj1, Vector3 ip)
 	Vector3 normal;
 	// Check each axis, looking for the axis on which the
 	// penetration is least deep.
-	float min_depth = (obj1.collider->size.x * scale.x) - abs(relPt.x);
+	float min_depth = (obj1.collider->size.x * scale.x) - fabs(relPt.x);
 	if (min_depth > EPSILON)
 		normal = obj1.collider->GetFaceDir(0) * ((relPt.x < 0) ? -1.0f : 1.0f);
 
-	float depth = (obj1.collider->size.y * scale.y) - abs(relPt.y);
+	float depth = (obj1.collider->size.y * scale.y) - fabs(relPt.y);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;
 		normal = obj1.collider->GetFaceDir(1) * ((relPt.y < 0) ? -1.0f : 1.0f);
 	}
 
-	depth = (obj1.collider->size.z * scale.z) - abs(relPt.z);
+	depth = (obj1.collider->size.z * scale.z) - fabs(relPt.z);
 	if (depth < min_depth && depth > EPSILON)
 	{
 		min_depth = depth;
