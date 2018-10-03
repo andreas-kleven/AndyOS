@@ -1,5 +1,5 @@
 #include "kernel.h"
-#include "os.h"
+#include "test.h"
 #include "Arch/init.h"
 #include "Drivers/serial.h"
 #include "Drivers/ata.h"
@@ -49,6 +49,6 @@ namespace Kernel
 		Scheduler::Init();
 		debug_print("Init Scheduler\n");
 
-		Task::Start(OS::Main);
+		Task::Start(Test::Start);
 	}
 }
