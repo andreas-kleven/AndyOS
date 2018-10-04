@@ -29,13 +29,10 @@ void Rigidbody::Update(float deltaTime)
 	if (bEnabledGravity)
 		F.y += -9.8 * mass;
 
-	parent->transform.Rotate(Quaternion::FromEuler(angularVelocity * deltaTime));
-
-	//Vector3 rot = parent->transform.rotation.ToEuler();
-	//rot += angularVelocity * deltaTime;
-	//parent->transform.rotation = Quaternion::FromEuler(rot);
-
-	//parent->transform.rotation.Rotate(angularVelocity.Normalized(), angularVelocity.Magnitude() * deltaTime);
+	Quaternion eulerRot = Quaternion::FromEuler(angularVelocity * deltaTime);
+	Quaternion& rot = parent->transform.rotation;
+	rot *= (rot.Inverse() * eulerRot * rot);
+	rot.Normalize();
 
 	//if(bEnabledDrag)
 	//	F += -velocity.Normalized() * SpeedSquared() * drag;

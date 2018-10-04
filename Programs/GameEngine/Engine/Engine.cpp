@@ -360,7 +360,7 @@ namespace GEngine
 						a->parent->transform.position += mtv * b->mass / (a->mass + b->mass);
 						b->parent->transform.position -= mtv * a->mass / (a->mass + b->mass);
 
-						//DrawLine(a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, 0xFF00FF00);
+						//DebugLine(a->parent->GetWorldPosition(), a->parent->GetWorldPosition() - mtv, Color::Blue);
 
 						if (count == 0)
 							continue;
@@ -379,9 +379,6 @@ namespace GEngine
 						Vector3 sc = WorldToScreen(colPoint);
 						gc.FillRect(sc.x - 5, sc.y - 5, 10, 10, Color::Blue);
 
-						Vector3 va;
-						Vector3 vb;
-
 						Quaternion rota = a->parent->GetWorldRotation();
 						Quaternion rotb = b->parent->GetWorldRotation();
 
@@ -393,8 +390,8 @@ namespace GEngine
 
 						Vector3 dp = posa - posb;
 
-						va = a->velocity;
-						vb = b->velocity;
+						Vector3 va = a->velocity;
+						Vector3 vb = b->velocity;
 
 						Vector3 dv = va - vb;
 						Vector3 dir = dp.Normalized();
@@ -431,13 +428,8 @@ namespace GEngine
 							//printf("%f %f %f %f %f %f", Ia[0], Ia[1], Ia[2], Ia[3], Ia[4], Ia[5]);
 							//Matrix3 MatR2 = Matrix3::CreateRotation(b->parent->transform.rotation.ToEuler());
 
-							Matrix3 invbA = IbodyA.Inverse();
-							Matrix3 invbB = IbodyB.Inverse();
-							Matrix3 invA = (MRA * invbA * MRA.Transpose());
-							Matrix3 invB = (MRB * invbB * MRB.Transpose());
-
-							PrintMatrix(invA);
-							//PIT::Sleep(200000);
+							Matrix3 invA = (MRA * IbodyA.Inverse() * MRA.Transpose());
+							Matrix3 invB = (MRB * IbodyB.Inverse() * MRB.Transpose());
 
 							Vector3 Xa = posa;
 							Vector3 Xb = posb;
@@ -450,10 +442,9 @@ namespace GEngine
 							Vector3 ra = /*-rota * */(colPoint - Xa);
 							Vector3 rb = /*-rotb * */(colPoint - Xb);
 
-							Vector3 pa = (a->velocity + a->angularVelocity.Cross(ra));
-							Vector3 pb = (b->velocity + b->angularVelocity.Cross(rb));
-							Vector3 vr = pb - pa;
-							float Vrel = vr.Dot(n);
+							Vector3 pa = a->velocity + a->angularVelocity.Cross(ra);
+							Vector3 pb = b->velocity + b->angularVelocity.Cross(rb);
+							float Vrel = n.Dot(pb - pa);
 
 							float N = Vrel * -(1 + e);
 							float t1 = 1 / ma;
@@ -470,8 +461,10 @@ namespace GEngine
 							//float t3 = 0;
 							//float t4 = n.Dot((inva * ra.Cross(n)).Cross(ra) + (invb * rb.Cross(n)).Cross(rb));
 
-							float J = N / (t1 + t2 + t3 + t4);
-							Vector3 force = n * J;
+							float j = N / (t1 + t2 + t3 + t4);
+							Vector3 force = n * j;
+
+							//usleep(10000);
 
 							printf("N %f\n", N);
 							printf("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
@@ -481,7 +474,17 @@ namespace GEngine
 
 							if (force.Dot(n) < 0)
 							{
-								a->AddImpulse(-force);
+								a->velocity -= force / ma;
+								b->velocity += force / mb;
+
+								//Vector3 t = force.Cross(ra);
+								DebugLine(colPoint, colPoint + force * 10, Color::Blue);
+								a->angularVelocity += (invA * ra.Cross(-force));
+
+								DebugLine(Xa, Xa + (invA * ra.Cross(force)), Color::Cyan);
+								//b->angularVelocity += (invB * rb.Cross(force));
+
+								/*a->AddImpulse(-force);
 								b->AddImpulse(force);
 
 								ra = -rota * (colPoint - Xa);
@@ -489,8 +492,7 @@ namespace GEngine
 
 								pa = (a->velocity + a->angularVelocity.Cross(ra));
 								pb = (b->velocity + b->angularVelocity.Cross(rb));
-								vr = pb - pa;
-								Vrel = vr.Dot(n);
+								Vrel = n.Dot(pb - pa);
 
 								N = Vrel * -(1 + e);
 								t1 = 1 / ma;
@@ -519,9 +521,9 @@ namespace GEngine
 								//PIT::Sleep(1000);
 
 
-								//DrawLine(colPoint, colPoint + t * 10, 0xFFFF00FF);
+								//DrawLine(colPoint, colPoint + t * 10, 0xFFFF00FF);*/
 
-								continue;
+								/*continue;
 								Vector3 ffa = FrictionForce(a, -n, vr, (a->bEnabledGravity ? Vector3(0, -9.8, 0) * a->mass : Vector3()));
 								Vector3 ffb = FrictionForce(b, n, vr, (b->bEnabledGravity ? Vector3(0, -9.8, 0) * b->mass : Vector3()));
 
@@ -529,7 +531,7 @@ namespace GEngine
 
 								a->AddImpulse(ffa * deltaTime);
 								b->AddImpulse(ffb * deltaTime);
-								usleep(10);
+								usleep(10);*/
 							}
 						}
 					}
@@ -722,7 +724,7 @@ namespace GEngine
 			}
 
 			Update();
-			//Collision();
+			Collision();
 			Render();
 
 			totalFrames++;
