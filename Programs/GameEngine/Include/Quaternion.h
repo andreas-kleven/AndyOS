@@ -42,9 +42,14 @@ public:
 		this->operator*=(local);
 	}
 
+	float MagnitudeSquared() const
+	{
+		return x * x + y * y + z * z + w * w;
+	}
+
 	float Magnitude() const
 	{
-		return sqrt(x*x + y * y + z * z + w * w);
+		return sqrt(MagnitudeSquared());
 	}
 
 	void Normalize()
@@ -65,6 +70,16 @@ public:
 		q.z *= inv;
 		q.w *= inv;
 		return q;
+	}
+
+	Quaternion Conjugate() const
+	{
+		return Quaternion(-x, -y, -z, w);
+	}
+
+	Quaternion Inverse() const
+	{
+		return Conjugate() * (1 / MagnitudeSquared());
 	}
 
 	Matrix4 ToMatrix() const
