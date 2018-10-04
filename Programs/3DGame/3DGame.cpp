@@ -66,7 +66,7 @@ void CreateCornell(Game* game)
 MyGame::MyGame()
 {
 	Camera* cam = CreateCamera<Camera>("Cam1");
-	cam->transform.position = Vector3(0, 0, -8);
+	cam->transform.position = Vector3(0, 0, -25);
 
 	//DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
 	//light->transform.position = Vector3(0, 100, 0);
@@ -78,11 +78,15 @@ MyGame::MyGame()
 
 	//Objects
 	Thing* thing = CreateObject<Thing>("Thing");
-	thing->transform.position = Vector3(-0.8, -0.6, 2);
-	thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
-	thing->transform.scale = Vector3(0.05, 1.5, 0.05);
+	//thing->transform.position = Vector3(-0.8, -0.6, 2);
+	//thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
+	//thing->transform.scale = Vector3(0.05, 1.5, 0.05);
 
-	MySphere* sphere = CreateObject<MySphere>("Sphere");
+	MyBox* box = CreateObject<MyBox>("Ground");
+	box->transform.position = Vector3(0, -5, 0);
+	box->transform.scale = Vector3(10, 1, 10);
+
+	/*MySphere* sphere = CreateObject<MySphere>("Sphere");
 	sphere->transform.position = Vector3(-1, -1, 2);
 	sphere->transform.scale = Vector3(0.7, 1, 0.7);
 
@@ -91,5 +95,5 @@ MyGame::MyGame()
 	sphere2->transform.scale = Vector3(1, 1, 1);
 	sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
 
-	CreateCornell(this);
+	CreateCornell(this);*/
 }

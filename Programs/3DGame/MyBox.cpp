@@ -6,7 +6,7 @@ BMP* bmp = 0;
 
 MyBox::MyBox()
 {
-	Model3D* model = ModelLoader::LoadModel("gamedata/1plane.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("gamedata/cube.a3d", Format3D::FORMAT_A3D);
 
 	if (!img_buf)
 	{
@@ -28,6 +28,6 @@ MyBox::MyBox()
 	Rigidbody* phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->mass = 1e10;
 	phys->collider = new BoxCollider();
-	phys->bEnabled = 0;
+	//phys->bEnabled = 0;
 	phys->bEnabledGravity = 0;
 }

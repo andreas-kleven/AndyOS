@@ -5,7 +5,7 @@ Rigidbody* phys;
 
 Thing::Thing()
 {
-	Model3D* model = ModelLoader::LoadModel("gamedata/cylinder.a3d", Format3D::FORMAT_A3D);
+	Model3D* model = ModelLoader::LoadModel("gamedata/cube.a3d", Format3D::FORMAT_A3D);
 	
 	char* img_buf;
 	if (!read_file(img_buf, "gamedata/earth.bmp"))
@@ -29,7 +29,7 @@ Thing::Thing()
 	//sphere->radius = 1;
 	phys = CreateComponent<Rigidbody>("Rigidbody");
 	phys->collider = new BoxCollider();
-	phys->bEnabled = 0;
+	//phys->bEnabled = 0;
 	//phys->bEnabledGravity = 0;
 }
 
