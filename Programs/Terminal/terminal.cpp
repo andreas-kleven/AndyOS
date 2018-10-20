@@ -300,7 +300,7 @@ public:
 		}
 	}
 
-	void Open(char* file)
+	void Open(const char* file)
 	{
 		int pipefd[2];
 		pid_t pid;

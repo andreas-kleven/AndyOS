@@ -1,5 +1,6 @@
 #include "stdlib.h"
 #include "unistd.h"
+#include "stdio.h"
 #include "syscall.h"
 
 int abs(int n)
