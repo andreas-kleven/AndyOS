@@ -17,7 +17,7 @@ public:
 	bool IsSphere() { return bIsSphere; }
 	bool IsBox() { return bIsBox; }
 
-	virtual Vector3 GetFaceDir(int i) 
+	Vector3 GetFaceDir(int i) 
 	{
 		switch (i) 
 		{
@@ -44,61 +44,30 @@ public:
 		}
 	}
 
-	virtual Vector3 GetEdgeDir(int i) 
-	{ 
-		/*if (i < 4)
-		{
-			return Vector3(1, 0, 0);
-		}
-		else if (i < 8)
-		{
-			return Vector3(0, 1, 0);
-		}
-		else
-		{
-			return Vector3(0, 0, 1);
-		}*/
-
-		switch (i) 
-		{
-		case 0:
-			return Vector3(1, 0, 0);
-
-		case 1:
-			return Vector3(0, 1, 0);
-
-		case 2:
-			return Vector3(0, 0, 1);
-		}
-
-		//Todo: crash
-		return Vector3();
-	}
-
-	virtual Vector3* GetEdge(int vertex) 
+	void GetEdge(int vertex, Vector3* edge1, Vector3* edge2)
 	{
-		//Todo:
-		Vector3* edges = new Vector3[2];
+		switch (vertex)
+		{
+		case 0: *edge1 = GetVertex(0); *edge2 = GetVertex(1); break;
+		case 1: *edge1 = GetVertex(1); *edge2 = GetVertex(2); break;
+		case 2: *edge1 = GetVertex(2); *edge2 = GetVertex(3); break;
+		case 3: *edge1 = GetVertex(3); *edge2 = GetVertex(0); break;
+		case 4: *edge1 = GetVertex(4); *edge2 = GetVertex(5); break;
+		case 5: *edge1 = GetVertex(5); *edge2 = GetVertex(6); break;
+		case 6: *edge1 = GetVertex(6); *edge2 = GetVertex(7); break;
+		case 7: *edge1 = GetVertex(7); *edge2 = GetVertex(4); break;
+		case 8: *edge1 = GetVertex(7); *edge2 = GetVertex(3); break;
+		case 9: *edge1 = GetVertex(6); *edge2 = GetVertex(2); break;
+		case 10: *edge1 = GetVertex(5); *edge2 = GetVertex(1); break;
+		case 11: *edge1 = GetVertex(4); *edge2 = GetVertex(0); break;
 
-		switch (vertex) {
-		case 0: edges[0] = GetVertex(0); edges[1] = GetVertex(1); break;
-		case 1: edges[0] = GetVertex(1); edges[1] = GetVertex(2); break;
-		case 2: edges[0] = GetVertex(2); edges[1] = GetVertex(3); break;
-		case 3: edges[0] = GetVertex(3); edges[1] = GetVertex(0); break;
-		case 4: edges[0] = GetVertex(4); edges[1] = GetVertex(5); break;
-		case 5: edges[0] = GetVertex(5); edges[1] = GetVertex(6); break;
-		case 6: edges[0] = GetVertex(6); edges[1] = GetVertex(7); break;
-		case 7: edges[0] = GetVertex(7); edges[1] = GetVertex(4); break;
-		case 8: edges[0] = GetVertex(7); edges[1] = GetVertex(3); break;
-		case 9: edges[0] = GetVertex(6); edges[1] = GetVertex(2); break;
-		case 10: edges[0] = GetVertex(5); edges[1] = GetVertex(1); break;
-		case 11: edges[0] = GetVertex(4); edges[1] = GetVertex(0); break;
+		default:
+			//Todo: crash
+			break;
 		}
-
-		return edges;
 	}
 
-	virtual Vector3 GetVertex(int i)
+	Vector3 GetVertex(int i)
 	{
 		switch (i) 
 		{
