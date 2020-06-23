@@ -1,8 +1,6 @@
 #!/bin/bash
-
 mkdir src
 cd src
-curl -s https://ftp.gnu.org/gnu/bison/bison-3.0.5.tar.xz | tar xvf - -J
 curl -s https://ftp.gnu.org/gnu/bison/bison-3.0.5.tar.xz | tar xvf - -J
 wget -O flex.tar.gz https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz && tar xvzf flex.tar.gz && rm flex.tar.gz
 curl -s https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz | tar xvf - -J
