@@ -1,6 +1,7 @@
 #!/bin/bash
 
-gnome-terminal -x qemu-system-aarch64 -M raspi3 -kernel ../Build/kernel8.img -serial null -serial stdio -s -S
+GNOME_TERMINAL_SCREEN=""
+gnome-terminal -- qemu-system-aarch64 -M raspi3 -kernel ../Build/kernel8.img -serial null -serial stdio -s -S
 
 sleep 0.1
 
