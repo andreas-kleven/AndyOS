@@ -1,8 +1,8 @@
-#include "api.h"
-#include "stdarg.h"
-#include "string.h"
-#include "stdio.h"
-#include "sys/syscall.h"
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <andyos/api.h>
+#include "syscall_list.h"
 
 void halt()
 {
@@ -14,12 +14,12 @@ void print(const char* msg)
 	syscall3(SYSCALL_PRINT, (int)msg, 0, 0);
 }
 
-void color(uint32 color)
+void color(uint32_t color)
 {
 	syscall1(SYSCALL_COLOR, (int)color);
 }
 
-void draw(uint32* framebuffer)
+void draw(uint32_t* framebuffer)
 {
 	syscall1(SYSCALL_DRAW, (int)framebuffer);
 }
@@ -29,7 +29,7 @@ void gettime(int& hour, int& minute, int& second)
 	syscall3(SYSCALL_GETTIME, (int)&hour, (int)&minute, (int)&second);
 }
 
-uint32 get_ticks()
+uint32_t get_ticks()
 {
 	return syscall0(SYSCALL_GET_TICKS);
 }
@@ -44,17 +44,17 @@ bool get_last_key(KEYCODE& code, bool& pressed)
 	return syscall2(SYSCALL_GET_LAST_KEY, (int)&code, (int)&pressed);
 }
 
-uint32* alloc(uint32 blocks)
+/*uint32_t* alloc(uint32_t blocks)
 {
-	return (uint32*)syscall1(SYSCALL_ALLOC, blocks);
+	return (uint32_t*)syscall1(SYSCALL_ALLOC, blocks);
 }
 
-void free(void* ptr, uint32 blocks)
+void free(void* ptr, uint32_t blocks)
 {
 	syscall2(SYSCALL_ALLOC, (int)ptr, blocks);
-}
+}*/
 
-void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
+void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32_t blocks)
 {
 	syscall4(SYSCALL_ALLOC_SHARED, proc_id, (int)&addr1, (int)&addr2, blocks);
 }

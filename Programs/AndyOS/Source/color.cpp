@@ -1,6 +1,6 @@
-#include "color.h"
-#include "sys/types.h"
-#include "math.h"
+#include <sys/types.h>
+#include <andyos/math.h>
+#include <andyos/color.h>
 
 Color Color::Red(1, 0, 0);
 Color Color::Green(0, 1, 0);
@@ -28,14 +28,14 @@ Color::Color(float r, float g, float b)
 	this->b = clamp(b, 0.f, 1.f);
 }
 
-Color::Color(uint32 col)
+Color::Color(uint32_t col)
 {
 	this->r = ((col >> 16) & 0xFF) / 255.f;
 	this->g = ((col >> 8) & 0xFF) / 255.f;
 	this->b = (col & 0xFF) / 255.f;
 }
 
-uint32 Color::ToInt()
+uint32_t Color::ToInt()
 {
 	return (0xFF << 24)
 		| (clamp((int)(r * 255), 0, 255) << 16)

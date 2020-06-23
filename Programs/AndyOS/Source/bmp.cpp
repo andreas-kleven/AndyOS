@@ -1,7 +1,6 @@
-#include "bmp.h"
-#include "string.h"
-#include "drawing.h"
-#include <AndyOS.h>
+#include <string.h>
+#include <sys/types.h>
+#include <andyos/bmp.h>
 
 BMP::BMP(void* buffer)
 {
@@ -15,16 +14,16 @@ BMP::BMP(void* buffer)
 	int bytes = header.bpp / 8;
 	int pitch = header.width * bytes;
 
-	uint8* p = (uint8*)buffer + header.dataOffset + size - bytes;
+	uint8_t* p = (uint8_t*)buffer + header.dataOffset + size - bytes;
 
-	pixels = new uint32[pixel_count];
-	uint32* p_ptr = pixels;
+	pixels = new uint32_t[pixel_count];
+	uint32_t* p_ptr = pixels;
 
 	int count = pixel_count;
 
 	while (count--)
 	{
-		*p_ptr++ = *(uint32*)p;
+		*p_ptr++ = *(uint32_t*)p;
 		p -= bytes;
 	}
 }
@@ -34,6 +33,6 @@ BMP::BMP(void* pixels, int width, int height)
 	this->width = width;
 	this->height = height;
 	this->size = width * height * 4;
-	pixels = new uint32[size];
+	pixels = new uint32_t[size];
 	memcpy(this->pixels, pixels, size);
 }

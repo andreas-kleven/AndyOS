@@ -1,5 +1,5 @@
 #pragma once
-#include "sys/types.h"
+#include <sys/types.h>
 
 struct Color
 {
@@ -9,9 +9,9 @@ struct Color
 
 	Color();
 	Color(float r, float g, float b);
-	Color(uint32 col);
+	Color(uint32_t col);
 
-	uint32 ToInt();
+	uint32_t ToInt();
 	float Luminosity();
 
 	Color operator+(Color c);

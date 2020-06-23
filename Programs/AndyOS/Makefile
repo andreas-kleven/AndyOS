@@ -1,8 +1,8 @@
 TARGET = $(BUILD_DIR)/andyos.a
 
-SRC_DIR := .
+SRC_DIR := Source
 OBJ_DIR := obj
-SRC_FILES := $(shell find . -name '*.cpp')
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
 $(TARGET): $(OBJ_FILES)

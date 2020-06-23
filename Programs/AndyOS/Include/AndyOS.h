@@ -1,10 +1,10 @@
 #pragma once
 
-extern "C++"
-{
-    #include "../API/api.h"
-    #include "../List/list.h"
-    #include "../List/queue.h"
-    #include "../Memory/memory.h"
-    #include "keycodes.h"
-}
+#include "andyos/api.h"
+#include "andyos/list.h"
+#include "andyos/queue.h"
+#include "andyos/memory.h"
+
+// Kernel
+#include "keycodes.h"
+#include "syscall_list.h"

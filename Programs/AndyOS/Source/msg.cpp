@@ -1,6 +1,5 @@
-#include "msg.h"
 #include <AndyOS.h>
-#include "sys/syscall.h"
+#include <andyos/msg.h>
 
 static void(*_sig_handler)(int);
 static MESSAGE(*_msg_handler)(MESSAGE);

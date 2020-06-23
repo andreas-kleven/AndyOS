@@ -1,6 +1,5 @@
 #pragma once
 #include "sys/types.h"
-#include "math.h"
 #include "font.h"
 #include "color.h"
 #include "bmp.h"
@@ -67,10 +66,10 @@ struct GC
 	int height;
 
 	int stride;
-	uint32* framebuffer;
+	uint32_t* framebuffer;
 
 	GC();
-	GC(int width, int height, uint32* framebuffer);
+	GC(int width, int height, uint32_t* framebuffer);
 	GC(int width, int height);
 	GC(GC& gc, int x, int y, int width, int height);
 	GC(GC& gc, Rect bounds);
@@ -109,7 +108,7 @@ struct GC
 	void DrawText(int x, int y, const char* c, Color& fg, Color& bg);
 
 private:
-	inline uint32 BlendAlpha(uint32 src, uint32 dst);
+	inline uint32_t BlendAlpha(uint32_t src, uint32_t dst);
 };
 
 namespace Drawing

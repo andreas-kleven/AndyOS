@@ -1,13 +1,12 @@
-#include "drawing.h"
-#include "string.h"
-#include "math.h"
-#include "../API/api.h"
-#include "../Memory/memory.h"
+#include <string.h>
+#include <andyos/math.h>
+#include <andyos/drawing.h>
+#include <andyos/api.h>
 
 GC::GC()
 { }
 
-GC::GC(int width, int height, uint32* framebuffer)
+GC::GC(int width, int height, uint32_t* framebuffer)
 {
 	this->x = 0;
 	this->y = 0;
@@ -17,7 +16,7 @@ GC::GC(int width, int height, uint32* framebuffer)
 	this->framebuffer = framebuffer;
 }
 
-GC::GC(int width, int height) : GC(width, height, new uint32[width * height])
+GC::GC(int width, int height) : GC(width, height, new uint32_t[width * height])
 { }
 
 GC::GC(GC& gc, int x, int y, int width, int height)
@@ -76,8 +75,8 @@ void GC::CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool al
 	w0 = clamp(w0, 0, min(this->width - x0, dst.width - x1));
 	h0 = clamp(h0, 0, min(this->height - y0, dst.height - y1));
 
-	uint32* srcPtr = this->framebuffer + this->stride * (y0 + this->y) + (x0 + this->x);
-	uint32* dstPtr = dst.framebuffer + dst.stride * (y1 + dst.y) + (x1 + dst.x);
+	uint32_t* srcPtr = this->framebuffer + this->stride * (y0 + this->y) + (x0 + this->x);
+	uint32_t* dstPtr = dst.framebuffer + dst.stride * (y1 + dst.y) + (x1 + dst.x);
 
 	int d0 = this->stride - w0;
 	int d1 = dst.stride - w0;
@@ -88,7 +87,7 @@ void GC::CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool al
 		{
 			for (int _x = 0; _x < w0; _x++)
 			{
-				uint32 c = *dstPtr;
+				uint32_t c = *dstPtr;
 				*dstPtr++ = BlendAlpha(*srcPtr++, c);
 			}
 
@@ -113,7 +112,7 @@ void GC::CopyTo(int x0, int y0, int w0, int h0, GC& dst, int x1, int y1, bool al
 
 void GC::SetPixel(int x, int y, Color& col)
 {
-	uint32* buffer = this->framebuffer;
+	uint32_t* buffer = this->framebuffer;
 
 	if (x >= this->width || x < 0)
 		return;
@@ -121,7 +120,7 @@ void GC::SetPixel(int x, int y, Color& col)
 	if (y >= this->height || y < 0)
 		return;
 
-	uint32* a = buffer + (y + this->y) * this->stride + (x + this->x);
+	uint32_t* a = buffer + (y + this->y) * this->stride + (x + this->x);
 	*a = col.ToInt();
 }
 
@@ -129,7 +128,7 @@ Color GC::GetPixel(int x, int y)
 {
 	if ((x > 0 && x < this->width) && (y > 0  && y < this->height))
 	{
-		uint32* a = this->framebuffer + (y + this->y) * this->stride + (x + this->x);
+		uint32_t* a = this->framebuffer + (y + this->y) * this->stride + (x + this->x);
 		return Color(*a);
 	}
 	else
@@ -302,9 +301,9 @@ void GC::FillRect(int x, int y, int w, int h, Color& col)
 	y += cy;
 
 	int delta = this->stride - w;
-	uint32* buf = this->framebuffer + (y + this->y) * this->stride + (x + this->x);
+	uint32_t* buf = this->framebuffer + (y + this->y) * this->stride + (x + this->x);
 
-	uint32 _col = col.ToInt();
+	uint32_t _col = col.ToInt();
 
 	for (int _y = 0; _y < h; _y++)
 	{
@@ -342,8 +341,8 @@ void GC::DrawImage(int x, int y, int w, int h, BMP* bmp)
 	h = clamp(h, 0, min(this->height - y, bmp->height));
 
 	int delta = this->stride - w;
-	uint32* dst = this->framebuffer + (y + oy) * this->stride + (x + ox);
-	uint32* src = bmp->pixels;
+	uint32_t* dst = this->framebuffer + (y + oy) * this->stride + (x + ox);
+	uint32_t* src = bmp->pixels;
 
 	for (int _y = 0; _y < h; _y++)
 	{
@@ -394,9 +393,9 @@ void GC::DrawText(int x, int y, const char* c, Color& fg, Color& bg)
 }
 
 
-inline uint32 GC::BlendAlpha(uint32 src, uint32 dst)
+inline uint32_t GC::BlendAlpha(uint32_t src, uint32_t dst)
 {
-	uint32 a = 0xFF & (src >> 24);
+	uint32_t a = 0xFF & (src >> 24);
 
 	if (a == 0)
 		return dst;
@@ -404,17 +403,17 @@ inline uint32 GC::BlendAlpha(uint32 src, uint32 dst)
 	if (a == 0xFF)
 		return src;
 
-	uint32 rs = 0xFF & (src >> 16);
-	uint32 gs = 0xFF & (src >> 8);
-	uint32 bs = 0xFF & src;
+	uint32_t rs = 0xFF & (src >> 16);
+	uint32_t gs = 0xFF & (src >> 8);
+	uint32_t bs = 0xFF & src;
 
-	uint32 rd = 0xFF & (dst >> 16);
-	uint32 gd = 0xFF & (dst >> 8);
-	uint32 bd = 0xFF & dst;
+	uint32_t rd = 0xFF & (dst >> 16);
+	uint32_t gd = 0xFF & (dst >> 8);
+	uint32_t bd = 0xFF & dst;
 
-	uint8 r = (rs * a + rd * (255 - a)) / 255;
-	uint8 g = (gs * a + gd * (255 - a)) / 255;
-	uint8 b = (bs * a + bd * (255 - a)) / 255;
+	uint8_t r = (rs * a + rd * (255 - a)) / 255;
+	uint8_t g = (gs * a + gd * (255 - a)) / 255;
+	uint8_t b = (bs * a + bd * (255 - a)) / 255;
 
 	return (0xFF << 24) | (r << 16) | (g << 8) | b;
 }
