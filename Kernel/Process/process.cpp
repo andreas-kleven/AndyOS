@@ -14,6 +14,8 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->addr_space = addr_space;
 	this->next = 0;
 	this->main_thread = 0;
+	this->stack_ptr = USER_END;
+	this->heap_end = 0;
 
 	memset(this->file_table, 0, sizeof(this->file_table));
 
@@ -23,10 +25,10 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 
 namespace ProcessManager
 {
-	PROCESS* first = 0;
+	PROCESS *first = 0;
 
 	pid_t pid_counter = 1;
-	pid_t AssignPid(PROCESS* proc)
+	pid_t AssignPid(PROCESS *proc)
 	{
 		if (!proc)
 			return 0;
@@ -35,7 +37,7 @@ namespace ProcessManager
 		return proc->id;
 	}
 
-	PROCESS* AddProcess(PROCESS* proc)
+	PROCESS *AddProcess(PROCESS *proc)
 	{
 		if (!proc)
 			return 0;
@@ -47,7 +49,7 @@ namespace ProcessManager
 		first = proc;
 
 		//Start threads
-		THREAD* thread = proc->main_thread;
+		THREAD *thread = proc->main_thread;
 		while (thread)
 		{
 			Scheduler::InsertThread(thread);
@@ -57,23 +59,23 @@ namespace ProcessManager
 		return proc;
 	}
 
-	STATUS Terminate(PROCESS* proc)
+	STATUS Terminate(PROCESS *proc)
 	{
-		FreeMemory(proc);
+		FreeAllMemory(proc);
 		CloseFiles(proc);
 		StopThreads(proc);
 		Task::Switch(); //execution stops here
 		return STATUS_SUCCESS;
 	}
 
-	STATUS Kill(PROCESS* proc)
+	STATUS Kill(PROCESS *proc)
 	{
 		return STATUS_FAILED;
 	}
 
-	THREAD* CreateThread(PROCESS* proc, void(*entry)())
+	THREAD *CreateThread(PROCESS *proc, void (*entry)())
 	{
-		THREAD* thread = 0;
+		THREAD *thread = 0;
 
 		//Create thread
 		switch (proc->flags)
@@ -84,8 +86,16 @@ namespace ProcessManager
 
 		case PROCESS_USER:
 			VMem::SwapAddressSpace(proc->addr_space);
-			uint8* stack = (uint8*)VMem::UserAlloc(2);
-			thread = Task::CreateUserThread(entry, stack + BLOCK_SIZE);
+
+			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
+			int blocks = 2;
+
+			void *virt = (void *)(proc->stack_ptr - blocks * BLOCK_SIZE);
+			void *phys = PMem::AllocBlocks(blocks);
+			VMem::MapPages(virt, phys, blocks, flags);
+
+			thread = Task::CreateUserThread(entry, (void*)proc->stack_ptr - 0x1000);
+			proc->stack_ptr = (size_t)virt;
 			break;
 		}
 
@@ -95,7 +105,7 @@ namespace ProcessManager
 		return 0;
 	}
 
-	bool AddThread(PROCESS* proc, THREAD* thread)
+	bool AddThread(PROCESS *proc, THREAD *thread)
 	{
 		thread->process = proc;
 
@@ -114,14 +124,14 @@ namespace ProcessManager
 		return true;
 	}
 
-	bool RemoveThread(THREAD* thread)
+	bool RemoveThread(THREAD *thread)
 	{
 		return false;
 	}
 
-	bool StopThreads(PROCESS* proc)
+	bool StopThreads(PROCESS *proc)
 	{
-		THREAD* thread = proc->main_thread;
+		THREAD *thread = proc->main_thread;
 		while (thread)
 		{
 			Scheduler::ExitThread(0, thread, false);
@@ -131,18 +141,18 @@ namespace ProcessManager
 		return true;
 	}
 
-	bool FreeMemory(PROCESS* proc)
+	bool FreeAllMemory(PROCESS *proc)
 	{
 		size_t count = (USER_END - USER_BASE) / PAGE_SIZE;
-		VMem::FreePages((void*)USER_BASE, count);
+		VMem::FreePages((void *)USER_BASE, count);
 		return true;
 	}
 
-	bool CloseFiles(PROCESS* proc)
+	bool CloseFiles(PROCESS *proc)
 	{
 		for (int fd = 0; fd < FILE_TABLE_SIZE; fd++)
 		{
-			FILE* file = proc->file_table[fd];
+			FILE *file = proc->file_table[fd];
 
 			if (file)
 			{
@@ -154,14 +164,43 @@ namespace ProcessManager
 		return true;
 	}
 
-	PROCESS* GetCurrent()
+	void* HeapAlloc(PROCESS* proc, int bytes)
+	{
+		size_t prev_end = proc->heap_end;
+		size_t next_end = prev_end + bytes;
+		int cur_block = prev_end / BLOCK_SIZE;
+		int next_block = next_end / BLOCK_SIZE;
+		int blocks = next_block - cur_block;
+
+		if (blocks > 0)
+		{
+			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
+			void* phys = PMem::AllocBlocks(blocks);
+			VMem::MapPages((void*)prev_end, phys, blocks, flags);
+		}
+		else if (blocks < 0)
+		{
+			void* virt = (void*)(prev_end - blocks * BLOCK_SIZE);
+			VMem::FreePages(virt, blocks);
+		}
+
+		proc->heap_end = next_end;
+		return (void*)prev_end;
+	}
+
+	void* HeapFree(PROCESS* proc, int bytes)
+	{
+		return HeapAlloc(proc, -bytes);
+	}
+
+	PROCESS *GetCurrent()
 	{
 		return Scheduler::CurrentThread()->process;
 	}
 
-	PROCESS* GetProcess(pid_t id)
+	PROCESS *GetProcess(pid_t id)
 	{
-		PROCESS* proc = first;
+		PROCESS *proc = first;
 
 		while (proc)
 		{
@@ -174,8 +213,8 @@ namespace ProcessManager
 		return 0;
 	}
 
-	PROCESS* GetFirst()
+	PROCESS *GetFirst()
 	{
 		return first;
 	}
-}
+} // namespace ProcessManager

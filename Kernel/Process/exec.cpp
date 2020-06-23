@@ -48,7 +48,7 @@ namespace ProcessManager
         strcpy(path, _path);
 
         StopThreads(proc);
-        FreeMemory(proc);
+        FreeAllMemory(proc);
 
         size_t entry = ELF::Load(path, proc);
 

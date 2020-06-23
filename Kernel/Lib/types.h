@@ -2,6 +2,8 @@
 
 typedef long unsigned int size_t;
 typedef int pid_t;
+typedef long int off_t;
+typedef long int intptr_t;
 
 typedef signed char			int8;
 typedef unsigned char		uint8;

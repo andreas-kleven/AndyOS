@@ -20,7 +20,7 @@ namespace Syscalls::Arch
 		void* location = (void*)Syscalls::GetSyscall(regs->eax);
 
 		if (!location)
-			panic("Invalid syscall", "IRQ: %i", regs->eax);
+			panic("Invalid syscall", "Id: %i", regs->eax);
 
 		UpdateStack(regs);
 

@@ -41,6 +41,7 @@ fi
 mkdir $SYSTEM
 cd $SYSTEM
 cp $syssrc/* .
+cp $parent_path/../Kernel/Include/syscall_list.h .
 
 aclocal -I ../../..
 automake --cygnus Makefile

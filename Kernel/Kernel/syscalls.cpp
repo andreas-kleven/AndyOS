@@ -19,8 +19,8 @@ namespace Syscalls
 	struct TMP_MSG
 	{
 		int id;
-		THREAD* thread;
-		TMP_MSG* next;
+		THREAD *thread;
+		TMP_MSG *next;
 
 		bool received;
 		MESSAGE response;
@@ -36,15 +36,15 @@ namespace Syscalls
 		int id;
 		int type;
 		int size;
-		char* data;
+		char *data;
 	};
 
-	void* syscalls[MAX_SYSCALLS];
+	void *syscalls[MAX_SYSCALLS];
 	int msg_id = 0;
 
-	TMP_MSG* first_msg = 0;
+	TMP_MSG *first_msg = 0;
 
-	int open(const char* filename, int flags)
+	int open(const char *filename, int flags)
 	{
 		return VFS::Open(filename);
 	}
@@ -54,19 +54,19 @@ namespace Syscalls
 		return VFS::Close(fd);
 	}
 
-	size_t read(int fd, char* buf, size_t size)
+	size_t read(int fd, char *buf, size_t size)
 	{
 		return VFS::Read(fd, buf, size);
 	}
 
-	size_t write(int fd, const char* buf, size_t size)
+	size_t write(int fd, const char *buf, size_t size)
 	{
 		return VFS::Write(fd, buf, size);
 	}
 
-	int seek(int fd, long int offset, int origin)
+	off_t lseek(int fd, off_t offset, int whence)
 	{
-		return VFS::Seek(fd, offset, origin);
+		return VFS::Seek(fd, offset, whence);
 	}
 
 	int pipe(int pipefd[2])
@@ -86,7 +86,7 @@ namespace Syscalls
 
 	pid_t fork()
 	{
-		PROCESS* newproc = ProcessManager::Fork(ProcessManager::GetCurrent());
+		PROCESS *newproc = ProcessManager::Fork(ProcessManager::GetCurrent());
 		return newproc == 0 ? -1 : 0;
 	}
 
@@ -97,8 +97,30 @@ namespace Syscalls
 
 	int execve(char const *path, char const *argv[], char const *envp[])
 	{
-		PROCESS* proc = ProcessManager::GetCurrent();
+		PROCESS *proc = ProcessManager::GetCurrent();
 		return ProcessManager::Exec(proc, path, argv, envp);
+	}
+
+	void *sbrk(intptr_t increment)
+	{
+		PROCESS *proc = ProcessManager::GetCurrent();
+		VMem::SwapAddressSpace(proc->addr_space);
+
+		void *ret = 0;
+
+		if (increment > 0)
+		{
+			ret = ProcessManager::HeapAlloc(proc, increment);
+		}
+		else if (increment > 0)
+		{
+			ret = ProcessManager::HeapFree(proc, -increment);
+		}
+
+		if (ret)
+			return ret;
+
+		return (void *)-1;
 	}
 
 	void halt()
@@ -106,7 +128,7 @@ namespace Syscalls
 		halt();
 	}
 
-	void print(char* text)
+	void print(char *text)
 	{
 		while (*text)
 			debug_putc(*text++);
@@ -117,14 +139,14 @@ namespace Syscalls
 		debug_color(color);
 	}
 
-	void gettime(int& hour, int& minute, int& second)
+	void gettime(int &hour, int &minute, int &second)
 	{
 		hour = RTC::Hour();
 		minute = RTC::Minute();
 		second = RTC::Second();
 	}
 
-	void draw(uint32* framebuffer)
+	void draw(uint32 *framebuffer)
 	{
 		Video::Draw(framebuffer);
 	}
@@ -149,42 +171,41 @@ namespace Syscalls
 		return Timer::Ticks();
 	}
 
-	bool get_last_key(KEYCODE& code, bool& pressed)
+	bool get_last_key(KEYCODE &code, bool &pressed)
 	{
 		return Keyboard::GetLastKey(code, pressed);
 	}
 
-	void* alloc(uint32 blocks)
+	void *alloc(uint32 blocks)
 	{
 		VMem::SwapAddressSpace(ProcessManager::GetCurrent()->addr_space);
 		return VMem::UserAlloc(blocks);
 	}
 
-	void free(void* ptr, uint32 blocks)
+	void free(void *ptr, uint32 blocks)
 	{
-
 	}
 
-	bool alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32 blocks)
+	bool alloc_shared(int proc_id, void *&addr1, void *&addr2, uint32 blocks)
 	{
 		ADDRESS_SPACE other_space = ProcessManager::GetProcess(proc_id)->addr_space;
 		return VMem::UserAllocShared(other_space, addr1, addr2, blocks);
 	}
 
-	uint32 read_file(char*& buffer, char* filename)
+	uint32 read_file(char *&buffer, char *filename)
 	{
-		char* kernel_buf;
+		char *kernel_buf;
 
 		int size = VFS::ReadFile(filename, kernel_buf);
-		buffer = (char*)VMem::UserAlloc(BYTES_TO_BLOCKS(size));
+		buffer = (char *)VMem::UserAlloc(BYTES_TO_BLOCKS(size));
 
 		memcpy(buffer, kernel_buf, size);
 		return size;
 	}
 
-	pid_t create_process(char* filename)
+	pid_t create_process(char *filename)
 	{
-		PROCESS* proc = ProcessManager::Exec(filename);
+		PROCESS *proc = ProcessManager::Exec(filename);
 
 		if (proc)
 			return proc->id;
@@ -206,7 +227,7 @@ namespace Syscalls
 
 	void send_signal(int proc_id, int signo)
 	{
-		PROCESS* proc = ProcessManager::GetProcess(proc_id);
+		PROCESS *proc = ProcessManager::GetProcess(proc_id);
 		int src_proc = ProcessManager::GetCurrent()->id;
 
 		if (proc)
@@ -222,9 +243,9 @@ namespace Syscalls
 		return 1;
 	}
 
-	void send_message(int proc_id, int type, char* buf, int size, bool async, int& id)
+	void send_message(int proc_id, int type, char *buf, int size, bool async, int &id)
 	{
-		PROCESS* proc = ProcessManager::GetProcess(proc_id);
+		PROCESS *proc = ProcessManager::GetProcess(proc_id);
 
 		if (!proc)
 			return;
@@ -240,7 +261,7 @@ namespace Syscalls
 
 		if (!async)
 		{
-			TMP_MSG* msg = new TMP_MSG;
+			TMP_MSG *msg = new TMP_MSG;
 			msg->id = id;
 			msg->thread = Scheduler::CurrentThread();
 			msg->next = first_msg;
@@ -250,9 +271,9 @@ namespace Syscalls
 		}
 	}
 
-	void send_message_reponse(int msg_id, int type, char* buf, int size)
+	void send_message_reponse(int msg_id, int type, char *buf, int size)
 	{
-		TMP_MSG* msg = first_msg;
+		TMP_MSG *msg = first_msg;
 		int src_proc = ProcessManager::GetCurrent()->id;
 
 		while (msg)
@@ -271,10 +292,10 @@ namespace Syscalls
 		}
 	}
 
-	bool get_message_reponse(int msg_id, USER_MESSAGE& response)
+	bool get_message_reponse(int msg_id, USER_MESSAGE &response)
 	{
-		TMP_MSG* msg = first_msg;
-		TMP_MSG* prev = 0;
+		TMP_MSG *msg = first_msg;
+		TMP_MSG *prev = 0;
 
 		while (msg)
 		{
@@ -286,7 +307,7 @@ namespace Syscalls
 					response.type = msg->response.type;
 					response.size = msg->response.size;
 
-					response.data = (char*)VMem::UserAlloc(BYTES_TO_BLOCKS(response.size));
+					response.data = (char *)VMem::UserAlloc(BYTES_TO_BLOCKS(response.size));
 					memcpy(response.data, msg->response.data, response.size);
 
 					//Remove message
@@ -318,7 +339,7 @@ namespace Syscalls
 		if (id >= MAX_SYSCALLS)
 			return;
 
-		syscalls[id] = (void*)handler;
+		syscalls[id] = (void *)handler;
 	}
 
 	SYSCALL_HANDLER GetSyscall(int id)
@@ -332,14 +353,15 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_CLOSE, (SYSCALL_HANDLER)close);
 		InstallSyscall(SYSCALL_READ, (SYSCALL_HANDLER)read);
 		InstallSyscall(SYSCALL_WRITE, (SYSCALL_HANDLER)write);
-		InstallSyscall(SYSCALL_SEEK, (SYSCALL_HANDLER)seek);
+		InstallSyscall(SYSCALL_LSEEK, (SYSCALL_HANDLER)lseek);
 		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
 		InstallSyscall(SYSCALL_DUP, (SYSCALL_HANDLER)dup);
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);
-		
+		InstallSyscall(SYSCALL_SBRK, (SYSCALL_HANDLER)sbrk);
+
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);
 		InstallSyscall(SYSCALL_COLOR, (SYSCALL_HANDLER)color);
@@ -366,4 +388,4 @@ namespace Syscalls
 
 		return true;
 	}
-}
+} // namespace Syscalls

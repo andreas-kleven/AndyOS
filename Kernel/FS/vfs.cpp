@@ -244,14 +244,14 @@ namespace VFS
 		return written;
 	}
 
-	int Seek(int fd, long int offset, int origin)
+	off_t Seek(int fd, off_t offset, int whence)
 	{
 		FILE* file = GetFile(fd);
 
 		if (!file)
 			return -1;
 
-		switch (origin)
+		switch (whence)
 		{
 		case SEEK_SET:
 			file->pos = offset;

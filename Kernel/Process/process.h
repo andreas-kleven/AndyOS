@@ -69,6 +69,8 @@ struct PROCESS
 	ADDRESS_SPACE addr_space;
 	THREAD* main_thread;
 	PROCESS* next;
+	size_t stack_ptr;
+	size_t heap_end;
 
 	FILE* file_table[FILE_TABLE_SIZE];
 
@@ -90,8 +92,10 @@ namespace ProcessManager
 	bool AddThread(PROCESS* proc, THREAD* thread);
 	bool RemoveThread(THREAD* thread);
 	bool StopThreads(PROCESS* proc);
-	bool FreeMemory(PROCESS* proc);
+	bool FreeAllMemory(PROCESS* proc);
 	bool CloseFiles(PROCESS* proc);
+	void* HeapAlloc(PROCESS* proc, int bytes);
+	void* HeapFree(PROCESS* proc, int bytes);
 
 	PROCESS* Exec(const char* path);
 	bool Exec(PROCESS* proc, char const *path, char const *argv[], char const *envp[]);
