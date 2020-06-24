@@ -9,5 +9,6 @@
 #define KERNEL_END			USER_BASE
 #define USER_BASE			0x40000000
 #define USER_END			0xFFC00000
+#define HEAP_END			0x80000000
 
 #define BYTES_TO_BLOCKS(x)	((1 + (((x) - 1) / BLOCK_SIZE)) * ((x) != 0))

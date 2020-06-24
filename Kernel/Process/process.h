@@ -94,8 +94,7 @@ namespace ProcessManager
 	bool StopThreads(PROCESS* proc);
 	bool FreeAllMemory(PROCESS* proc);
 	bool CloseFiles(PROCESS* proc);
-	void* HeapAlloc(PROCESS* proc, int bytes);
-	void* HeapFree(PROCESS* proc, int bytes);
+	void* AdjustHeap(PROCESS* proc, int increment);
 
 	PROCESS* Exec(const char* path);
 	bool Exec(PROCESS* proc, char const *path, char const *argv[], char const *envp[]);

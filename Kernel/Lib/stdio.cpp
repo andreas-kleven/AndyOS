@@ -52,21 +52,21 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'i':
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 10, ptr);
+					itoa(num, ptr, 10);
 					break;
 				}
 
 				case 'u':	//unsigned int
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 10, ptr, false);
+					itoa(num, ptr, 10, false);
 					break;
 				}
 
 				case 'o':	//unsigned octal
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 8, ptr, false);
+					itoa(num, ptr, 8, false);
 					break;
 				}
 
@@ -74,7 +74,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'X':
 				{
 					int num = va_arg(vlist, int);
-					itoa(num, 16, ptr, false);
+					itoa(num, ptr, 16, false);
 					break;
 				}
 
@@ -82,7 +82,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'F':
 				{
 					double num = va_arg(vlist, double);
-					ftoa(num, 10, ptr);
+					ftoa(num, ptr, 10);
 					break;
 				}
 
@@ -90,7 +90,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 				case 'A':
 				{
 					double num = va_arg(vlist, double);
-					ftoa(num, 16, ptr);
+					ftoa(num, ptr, 16);
 					break;
 				}
 
@@ -99,7 +99,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist)
 					void* p = va_arg(vlist, void*);
 					*ptr++ = '0';
 					*ptr++ = 'x';
-					itoa((unsigned long long)p, 16, ptr, false);
+					itoa((unsigned long long)p, ptr, 16, false);
 					break;
 				}
 
@@ -234,7 +234,7 @@ int atoi(const char * str) {
 }
 
 //Converts int to string
-char* itoa(int i, unsigned base, char* buf, bool sign)
+char* itoa(int i, char* buf, unsigned base, bool sign)
 {
 	if (base > 16)
 		return buf;
@@ -302,7 +302,7 @@ float atof(const char* s)
 
 #define PRECISION 0.00001
 //Converts float to string
-char* ftoa(float f, unsigned base, char* buf)
+char* ftoa(float f, char* buf, unsigned base)
 {
 	char* _buf = buf;
 

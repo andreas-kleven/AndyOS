@@ -135,7 +135,7 @@ namespace VMem
 
 	void* UserAlloc(size_t count)
 	{
-		return Alloc(count, PAGE_PRESENT | PAGE_WRITE | PAGE_USER, USER_BASE, USER_END);
+		return Alloc(count, PAGE_PRESENT | PAGE_WRITE | PAGE_USER, HEAP_END, USER_END);
 	}
 
 	void* KernelMapFirstFree(void* phys, size_t count, pflags_t flags)
@@ -145,7 +145,7 @@ namespace VMem
 
 	void* UserMapFirstFree(void* phys, size_t count, pflags_t flags)
 	{
-		return MapFirstFree(phys, count, flags, USER_BASE, USER_END);
+		return MapFirstFree(phys, count, flags, HEAP_END, USER_END);
 	}
 
 	bool UserAllocShared(ADDRESS_SPACE other_space, void*& addr1, void*& addr2, size_t count)

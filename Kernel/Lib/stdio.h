@@ -19,7 +19,7 @@ int vsprintf(char* buffer, const char* format, va_list vlist);
 long strtol(const char* nptr, char** endptr, int base);
 
 int atoi(const char * str);
-char* itoa(int i, unsigned base, char* buf, bool sign = 1);
+char* itoa(int i, char* buf, unsigned base, bool sign = 1);
 
 float atof(const char* s);
-char* ftoa(float f, unsigned base, char* buf);
+char* ftoa(float f, char* buf, unsigned base);

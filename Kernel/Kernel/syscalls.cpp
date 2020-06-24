@@ -106,21 +106,30 @@ namespace Syscalls
 		PROCESS *proc = ProcessManager::GetCurrent();
 		VMem::SwapAddressSpace(proc->addr_space);
 
-		void *ret = 0;
-
-		if (increment > 0)
-		{
-			ret = ProcessManager::HeapAlloc(proc, increment);
-		}
-		else if (increment > 0)
-		{
-			ret = ProcessManager::HeapFree(proc, -increment);
-		}
+		void *ret = ProcessManager::AdjustHeap(proc, increment);
 
 		if (ret)
 			return ret;
 
 		return (void *)-1;
+	}
+
+	int fstat(int fd, stat *st)
+	{
+		st->st_dev = 1;
+		st->st_ino = 1;
+		st->st_mode = 1;
+		st->st_nlink = 0;
+		st->st_uid = 0;
+		st->st_gid = 0;
+		st->st_rdev = 0;
+		st->st_size = 100;
+		st->st_blksize = 512;
+		st->st_blocks = 1;
+		st->st_atime = 0;
+		st->st_mtime = 0;
+		st->st_ctime = 0;
+		return 0;
 	}
 
 	void halt()
@@ -174,16 +183,6 @@ namespace Syscalls
 	bool get_last_key(KEYCODE &code, bool &pressed)
 	{
 		return Keyboard::GetLastKey(code, pressed);
-	}
-
-	void *alloc(uint32 blocks)
-	{
-		VMem::SwapAddressSpace(ProcessManager::GetCurrent()->addr_space);
-		return VMem::UserAlloc(blocks);
-	}
-
-	void free(void *ptr, uint32 blocks)
-	{
 	}
 
 	bool alloc_shared(int proc_id, void *&addr1, void *&addr2, uint32 blocks)
@@ -361,6 +360,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);
 		InstallSyscall(SYSCALL_SBRK, (SYSCALL_HANDLER)sbrk);
+		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)fstat);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);
@@ -372,8 +372,6 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sleep);
 		InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)get_ticks);
 		InstallSyscall(SYSCALL_GET_LAST_KEY, (SYSCALL_HANDLER)get_last_key);
-		InstallSyscall(SYSCALL_ALLOC, (SYSCALL_HANDLER)alloc);
-		InstallSyscall(SYSCALL_FREE, (SYSCALL_HANDLER)free);
 		InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)alloc_shared);
 		InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)read_file);
 		InstallSyscall(SYSCALL_CREATE_PROCESS, (SYSCALL_HANDLER)create_process);

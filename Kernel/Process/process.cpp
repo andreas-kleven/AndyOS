@@ -88,13 +88,13 @@ namespace ProcessManager
 			VMem::SwapAddressSpace(proc->addr_space);
 
 			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
-			int blocks = 2;
+			int blocks = 2; // TODO: Hack
 
 			void *virt = (void *)(proc->stack_ptr - blocks * BLOCK_SIZE);
 			void *phys = PMem::AllocBlocks(blocks);
 			VMem::MapPages(virt, phys, blocks, flags);
 
-			thread = Task::CreateUserThread(entry, (void*)proc->stack_ptr - 0x1000);
+			thread = Task::CreateUserThread(entry, (void *)(proc->stack_ptr - 0x1000));
 			proc->stack_ptr = (size_t)virt;
 			break;
 		}
@@ -164,19 +164,23 @@ namespace ProcessManager
 		return true;
 	}
 
-	void* HeapAlloc(PROCESS* proc, int bytes)
+	void *AdjustHeap(PROCESS *proc, int increment)
 	{
 		size_t prev_end = proc->heap_end;
-		size_t next_end = prev_end + bytes;
-		int cur_block = prev_end / BLOCK_SIZE;
-		int next_block = next_end / BLOCK_SIZE;
+		size_t next_end = prev_end + increment;
+		int cur_block = (prev_end - 1) / BLOCK_SIZE + 1;
+		int next_block = (next_end - 1) / BLOCK_SIZE + 1;
 		int blocks = next_block - cur_block;
+
+		if (next_end > HEAP_END)
+			return 0;
 
 		if (blocks > 0)
 		{
 			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
-			void* phys = PMem::AllocBlocks(blocks);
-			VMem::MapPages((void*)prev_end, phys, blocks, flags);
+			size_t virt = cur_block * BLOCK_SIZE;
+			void *phys = PMem::AllocBlocks(blocks);
+			VMem::MapPages((void *)virt, phys, blocks, flags);
 		}
 		else if (blocks < 0)
 		{
@@ -185,12 +189,7 @@ namespace ProcessManager
 		}
 
 		proc->heap_end = next_end;
-		return (void*)prev_end;
-	}
-
-	void* HeapFree(PROCESS* proc, int bytes)
-	{
-		return HeapAlloc(proc, -bytes);
+		return (void *)prev_end;
 	}
 
 	PROCESS *GetCurrent()

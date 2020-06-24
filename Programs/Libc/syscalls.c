@@ -9,6 +9,11 @@
 
 char **environ = 0;
 
+int *__errno()
+{
+    return &_REENT->_errno;
+}
+
 void _exit(int status)
 {
     syscall1(SYSCALL_EXIT, status);
@@ -29,7 +34,7 @@ int dup2(int oldfd, int newfd)
     return syscall2(SYSCALL_DUP2, oldfd, newfd);
 }
 
-int execve(char const *path, char const *argv[], char const *envp[])
+int execve(const char *path, char const *argv[], char const *envp[])
 {
     return syscall3(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp);
 }
