@@ -1,16 +1,18 @@
-#include "GL.h"
+#include <string.h>
+#include <math.h>
 #include <AndyOS.h>
+#include <andyos/math.h>
 #include "Rasterizer.h"
-#include "string.h"
+#include "GL.h"
 
 namespace GL
 {
 	GC gc_buf;
 	GC gc_out;
 
-	uint32 m_width;
-	uint32 m_height;
-	uint32 m_stride;
+	uint32_t m_width;
+	uint32_t m_height;
+	uint32_t m_stride;
 
 	Rasterizer rasterizer;
 

@@ -1,8 +1,7 @@
+#include <math.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "GEngine.h"
-#include "math.h"
-#include "stdio.h"
-#include "ctype.h"
-#include "unistd.h"
 
 namespace GEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "window.h"
-#include <sys/msg.h>
+#include <andyos/msg.h>
 
 struct MOUSE_CLICK_INFO
 {

@@ -1,5 +1,5 @@
+#include <ctype.h>
 #include "input.h"
-#include "ctype.h"
 
 namespace gui
 {

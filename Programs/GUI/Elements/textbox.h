@@ -1,6 +1,6 @@
 #pragma once
 #include "element.h"
-#include "string.h"
+#include <string.h>
 
 namespace gui
 {

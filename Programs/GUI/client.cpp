@@ -1,6 +1,6 @@
 #include "client.h"
 #include <AndyOS.h>
-#include "string.h"
+#include <string.h>
 
 namespace gui
 {

@@ -1,6 +1,6 @@
-#include "Obj.h"
+#include <stdio.h>
 #include <AndyOS.h>
-#include "stdio.h"
+#include "Obj.h"
 
 using namespace std;
 

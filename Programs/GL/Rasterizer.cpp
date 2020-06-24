@@ -1,14 +1,15 @@
+#include <math.h>
+#include <andyos/math.h>
+#include <andyos/float.h>
 #include "Rasterizer.h"
 #include "GL.h"
-#include "math.h"
-#include "limits.h"
 
-float EdgeFunction(const Vector4& a, const Vector4& b, const Vector4& c)
+float EdgeFunction(const Vector4 &a, const Vector4 &b, const Vector4 &c)
 {
 	return (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y);
 }
 
-float EdgeFunction(const Vector4& a, const Vector4& b, float cx, float cy)
+float EdgeFunction(const Vector4 &a, const Vector4 &b, float cx, float cy)
 {
 	return (cy - a.y) * (b.x - a.x) - (cx - a.x) * (b.y - a.y);
 }
@@ -27,10 +28,10 @@ Rasterizer::Rasterizer(GC gc)
 void Rasterizer::Clear()
 {
 	float val = FLT_MAX;
-	memset32(this->depth_buffer, *(uint32*)&val, gc.memsize());
+	memset(this->depth_buffer, *(uint32_t *)&val, gc.memsize());
 }
 
-void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
+void Rasterizer::DrawTriangle(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
 {
 	//Calculate values
 	v0.tmpPos.w = 1 / v0.tmpPos.w;
@@ -61,7 +62,7 @@ void Rasterizer::DrawTriangle(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 	//gc.DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y, 0xFF0000);
 }
 
-void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
+void Rasterizer::DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
 {
 	//Clamping
 	int minx = min(floor(v0.tmpPos.x), floor(v1.tmpPos.x), floor(v2.tmpPos.x));
@@ -79,14 +80,13 @@ void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 
 	int line_delta = gc.width - (maxx - minx) - 1;
 
-	uint32* color_ptr = (uint32*)(gc.framebuffer + miny * gc.stride + minx);
-	float* depth_ptr = (float*)(depth_buffer + miny * gc.width + minx);
+	uint32_t *color_ptr = (uint32_t *)(gc.framebuffer + miny * gc.stride + minx);
+	float *depth_ptr = (float *)(depth_buffer + miny * gc.width + minx);
 
 	float co[3][3] = {
-		{ v0.builtColor.r * v0.tmpPos.w, v1.builtColor.r * v1.tmpPos.w , v2.builtColor.r * v2.tmpPos.w },
-		{ v0.builtColor.g * v0.tmpPos.w, v1.builtColor.g * v1.tmpPos.w , v2.builtColor.g * v2.tmpPos.w },
-		{ v0.builtColor.b * v0.tmpPos.w, v1.builtColor.b * v1.tmpPos.w , v2.builtColor.b * v2.tmpPos.w }
-	};
+		{v0.builtColor.r * v0.tmpPos.w, v1.builtColor.r * v1.tmpPos.w, v2.builtColor.r * v2.tmpPos.w},
+		{v0.builtColor.g * v0.tmpPos.w, v1.builtColor.g * v1.tmpPos.w, v2.builtColor.g * v2.tmpPos.w},
+		{v0.builtColor.b * v0.tmpPos.w, v1.builtColor.b * v1.tmpPos.w, v2.builtColor.b * v2.tmpPos.w}};
 
 	float A01 = (v0.tmpPos.y - v1.tmpPos.y) * inv_area;
 	float B01 = (v1.tmpPos.x - v0.tmpPos.x) * inv_area;
@@ -132,10 +132,10 @@ void Rasterizer::DrawTriangle2(Vertex& v0, Vertex& v1, Vertex& v2, BMP* texture)
 						int X = texture->width * U;
 						int Y = texture->height * V;
 
-						uint32 color = texture->pixels[(int)(Y * texture->width + X)];
-						r = lum * (uint8)(color >> 16);
-						g = lum * (uint8)(color >> 8);
-						b = lum * (uint8)(color >> 0);
+						uint32_t color = texture->pixels[(int)(Y * texture->width + X)];
+						r = lum * (uint8_t)(color >> 16);
+						g = lum * (uint8_t)(color >> 8);
+						b = lum * (uint8_t)(color >> 0);
 					}
 					else
 					{

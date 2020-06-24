@@ -1,4 +1,5 @@
 #pragma once
+#include <andyos/math.h>
 #include "GL.h"
 
 struct Box

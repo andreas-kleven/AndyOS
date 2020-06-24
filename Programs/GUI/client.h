@@ -1,5 +1,5 @@
 #pragma once
-#include <sys/msg.h>
+#include <andyos/msg.h>
 #include "GUI/messages.h"
 #include "window.h"
 

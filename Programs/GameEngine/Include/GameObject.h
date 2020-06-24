@@ -1,5 +1,6 @@
 #pragma once
 #include <AndyOS.h>
+#include <andyos/string.h>
 #include "Transform.h"
 #include "Component.h"
 #include "Components/MeshComponent.h"

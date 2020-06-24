@@ -1,20 +1,30 @@
-INC_SRCH_PATH := -isystem$(PROGRAMS_DIR)/AndyOS/Include
+#PREFIX = i686-elf-
+#CC := $(PREFIX)gcc
+#AR := $(PREFIX)ar
+#LD := $(PREFIX)ld
+#OBJCOPY := $(PREFIX)objcopy
+#
+#export CC AR LD OBJCOPY
+
+INC_SRCH_PATH := -isystem$(SYSROOT)/include
+INC_SRCH_PATH += -isystem$(PROGRAMS_DIR)/AndyOS/Include
 INC_SRCH_PATH += -I.
 INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
 INC_SRCH_PATH += -I$(PROGRAMS_DIR)
 INC_SRCH_PATH += -I$(PROGRAMS_DIR)/Include
-INC_SRCH_PATH += -I$(PROGRAMS_DIR)/Lib/Include
 
-LIB_SRCH_PATH := -L$(BUILD_DIR)
+#LIB_SRCH_PATH := -L$(BUILD_DIR) -L$(SYSROOT)
+LIB_SRCH_PATH := 
 
-CRT_FILES := $(BUILD_DIR)/crt0.o
+LIB_FILES := $(BUILD_DIR)/andyos.a $(SYSROOT)/lib/crt0.o $(SYSROOT)/lib/libc.a $(SYSROOT)/lib/libg.a $(SYSROOT)/lib/libm.a
 
-CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH) -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wall
-CPPFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
+CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
+CPPFLAGS += -g -O0
+CPPFLAGS += -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wall
+CPPFLAGS += -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
 
-LDFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
-LDFLAGS += -g -ffreestanding -fno-exceptions -nostdlib -fno-rtti -fno-exceptions
-LDFLAGS += $(CRT_FILES) $(BUILD_DIR)/andyos.a $(BUILD_DIR)/libc.a -T $(PROGRAMS_DIR)/link.ld
+LDFLAGS := $(LIB_SRCH_PATH)
+LDFLAGS += $(LIB_FILES) -T $(PROGRAMS_DIR)/link.ld -e _start
 
 export CPPFLAGS LDFLAGS INC_SRCH_PATH PROGRAMS_DIR
 
@@ -22,12 +32,10 @@ create_dir:
 	mkdir -p $(BUILD_DIR)
 
 libs: create_dir
-	$(MAKE) -C Lib
-	$(MAKE) -C RT
 	$(MAKE) -C AndyOS
+	$(MAKE) -C GUI
 
 all: libs
-	$(MAKE) -C GUI
 	$(MAKE) -C WindowManager
 	$(MAKE) -C Terminal
 	$(MAKE) -C Test
@@ -39,8 +47,6 @@ all: libs
 
 .PHONY: clean
 clean:
-	$(MAKE) -C Lib clean
-	$(MAKE) -C RT clean
 	$(MAKE) -C AndyOS clean
 	$(MAKE) -C GUI clean
 	$(MAKE) -C WindowManager clean

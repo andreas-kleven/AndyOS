@@ -1,10 +1,10 @@
 #include <AndyOS.h>
-#include <sys/msg.h>
+#include <andyos/msg.h>
 #include "GUI.h"
-#include "stdlib.h"
-#include "unistd.h"
-#include "stdio.h"
-#include "string.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
 #include "math.h"
 
 using namespace gui;
@@ -57,7 +57,7 @@ int main()
 	Drawing::Init();
 
 	char title[256];
-	sprintf(title, "Test window: %i", get_ticks());
+	sprintf(title, "Test window: %lu", get_ticks());
 	wnd = new MainWindow(title);
 
 	while (true) usleep(100);

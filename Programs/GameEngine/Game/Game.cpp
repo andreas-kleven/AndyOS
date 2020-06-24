@@ -1,6 +1,6 @@
-#include "Game.h"
+#include <stdio.h>
 #include "GEngine.h"
-#include "stdio.h"
+#include "Game.h"
 
 Game::Game()
 {

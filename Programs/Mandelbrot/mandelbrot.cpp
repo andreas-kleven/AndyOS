@@ -1,10 +1,11 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <AndyOS.h>
-#include <sys/drawing.h>
+#include <andyos/math.h>
+#include <andyos/drawing.h>
 #include "GUI.h"
-#include "stdlib.h"
-#include "stdio.h"
-#include "math.h"
-#include "unistd.h"
 
 using namespace gui;
 

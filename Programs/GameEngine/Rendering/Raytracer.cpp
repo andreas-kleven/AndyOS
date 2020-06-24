@@ -1,8 +1,8 @@
-#include "Raytracer.h"
+#include <stdio.h>
+#include <andyos/float.h>
 #include "GEngine.h"
 #include "GL.h"
-#include "limits.h"
-#include "stdio.h"
+#include "Raytracer.h"
 
 const int numPhotons = 10000;
 static Photon* photonMap;

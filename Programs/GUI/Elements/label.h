@@ -1,6 +1,7 @@
 #pragma once
+#include <string.h>
+#include "andyos/string.h"
 #include "element.h"
-#include "string.h"
 
 namespace gui
 {

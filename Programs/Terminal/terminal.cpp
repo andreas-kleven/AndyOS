@@ -1,11 +1,15 @@
-#include <AndyOS.h>
-#include <sys/msg.h>
-#include "GUI.h"
+#include <stdarg.h>
 #include <stdio.h>
-#include "unistd.h"
-#include "stdlib.h"
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <math.h>
+#include <AndyOS.h>
+#include <andyos/msg.h>
+#include <andyos/math.h>
+#include "GUI.h"
+
+#define BUF_SIZE 256
 
 using namespace gui;
 
@@ -15,12 +19,14 @@ public:
 	Color color;
 	Color bcolor;
 
-	char terminal_path[256] = "/";
+	char terminal_path[BUF_SIZE] = "/";
 	int x = 0;
 	int y = 0;
 
-	String command;
-	List<String> history;
+	char command_buf[BUF_SIZE];
+	int command_index = 0;
+
+	List<char *> history;
 	int history_index = 0;
 
 	MainWindow()
@@ -41,22 +47,22 @@ public:
 	void KeyPress(KEY_PACKET packet)
 	{
 		if (packet.code == KEY_BACK)
-        {
-            if (command.Length() > 0)
-            {
-                command = command.Remove(command.Length() - 2);
+		{
+			if (command_index > 0)
+			{
+				command_buf[--command_index] = 0;
 				Putc('\b');
-            }
-        }
+			}
+		}
 		else if (packet.code == KEY_RETURN)
 		{
 			Putc('\n');
-			HandleCommand(command);
+			HandleCommand(command_buf);
 			Putc('\n');
 			ResetCommand();
 		}
-		else if (packet.code == KEY_UP)
-		{			
+		/*else if (packet.code == KEY_UP)
+		{
 			if (history_index > 0)
 			{
 				ClearLine();
@@ -84,38 +90,46 @@ public:
 				history_index = history.Count();
 				command = "";
 			}
-		}
-        else
-        {
-            if (packet.character)
-            {
-                command += packet.character;
+		}*/
+		else
+		{
+			if (packet.character && command_index < BUF_SIZE - 1)
+			{
+				command_buf[command_index++] = packet.character;
+				command_buf[command_index] = 0;
 				Putc(packet.character);
-            }
-        }
+			}
+		}
 	}
 
 	void ResetCommand()
 	{
+		command_index = 0;
+		command_buf[0] = 0;
+
 		x = 0;
-		command = "";
 		Print("%s>", terminal_path);
 	}
 
-	void HandleCommand(String cmd)
+	void HandleCommand(char *cmd)
 	{
+		/*char* copy = new char[strlen(cmd) + 1];
+		strcpy(copy, cmd);
+
 		history.Add(cmd);
-		history_index = history.Count();
+		history_index = history.Count();*/
 
-		char* saveptr;
+		char *saveptr;
 
-		char* arg1 = 0;
-		char* arg2 = 0;
-		char* arg3 = 0;
+		char *arg1 = 0;
+		char *arg2 = 0;
+		char *arg3 = 0;
 
-		arg1 = strtok_r(cmd.ToChar(), " \t", &saveptr);
-		if (arg1) arg2 = strtok_r(0, " \t", &saveptr);
-		if (arg2) arg3 = strtok_r(0, " \t", &saveptr);
+		arg1 = strtok_r(cmd, " \t", &saveptr);
+		if (arg1)
+			arg2 = strtok_r(0, " \t", &saveptr);
+		if (arg2)
+			arg3 = strtok_r(0, " \t", &saveptr);
 
 		if (strcmp(arg1, "ls") == 0)
 		{
@@ -175,14 +189,14 @@ public:
 		else if (strcmp(arg1, "read") == 0)
 		{
 			int path_len = strlen(terminal_path) + strlen(arg2);
-			char* path = new char[path_len];
+			char *path = new char[path_len];
 			memset(path, 0, path_len);
 
 			strcpy(path, terminal_path);
 			strcpy(path + strlen(terminal_path), arg2);
 
-			char* buf;
-			uint32 size = read_file(buf, path);
+			char *buf;
+			uint32_t size = read_file(buf, path);
 
 			if (size == 0)
 			{
@@ -211,45 +225,49 @@ public:
 		}
 		else if (strcmp(arg1, "test") == 0)
 		{
-			FILE* file = fopen("text.txt", "");
+			FILE *file = fopen("text.txt", "r");
 			Print("File: %X\n", file);
 
-			int len = 20;
-			char data[len];
-			memset(data, 0, len);
-
-			if (fread(data, 1, len, file) != -1)
+			if (file)
 			{
-				for (int i = 0; i < len; i++)
-					Print("%c", data[i]);
-			}
-			else
-			{
-				Print("Read error\n");
-			}
+				int len = 20;
+				char data[len];
+				memset(data, 0, len);
 
-			fclose(file);
-
-			Print("\n");
-			if ((file = fopen("/dev/mouse", "")) != 0)
-			{
-				memset(data, 0, 4);
-
-				while (1)
+				if (fread(data, 1, len, file) != -1)
 				{
-					if (fread(data, 1, 4, file) != -1)
-					{
-						for (int i = 0; i < 4; i++)
-							Print("%X ", (uint8)data[i]);
-						Print("\n");
-					}
+					debug_print("%s\n", data);
+					for (int i = 0; i < len; i++)
+						Putc(data[i]);
+				}
+				else
+				{
+					Print("Read error\n");
 				}
 
 				fclose(file);
-			}
-			else
-			{
-				Print("Open error\n");
+
+				Print("\n");
+				if ((file = fopen("/dev/mouse", "")) != 0)
+				{
+					memset(data, 0, 4);
+
+					while (1)
+					{
+						if (fread(data, 1, 4, file) != -1)
+						{
+							for (int i = 0; i < 4; i++)
+								Print("%X ", (uint8_t)data[i]);
+							Print("\n");
+						}
+					}
+
+					fclose(file);
+				}
+				else
+				{
+					Print("Open error\n");
+				}
 			}
 		}
 		else if (strcmp(arg1, "pipe") == 0)
@@ -263,7 +281,7 @@ public:
 			char buf[len];
 			memset(buf, 0, len);
 
-			const char* str = "Pipe data ...\n";
+			const char *str = "Pipe data ...\n";
 			int written = write(pipefd[1], str, strlen(str));
 			Print("Written: %i\n", written);
 
@@ -276,12 +294,12 @@ public:
 				if (l > 0)
 				{
 					for (int i = 0; i < l; i++)
-						Print("%c", buf[i]);
+						Putc(buf[i]);
 				}
 				else if (l == 0)
 				{
 					char sb[100];
-					itoa(counter++, 10, sb);
+					itoa(counter++, sb, 10);
 					write(pipefd[1], sb, strlen(sb));
 				}
 				else
@@ -300,7 +318,7 @@ public:
 		}
 	}
 
-	void Open(const char* file)
+	void Open(const char *file)
 	{
 		int pipefd[2];
 		pid_t pid;
@@ -323,17 +341,17 @@ public:
 		{
 			close(pipefd[1]);
 
-			char buf[256];
+			char buf[BUF_SIZE];
 
 			while (true)
 			{
-				int len = read(pipefd[0], buf, 256);
+				int len = read(pipefd[0], buf, BUF_SIZE);
 
 				if (len == -1)
 					break;
 
 				for (int i = 0; i < len; i++)
-					Print("%c", buf[i]);
+					Putc(buf[i]);
 
 				usleep(10);
 			}
@@ -346,29 +364,31 @@ public:
 
 			if (fd == STDOUT_FILENO)
 			{
-				execl(file, file, 0);
+				char *argv[] = {(char *)file, NULL};
+				char *envp[] = {NULL};
+				execve(file, argv, envp);
+				//execl(file, file, 0);
 			}
 			else
 			{
 				debug_print("Error\n");
 			}
 
-			while (1);
+			while (1)
+				;
 		}
 	}
 
-	void Print(const char* format, ...)
+	void Print(const char *format, ...)
 	{
-		char buf[256];
+		char buffer[BUF_SIZE];
+		va_list args;
+		va_start(args, format);
+		vsprintf(buffer, format, args);
 
-		va_list	va;
-		va_start(va, format);
-		int ret = vsprintf(buf, format, va);
-		va_end(va);
-
-		for (int i = 0; i < strlen(buf); i++)
+		for (int i = 0; i < strlen(buffer); i++)
 		{
-			Putc(buf[i]);
+			Putc(buffer[i]);
 		}
 	}
 
@@ -397,7 +417,7 @@ public:
 			break;
 
 		default:
-			char str[] = { c, '\0' };
+			char str[] = {c, '\0'};
 			gc.DrawText(x * 8, y * 16, str, color, bcolor);
 			x++;
 			break;
@@ -430,7 +450,8 @@ public:
 int main()
 {
 	Drawing::Init();
-	MainWindow* wnd = new MainWindow();
+	MainWindow *wnd = new MainWindow();
 
-	while (true) usleep(100);
+	while (true)
+		usleep(100);
 }

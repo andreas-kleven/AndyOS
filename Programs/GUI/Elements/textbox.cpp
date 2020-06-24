@@ -1,5 +1,6 @@
-#include "textbox.h"
 #include <AndyOS.h>
+#include "andyos/string.h"
+#include "textbox.h"
 
 namespace gui
 {

@@ -1,17 +1,18 @@
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <AndyOS.h>
-#include <sys/drawing.h>
-#include <sys/msg.h>
-#include "unistd.h"
+#include <andyos/drawing.h>
+#include <andyos/msg.h>
+#include <andyos/math.h>
 #include "GUI.h"
 #include "manager.h"
 #include "window.h"
 #include "input.h"
-#include "string.h"
-#include "stdio.h"
 
 using namespace gui::messages;
 
-static uint32 cursor_bitmap[8 * 14] =
+static uint32_t cursor_bitmap[8 * 14] =
 {
 	0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 	0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -186,12 +187,12 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 
 			alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
-			Window* wnd = new Window(msg.src_proc, request->title, w, h, (uint32*)addr1);
+			Window* wnd = new Window(msg.src_proc, request->title, w, h, (uint32_t*)addr1);
 			WindowManager::AddWindow(wnd);
 			WindowManager::SetFocusedWindow(wnd);
 			WindowManager::SetActiveWindow(wnd);
 
-			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32*)addr2, wnd->gc.width, wnd->gc.height);
+			CREATE_WINDOW_RESPONSE* response = new CREATE_WINDOW_RESPONSE(wnd->id, (uint32_t*)addr2, wnd->gc.width, wnd->gc.height);
 			return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
 		}
 		else if (type == REQUEST_TYPE_PAINT)
@@ -355,7 +356,7 @@ void WindowManager::PaintCursor()
 	{
 		for (int x = 0; x < 8; x++)
 		{
-			uint32 c = cursor_bitmap[x + y * 8];
+			uint32_t c = cursor_bitmap[x + y * 8];
 
 			if (c != 0)
 			{

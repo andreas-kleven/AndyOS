@@ -14,7 +14,7 @@ public:
     {
         int length = strlen(str);
         buffer = new char[length + 1];
-        memcpy(buffer, str, length + 1);
+        strcpy(buffer, str);
     }
 
     ~String()

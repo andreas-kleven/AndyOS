@@ -1,14 +1,14 @@
-#include "ModelLoader.h"
+#include <stdio.h>
 #include <AndyOS.h>
 #include "Obj.h"
 #include "A3D.h"
-#include "stdio.h"
+#include "ModelLoader.h"
 
 Model3D* ModelLoader::LoadModel(const char* filename, Format3D format)
 {
 	char* buffer;
 
-	uint32 size = read_file(buffer, filename);
+	uint32_t size = read_file(buffer, filename);
 
 	if (size)
 	{

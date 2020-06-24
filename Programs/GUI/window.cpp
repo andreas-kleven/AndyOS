@@ -1,6 +1,6 @@
-#include "window.h"
-#include "client.h"
 #include "GUI/messages.h"
+#include "client.h"
+#include "window.h"
 
 namespace gui
 {

@@ -1,7 +1,7 @@
+#include <math.h>
+#include <andyos/float.h>
 #include "Components/MeshComponent.h"
 #include "GameObject.h"
-#include "limits.h"
-#include "math.h"
 
 MeshComponent::MeshComponent()
 {

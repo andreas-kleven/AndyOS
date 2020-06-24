@@ -1,13 +1,14 @@
-#include "window.h"
+#include <string.h>
+#include <sys/types.h>
+#include <andyos/math.h>
 #include "GUI.h"
-#include "sys/types.h"
-#include "string.h"
+#include "window.h"
 
 using namespace gui::messages;
 
 static int new_id = 1;
 
-Window::Window(int proc_id, char* title, int width, int height, uint32* framebuffer)
+Window::Window(int proc_id, char* title, int width, int height, uint32_t* framebuffer)
 {
 	color_background = Color(0, 0.5, 0.5);
 	color_foreground = Color::White;

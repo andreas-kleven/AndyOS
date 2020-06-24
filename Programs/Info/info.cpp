@@ -1,6 +1,8 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
 #include <AndyOS.h>
-#include "stdlib.h"
-#include "stdio.h"
 
 int main()
 {

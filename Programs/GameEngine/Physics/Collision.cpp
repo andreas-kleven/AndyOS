@@ -1,7 +1,7 @@
-#include "Physics/Collision.h"
+#include <math.h>
+#include <stdio.h>
 #include "GameObject.h"
-#include "math.h"
-#include "stdio.h"
+#include "Physics/Collision.h"
 
 #define EPSILON 0.00001f
 #define DEPSILON 0.05f

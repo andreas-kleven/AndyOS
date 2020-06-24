@@ -1,7 +1,7 @@
+#include <stdio.h>
+#include <andyos/float.h>
 #include "KDTree.h"
 #include "GEngine.h"
-#include "limits.h"
-#include "stdio.h"
 
 void SortTriangles(Triangle* arr[], int axis, int left, int right) {
 	int i = left, j = right;

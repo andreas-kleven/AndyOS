@@ -1,5 +1,7 @@
 #pragma once
 
+inline float frand();
+
 extern "C++"
 {
 	template <class T>

@@ -1,5 +1,5 @@
 #pragma once
-#include <sys/drawing.h>
+#include <andyos/drawing.h>
 
 #define GUI_WINDOW_BORDER_WIDTH		1
 #define GUI_TITLEBAR_HEIGHT			22
@@ -40,7 +40,7 @@ public:
 	Window* next;
 	Window* previous;
 
-	Window(int proc_id, char* title, int width, int height, uint32* framebuffer);
+	Window(int proc_id, char* title, int width, int height, uint32_t* framebuffer);
 
 	void Paint(GC& main_gc);
 	void Move(int x, int y);

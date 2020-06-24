@@ -1,5 +1,5 @@
 #pragma once
-#include "string.h"
+#include <andyos/string.h>
 
 class GameObject;
 

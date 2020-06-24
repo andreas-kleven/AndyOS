@@ -16,7 +16,7 @@ struct RAW_VERTEX
 
 A3D::A3D(char* buffer)
 {
-	int vertex_count = *(uint32*)buffer;
+	int vertex_count = *(uint32_t*)buffer;
 	vertex_buffer = new Vertex[vertex_count];
 	triangle_buffer = new Triangle[vertex_count / 3];
 

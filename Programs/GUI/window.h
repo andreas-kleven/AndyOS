@@ -1,9 +1,9 @@
 #pragma once
 #include <AndyOS.h>
-#include <sys/drawing.h>
-#include <sys/msg.h>
+#include <andyos/drawing.h>
+#include <andyos/msg.h>
 #include "Elements/element.h"
-#include "sys/types.h"
+#include <sys/types.h>
 #include "guibase.h"
 
 namespace gui

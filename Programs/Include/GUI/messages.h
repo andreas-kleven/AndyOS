@@ -1,8 +1,8 @@
 #pragma once
+#include <string.h>
+#include <sys/types.h>
 #include <AndyOS.h>
-#include <sys/drawing.h>
-#include "sys/types.h"
-#include "string.h"
+#include <andyos/drawing.h>
 
 namespace gui
 {
@@ -65,14 +65,14 @@ namespace gui
         {
             REQUEST_TYPE type;
             int id;
-            uint32* framebuffer;
+            uint32_t* framebuffer;
             int width;
             int height;
 
             CREATE_WINDOW_RESPONSE()
             { }
 
-            CREATE_WINDOW_RESPONSE(int id, uint32* framebuffer, int width, int height) 
+            CREATE_WINDOW_RESPONSE(int id, uint32_t* framebuffer, int width, int height) 
             { 
                 this->id = id;
                 this->type = REQUEST_TYPE_CREATE_WINDOW;

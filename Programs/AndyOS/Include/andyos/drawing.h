@@ -1,5 +1,5 @@
 #pragma once
-#include "sys/types.h"
+#include <sys/types.h>
 #include "font.h"
 #include "color.h"
 #include "bmp.h"

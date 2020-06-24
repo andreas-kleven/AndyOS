@@ -1,5 +1,5 @@
 ARCH := x86
-
+SYSROOT = $(shell realpath ~/andyos/usr/i686-andyos)
 MAKE_DIR = $(CURDIR)
 BUILD_DIR = $(MAKE_DIR)/Build
 PROGRAMS_DIR = $(MAKE_DIR)/Programs
@@ -19,7 +19,7 @@ AR := $(PREFIX)ar
 LD := $(PREFIX)ld
 OBJCOPY := $(PREFIX)objcopy
 
-export ARCH CC AR LD OBJCOPY MAKE_DIR PROGRAMS_DIR BUILD_DIR
+export ARCH SYSROOT CC AR LD OBJCOPY MAKE_DIR PROGRAMS_DIR BUILD_DIR
 
 create_dir:
 	mkdir -p $(BUILD_DIR)
