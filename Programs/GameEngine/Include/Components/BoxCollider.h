@@ -11,8 +11,4 @@ class BoxCollider : public Collider
 {
 public:
 	BoxCollider();
-
-	bool IsColliding(BoxCollider* other, Vector3& mtv);
-
-	//Box GetBoundingBox();
 };

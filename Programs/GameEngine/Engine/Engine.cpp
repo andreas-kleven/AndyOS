@@ -346,7 +346,7 @@ namespace GEngine
 					//a->collider->size = a->parent->GetWorldScale();
 					//b->collider->size = b->parent->GetWorldScale();
 
-					Vector3 mtv(0, 0, 0);
+					Vector3 mtv;
 					int count;
 					Manifold* man;
 
