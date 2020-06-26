@@ -1,5 +1,5 @@
 #pragma once
-#include <andyos/string.h>
+#include <string>
 
 class GameObject;
 
@@ -13,9 +13,9 @@ public:
 	virtual void Start() { }
 	virtual void Update(float delta) { }
 
-	void SetName(String name);
-	String GetName();
+	void SetName(const std::string& name);
+	std::string GetName();
 
 private:
-	String name;
+	std::string name;
 };

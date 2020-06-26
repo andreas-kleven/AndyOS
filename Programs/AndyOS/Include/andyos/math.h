@@ -1,9 +1,11 @@
 #pragma once
 
-inline float frand();
+float frand();
 
+#ifdef __cplusplus
 extern "C++"
 {
+#endif
 	template <class T>
 	inline T clamp(T val, T min, T max)
 	{
@@ -49,4 +51,6 @@ extern "C++"
 	{
 		return (a < 0) == (b < 0) ? a : -a;
 	}
+#ifdef __cplusplus
 }
+#endif

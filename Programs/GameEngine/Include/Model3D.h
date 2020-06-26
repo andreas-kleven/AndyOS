@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <vector>
 #include <AndyOS.h>
 #include "GL.h"
 #include "Shapes/Box.h"
@@ -89,8 +91,8 @@ public:
 	Vertex* vertex_buffer;
 	Triangle* triangle_buffer;
 
-	List<Vertex*> vertices;
-	List<Triangle*> triangles;
+	std::vector<Vertex*> vertices;
+	std::vector<Triangle*> triangles;
 
 	//void SetTexture(int index);
 };

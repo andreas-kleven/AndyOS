@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "A3D.h"
 
 struct RAW_VERTEX
@@ -19,7 +20,7 @@ A3D::A3D(char* buffer)
 	int vertex_count = *(uint32_t*)buffer;
 	vertex_buffer = new Vertex[vertex_count];
 	triangle_buffer = new Triangle[vertex_count / 3];
-
+	
 	RAW_VERTEX* vertex = (RAW_VERTEX*)((char*)buffer + 4);
 
 	for (int i = 0; i < vertex_count; i++)
@@ -33,13 +34,13 @@ A3D::A3D(char* buffer)
 		vert.tex_v = raw.tex_v;
 
 		vertex_buffer[i] = vert;
-		vertices.Add(&vertex_buffer[i]);
+		vertices.push_back(&vertex_buffer[i]);
 	}
 
 	for (int i = 0; i < vertex_count; i += 3)
 	{
 		Triangle tri(&vertex_buffer[i], &vertex_buffer[i + 1], &vertex_buffer[i + 2]);
 		triangle_buffer[i / 3] = tri;
-		triangles.Add(&triangle_buffer[i / 3]);
+		triangles.push_back(&triangle_buffer[i / 3]);
 	}
 }

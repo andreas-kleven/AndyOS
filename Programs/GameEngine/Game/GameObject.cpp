@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "GameObject.h"
 
 GameObject::GameObject()
@@ -6,12 +7,12 @@ GameObject::GameObject()
 	this->name = "GameObject";
 }
 
-void GameObject::SetName(String name)
+void GameObject::SetName(const std::string& name)
 {
 	this->name = name;
 }
 
-String GameObject::GetName()
+std::string GameObject::GetName()
 {
 	return name;
 }
@@ -47,36 +48,36 @@ Vector3 GameObject::GetWorldScale()
 
 void GameObject::AddComponent(Component* comp)
 {
-	String compName = comp->GetName();
+	std::string compName = comp->GetName();
 	comp->parent = this;
 
-	if (compName.Contains("Mesh"))
+	if (compName.find("Mesh") != std::string::npos)
 	{
-		meshComponents.Add((MeshComponent*)comp);
+		meshComponents.push_back((MeshComponent*)comp);
 	}
-	else if (compName.Contains("Rigidbody"))
+	else if (compName.find("Rigidbody") != std::string::npos)
 	{
-		int index = components.IndexOf(rigidbody);
+		auto it = std::find(components.begin(), components.end(), rigidbody);
 
-		if(index == -1)
+		if (it == components.end())
 		{
 			rigidbody = (Rigidbody*)comp;
-			components.Add(rigidbody);
+			components.push_back(rigidbody);
 		}
 		else
 		{
 			rigidbody = (Rigidbody*)comp;
-			components[index] = rigidbody;
+			*it = rigidbody;
 		}
 		return;
 	}
 
-	components.Add(comp);
+	components.push_back(comp);
 }
 
-Component* GameObject::GetComponent(String name)
+Component* GameObject::GetComponent(const std::string& name)
 {
-	for (int i = 0; i < components.Count(); i++)
+	for (int i = 0; i < components.size(); i++)
 	{
 		Component* comp = components[i];
 		if (comp->GetName() == name)

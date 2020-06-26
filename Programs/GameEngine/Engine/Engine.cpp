@@ -1,3 +1,4 @@
+#include <vector>
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -20,10 +21,10 @@ namespace GEngine
 	GC gc;
 	bool paused = false;
 
-	List<Component*> all_components;
-	List<MeshComponent*> meshComponents;
-	List<Rigidbody*> rigidbodies;
-	List<Component*> physics_components;
+	std::vector<Component*> all_components;
+	std::vector<MeshComponent*> meshComponents;
+	std::vector<Rigidbody*> rigidbodies;
+	std::vector<Component*> physics_components;
 
 	float deltaTime;
 	Game* game;
@@ -289,17 +290,17 @@ namespace GEngine
 		if (Input::GetKey(KEY_Q))
 			cam->transform.Translate(-cam->transform.GetUpVector() * speed * deltaTime * cam->speed);
 
-		for (int i = 0; i < game->objects.Count(); i++)
+		for (int i = 0; i < game->objects.size(); i++)
 		{
 			GameObject* obj = game->objects[i];
 			obj->Update(deltaTime);
 		}
 
-		for (int i = 0; i < game->objects.Count(); i++)
+		for (int i = 0; i < game->objects.size(); i++)
 		{
 			GameObject* obj = game->objects[i];
 
-			for (int j = 0; j < obj->components.Count(); j++)
+			for (int j = 0; j < obj->components.size(); j++)
 			{
 				Component* comp = obj->components[j];
 				comp->Update(deltaTime);
@@ -311,9 +312,9 @@ namespace GEngine
 	{
 		float energy = 0;
 
-		List<Rigidbody*> all;
+		std::vector<Rigidbody*> all;
 
-		for (int i = 0; i < game->objects.Count(); i++)
+		for (int i = 0; i < game->objects.size(); i++)
 		{
 			GameObject* obj = game->objects[i];
 
@@ -321,7 +322,7 @@ namespace GEngine
 
 			if (comp->bEnabled)
 			{
-				all.Add(comp);
+				all.push_back(comp);
 
 				if (comp->bEnabledGravity)
 					energy += 1 * 9.8 * (obj->GetWorldPosition().y + 1000);
@@ -333,10 +334,10 @@ namespace GEngine
 
 		printf("Energy: %f\n", energy);
 
-		for (int i = 0; i < all.Count(); i++)
+		for (int i = 0; i < all.size(); i++)
 		{
 			int start = i + 1;
-			for (int j = start; j < all.Count(); j++)
+			for (int j = start; j < all.size(); j++)
 			{
 				//if (all[i]->IsBox() && all[j]->IsBox())
 				if (1)
@@ -598,11 +599,11 @@ namespace GEngine
 		GL::LoadMatrix(V);
 		GL::MatrixMode(GL_MODEL);
 
-		for (int i = 0; i < game->objects.Count(); i++)
+		for (int i = 0; i < game->objects.size(); i++)
 		{
 			GameObject* obj = game->objects[i];
 
-			for (int j = 0; j < obj->meshComponents.Count(); j++)
+			for (int j = 0; j < obj->meshComponents.size(); j++)
 			{
 				MeshComponent* mesh = obj->meshComponents[j];
 				Model3D* model = mesh->model;
@@ -616,7 +617,7 @@ namespace GEngine
 				Matrix4 R = trans.rotation.ToMatrix();
 				Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
 
-				for (int v = 0; v < mesh->model->vertices.Count(); v++)
+				for (int v = 0; v < mesh->model->vertices.size(); v++)
 					model->vertex_buffer[v].worldNormal = R * model->vertex_buffer[v].normal;
 
 				Matrix4 M = T * R * S;
@@ -624,7 +625,7 @@ namespace GEngine
 				GL::LoadMatrix(M);
 
 				GL::BindTexture(mesh->texId);
-				GL::Draw(model->vertex_buffer, model->vertices.Count());
+				GL::Draw(model->vertex_buffer, model->vertices.size());
 			}
 		}
 

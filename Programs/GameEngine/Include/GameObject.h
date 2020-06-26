@@ -1,6 +1,7 @@
 #pragma once
+#include <string>
+#include <vector>
 #include <AndyOS.h>
-#include <andyos/string.h>
 #include "Transform.h"
 #include "Component.h"
 #include "Components/MeshComponent.h"
@@ -12,10 +13,10 @@ public:
 	Transform transform;
 
 	GameObject* parent;
-	List<GameObject*> children;
+	std::vector<GameObject*> children;
 
-	List<Component*> components;
-	List<MeshComponent*> meshComponents;
+	std::vector<Component*> components;
+	std::vector<MeshComponent*> meshComponents;
 	Rigidbody* rigidbody;
 
 	GameObject();
@@ -23,8 +24,8 @@ public:
 	virtual void Start() { }
 	virtual void Update(float deltaTime) { }
 
-	void SetName(String name);
-	String GetName();
+	void SetName(const std::string& name);
+	std::string GetName();
 
 	Transform GetWorldTransform();
 	Vector3 GetWorldPosition();
@@ -32,18 +33,18 @@ public:
 	Vector3 GetWorldScale();
 
 	void AddComponent(Component* comp);
-	Component* GetComponent(String name);
+	Component* GetComponent(const std::string& name);
 
 	template<class T>
-	T* CreateComponent(String name);
+	T* CreateComponent(const std::string& name);
 
 private:
-	String name;
+	std::string name;
 	Transform world_transform;
 };
 
 template<class T>
-T* GameObject::CreateComponent(String name)
+T* GameObject::CreateComponent(const std::string& name)
 {
 	Component* t = new T;
 	t->SetName(name);

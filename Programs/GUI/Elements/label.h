@@ -1,6 +1,5 @@
 #pragma once
-#include <string.h>
-#include "andyos/string.h"
+#include <string>
 #include "element.h"
 
 namespace gui
@@ -8,9 +7,9 @@ namespace gui
 	class Label : public Element
 	{
 	public:
-		String text;
+		std::string text;
 
-		Label(String text);
+		Label(const std::string& text);
 
 		virtual void Paint();
 	};

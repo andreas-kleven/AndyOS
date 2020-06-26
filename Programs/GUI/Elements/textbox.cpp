@@ -1,5 +1,4 @@
 #include <AndyOS.h>
-#include "andyos/string.h"
 #include "textbox.h"
 
 namespace gui
@@ -21,7 +20,7 @@ namespace gui
 
 		gc.Clear(background);
 		gc.DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black);
-		gc.DrawText(2, 2, text.ToChar(), foreground, background);
+		gc.DrawText(2, 2, text.c_str(), foreground, background);
 
         int time = get_ticks() - focusTime;
 
@@ -29,7 +28,7 @@ namespace gui
         {
             if (time % blinkTime < blinkTime / 2)
             {
-                int x = text.Length() * 8 + 2;
+                int x = text.length() * 8 + 2;
                 gc.FillRect(x, 2, 1, 16, foreground);
             }
         }
@@ -44,9 +43,9 @@ namespace gui
     {
         if (packet.code == KEY_BACK)
         {
-            if (text.Length() > 0)
+            if (text.length() > 0)
             {
-                text = text.Remove(text.Length() - 2);
+                text.pop_back();
                 focusTime = get_ticks();
             }
         }

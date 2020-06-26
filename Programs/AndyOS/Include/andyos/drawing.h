@@ -78,7 +78,7 @@ struct GC
 
 	inline int memsize()
 	{
-		return width * height;
+		return stride * height;
 	}
 
 	inline int pixels()

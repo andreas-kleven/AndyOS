@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <string>
 #include "GEngine.h"
 #include "Game.h"
 
@@ -9,12 +9,12 @@ Game::Game()
 
 void Game::AddObject(GameObject* object)
 {
-	objects.Add(object);
+	objects.push_back(object);
 }
 
 void Game::AddCamera(Camera* cam)
 {
-	cameras.Add(cam);
+	cameras.push_back(cam);
 
 	if (!active_cam)
 		SetActiveCamera(cam);
@@ -22,7 +22,7 @@ void Game::AddCamera(Camera* cam)
 
 void Game::AddLightSource(LightSource* light)
 {
-	lights.Add(light);
+	lights.push_back(light);
 }
 
 Camera* Game::GetActiveCamera()
@@ -35,11 +35,11 @@ void Game::SetActiveCamera(Camera* cam)
 	active_cam = cam;
 }
 
-GameObject* Game::GetObject(String name)
+GameObject* Game::GetObject(const std::string& name)
 {
-	for (int i = 0; i < objects.Count(); i++)
+	for (int i = 0; i < objects.size(); i++)
 	{
-		printf(objects[i]->GetName().ToChar());
+		printf(objects[i]->GetName().c_str());
 
 		GameObject* obj = objects[i];
 		if (obj->GetName() == name)
@@ -49,9 +49,9 @@ GameObject* Game::GetObject(String name)
 	return 0;
 }
 
-Camera* Game::GetCamera(String name)
+Camera* Game::GetCamera(const std::string& name)
 {
-	for (int i = 0; i < cameras.Count(); i++)
+	for (int i = 0; i < cameras.size(); i++)
 	{
 		Camera* cam = cameras[i];
 		if (cam->GetName() == name)
@@ -61,9 +61,9 @@ Camera* Game::GetCamera(String name)
 	return 0;
 }
 
-LightSource* Game::GetLightSource(String name)
+LightSource* Game::GetLightSource(const std::string& name)
 {
-	for (int i = 0; i < lights.Count(); i++)
+	for (int i = 0; i < lights.size(); i++)
 	{
 		LightSource* light = lights[i];
 		if (light->GetName() == name)

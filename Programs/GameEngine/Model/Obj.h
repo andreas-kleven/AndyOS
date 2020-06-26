@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <sys/types.h>
 #include <AndyOS.h>
 #include "Model3D.h"
@@ -14,10 +15,10 @@ struct Face
 class Obj : public Model3D
 {
 public:
-	List<Vector3> positions;
-	List<Vector3> normals;
-	List<Vector3> uvs;
-	List<Face> faces;
+	std::vector<Vector3> positions;
+	std::vector<Vector3> normals;
+	std::vector<Vector3> uvs;
+	std::vector<Face> faces;
 
 	Obj(char* file);
 

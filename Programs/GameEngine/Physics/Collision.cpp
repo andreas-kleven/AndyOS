@@ -128,7 +128,7 @@ Manifold* Collision::CollisionPoint(Rigidbody& obj1, Rigidbody& obj2, int& count
 	int colIndex = 0;
 
 	//points.Clear();
-	//points = List<Manifold*>();
+	//points = std::vector<Manifold*>();
 
 	//vertices
 	for (int i = 0; i < 8; i++)

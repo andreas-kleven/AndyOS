@@ -4,7 +4,7 @@ namespace gui
 {
 	static bool isMouseDown = false;
 
-	Button::Button(String text)
+	Button::Button(const std::string& text)
 		: Element(0, 0, 100, 20)
 	{
 		this->text = text;
@@ -24,7 +24,7 @@ namespace gui
 
 		gc.Clear(bg_color);
 		gc.DrawRect(0, 0, bounds.width, bounds.height, 1, Color::Black);
-		gc.DrawText(2, 2, text.ToChar(), foreground, bg_color);
+		gc.DrawText(2, 2, text.c_str(), foreground, bg_color);
 	}
 
 	void Button::MouseDown()

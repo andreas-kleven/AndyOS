@@ -1,7 +1,12 @@
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <string>
+#include <sstream>
+#include <vector>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <math.h>
 #include <AndyOS.h>
@@ -19,15 +24,14 @@ public:
 	Color color;
 	Color bcolor;
 
-	char terminal_path[BUF_SIZE] = "/";
+	std::string command;
+	std::vector<std::string> terminal_path_parts;
+	std::string terminal_path;
+	std::vector<std::string> history;
+
+	int history_index = 0;
 	int x = 0;
 	int y = 0;
-
-	char command_buf[BUF_SIZE];
-	int command_index = 0;
-
-	List<char *> history;
-	int history_index = 0;
 
 	MainWindow()
 		: Window("Terminal", 424, 288, Color::Black)
@@ -48,20 +52,20 @@ public:
 	{
 		if (packet.code == KEY_BACK)
 		{
-			if (command_index > 0)
+			if (command.length() > 0)
 			{
-				command_buf[--command_index] = 0;
+				command.pop_back();
 				Putc('\b');
 			}
 		}
 		else if (packet.code == KEY_RETURN)
 		{
 			Putc('\n');
-			HandleCommand(command_buf);
+			HandleCommand(command);
 			Putc('\n');
 			ResetCommand();
 		}
-		/*else if (packet.code == KEY_UP)
+		else if (packet.code == KEY_UP)
 		{
 			if (history_index > 0)
 			{
@@ -70,7 +74,7 @@ public:
 
 				history_index -= 1;
 				command = history[history_index];
-				Print("%s", command.ToChar());
+				PrintString(command);
 			}
 		}
 		else if (packet.code == KEY_DOWN)
@@ -80,23 +84,22 @@ public:
 
 			history_index++;
 
-			if (history_index < history.Count())
+			if (history_index < history.size())
 			{
 				command = history[history_index];
-				Print("%s", command.ToChar());
+				PrintString(command);
 			}
 			else
 			{
-				history_index = history.Count();
+				history_index = history.size();
 				command = "";
 			}
-		}*/
+		}
 		else
 		{
-			if (packet.character && command_index < BUF_SIZE - 1)
+			if (packet.character)
 			{
-				command_buf[command_index++] = packet.character;
-				command_buf[command_index] = 0;
+				command += packet.character;
 				Putc(packet.character);
 			}
 		}
@@ -104,34 +107,25 @@ public:
 
 	void ResetCommand()
 	{
-		command_index = 0;
-		command_buf[0] = 0;
-
+		command = "";
 		x = 0;
-		Print("%s>", terminal_path);
+		PrintString(terminal_path);
+		Print(">");
 	}
 
-	void HandleCommand(char *cmd)
+	void HandleCommand(std::string cmd)
 	{
-		/*char* copy = new char[strlen(cmd) + 1];
-		strcpy(copy, cmd);
+		history.push_back(cmd);
+		history_index = history.size();
 
-		history.Add(cmd);
-		history_index = history.Count();*/
+		std::istringstream iss(cmd);
+		std::vector<std::string> tokens{std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>{}};
 
-		char *saveptr;
+		std::string arg1 = tokens.size() > 0 ? tokens[0] : "";
+		std::string arg2 = tokens.size() > 1 ? tokens[1] : "";
+		std::string arg3 = tokens.size() > 2 ? tokens[2] : "";
 
-		char *arg1 = 0;
-		char *arg2 = 0;
-		char *arg3 = 0;
-
-		arg1 = strtok_r(cmd, " \t", &saveptr);
-		if (arg1)
-			arg2 = strtok_r(0, " \t", &saveptr);
-		if (arg2)
-			arg3 = strtok_r(0, " \t", &saveptr);
-
-		if (strcmp(arg1, "ls") == 0)
+		if (arg1 == "ls")
 		{
 			/*FILE_INFO* files;
 			DIRECTORY_INFO* dirs;
@@ -150,53 +144,33 @@ public:
 				Debug::Print("%s\n", dirs[i].name);
 			}*/
 		}
-		else if (strcmp(arg1, "cd") == 0)
+		else if (arg1 == "cd")
 		{
-			if (arg2)
+			if (arg2.length())
 			{
-				if (strcmp(arg2, "..") == 0)
+				if (arg2 == "..")
 				{
-					int length = strlen(terminal_path) - 1;
-
-					if (length > 0)
-					{
-						while (terminal_path[--length] != '/')
-							terminal_path[length] = 0;
-					}
+					if (terminal_path_parts.size() > 0)
+						terminal_path_parts.pop_back();
 				}
 				else
 				{
-					int arg2_len = strlen(arg2);
-
-					if (arg2_len > 0 && arg2[0] != '/')
-					{
-						strcpy(terminal_path + strlen(terminal_path), arg2);
-
-						int length = strlen(terminal_path);
-						if (terminal_path[length - 1] != '/')
-						{
-							terminal_path[length] = '/';
-							terminal_path[length + 1] = 0;
-						}
-					}
+					terminal_path_parts.push_back(arg2);
 				}
+
+				terminal_path = FormatPath(terminal_path_parts);
 			}
 			else
 			{
-				Print("%s\n", terminal_path);
+				PrintString(terminal_path);
 			}
 		}
-		else if (strcmp(arg1, "read") == 0)
+		else if (arg1 == "read")
 		{
-			int path_len = strlen(terminal_path) + strlen(arg2);
-			char *path = new char[path_len];
-			memset(path, 0, path_len);
-
-			strcpy(path, terminal_path);
-			strcpy(path + strlen(terminal_path), arg2);
+			std::string path = terminal_path + "/" + arg2;
 
 			char *buf;
-			uint32_t size = read_file(buf, path);
+			uint32_t size = read_file(buf, path.c_str());;
 
 			if (size == 0)
 			{
@@ -210,20 +184,20 @@ public:
 				}
 			}
 		}
-		else if (strcmp(arg1, "open") == 0)
+		else if (arg1 == "open")
 		{
-			Open(arg2);
+			Open(arg2.c_str());
 		}
-		else if (strcmp(arg1, "color") == 0)
+		else if (arg1 == "color")
 		{
-			color = (0xFF << 24) | strtol(arg2, 0, 16);
+			color = (0xFF << 24) | strtol(arg2.c_str(), 0, 16);
 		}
-		else if (strcmp(arg1, "clear") == 0)
+		else if (arg1 == "clear")
 		{
 			y = 0;
 			gc.Clear(bcolor);
 		}
-		else if (strcmp(arg1, "test") == 0)
+		else if (arg1 == "test")
 		{
 			FILE *file = fopen("text.txt", "r");
 			Print("File: %X\n", file);
@@ -270,7 +244,7 @@ public:
 				}
 			}
 		}
-		else if (strcmp(arg1, "pipe") == 0)
+		else if (arg1 == "pipe")
 		{
 			int pipefd[2];
 			pipe(pipefd);
@@ -375,8 +349,21 @@ public:
 			}
 
 			while (1)
-				;
+			{
+			}
 		}
+	}
+
+	std::string FormatPath(const std::vector<std::string> &path)
+	{
+		std::ostringstream imploded;
+		std::copy(path.begin(), path.end(), std::ostream_iterator<std::string>(imploded, "/"));
+		std::string formatted = imploded.str();
+
+		if (formatted.length() > 0)
+			formatted.pop_back(); // remove trailing delimiter
+
+		return imploded.str();
 	}
 
 	void Print(const char *format, ...)
@@ -384,12 +371,18 @@ public:
 		char buffer[BUF_SIZE];
 		va_list args;
 		va_start(args, format);
-		vsprintf(buffer, format, args);
+		vsnprintf(buffer, sizeof(buffer), format, args);
 
 		for (int i = 0; i < strlen(buffer); i++)
 		{
 			Putc(buffer[i]);
 		}
+	}
+
+	void PrintString(const std::string &s)
+	{
+		for (char const &c : s)
+			Putc(c);
 	}
 
 	void Putc(char c)

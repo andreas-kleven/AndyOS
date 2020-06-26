@@ -1,6 +1,7 @@
-#include "client.h"
-#include <AndyOS.h>
+#include <vector>
 #include <string.h>
+#include <AndyOS.h>
+#include "client.h"
 
 namespace gui
 {
@@ -9,7 +10,7 @@ namespace gui
     static bool initialized = 0;
     bool Client::connected = false;
 
-    List<Window*> windows;
+    std::vector<Window*> windows;
 
     void Client::Init()
     {   
@@ -30,7 +31,7 @@ namespace gui
 
     void Client::AddWindow(Window* wnd)
     {
-        windows.Add(wnd);
+        windows.push_back(wnd);
     }
 
     MESSAGE Client::MessageHandler(MESSAGE msg)
@@ -40,7 +41,7 @@ namespace gui
             if (msg.size < 4)
                 return MESSAGE(0);
 
-            for (int i = 0; i < windows.Count(); i++)
+            for (int i = 0; i < windows.size(); i++)
             {
                 Window* wnd = windows[i];
                 WINDOW_MESSAGE* wnd_msg = (WINDOW_MESSAGE*)msg.data;

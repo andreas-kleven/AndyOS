@@ -13,58 +13,58 @@ Obj::Obj(char* file)
 void Obj::ReadFile(char* file)
 {
 	return;
-	/*String text = file;
-	List<String> lines;
+	/*std::string text = file;
+	std::vector<std::string> lines;
 	text.Split(lines, '\n');
 
 	printf("--START\n");
 
-	for (int i = 0; i < lines.Count(); i++)
+	for (int i = 0; i < lines.size(); i++)
 	{
-		List<String> args;
+		std::vector<std::string> args;
 		lines[i].Split(args, ' ');
 
 		if (args[0] == "v")
 		{
-			float x = atof(args[1].ToChar());
-			float y = atof(args[2].ToChar());
-			float z = atof(args[3].ToChar());
-			positions.Add(Vector3(x, y, z));
+			float x = atof(args[1].c_str());
+			float y = atof(args[2].c_str());
+			float z = atof(args[3].c_str());
+			positions.push_back(Vector3(x, y, z));
 		}
 		else if (args[0] == "vt")
 		{
-			float u = atof(args[1].ToChar());
-			float v = atof(args[2].ToChar());
-			uvs.Add(Vector3(u, v, 0));
+			float u = atof(args[1].c_str());
+			float v = atof(args[2].c_str());
+			uvs.push_back(Vector3(u, v, 0));
 		}
 		else if (args[0] == "vn")
 		{
-			float x = atof(args[1].ToChar());
-			float y = atof(args[2].ToChar());
-			float z = atof(args[3].ToChar());
-			normals.Add(Vector3(x, y, z));
+			float x = atof(args[1].c_str());
+			float y = atof(args[2].c_str());
+			float z = atof(args[3].c_str());
+			normals.push_back(Vector3(x, y, z));
 		}
 		else if (args[0] == "f")
 		{
-			//if (args.Count() == 5)
+			//if (args.size() == 5)
 			//	Exceptions::ThrowException("Quad exception", "Obj file");
 
 			Face face;
 			for (int i = 0; i < 3; i++)
 			{
-				List<String> indexes;
+				std::vector<std::string> indexes;
 
 				args[i + 1].Split(indexes, '/');
-				face.positions[i] = atoi(indexes[0].ToChar());
-				face.normals[i] = atoi(indexes[2].ToChar());
+				face.positions[i] = atoi(indexes[0].c_str());
+				face.normals[i] = atoi(indexes[2].c_str());
 
 				if (indexes[1] == "")
 					face.uvs[i] = 0;
 				else
-					face.uvs[i] = atoi(indexes[1].ToChar());
+					face.uvs[i] = atoi(indexes[1].c_str());
 
 			}
-			faces.Add(face);
+			faces.push_back(face);
 		}
 	}
 
@@ -73,9 +73,9 @@ void Obj::ReadFile(char* file)
 
 void Obj::CreateVertices()
 {
-	/*int vertex_count = faces.Count() * 3;
+	/*int vertex_count = faces.size() * 3;
 
-	for (int i = 0; i < faces.Count(); i++)
+	for (int i = 0; i < faces.size(); i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{

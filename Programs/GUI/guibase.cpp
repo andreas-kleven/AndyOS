@@ -11,6 +11,6 @@ namespace gui
     void GUIBase::AddChild(GUIBase* child)
     {
         child->parent = this;
-        elements.Add(child);
+        elements.push_back(child);
     }
 }

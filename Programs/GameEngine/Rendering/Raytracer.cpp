@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <andyos/float.h>
+#include <andyos/math.h>
 #include "GEngine.h"
 #include "GL.h"
 #include "Raytracer.h"
@@ -223,11 +224,11 @@ bool Trace(
 
 	float distance = FLT_MAX;
 
-	for (int i = 0; i < game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.size(); i++)
 	{
 		GameObject* obj = game->objects[i];
 
-		for (int j = 0; j < obj->meshComponents.Count(); j++)
+		for (int j = 0; j < obj->meshComponents.size(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
 			Model3D* model = mesh->model;
@@ -448,7 +449,7 @@ void EmitPhotons()
 
 void CalculateVertices()
 {
-	for (int i = 0; i < game->objects.Count(); i++)
+	for (int i = 0; i < game->objects.size(); i++)
 	{
 		GameObject* obj = game->objects[i];
 		Transform trans = obj->GetWorldTransform();
@@ -458,13 +459,13 @@ void CalculateVertices()
 		Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
 		Matrix4 M = T * R * S;
 
-		for (int j = 0; j < obj->meshComponents.Count(); j++)
+		for (int j = 0; j < obj->meshComponents.size(); j++)
 		{
 			MeshComponent* mesh = obj->meshComponents[j];
 
 			if (mesh->model)
 			{
-				for (int k = 0; k < mesh->model->vertices.Count(); k++)
+				for (int k = 0; k < mesh->model->vertices.size(); k++)
 				{
 					Vertex* vert = &mesh->model->vertex_buffer[k];
 

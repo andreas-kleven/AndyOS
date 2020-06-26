@@ -1,8 +1,6 @@
 #pragma once
 
 #include "andyos/api.h"
-#include "andyos/list.h"
-#include "andyos/queue.h"
 #include "andyos/memory.h"
 
 // Kernel

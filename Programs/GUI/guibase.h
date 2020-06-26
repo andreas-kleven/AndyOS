@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <AndyOS.h>
 #include <andyos/drawing.h>
 #include "GUI/messages.h"
@@ -10,7 +11,7 @@ namespace gui
     {
     public:
         GUIBase* parent;
-        List<GUIBase*> elements;
+        std::vector<GUIBase*> elements;
 
         GC gc;
         Rect bounds;

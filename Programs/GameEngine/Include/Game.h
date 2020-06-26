@@ -1,13 +1,14 @@
 #pragma once
+#include <vector>
 #include "Scene.h"
 
 class Game
 {
 public:
 	//Scene* scene;
-	List<GameObject*> objects;
-	List<Camera*> cameras;
-	List<LightSource*> lights;
+	std::vector<GameObject*> objects;
+	std::vector<Camera*> cameras;
+	std::vector<LightSource*> lights;
 
 	Game();
 
@@ -18,18 +19,18 @@ public:
 	Camera* GetActiveCamera();
 	void SetActiveCamera(Camera* cam);
 
-	GameObject* GetObject(String name);
-	Camera* GetCamera(String name);
-	LightSource* GetLightSource(String name);
+	GameObject* GetObject(const std::string& name);
+	Camera* GetCamera(const std::string& name);
+	LightSource* GetLightSource(const std::string& name);
 
 	template<class T>
-	T* CreateObject(String name);
+	T* CreateObject(const std::string& name);
 
 	template<class T>
-	T* CreateCamera(String name);
+	T* CreateCamera(const std::string& name);
 
 	template<class T>
-	T* CreateLightSource(String name);
+	T* CreateLightSource(const std::string& name);
 
 private:
 	Camera* active_cam;
@@ -38,7 +39,7 @@ private:
 
 //Creates an object and adds it
 template<class T>
-T* Game::CreateObject(String name)
+T* Game::CreateObject(const std::string& name)
 {
 	GameObject* t = new T;
 	t->SetName(name);
@@ -48,7 +49,7 @@ T* Game::CreateObject(String name)
 
 //Creates a camera and adds it
 template<class T>
-T* Game::CreateCamera(String name)
+T* Game::CreateCamera(const std::string& name)
 {
 	Camera* t = new T;
 	t->SetName(name);
@@ -58,7 +59,7 @@ T* Game::CreateCamera(String name)
 
 //Creates a light source and adds it
 template<class T>
-T* Game::CreateLightSource(String name)
+T* Game::CreateLightSource(const std::string& name)
 {
 	LightSource* t = new T;
 	t->SetName(name);

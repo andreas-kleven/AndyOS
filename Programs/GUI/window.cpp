@@ -38,7 +38,7 @@ namespace gui
 
     void Window::Paint()
     {
-        for (int i = 0; i < elements.Count(); i++)
+        for (int i = 0; i < elements.size(); i++)
         {
             PaintElement(elements[i]);
         }
@@ -48,7 +48,7 @@ namespace gui
 
     void Window::PaintElement(GUIBase* elem)
     {
-        for (int i = 0; i < elem->elements.Count(); i++)
+        for (int i = 0; i < elem->elements.size(); i++)
         {
             PaintElement(elem->elements[i]);
         }
@@ -157,7 +157,7 @@ namespace gui
 
     void Window::HoverElement(GUIBase* elem, int x, int y)
     {
-        for (int i = 0; i < elem->elements.Count(); i++)
+        for (int i = 0; i < elem->elements.size(); i++)
         {
             Element* child = (Element*)elem->elements[i];
             bool isInside = child->bounds.Contains(x, y);
@@ -179,7 +179,7 @@ namespace gui
         if (!parent->bounds.Contains(x, y))
             return 0;
 
-        for (int i = 0; i < parent->elements.Count(); i++)
+        for (int i = 0; i < parent->elements.size(); i++)
         {
             Element* child = (Element*)parent->elements[i];
             bool isInside = child->bounds.Contains(x, y);

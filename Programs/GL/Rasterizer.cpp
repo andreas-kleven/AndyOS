@@ -1,6 +1,5 @@
 #include <math.h>
 #include <andyos/math.h>
-#include <andyos/float.h>
 #include "Rasterizer.h"
 #include "GL.h"
 
@@ -27,8 +26,7 @@ Rasterizer::Rasterizer(GC gc)
 
 void Rasterizer::Clear()
 {
-	float val = FLT_MAX;
-	memset(this->depth_buffer, *(uint32_t *)&val, gc.memsize());
+	memset(this->depth_buffer, 0, gc.width * gc.height * sizeof(float));
 }
 
 void Rasterizer::DrawTriangle(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
@@ -112,7 +110,7 @@ void Rasterizer::DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
 			{
 				float Z = 1 / (v0.tmpPos.w * w0 + v1.tmpPos.w * w1 + v2.tmpPos.w * w2);
 
-				if (Z < *depth_ptr)
+				if (*depth_ptr == 0 || Z < *depth_ptr)
 				{
 					float U = ((w0 * v0.tex_u * v0.tmpPos.w) + (w1 * v1.tex_u * v1.tmpPos.w) + (w2 * v2.tex_u * v2.tmpPos.w)) * Z;
 					float V = ((w0 * v0.tex_v * v0.tmpPos.w) + (w1 * v1.tex_v * v1.tmpPos.w) + (w2 * v2.tex_v * v2.tmpPos.w)) * Z;

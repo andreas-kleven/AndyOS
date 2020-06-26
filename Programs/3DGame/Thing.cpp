@@ -18,7 +18,7 @@ Thing::Thing()
 	MeshComponent* mesh = CreateComponent<MeshComponent>("Mesh");
 	mesh->SetModel(model);
 
-	for (int i = 0; i < mesh->model->vertices.Count(); i++)
+	for (int i = 0; i < mesh->model->vertices.size(); i++)
 	{
 		mesh->model->vertex_buffer[i].color = Color::Red;
 	}

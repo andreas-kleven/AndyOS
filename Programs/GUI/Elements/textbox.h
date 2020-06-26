@@ -1,13 +1,13 @@
 #pragma once
+#include <string>
 #include "element.h"
-#include <string.h>
 
 namespace gui
 {
 	class TextBox : public Element
 	{
 	public:
-		String text;
+		std::string text;
 
 		TextBox();
 

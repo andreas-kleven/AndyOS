@@ -123,12 +123,12 @@ KDTree::~KDTree()
 
 void KDTree::Build(Model3D* model)
 {
-	printf("Building k-d tree. %i triangles\n", model->triangles.Count());
+	printf("Building k-d tree. %i triangles\n", model->triangles.size());
 
-	Triangle** tris = new Triangle*[model->triangles.Count()];
+	Triangle** tris = new Triangle*[model->triangles.size()];
 
-	for (int i = 0; i < model->triangles.Count(); i++)
+	for (int i = 0; i < model->triangles.size(); i++)
 		tris[i] = &model->triangle_buffer[i];
 
-	root = KDNode::Build(tris, model->triangles.Count(), 0);
+	root = KDNode::Build(tris, model->triangles.size(), 0);
 }

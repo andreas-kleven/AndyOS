@@ -56,7 +56,7 @@ void CreateCornell(Game* game)
 
 		MeshComponent* mesh = walls[i]->meshComponents[0];
 
-		for (int j = 0; j < mesh->model->vertices.Count(); j++)
+		for (int j = 0; j < mesh->model->vertices.size(); j++)
 		{
 			mesh->model->vertex_buffer[j].color = colors[i];
 		}

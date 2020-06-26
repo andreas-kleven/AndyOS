@@ -5,12 +5,12 @@ Component::Component()
 	this->parent = 0;
 }
 
-void Component::SetName(String name)
+void Component::SetName(const std::string& name)
 {
 	this->name = name;
 }
 
-String Component::GetName()
+std::string Component::GetName()
 {
 	return name;
 }

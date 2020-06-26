@@ -2,7 +2,7 @@
 
 namespace gui
 {
-	Label::Label(String text)
+	Label::Label(const std::string& text)
 		: Element(0, 0, 256, 16)
 	{
 		this->text = text;
@@ -15,6 +15,6 @@ namespace gui
 		GC gc = CreateGC();
 
 		gc.Clear(background);
-		gc.DrawText(0, 0, text.ToChar(), foreground, background);
+		gc.DrawText(0, 0, text.c_str(), foreground, background);
 	}
 }
