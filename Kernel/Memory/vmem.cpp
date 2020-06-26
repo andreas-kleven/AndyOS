@@ -8,9 +8,9 @@
 
 namespace VMem
 {
-	void* MapFirstFree(void* phys, size_t count, pflags_t flags, size_t start, size_t end)
+	void *MapFirstFree(void *phys, size_t count, pflags_t flags, size_t start, size_t end)
 	{
-		void* virt = FirstFree(count, start, end);
+		void *virt = FirstFree(count, start, end);
 
 		if (!virt)
 			return 0;
@@ -18,18 +18,18 @@ namespace VMem
 		if (MapPages(virt, phys, count, flags))
 		{
 			PMem::DeInitRegion(phys, count * PAGE_SIZE);
-			return (void*)virt;
+			return (void *)virt;
 		}
 
 		return 0;
 	}
-	
-	void* Alloc(size_t count, pflags_t flags, size_t start, size_t end)
+
+	void *Alloc(size_t count, pflags_t flags, size_t start, size_t end)
 	{
 		Scheduler::Disable();
 
-		void* virt = FirstFree(count, start, end);
-		void* phys = PMem::AllocBlocks(count);
+		void *virt = FirstFree(count, start, end);
+		void *phys = PMem::AllocBlocks(count);
 		MapPages(virt, phys, count, flags);
 
 		Scheduler::Enable();
@@ -59,7 +59,7 @@ namespace VMem
 
 	///
 
-    size_t GetAddress(size_t virt)
+	size_t GetAddress(size_t virt)
 	{
 		Scheduler::Disable();
 		size_t ret = Arch::GetAddress(virt);
@@ -67,7 +67,7 @@ namespace VMem
 		return ret;
 	}
 
-    pflags_t GetFlags(size_t virt)
+	pflags_t GetFlags(size_t virt)
 	{
 		Scheduler::Disable();
 		pflags_t ret = Arch::GetFlags(virt);
@@ -80,7 +80,7 @@ namespace VMem
 		return Arch::GetAddressSpace();
 	}
 
-    bool SwapAddressSpace(ADDRESS_SPACE& space)
+	bool SwapAddressSpace(ADDRESS_SPACE &space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::SwapAddressSpace(space);
@@ -88,7 +88,7 @@ namespace VMem
 		return ret;
 	}
 
-    bool CreateAddressSpace(ADDRESS_SPACE* space)
+	bool CreateAddressSpace(ADDRESS_SPACE *space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::CreateAddressSpace(space);
@@ -96,7 +96,7 @@ namespace VMem
 		return ret;
 	}
 
-	bool CopyAddressSpace(ADDRESS_SPACE* space)
+	bool CopyAddressSpace(ADDRESS_SPACE *space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::CopyAddressSpace(space);
@@ -104,23 +104,31 @@ namespace VMem
 		return ret;
 	}
 
-    void* FirstFree(size_t count, size_t start, size_t end)
+	void *FirstFree(size_t count, size_t start, size_t end)
 	{
 		Scheduler::Disable();
-		void* ret = Arch::FirstFree(count, start, end);
+		void *ret = Arch::FirstFree(count, start, end);
 		Scheduler::Enable();
 		return ret;
 	}
 
-    bool MapPages(void* virt, void* phys, size_t count, pflags_t flags)
+	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
 	{
 		Scheduler::Disable();
+
+		for (size_t i = 0; i < count; i++)
+		{
+			size_t addr = (size_t)virt + i * PAGE_SIZE;
+			if (GetFlags(addr) & PAGE_PRESENT)
+				debug_print("Page already mapped %p\n", virt);
+		}
+
 		bool ret = Arch::MapPages(virt, phys, count, flags);
 		Scheduler::Enable();
 		return ret;
 	}
 
-    bool FreePages(void* virt, size_t count)
+	bool FreePages(void *virt, size_t count)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::FreePages(virt, count);
@@ -128,38 +136,38 @@ namespace VMem
 		return ret;
 	}
 
-	void* KernelAlloc(size_t count)
+	void *KernelAlloc(size_t count)
 	{
 		return Alloc(count, PAGE_PRESENT | PAGE_WRITE, KERNEL_BASE, KERNEL_END);
 	}
 
-	void* UserAlloc(size_t count)
+	void *UserAlloc(size_t count)
 	{
 		return Alloc(count, PAGE_PRESENT | PAGE_WRITE | PAGE_USER, HEAP_END, USER_END);
 	}
 
-	void* KernelMapFirstFree(void* phys, size_t count, pflags_t flags)
+	void *KernelMapFirstFree(void *phys, size_t count, pflags_t flags)
 	{
 		return MapFirstFree(phys, count, flags, KERNEL_BASE, KERNEL_END);
 	}
 
-	void* UserMapFirstFree(void* phys, size_t count, pflags_t flags)
+	void *UserMapFirstFree(void *phys, size_t count, pflags_t flags)
 	{
 		return MapFirstFree(phys, count, flags, HEAP_END, USER_END);
 	}
 
-	bool UserAllocShared(ADDRESS_SPACE other_space, void*& addr1, void*& addr2, size_t count)
+	bool UserAllocShared(ADDRESS_SPACE other_space, void *&addr1, void *&addr2, size_t count)
 	{
 		Scheduler::Disable();
 		ADDRESS_SPACE cur_space = GetAddressSpace();
 
-		void* phys = PMem::AllocBlocks(count);
+		void *phys = PMem::AllocBlocks(count);
 		pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 
 		addr1 = UserMapFirstFree(phys, count, flags);
 
 		SwapAddressSpace(other_space);
-		void* _addr2 = UserMapFirstFree(phys, count, flags);
+		void *_addr2 = UserMapFirstFree(phys, count, flags);
 
 		//Switch back
 		SwapAddressSpace(cur_space);
@@ -169,11 +177,11 @@ namespace VMem
 		return true;
 	}
 
-    bool Init()
+	bool Init()
 	{
 		if (!Arch::Init())
 			return false;
 
 		return true;
 	}
-}
+} // namespace VMem

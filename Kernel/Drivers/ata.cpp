@@ -15,7 +15,7 @@ ATADriver::ATADriver(int bus, int drive)
 
 	int num = ((bus == ATA_BUS_SECONDARY) << 1) | (drive == ATA_DRIVE_SLAVE);
 
-	char id[] = { 'h', 'd', ' ' };
+	char *id = new char[4]{'h', 'd', ' ', 0};
 	id[2] = 'a' + num;
 	this->id = id;
 

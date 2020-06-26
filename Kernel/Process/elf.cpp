@@ -35,15 +35,21 @@ namespace ELF
 		{
 			ELF32_PHEADER *pheader = (ELF32_PHEADER *)(image + header->e_phoff + i * header->e_phentsize);
 
-			size_t blocks = BYTES_TO_BLOCKS(pheader->p_memsz) + 1;
+			uint32 vaddr = pheader->p_vaddr;
+			uint32 memsz = pheader->p_memsz;
+			size_t offset = vaddr % BLOCK_SIZE;
+			vaddr -= offset;
+			memsz += offset;
+
+			size_t blocks = BYTES_TO_BLOCKS(memsz + offset);
 
 			void *phys = PMem::AllocBlocks(blocks);
-			void *virt = (void *)pheader->p_vaddr;
+			void *virt = (void *)vaddr;
 
 			VMem::MapPages(virt, phys, blocks, flags);
-			memcpy(virt, image + pheader->p_offset, pheader->p_memsz);
+			memcpy((void*)pheader->p_vaddr, image + pheader->p_offset, pheader->p_memsz);
 
-			size_t end = (size_t)virt + blocks * BLOCK_SIZE;
+			size_t end = vaddr + blocks * BLOCK_SIZE;
 			if (end > virt_end)
 				virt_end = end;
 		}
@@ -57,6 +63,8 @@ namespace ELF
 				memset((void *)sheader->sh_addr, 0, sheader->sh_size);
 			}
 		}
+
+		debug_print("Loaded ELF\n");
 
 		proc->heap_end = virt_end;
 		return header->e_entry;
