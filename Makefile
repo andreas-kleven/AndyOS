@@ -1,5 +1,5 @@
 ARCH := x86
-SYSROOT = $(shell realpath ~/andyos/usr/i686-andyos)
+SYSROOT = $(HOME)/andyos
 MAKE_DIR = $(CURDIR)
 BUILD_DIR = $(MAKE_DIR)/Build
 PROGRAMS_DIR = $(MAKE_DIR)/Programs

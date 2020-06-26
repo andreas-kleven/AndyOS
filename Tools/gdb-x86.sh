@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GNOME_TERMINAL_SCREEN=""
-gnome-terminal -- qemu-system-i386 -cdrom ../AndyOS.iso -s -S
+gnome-terminal -- qemu-system-i386 -cdrom ../AndyOS.iso -s -S -serial pipe:/tmp/guest
 
 sleep 0.1
 

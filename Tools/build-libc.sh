@@ -1,24 +1,28 @@
 #!/bin/bash
 SYSTEM=andyos
-SYSROOT=$(realpath ~/$SYSTEM)
+SYSROOT=$HOME/$SYSTEM
 
 parent_path=$(cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
 srcdir=$parent_path/src
-bindir=$parent_path/bin
 syssrc=$parent_path/../Programs/Libc
 
-mkdir $bindir
-mkdir build
-cd build
+export PREFIX="$parent_path/build/libc"
+export TARGET=i686-$SYSTEM
+export PATH="$PREFIX/bin:$PATH"
 
-$srcdir/automake-1.12.1/configure --prefix="$bindir"
-make && make install
+cd $srcdir
+mkdir build-automake-1.12.1
+cd build-automake-1.12.1
+$srcdir/automake-1.12.1/configure --prefix="$PREFIX"
+make -j6 && make install
 
-$srcdir/autoconf-2.69/configure --prefix="$bindir"
-make && make install
+cd $srcdir
+mkdir build-autoconf-2.69
+cd build-autoconf-2.69
+$srcdir/autoconf-2.69/configure --prefix="$PREFIX"
+make -j6 && make install
 
-bindir=$bindir/bin
-export PATH=$bindir:$PATH
+# Newlib
 
 cd $srcdir/newlib-3.0.0/
 if ! grep -q $SYSTEM "config.sub"; then
@@ -51,16 +55,14 @@ autoconf
 cd $SYSTEM
 autoconf
 
-ln -s $(which i686-elf-ar) $bindir/i686-$SYSTEM-ar
-ln -s $(which i686-elf-as) $bindir/i686-$SYSTEM-as
-ln -s $(which i686-elf-gcc) $bindir/i686-$SYSTEM-gcc
-ln -s $(which i686-elf-gcc) $bindir/i686-$SYSTEM-cc
-ln -s $(which i686-elf-ranlib) $bindir/i686-$SYSTEM-ranlib
+# Build
 
-cd $parent_path
-mkdir build-newlib
-cd build-newlib
+cd $srcdir
+mkdir build-newlib-3.0.0
+cd build-newlib-3.0.0
+$srcdir/newlib-3.0.0/configure --target=$TARGET --prefix="$PREFIX"
+make -j6 all
+make -j6 install
 
-$srcdir/newlib-3.0.0/configure --prefix=/usr --target=i686-$SYSTEM
-make all
-make DESTDIR=${SYSROOT} install
+mkdir -p $SYSROOT/usr
+cp -R $PREFIX/$TARGET/* $SYSROOT/usr
