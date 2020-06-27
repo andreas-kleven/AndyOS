@@ -230,24 +230,6 @@ namespace Syscalls
 	}
 
 	//
-	int set_signal(SIGNAL_HANDLER handler)
-	{
-		ProcessManager::GetCurrent()->signal_handler = handler;
-		return 1;
-	}
-
-	void send_signal(int proc_id, int signo)
-	{
-		PROCESS *proc = ProcessManager::GetProcess(proc_id);
-		int src_proc = ProcessManager::GetCurrent()->id;
-
-		if (proc)
-		{
-			MESSAGE msg(MESSAGE_TYPE_SIGNAL, ++msg_id, src_proc, signo, 0);
-			proc->messages.Add(msg);
-		}
-	}
-
 	int set_message(MESSAGE_HANDLER handler)
 	{
 		ProcessManager::GetCurrent()->message_handler = handler;
@@ -391,8 +373,6 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_CREATE_PROCESS, (SYSCALL_HANDLER)create_process);
 		InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)debug_reset);
 
-		InstallSyscall(SYSCALL_SET_SIGNAL, (SYSCALL_HANDLER)set_signal);
-		InstallSyscall(SYSCALL_SEND_SIGNAL, (SYSCALL_HANDLER)send_signal);
 		InstallSyscall(SYSCALL_SET_MESSAGE, (SYSCALL_HANDLER)set_message);
 		InstallSyscall(SYSCALL_SEND_MESSAGE, (SYSCALL_HANDLER)send_message);
 		InstallSyscall(SYSCALL_SEND_MESSAGE_RESPONSE, (SYSCALL_HANDLER)send_message_reponse);

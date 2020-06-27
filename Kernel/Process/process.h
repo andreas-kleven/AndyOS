@@ -17,8 +17,6 @@
 #define SIGSTOP 17
 
 typedef void (*sig_t)(int signo);
-
-typedef void SIGNAL_HANDLER(int signo);
 typedef void MESSAGE_HANDLER(int id, int type, char *buf, int size);
 
 enum PROCESS_FLAGS
@@ -29,7 +27,6 @@ enum PROCESS_FLAGS
 
 enum MESSAGE_TYPE
 {
-	MESSAGE_TYPE_SIGNAL,
 	MESSAGE_TYPE_MESSAGE,
 	MESSAGE_TYPE_RESPONSE
 };
@@ -88,7 +85,6 @@ struct PROCESS
 	FILE *file_table[FILE_TABLE_SIZE];
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
 
-	SIGNAL_HANDLER *signal_handler;
 	MESSAGE_HANDLER *message_handler;
 	CircularBuffer<MESSAGE> messages;
 

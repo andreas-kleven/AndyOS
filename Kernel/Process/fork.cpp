@@ -49,7 +49,6 @@ namespace ProcessManager
 		memcpy(newproc->file_table, proc->file_table, sizeof(proc->file_table));
 		memcpy(newproc->signal_table, proc->signal_table, sizeof(proc->signal_table));
 
-		newproc->signal_handler = proc->signal_handler;
 		newproc->message_handler = proc->message_handler;
 
 		if (!CopyThreads(proc, newproc))

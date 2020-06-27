@@ -22,7 +22,6 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	for (int i = 0; i < sizeof(this->signal_table); i++)
 		ProcessManager::SetSignalHandler(this, i, SIG_DFL);
 
-	this->signal_handler = 0;
 	this->messages = CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
 }
 

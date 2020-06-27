@@ -98,40 +98,24 @@ namespace Test
 						disable();
 						VMem::SwapAddressSpace(proc->addr_space);
 
-						if (msg->type == MESSAGE_TYPE_SIGNAL)
+
+						if (proc->message_handler)
 						{
-							if (proc->signal_handler)
-							{
-								THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->signal_handler);
+							THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
 
-								REGS* regs = (REGS*)thread->stack;
-								uint32* stack_ptr = (uint32*)regs->user_stack;
-								*--stack_ptr = msg->param;
-								regs->user_stack -= 8;
-								
-								Scheduler::InsertThread(thread);
-							}
-						}
-						else
-						{
-							if (proc->message_handler)
-							{
-								THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
+							REGS* regs = (REGS*)thread->stack;
+							char* data_ptr = (char*)regs->user_stack - msg->size - 4;
+							memcpy(data_ptr, msg->data, msg->size);
 
-								REGS* regs = (REGS*)thread->stack;
-								char* data_ptr = (char*)regs->user_stack - msg->size - 4;
-								memcpy(data_ptr, msg->data, msg->size);
+							uint32* stack_ptr = (uint32*)data_ptr;
+							*--stack_ptr = msg->size;
+							*--stack_ptr = (int)data_ptr;
+							*--stack_ptr = msg->param;
+							*--stack_ptr = msg->src_proc;
+							*--stack_ptr = msg->id;
+							regs->user_stack -= 28 + msg->size;
 
-								uint32* stack_ptr = (uint32*)data_ptr;
-								*--stack_ptr = msg->size;
-								*--stack_ptr = (int)data_ptr;
-								*--stack_ptr = msg->param;
-								*--stack_ptr = msg->src_proc;
-								*--stack_ptr = msg->id;
-								regs->user_stack -= 28 + msg->size;
-
-								Scheduler::InsertThread(thread);
-							}
+							Scheduler::InsertThread(thread);
 						}
 
 						enable();

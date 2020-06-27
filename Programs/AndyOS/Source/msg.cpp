@@ -24,18 +24,6 @@ static void __msg_handler(int id, int src_proc, int type, char* data, int size)
     exit_thread(0);
 }
 
-
-int set_signal(void(*handler)(int))
-{
-    _sig_handler = handler;
-    return syscall1(SYSCALL_SET_SIGNAL, (int)__sig_handler);
-}
-
-void send_signal(int proc_id, int signo)
-{
-    syscall2(SYSCALL_SEND_SIGNAL, proc_id, signo);
-}
-
 int set_message(MESSAGE(*handler)(MESSAGE))
 {
     _msg_handler = handler;
