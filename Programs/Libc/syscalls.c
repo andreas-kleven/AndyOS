@@ -4,6 +4,7 @@
 #include <sys/times.h>
 #include <sys/errno.h>
 #include <sys/time.h>
+#include <signal.h>
 #include <stdio.h>
 #include "syscall_list.h"
 
@@ -46,7 +47,7 @@ pid_t fork()
 
 int fstat(int fd, struct stat *st)
 {
-    return syscall2(SYSCALL_FSTAT, fd, (int)st);
+    return syscall2(SYSCALL_FSTAT, fd, st);
 }
 
 pid_t getpid()
@@ -56,7 +57,7 @@ pid_t getpid()
 
 int gettimeofday(struct timeval *p, void *z)
 {
-    return syscall2(SYSCALL_GETTIMEOFDAY, (int)p, (int)z);
+    return syscall2(SYSCALL_GETTIMEOFDAY, p, z);
 }
 
 int isatty(int fd)
@@ -71,7 +72,7 @@ int kill(int pid, int sig)
 
 int link(char *path1, char *path2)
 {
-    return syscall2(SYSCALL_LINK, (int)path1, (int)path2);
+    return syscall2(SYSCALL_LINK, path1, path2);
 }
 
 off_t lseek(int fd, off_t offset, int whence)
@@ -84,17 +85,17 @@ off_t lseek(int fd, off_t offset, int whence)
 //int open(const char *pathname, int flags, mode_t mode);
 int open(const char *name, int flags, ...)
 {
-    return syscall2(SYSCALL_OPEN, (int)name, flags);
+    return syscall2(SYSCALL_OPEN, name, flags);
 }
 
 int pipe(int pipefd[2])
 {
-    return syscall1(SYSCALL_PIPE, (int)pipefd);
+    return syscall1(SYSCALL_PIPE, pipefd);
 }
 
 ssize_t read(int fd, char *buf, size_t size)
 {
-    return syscall3(SYSCALL_READ, fd, (int)buf, size);
+    return syscall3(SYSCALL_READ, fd, buf, size);
 }
 
 void *sbrk(intptr_t increment)
@@ -102,19 +103,24 @@ void *sbrk(intptr_t increment)
     return syscall1(SYSCALL_SBRK, increment);
 }
 
+sig_t signal(int signum, sig_t handler)
+{
+    return syscall2(SYSCALL_SIGNAL, signum, handler);
+}
+
 int stat(const char *file, struct stat *st)
 {
-    return syscall2(SYSCALL_STAT, (int)file, (int)st);
+    return syscall2(SYSCALL_STAT, file, st);
 }
 
 clock_t times(struct tms *buf)
 {
-    return syscall1(SYSCALL_TIMES, (int)buf);
+    return syscall1(SYSCALL_TIMES, buf);
 }
 
 int unlink(char *name)
 {
-    return syscall1(SYSCALL_UNLINK, (int)name);
+    return syscall1(SYSCALL_UNLINK, name);
 }
 
 void usleep(useconds_t usec)
@@ -124,12 +130,12 @@ void usleep(useconds_t usec)
 
 int wait(int *status)
 {
-    return syscall1(SYSCALL_WAIT, (int)status);
+    return syscall1(SYSCALL_WAIT, status);
 }
 
 ssize_t write(int fd, const char *buf, size_t size)
 {
-    return syscall3(SYSCALL_WRITE, fd, (int)buf, size);
+    return syscall3(SYSCALL_WRITE, fd, buf, size);
 }
 
 // TODO

@@ -132,6 +132,18 @@ namespace Syscalls
 		return 0;
 	}
 
+	int kill(pid_t pid, int signo)
+	{
+		PROCESS *proc = ProcessManager::GetProcess(pid);
+		ProcessManager::HandleSignal(proc, signo);
+	}
+
+	sig_t signal(int signum, sig_t handler)
+	{
+		PROCESS *proc = ProcessManager::GetCurrent();
+		ProcessManager::SetSignalHandler(proc, signum, handler);
+	}
+
 	void halt()
 	{
 		halt();
@@ -348,6 +360,7 @@ namespace Syscalls
 
 	bool Init()
 	{
+		InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)exit);
 		InstallSyscall(SYSCALL_OPEN, (SYSCALL_HANDLER)open);
 		InstallSyscall(SYSCALL_CLOSE, (SYSCALL_HANDLER)close);
 		InstallSyscall(SYSCALL_READ, (SYSCALL_HANDLER)read);
@@ -361,13 +374,14 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);
 		InstallSyscall(SYSCALL_SBRK, (SYSCALL_HANDLER)sbrk);
 		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)fstat);
+		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)kill);
+		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)signal);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);
 		InstallSyscall(SYSCALL_COLOR, (SYSCALL_HANDLER)color);
 		InstallSyscall(SYSCALL_GETTIME, (SYSCALL_HANDLER)gettime);
 		InstallSyscall(SYSCALL_DRAW, (SYSCALL_HANDLER)draw);
-		InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)exit);
 		InstallSyscall(SYSCALL_EXIT_THREAD, (SYSCALL_HANDLER)exit_thread);
 		InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sleep);
 		InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)get_ticks);

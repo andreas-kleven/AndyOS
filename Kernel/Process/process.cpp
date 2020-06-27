@@ -19,6 +19,9 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 
 	memset(this->file_table, 0, sizeof(this->file_table));
 
+	for (int i = 0; i < sizeof(this->signal_table); i++)
+		ProcessManager::SetSignalHandler(this, i, SIG_DFL);
+
 	this->signal_handler = 0;
 	this->messages = CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
 }
@@ -61,16 +64,15 @@ namespace ProcessManager
 
 	STATUS Terminate(PROCESS *proc)
 	{
+		debug_print("Terminate pid:%d\n", proc->id);
+		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
+		VMem::SwapAddressSpace(proc->addr_space);
 		FreeAllMemory(proc);
 		CloseFiles(proc);
 		StopThreads(proc);
 		Task::Switch(); //execution stops here
+		VMem::SwapAddressSpace(old_space);
 		return STATUS_SUCCESS;
-	}
-
-	STATUS Kill(PROCESS *proc)
-	{
-		return STATUS_FAILED;
 	}
 
 	THREAD *CreateThread(PROCESS *proc, void (*entry)())
@@ -87,7 +89,7 @@ namespace ProcessManager
 		case PROCESS_USER:
 			VMem::SwapAddressSpace(proc->addr_space);
 
-			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
+			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 			int blocks = 2; // TODO: Hack
 
 			void *virt = (void *)(proc->stack_ptr - blocks * BLOCK_SIZE);
@@ -172,19 +174,24 @@ namespace ProcessManager
 		int next_block = (next_end - 1) / BLOCK_SIZE + 1;
 		int blocks = next_block - cur_block;
 
+		debug_print("sbrk %d=0x%x %i %i %p-%p\n", increment, increment, BYTES_TO_BLOCKS(increment), blocks, prev_end, next_end);
+
 		if (next_end > HEAP_END)
 			return 0;
 
 		if (blocks > 0)
 		{
-			int flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
+			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 			size_t virt = cur_block * BLOCK_SIZE;
 			void *phys = PMem::AllocBlocks(blocks);
 			VMem::MapPages((void *)virt, phys, blocks, flags);
+
+			debug_print("%p-%p  %p\n", virt, virt + blocks * BLOCK_SIZE, proc->heap_end);
 		}
 		else if (blocks < 0)
 		{
-			void* virt = (void*)(prev_end - blocks * BLOCK_SIZE);
+			// TODO
+			void *virt = (void *)((cur_block - blocks) * BLOCK_SIZE);
 			VMem::FreePages(virt, blocks);
 		}
 

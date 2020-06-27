@@ -32,7 +32,7 @@ fi
 
 cd newlib
 if ! grep -q $SYSTEM "configure.host"; then
-    awk "/Get the source directories to use for the host./,/case/ { if(\$0 ~ /case/) { print; print \"  i[3-7]86-*-$SYSTEM*)\"; print \"    sys_dir=$SYSTEM\"; print \"    ;;\"; next }}1" configure.host > configure.host.tmp
+    awk "/Get the source directories to use for the host./,/case/ { if(\$0 ~ /case/) { print; print \"  i[3-7]86-*-$SYSTEM*)\"; print \"    sys_dir=$SYSTEM\"; print \"    newlib_cflags=\\\"\${newlib_cflags} -DSIGNAL_PROVIDED\\\"\"; print \"    ;;\"; next }}1" configure.host > configure.host.tmp
     mv configure.host.tmp configure.host
 fi
 
