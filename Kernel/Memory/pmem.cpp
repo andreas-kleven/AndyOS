@@ -1,10 +1,11 @@
 #include "pmem.h"
 #include "memory.h"
+#include "Process/scheduler.h"
 
 namespace PMem
 {
 	size_t mem_size;
-	uint32* mem_map;
+	uint32 *mem_map;
 
 	size_t num_blocks;
 	size_t num_free;
@@ -26,10 +27,18 @@ namespace PMem
 
 	size_t FirstFree()
 	{
-		for (size_t i = 0; i < num_blocks; i++)
-			if (!GetBit(i))
-				return i;
+		Scheduler::Disable();
 
+		for (size_t i = 0; i < num_blocks; i++)
+		{
+			if (!GetBit(i))
+			{
+				Scheduler::Enable();
+				return i;
+			}
+		}
+
+		Scheduler::Enable();
 		return 0;
 	}
 
@@ -40,6 +49,8 @@ namespace PMem
 
 		if (size == 1)
 			return FirstFree();
+
+		Scheduler::Disable();
 
 		size_t i, j;
 
@@ -56,12 +67,18 @@ namespace PMem
 				}
 
 				if (found)
+				{
+					Scheduler::Enable();
 					return i;
+				}
 				else
+				{
 					i += j;
+				}
 			}
 		}
 
+		Scheduler::Enable();
 		return 0;
 	}
 
@@ -80,7 +97,7 @@ namespace PMem
 		return num_blocks - num_free;
 	}
 
-	void InitRegion(void* addr, size_t size)
+	void InitRegion(void *addr, size_t size)
 	{
 		int align = (size_t)addr / BLOCK_SIZE;
 		int num = size / BLOCK_SIZE;
@@ -94,7 +111,7 @@ namespace PMem
 		SetBit(0);
 	}
 
-	void DeInitRegion(void* addr, size_t size)
+	void DeInitRegion(void *addr, size_t size)
 	{
 		int align = (size_t)addr / BLOCK_SIZE;
 		int blocks = size / BLOCK_SIZE;
@@ -108,12 +125,14 @@ namespace PMem
 		SetBit(0);
 	}
 
-	void* AllocBlocks(size_t size)
+	void *AllocBlocks(size_t size)
 	{
 		size_t frame = FirstFreeNum(size);
 
 		if (frame == 0)
 			return 0;
+
+		Scheduler::Disable();
 
 		for (size_t i = 0; i < size; i++)
 		{
@@ -121,15 +140,18 @@ namespace PMem
 			num_free--;
 		}
 
-		return (void*)(frame * BLOCK_SIZE);
+		Scheduler::Enable();
+		return (void *)(frame * BLOCK_SIZE);
 	}
 
-	void FreeBlocks(void* addr, size_t size)
+	void FreeBlocks(void *addr, size_t size)
 	{
 		int frame = (size_t)addr / BLOCK_SIZE;
 
 		if (frame == 0 || size == 0)
 			return;
+
+		Scheduler::Disable();
 
 		for (size_t i = 0; i < size; i++)
 		{
@@ -139,12 +161,14 @@ namespace PMem
 				num_free++;
 			}
 		}
+
+		Scheduler::Enable();
 	}
 
-	STATUS Init(size_t mem_start, size_t mem_end, void* map)
+	STATUS Init(size_t mem_start, size_t mem_end, void *map)
 	{
 		mem_size = mem_end - mem_start;
-		mem_map = (uint32*)map;
+		mem_map = (uint32 *)map;
 
 		num_blocks = BYTES_TO_BLOCKS(mem_size);
 		num_free = num_blocks;
@@ -152,4 +176,4 @@ namespace PMem
 		DeInitRegion(0, mem_size);
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace PMem

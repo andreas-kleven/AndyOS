@@ -8,38 +8,34 @@
 
 namespace ProcessManager
 {
-    PROCESS* Exec(const char* path)
+    PROCESS *Exec(const char *path)
     {
-		disable();
-
         ADDRESS_SPACE old_space = VMem::GetAddressSpace();
-		ADDRESS_SPACE addr_space;
+        ADDRESS_SPACE addr_space;
 
         if (!VMem::CreateAddressSpace(&addr_space))
             return 0;
 
-		VMem::SwapAddressSpace(addr_space);
+        VMem::SwapAddressSpace(addr_space);
 
-		PROCESS* proc = new PROCESS(PROCESS_USER, addr_space);
+        PROCESS *proc = new PROCESS(PROCESS_USER, addr_space);
         size_t entry = ELF::Load(path, proc);
 
         if (entry)
         {
-		    if (ProcessManager::CreateThread(proc, (void(*)())entry))
+            if (ProcessManager::CreateThread(proc, (void (*)())entry))
             {
-		        VMem::SwapAddressSpace(old_space);
-                enable();
-		        return AddProcess(proc);
+                VMem::SwapAddressSpace(old_space);
+                return AddProcess(proc);
             }
         }
 
         //Todo: cleanup
         VMem::SwapAddressSpace(old_space);
-        enable();
         return 0;
     }
 
-    bool Exec(PROCESS* proc, char const *_path, char const *argv[], char const *envp[])
+    bool Exec(PROCESS *proc, char const *_path, char const *argv[], char const *envp[])
     {
         if (!_path)
             return false;
@@ -54,15 +50,12 @@ namespace ProcessManager
 
         if (entry)
         {
-            THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())entry);
+            THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry);
 
-		    if (thread)
-            {
+            if (thread)
                 Scheduler::InsertThread(thread);
-                Task::Switch(); //execution stops here
-            }
         }
 
         return false;
     }
-}
+} // namespace ProcessManager

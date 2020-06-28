@@ -87,7 +87,7 @@ namespace Syscalls
 	pid_t fork()
 	{
 		PROCESS *newproc = ProcessManager::Fork(ProcessManager::GetCurrent());
-		return newproc == 0 ? -1 : 0;
+		return newproc ? newproc->id : -1;
 	}
 
 	pid_t getpid()
@@ -146,7 +146,7 @@ namespace Syscalls
 
 	void halt()
 	{
-		halt();
+		sys_halt();
 	}
 
 	void print(char *text)
@@ -179,7 +179,7 @@ namespace Syscalls
 
 	void exit_thread(int code)
 	{
-		Scheduler::ExitThread(code, Scheduler::CurrentThread(), true);
+		Scheduler::ExitThread(code, Scheduler::CurrentThread());
 	}
 
 	void sleep(uint32 ticks)

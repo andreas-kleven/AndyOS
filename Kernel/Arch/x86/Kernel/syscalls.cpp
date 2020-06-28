@@ -2,6 +2,7 @@
 #include "Arch/idt.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
+#include "Kernel/task.h"
 #include "panic.h"
 #include "syscalls.h"
 #include "syscall_list.h"
@@ -41,6 +42,8 @@ namespace Syscalls::Arch
 			"pop %%ebx\n"
 			"pop %%ebx\n"
 			: "=a" (ret) : "g" (regs->ebp), "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
+
+		Task::Switch();
 
 		regs->eax = ret;
     }

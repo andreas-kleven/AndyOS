@@ -10,6 +10,7 @@ typedef long long			int64;
 typedef unsigned long long	uint64;
 
 typedef long unsigned int size_t;
+typedef long signed int ssize_t;
 typedef int pid_t;
 typedef long int off_t;
 typedef long int intptr_t;

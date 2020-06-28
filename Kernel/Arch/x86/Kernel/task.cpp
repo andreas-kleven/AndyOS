@@ -19,9 +19,9 @@ namespace Task::Arch
 	size_t tmp_stack;
 	uint8 __attribute__((aligned(16))) fpu_state[512];
 
-	THREAD* CreateKernelThread(void(*entry)())
+	THREAD *CreateKernelThread(void (*entry)())
 	{
-		THREAD* thread = (THREAD*)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
+		THREAD *thread = (THREAD *)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
 
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
@@ -31,7 +31,7 @@ namespace Task::Arch
 		thread->procNext = 0;
 		thread->sleep_until = 0;
 
-		REGS* regs = (REGS*)thread->stack;
+		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;
 		regs->edi = 0;
 		regs->esi = 0;
@@ -52,12 +52,12 @@ namespace Task::Arch
 		return thread;
 	}
 
-	THREAD* CreateUserThread(void(*entry)(), void* stack)
+	THREAD *CreateUserThread(void (*entry)(), void *stack)
 	{
-		THREAD* thread = CreateKernelThread(entry);
+		THREAD *thread = CreateKernelThread(entry);
 		thread->kernel_esp = thread->stack;
 
-		REGS* regs = (REGS*)thread->stack;
+		REGS *regs = (REGS *)thread->stack;
 		regs->cs = USER_CS;
 		regs->ds = USER_SS;
 		regs->es = USER_SS;
@@ -69,41 +69,42 @@ namespace Task::Arch
 		return thread;
 	}
 
-	THREAD* CopyThread(THREAD* old, pid_t newpid)
+	THREAD *CopyThread(THREAD *old)
 	{
 		//Copy stack
-		char* old_stack = (char*)old - stack_size + sizeof(THREAD);
-		char* new_stack = new char[stack_size];
+		char *old_stack = (char *)old - stack_size + sizeof(THREAD);
+		char *new_stack = new char[stack_size];
 		memcpy(new_stack, old_stack, stack_size);
 
-		THREAD* thread = (THREAD*)((size_t)(new_stack) + stack_size - sizeof(THREAD));
-		thread->stack = old->stack + (signed long)thread - (signed long)old;
-		thread->kernel_esp = old->kernel_esp + (signed long)thread - (signed long)old;
+		ssize_t offset = (ssize_t)new_stack - (ssize_t)old_stack;
+		THREAD *thread = (THREAD *)((size_t)old + offset);
+		thread->stack = old->stack + offset;
+		thread->kernel_esp = old->kernel_esp + offset;
 
 		//Copy fpu state
 		thread->fpu_state = new uint8[512];
 		memcpy(thread->fpu_state, old->fpu_state, 512);
 
-		if (newpid > 0)
-		{
-			//Set return value of fork()
-			REGS* regs = (REGS*)thread->stack;
-			regs->eax = newpid;
-		}
-
 		return thread;
 	}
 
-    void Switch()
-    {
-        asm volatile("int %0" :: "N" (TASK_SCHEDULE_IRQ));
-    }
+	int SetThreadReturn(THREAD *thread, int ret)
+	{
+		REGS *regs = (REGS *)thread->stack;
+		regs->eax = ret;
+		return 1;
+	}
 
-    void Schedule()
-    {
+	void Switch()
+	{
+		asm volatile("int %0" ::"N"(TASK_SCHEDULE_IRQ));
+	}
+
+	void Schedule()
+	{
 		PIT::ticks++;
-		
-        THREAD* current_thread = Scheduler::CurrentThread();
+
+		THREAD *current_thread = Scheduler::CurrentThread();
 
 		//Save stack
 		current_thread->stack = tmp_stack;
@@ -111,9 +112,9 @@ namespace Task::Arch
 		//Save fpu state
 		//asm volatile("fxsave (%0)" :: "m" (fpu_state));
 		//memcpy(current_thread->fpu_state, fpu_state, 512);
-        
-        //Schedule
-        current_thread = Scheduler::Schedule();
+
+		//Schedule
+		current_thread = Scheduler::Schedule();
 
 		//Restore fpu state
 		/*if (current_thread->state != THREAD_STATE_INITIALIZED)
@@ -127,7 +128,7 @@ namespace Task::Arch
 
 		TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
 		PIC::InterruptDone(TASK_SCHEDULE_IRQ);
-    }
+	}
 
 	void INTERRUPT Task_ISR()
 	{
@@ -156,14 +157,15 @@ namespace Task::Arch
 			"popa\n"
 
 			"iret"
-			: "=m" (tmp_stack) : "i" (&Schedule), "m" (tmp_stack));
+			: "=m"(tmp_stack)
+			: "i"(&Schedule), "m"(tmp_stack));
 	}
 
-	void Start(void(*entry)())
+	void Start(void (*entry)())
 	{
-        THREAD* thread = CreateKernelThread(entry);
+		THREAD *thread = CreateKernelThread(entry);
 		Scheduler::InsertThread(thread);
-		
+
 		disable();
 		IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);
 
@@ -174,6 +176,6 @@ namespace Task::Arch
 			"pop %%es\n"
 			"pop %%ds\n"
 			"popa\n"
-			"iret" :: "r" (thread->stack));
+			"iret" ::"r"(thread->stack));
 	}
-}
+} // namespace Task::Arch

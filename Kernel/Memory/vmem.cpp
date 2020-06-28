@@ -120,7 +120,7 @@ namespace VMem
 		{
 			size_t addr = (size_t)virt + i * PAGE_SIZE;
 			if (GetFlags(addr) & PAGE_PRESENT)
-				debug_print("Page already mapped %p\n", virt);
+				debug_print("Page already mapped %p, %x, %p -> %p\n", GetAddressSpace().ptr, GetFlags(addr), addr, GetAddress(addr));
 		}
 
 		bool ret = Arch::MapPages(virt, phys, count, flags);

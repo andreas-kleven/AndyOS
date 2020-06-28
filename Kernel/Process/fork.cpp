@@ -5,27 +5,26 @@
 
 namespace ProcessManager
 {
-	bool CopyThreads(PROCESS* proc, PROCESS* newproc)
+	bool CopyThreads(PROCESS *proc, PROCESS *newproc)
 	{
-		THREAD* current_thread = Scheduler::CurrentThread();
-		THREAD* thread = proc->main_thread;
-		
+		THREAD *current_thread = Scheduler::CurrentThread();
+		THREAD *thread = proc->main_thread;
+
 		while (thread)
 		{
-			pid_t newpid = thread == current_thread ? newproc->id : 0;
-			THREAD* copy = Task::CopyThread(thread, newpid);
-			
-			if (!copy)
-				return false;
+			if (thread->state != THREAD_STATE_TERMINATED)
+			{
+				THREAD *copy = Task::CopyThread(thread);
 
-			if (!AddThread(newproc, copy))
-				return false;
+				if (!copy)
+					return false;
 
-			if (thread == proc->main_thread)
-				newproc->main_thread = copy;
+				if (!AddThread(newproc, copy))
+					return false;
 
-			if (copy->state == THREAD_STATE_RUNNING)
-				copy->state = THREAD_STATE_READY;
+				if (thread == current_thread)
+					Task::SetThreadReturn(copy, 0);
+			}
 
 			thread = thread->procNext;
 		}
@@ -33,23 +32,31 @@ namespace ProcessManager
 		return true;
 	}
 
-	PROCESS* Fork(PROCESS* proc)
+	PROCESS *Fork(PROCESS *proc)
 	{
+		debug_print("Fork %d\n", proc->id);
+
 		VMem::SwapAddressSpace(proc->addr_space);
 		ADDRESS_SPACE space;
-		
+
 		if (!VMem::CopyAddressSpace(&space))
 			return 0;
 
 		VMem::SwapAddressSpace(space);
 
-		PROCESS* newproc = new PROCESS(proc->flags, space);
+		PROCESS *newproc = new PROCESS(proc->flags, space);
 		AssignPid(newproc);
 
-		memcpy(newproc->file_table, proc->file_table, sizeof(proc->file_table));
-		memcpy(newproc->signal_table, proc->signal_table, sizeof(proc->signal_table));
-
+		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
 		newproc->message_handler = proc->message_handler;
+
+		for (int i = 0; i < FILE_TABLE_SIZE; i++)
+		{
+			if (proc->file_table[i])
+				newproc->file_table[i] = new FILE(*proc->file_table[i]);
+		}
+
+		THREAD *current_thread = Scheduler::CurrentThread();
 
 		if (!CopyThreads(proc, newproc))
 		{
@@ -62,6 +69,7 @@ namespace ProcessManager
 		if (!AddProcess(newproc))
 			return 0;
 
+		debug_print("Fork complete\n");
 		return newproc;
 	}
-}
+} // namespace ProcessManager

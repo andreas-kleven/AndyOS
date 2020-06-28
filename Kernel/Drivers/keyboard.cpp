@@ -201,7 +201,7 @@ namespace Keyboard
 		if (key_buffer.IsEmpty())
 			return false;
 
-		KEY_ACTION* packet = key_buffer.Get();
+		KEY_ACTION* packet = key_buffer.Pop();
 
 		if (!packet)
 			return false;

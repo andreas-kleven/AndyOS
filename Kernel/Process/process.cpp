@@ -69,7 +69,6 @@ namespace ProcessManager
 		FreeAllMemory(proc);
 		CloseFiles(proc);
 		StopThreads(proc);
-		Task::Switch(); //execution stops here
 		VMem::SwapAddressSpace(old_space);
 		return STATUS_SUCCESS;
 	}
@@ -127,7 +126,28 @@ namespace ProcessManager
 
 	bool RemoveThread(THREAD *thread)
 	{
-		return false;
+		if (!thread || !thread->process)
+			return false;
+
+		PROCESS* proc = thread->process;
+		THREAD *prev = 0;
+		THREAD *t = proc->main_thread;
+
+		while (t)
+		{
+			if (t == thread)
+			{
+				if (prev)
+					prev->procNext = t->procNext;
+				else
+					proc->main_thread = t->procNext;
+
+				break;
+			}
+
+			prev = t;
+			t = t->procNext;
+		}
 	}
 
 	bool StopThreads(PROCESS *proc)
@@ -135,7 +155,7 @@ namespace ProcessManager
 		THREAD *thread = proc->main_thread;
 		while (thread)
 		{
-			Scheduler::ExitThread(0, thread, false);
+			Scheduler::ExitThread(0, thread);
 			thread = thread->procNext;
 		}
 
@@ -173,7 +193,7 @@ namespace ProcessManager
 		int next_block = (next_end - 1) / BLOCK_SIZE + 1;
 		int blocks = next_block - cur_block;
 
-		debug_print("sbrk %d=0x%x %i %i %p-%p\n", increment, increment, BYTES_TO_BLOCKS(increment), blocks, prev_end, next_end);
+		debug_print("sbrk pid:%d %d=0x%x %i %i %p-%p\n", proc->id, increment, increment, BYTES_TO_BLOCKS(increment), blocks, prev_end, next_end);
 
 		if (next_end > HEAP_END)
 			return 0;
@@ -185,7 +205,7 @@ namespace ProcessManager
 			void *phys = PMem::AllocBlocks(blocks);
 			VMem::MapPages((void *)virt, phys, blocks, flags);
 
-			debug_print("%p-%p  %p\n", virt, virt + blocks * BLOCK_SIZE, proc->heap_end);
+			debug_print("%p-%p -> %p-%p  %p\n", virt, virt + blocks * BLOCK_SIZE, phys, (size_t)phys + blocks * BLOCK_SIZE, next_end);
 		}
 		else if (blocks < 0)
 		{

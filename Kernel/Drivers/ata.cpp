@@ -27,6 +27,8 @@ int ATADriver::Read(fpos_t pos, char* buf, size_t length)
 	if (length <= 0)
 		return -1;
 
+	Scheduler::Disable();
+	
 	int size = ATA_SECTOR_SIZE;
 	int sectors = (length - 1) / ATA_SECTOR_SIZE + 1;
 

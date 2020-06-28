@@ -6,12 +6,14 @@
 #include "string.h"
 #include "Lib/debug.h"
 
+#include "Arch/regs.h"
+
 namespace Scheduler
 {
-	THREAD* first_thread;
-	THREAD* last_thread;
-	THREAD* current_thread;
-	THREAD* idle_thread;
+	THREAD *first_thread;
+	THREAD *last_thread;
+	THREAD *current_thread;
+	THREAD *idle_thread;
 
 	bool enabled = false;
 	int disableCount = 0;
@@ -24,14 +26,19 @@ namespace Scheduler
 
 	void Enable()
 	{
-		if (disableCount <= 1)
+		if (disableCount == 1)
 		{
 			enabled = true;
 			disableCount = 0;
 		}
-		else
+		else if (disableCount > 1)
 		{
 			disableCount--;
+		}
+		else
+		{
+			debug_print("Scheduling error\n");
+			sys_halt();
 		}
 	}
 
@@ -42,7 +49,7 @@ namespace Scheduler
 	}
 
 	int id_counter = 1;
-	int AssignId(THREAD* thread)
+	int AssignId(THREAD *thread)
 	{
 		if (!thread)
 			return 0;
@@ -51,68 +58,42 @@ namespace Scheduler
 		return thread->id;
 	}
 
-	void ExitThread(int code, THREAD* thread, bool auto_switch)
+	void ExitThread(int code, THREAD *thread)
 	{
 		thread->state = THREAD_STATE_TERMINATED;
-
-		if (auto_switch)
-		{
-			//Switch thread
-			if (thread == current_thread)
-				Task::Switch();
-		}
 	}
 
-	void SleepThread(size_t until, THREAD* thread)
+	void SleepThread(size_t until, THREAD *thread)
 	{
-		if (thread->state == THREAD_STATE_TERMINATED)
-			return;
+		Disable();
 
 		if (thread->state != THREAD_STATE_TERMINATED)
-		{
-			thread->state = THREAD_STATE_SLEEPING;
 			thread->sleep_until = until;
 
-			//Switch thread
-			if (thread == current_thread)
-				Task::Switch();
-		}
+		Enable();
 	}
 
-	void BlockThread(THREAD* thread)
+	void BlockThread(THREAD *thread)
 	{
-		if (thread->state == THREAD_STATE_TERMINATED)
-			return;
+		Disable();
 
 		if (thread->state != THREAD_STATE_TERMINATED)
-		{
 			thread->state = THREAD_STATE_BLOCKING;
 
-			//Switch thread
-			if (thread == current_thread)
-				Task::Switch();
-		}
+		Enable();
 	}
 
-	void WakeThread(THREAD* thread)
+	void WakeThread(THREAD *thread)
 	{
-		if (thread->state == THREAD_STATE_TERMINATED)
-			return;
+		Disable();
 
 		if (thread->state != THREAD_STATE_TERMINATED)
-		{
-			if (Timer::Ticks() >= thread->sleep_until)
-			{
-				thread->state = THREAD_STATE_READY;
-			}
-			else
-			{
-				thread->state = THREAD_STATE_SLEEPING;
-			}
-		}
+			thread->state = THREAD_STATE_READY;
+
+		Enable();
 	}
 
-	void InsertThread(THREAD* thread)
+	void InsertThread(THREAD *thread)
 	{
 		Disable();
 		AssignId(thread);
@@ -134,14 +115,16 @@ namespace Scheduler
 		Enable();
 	}
 
-	void RemoveThread(THREAD* thread)
+	void RemoveThread(THREAD *thread)
 	{
 		if (!thread)
 			return;
 
 		Disable();
 
-		THREAD* t = first_thread;
+		ProcessManager::RemoveThread(thread);
+
+		THREAD *t = first_thread;
 		while (t)
 		{
 			if (t->next == thread)
@@ -162,12 +145,12 @@ namespace Scheduler
 		Enable();
 	}
 
-	THREAD* CurrentThread()
+	THREAD *CurrentThread()
 	{
 		return current_thread;
 	}
 
-	THREAD* Schedule()
+	THREAD *Schedule()
 	{
 		if (!enabled)
 			return current_thread;
@@ -179,7 +162,7 @@ namespace Scheduler
 		if (current_thread == idle_thread && first_thread != 0)
 			current_thread = first_thread;
 
-		THREAD* first = current_thread;
+		THREAD *first = current_thread;
 
 		while (1)
 		{
@@ -187,9 +170,7 @@ namespace Scheduler
 
 			if (current_thread == first)
 			{
-				if (current_thread->state != THREAD_STATE_READY
-					&& current_thread->state != THREAD_STATE_INITIALIZED
-					&& current_thread->state != THREAD_STATE_RUNNING)
+				if (current_thread->sleep_until != 0 || (current_thread->state != THREAD_STATE_READY && current_thread->state != THREAD_STATE_INITIALIZED && current_thread->state != THREAD_STATE_RUNNING))
 				{
 					current_thread = idle_thread;
 				}
@@ -198,22 +179,19 @@ namespace Scheduler
 
 			while (current_thread->state == THREAD_STATE_TERMINATED)
 			{
-				THREAD* next = current_thread->next;
-				RemoveThread(current_thread);	
+				THREAD *next = current_thread->next;
+				RemoveThread(current_thread);
 				current_thread = next;
 			}
-			
+
 			//Waiting
-			if (current_thread->state == THREAD_STATE_SLEEPING)
+			if (current_thread->sleep_until)
 			{
 				if (Timer::Ticks() >= current_thread->sleep_until)
-				{
 					current_thread->sleep_until = 0;
-					current_thread->state = THREAD_STATE_READY;
-				}
 			}
 
-			if (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED)
+			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))
 				break;
 		}
 
@@ -233,4 +211,4 @@ namespace Scheduler
 
 		idle_thread = Task::CreateKernelThread(idle);
 	}
-}
+} // namespace Scheduler

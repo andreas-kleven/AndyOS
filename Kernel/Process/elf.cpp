@@ -8,6 +8,8 @@ namespace ELF
 {
 	size_t Load(const char *path, PROCESS *proc)
 	{
+		debug_print("Loading ELF '%s'...\n", path);
+
 		char *image;
 		int size = VFS::ReadFile(path, image);
 

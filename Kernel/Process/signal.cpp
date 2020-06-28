@@ -9,7 +9,7 @@ namespace ProcessManager
         if (!proc)
             return -1;
 
-        if (signo < 0 || signo >= sizeof(proc->signal_table))
+        if (signo < 0 || signo >= SIGNAL_TABLE_SIZE)
             return -1;
 
         if (signo == SIGKILL || signo == SIGSTOP)
@@ -23,7 +23,7 @@ namespace ProcessManager
         if (!proc)
             return -1;
 
-        if (signo < 0 || signo >= sizeof(proc->signal_table))
+        if (signo < 0 || signo >= SIGNAL_TABLE_SIZE)
             return -1;
 
         sig_t &handler = proc->signal_table[signo];

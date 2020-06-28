@@ -9,15 +9,14 @@ private:
 	int tail;
 	bool empty;
 	int size;
-	char* buffer;
+	char *buffer;
 
 public:
 	CircularDataBuffer()
 	{
-		this->head = 0;
-		this->tail = 0;
-		this->empty = true;
 		this->size = 0;
+		this->buffer = 0;
+		Clear();
 	}
 
 	CircularDataBuffer(int size)
@@ -26,13 +25,20 @@ public:
 		this->size = size;
 		this->buffer = new char[size];
 	}
-	
+
 	~CircularDataBuffer()
 	{
 		delete[] buffer;
 	}
 
-	int Write(const char* data, size_t length)
+	void Clear()
+	{
+		this->head = 0;
+		this->tail = 0;
+		this->empty = true;
+	}
+
+	int Write(const char *data, size_t length)
 	{
 		for (size_t i = 0; i < length; i++)
 		{
@@ -43,7 +49,7 @@ public:
 		return length;
 	}
 
-	int Read(int length, char* data)
+	int Read(int length, char *data)
 	{
 		for (int i = 0; i < length; i++)
 		{
@@ -80,7 +86,7 @@ private:
 		return 1;
 	}
 
-	bool ReadOne(char* c)
+	bool ReadOne(char *c)
 	{
 		if (size == 0)
 			return false;
@@ -104,7 +110,7 @@ private:
 	int tail;
 	bool empty;
 	int size;
-	T* items;
+	T *items;
 
 public:
 	CircularBuffer()
@@ -121,13 +127,13 @@ public:
 		this->size = size;
 		this->items = new T[size];
 	}
-	
+
 	~CircularBuffer<T>()
 	{
 		delete items;
 	}
 
-	bool Add(const T& item)
+	bool Add(const T &item)
 	{
 		if (size == 0)
 			return false;
@@ -142,7 +148,7 @@ public:
 		return 1;
 	}
 
-	T* Get()
+	T *Pop()
 	{
 		if (size == 0)
 			return 0;
@@ -150,11 +156,21 @@ public:
 		if (empty)
 			return 0;
 
-		T* item = &items[tail];
+		T *item = Get();
 		tail = (tail + 1) % size;
-
 		empty = tail == head;
 		return item;
+	}
+
+	T *Get()
+	{
+		if (size == 0)
+			return 0;
+
+		if (empty)
+			return 0;
+
+		return &items[tail];
 	}
 
 	bool IsEmpty()

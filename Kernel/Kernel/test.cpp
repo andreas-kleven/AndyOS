@@ -75,9 +75,11 @@ namespace Test
 
 	void GUI()
 	{
-		PROCESS* proc = ProcessManager::Exec("1winman");
-		Scheduler::SleepThread(100, Scheduler::CurrentThread());
-		ProcessManager::Exec("1term");
+		Scheduler::Disable();
+		PROCESS* proc1 = ProcessManager::Exec("1winman");
+		PROCESS* proc2 = ProcessManager::Exec("1term");
+		Scheduler::Enable();
+
 		//ProcessManager::Exec("1test");
 		//ProcessManager::Exec("1mndlbrt");
 
@@ -98,7 +100,6 @@ namespace Test
 						disable();
 						VMem::SwapAddressSpace(proc->addr_space);
 
-
 						if (proc->message_handler)
 						{
 							THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
@@ -116,6 +117,8 @@ namespace Test
 							regs->user_stack -= 28 + msg->size;
 
 							Scheduler::InsertThread(thread);
+
+							proc->messages.Pop();
 						}
 
 						enable();
