@@ -12,14 +12,14 @@
 
 namespace VFS
 {
-	FileSystem* first_fs;
-	FileSystem* primary_fs;
+	FileSystem *first_fs;
+	FileSystem *primary_fs;
 
-	FNODE* nodes[NODE_COUNT];
+	FNODE *nodes[NODE_COUNT];
 
-	bool Mount(BlockDriver* driver, const char* mount_point)
+	bool Mount(BlockDriver *driver, const char *mount_point)
 	{
-		FileSystem* fs = new ISO_FS(driver);
+		FileSystem *fs = new ISO_FS(driver);
 		fs->mount_point = mount_point;
 
 		first_fs = fs;
@@ -27,7 +27,7 @@ namespace VFS
 		return true;
 	}
 
-	bool AddNode(FNODE* node)
+	bool AddNode(FNODE *node)
 	{
 		for (int i = 0; i < NODE_COUNT; i++)
 		{
@@ -41,19 +41,19 @@ namespace VFS
 		return false;
 	}
 
-	FileSystem* GetFS(const Path& path)
+	FileSystem *GetFS(const Path &path)
 	{
 		return primary_fs;
 	}
 
-	FNODE* GetNode(const Path& path)
+	FNODE *GetNode(const Path &path)
 	{
 		if (path.count == 0)
 			return 0;
 
 		for (int i = 0; i < NODE_COUNT; i++)
 		{
-			FNODE* node = nodes[i];
+			FNODE *node = nodes[i];
 
 			if (node)
 			{
@@ -64,8 +64,8 @@ namespace VFS
 			}
 		}
 
-		FileSystem* fs = GetFS(path);
-		FNODE* node = new FNODE;
+		FileSystem *fs = GetFS(path);
+		FNODE *node = new FNODE;
 
 		if (fs)
 		{
@@ -77,7 +77,7 @@ namespace VFS
 			{
 				if (strcmp(path.parts[0], "dev") == 0)
 				{
-					Driver* drv = DriverManager::GetDriver(path.parts[1]);
+					Driver *drv = DriverManager::GetDriver(path.parts[1]);
 
 					if (drv && drv->type == DRIVER_TYPE_CHAR)
 					{
@@ -113,9 +113,9 @@ namespace VFS
 		return node;
 	}
 
-	int AddFile(FILE* file)
+	int AddFile(FILE *file)
 	{
-		PROCESS* proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Scheduler::CurrentThread()->process;
 
 		//Find first empty
 		for (int i = 3; i < FILE_TABLE_SIZE; i++)
@@ -130,9 +130,9 @@ namespace VFS
 		return -1;
 	}
 
-	FILE* GetFile(int fd)
+	FILE *GetFile(int fd)
 	{
-		PROCESS* proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Scheduler::CurrentThread()->process;
 
 		if (fd >= FILE_TABLE_SIZE)
 			return 0;
@@ -140,9 +140,9 @@ namespace VFS
 		return proc->file_table[fd];
 	}
 
-	bool SetFile(int fd, FILE* file)
+	bool SetFile(int fd, FILE *file)
 	{
-		PROCESS* proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Scheduler::CurrentThread()->process;
 
 		if (fd >= FILE_TABLE_SIZE)
 			return false;
@@ -153,7 +153,7 @@ namespace VFS
 
 	int DuplicateFile(int oldfd)
 	{
-		FILE* file = GetFile(oldfd);
+		FILE *file = GetFile(oldfd);
 
 		if (!file)
 			return -1;
@@ -163,7 +163,7 @@ namespace VFS
 
 	int DuplicateFile(int oldfd, int newfd)
 	{
-		FILE* file = GetFile(oldfd);
+		FILE *file = GetFile(oldfd);
 
 		if (!file)
 			return -1;
@@ -175,17 +175,17 @@ namespace VFS
 		return SetFile(newfd, file);
 	}
 
-	int Open(const char* filename)
+	int Open(const char *filename)
 	{
 		Path path(filename);
-		FNODE* node = GetNode(path);
+		FNODE *node = GetNode(path);
 
 		if (!node)
 			return -1;
 
-		THREAD* thread = Scheduler::CurrentThread();
-		FILE* file = new FILE(node, thread);
-		FileIO* io = file->node->io;
+		THREAD *thread = Scheduler::CurrentThread();
+		FILE *file = new FILE(node, thread);
+		FileIO *io = file->node->io;
 
 		if (!io)
 			return -1;
@@ -198,24 +198,31 @@ namespace VFS
 
 	int Close(int fd)
 	{
-		FILE* file = GetFile(fd);
-		delete file;
+		int ret = 0;
+		FILE *file = GetFile(fd);
 
 		if (!file)
 			return -1;
 
+		//if ((ret = file->node->io->Close(file)))
+		//	return ret;
+
+		debug_print("Close file %d\n", fd);
+
+		delete file;
 		SetFile(fd, 0);
-		return 0;
+
+		return ret;
 	}
 
-	size_t Read(int fd, char* dst, size_t size)
+	size_t Read(int fd, char *dst, size_t size)
 	{
-		FILE* file = GetFile(fd);
+		FILE *file = GetFile(fd);
 
 		if (!file)
 			return 0;
 
-		FNODE* node = file->node;
+		FNODE *node = file->node;
 
 		int read = node->io->Read(file, dst, size);
 
@@ -226,14 +233,14 @@ namespace VFS
 		return read;
 	}
 
-	size_t Write(int fd, const char* buf, size_t size)
+	size_t Write(int fd, const char *buf, size_t size)
 	{
-		FILE* file = GetFile(fd);
+		FILE *file = GetFile(fd);
 
 		if (!file)
 			return 0;
 
-		FNODE* node = file->node;
+		FNODE *node = file->node;
 
 		int written = node->io->Write(file, buf, size);
 
@@ -246,7 +253,7 @@ namespace VFS
 
 	off_t Seek(int fd, off_t offset, int whence)
 	{
-		FILE* file = GetFile(fd);
+		FILE *file = GetFile(fd);
 
 		if (!file)
 			return -1;
@@ -272,16 +279,16 @@ namespace VFS
 
 	int CreatePipes(int pipefd[2], int flags)
 	{
-		THREAD* thread = Scheduler::CurrentThread();
+		THREAD *thread = Scheduler::CurrentThread();
 
-		Pipe* pipe = new Pipe();
-		FNODE* node = new FNODE("/pipes/1", FILE_TYPE_PIPE, pipe);
-		
+		Pipe *pipe = new Pipe();
+		FNODE *node = new FNODE(0, FILE_TYPE_PIPE, pipe);
+
 		if (!AddNode(node))
 			return -1;
 
-		FILE* read = new FILE(node, thread);
-		FILE* write = new FILE(node, thread);
+		FILE *read = new FILE(node, thread);
+		FILE *write = new FILE(node, thread);
 
 		pipefd[0] = AddFile(read);
 		pipefd[1] = AddFile(write);
@@ -292,7 +299,7 @@ namespace VFS
 		return 0;
 	}
 
-	uint32 ReadFile(const char* filename, char*& buffer)
+	uint32 ReadFile(const char *filename, char *&buffer)
 	{
 		Path path(filename);
 
@@ -311,18 +318,18 @@ namespace VFS
 
 	STATUS Init()
 	{
-		memset(nodes, 0, sizeof(FNODE*) * NODE_COUNT);
+		memset(nodes, 0, sizeof(FNODE *) * NODE_COUNT);
 
 		first_fs = 0;
 		primary_fs = 0;
 
-		Driver* drv = DriverManager::GetDriver();
+		Driver *drv = DriverManager::GetDriver();
 
 		while (drv)
 		{
 			if (drv->type == DRIVER_TYPE_BLOCK)
 			{
-				Mount((BlockDriver*)drv, "/");
+				Mount((BlockDriver *)drv, "/");
 				return STATUS_SUCCESS;
 			}
 
@@ -331,4 +338,4 @@ namespace VFS
 
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace VFS

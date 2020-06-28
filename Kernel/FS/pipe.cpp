@@ -1,16 +1,13 @@
 #include "pipe.h"
 #include "string.h"
 
-Event read_event;
-Event write_event;
-
 Pipe::Pipe(int buf_size)
 {
     buffer = CircularDataBuffer(buf_size);
     write_event.Set();
 }
 
-int Pipe::Read(FILE* file, char* buf, size_t size)
+int Pipe::Read(FILE *file, char *buf, size_t size)
 {
     read_event.Wait();
     int ret = buffer.Read(size, buf);
@@ -24,8 +21,9 @@ int Pipe::Read(FILE* file, char* buf, size_t size)
     return ret;
 }
 
-int Pipe::Write(FILE* file, const char* buf, size_t size)
+int Pipe::Write(FILE *file, const char *buf, size_t size)
 {
+    write_event.Wait();
     read_event.Set();
     int ret = buffer.Write(buf, size);
 
@@ -38,7 +36,13 @@ int Pipe::Write(FILE* file, const char* buf, size_t size)
     return ret;
 }
 
-int Pipe::Seek(FILE* file, long offset, int origin)
+int Pipe::Seek(FILE *file, long offset, int origin)
 {
     return -1;
+}
+
+int Pipe::Close(FILE *file)
+{
+    read_event.Set();
+    return 0;
 }
