@@ -14,6 +14,13 @@
 #define USER_SS		0x23
 #define USER_DS		0x23
 
+#define IDT_DESC_BIT16		0x06	//00000110
+#define IDT_DESC_BIT32		0x0E	//00001110
+#define IDT_DESC_RING1		0x40	//01000000
+#define IDT_DESC_RING2		0x20	//00100000
+#define IDT_DESC_RING3		0x60	//01100000
+#define IDT_DESC_PRESENT	0x80	//10000000
+
 typedef void(*ISR)();
 
 struct IDT_DESCRIPTOR

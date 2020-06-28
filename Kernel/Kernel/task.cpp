@@ -38,11 +38,6 @@ namespace Task
 		return Arch::SetThreadReturn(thread, ret);
 	}
 
-	void Switch()
-	{
-		Arch::Switch();
-	}
-
 	void Start(void (*entry)())
 	{
 		Arch::Start(entry);

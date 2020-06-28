@@ -9,12 +9,6 @@ namespace Task::Arch
 
 	THREAD* CreateUserThread(void(*entry)(), void* stack)
     {
-        return 0;
-    }
-
-    void Switch()
-    {
-    }
 
     void Start(void(*entry)())
     {

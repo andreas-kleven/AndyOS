@@ -1,14 +1,6 @@
 #include "Arch/idt.h"
 #include "Arch/pic.h"
-#include "syscall_list.h"
 #include "string.h"
-
-#define IDT_DESC_BIT16		0x06	//00000110
-#define IDT_DESC_BIT32		0x0E	//00001110
-#define IDT_DESC_RING1		0x40	//01000000
-#define IDT_DESC_RING2		0x20	//00100000
-#define IDT_DESC_RING3		0x60	//01100000
-#define IDT_DESC_PRESENT	0x80	//10000000
 
 namespace IDT
 {
@@ -51,7 +43,6 @@ namespace IDT
 	void INTERRUPT CommonISR()
 	{
 		asm volatile(
-			"cli\n"
 			"pop %%eax\n"
 			"and $0xFF, %%eax\n"
 			"sub $48, %%esp\n"
@@ -137,10 +128,7 @@ namespace IDT
 			ptr[6] = (target_addr >> 16) & 0xFF;
 			ptr[7] = (target_addr >> 24) & 0xFF;
 
-			if (i == SYSCALL_IRQ)
-				SetISR(i, (ISR)ptr, IDT_DESC_RING3);
-			else
-				SetISR(i, (ISR)ptr, 0);
+			SetISR(i, (ISR)ptr, 0);
 
 			handlers[i].handler = 0;
 		}

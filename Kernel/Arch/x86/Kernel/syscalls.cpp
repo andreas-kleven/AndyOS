@@ -1,5 +1,8 @@
 #include "Arch/syscalls.h"
 #include "Arch/idt.h"
+#include "Arch/pic.h"
+#include "Arch/tss.h"
+#include "Arch/task.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Kernel/task.h"
@@ -10,46 +13,38 @@
 
 namespace Syscalls::Arch
 {
-	void UpdateStack(REGS* regs)
+	void INTERRUPT Syscall_ISR()
 	{
-		THREAD* t = Scheduler::CurrentThread();
-		t->stack = regs->esp + 20 - sizeof(REGS);
+		asm volatile(
+			//Save registers
+			"pusha\n"
+			"push %%ds\n"
+			"push %%es\n"
+			"push %%fs\n"
+			"push %%gs\n"
+
+			"mov %%esp, %0\n"
+
+			//Schedule
+			"push $0x1\n"
+			"call %P1\n"
+
+			//Load registers
+			"mov %2, %%esp\n"
+
+			"pop %%gs\n"
+			"pop %%fs\n"
+			"pop %%es\n"
+			"pop %%ds\n"
+			"popa\n"
+
+			"iret"
+			: "=m"(Task::Arch::tmp_stack)
+			: "i"(&Task::Arch::ScheduleTask), "m"(Task::Arch::tmp_stack));
 	}
 
-    void Handler(REGS* regs)
-    {
-		void* location = (void*)Syscalls::GetSyscall(regs->eax);
-
-		if (!location)
-			panic("Invalid syscall", "Id: %i", regs->eax);
-
-		UpdateStack(regs);
-
-		uint32 ret;
-
-		asm volatile (
-			"push %1\n"
-			"push %2\n"
-			"push %3\n"
-			"push %4\n"
-			"push %5\n"
-			"push %6\n"
-			"call *%7\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			: "=a" (ret) : "g" (regs->ebp), "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
-
-		Task::Switch();
-
-		regs->eax = ret;
-    }
-
-    void Init()
-    {
-        IDT::InstallIRQ(SYSCALL_IRQ, Handler);
-    }
-}
+	void Init()
+	{
+		IDT::SetISR(SYSCALL_IRQ, Syscall_ISR, IDT_DESC_RING3);
+	}
+} // namespace Syscalls::Arch

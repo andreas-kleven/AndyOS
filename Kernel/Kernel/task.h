@@ -8,6 +8,5 @@ namespace Task
     THREAD* CopyThread(THREAD* thread);
     int SetThreadReturn(THREAD* thread, int ret);
 
-    void Switch();
     void Start(void(*entry)());
 }
