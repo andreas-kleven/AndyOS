@@ -8,16 +8,18 @@ namespace Scheduler
 	void Enable();
 	void Disable();
 
-	void ExitThread(int code, THREAD* thread);
-	void SleepThread(size_t until, THREAD* thread);
-	void BlockThread(THREAD* thread);
-	void WakeThread(THREAD* thread);
-	
-	void InsertThread(THREAD* thread);
-	void RemoveThread(THREAD* thread);
+	void ExitThread(int code, THREAD *thread);
+	void SleepThread(size_t until, THREAD *thread);
+	void BlockThread(THREAD *thread, bool auto_switch = true);
+	void WakeThread(THREAD *thread);
 
-	THREAD* CurrentThread();
-	THREAD* Schedule();
-	
+	void InsertThread(THREAD *thread);
+	void RemoveThread(THREAD *thread);
+
+	THREAD *CurrentThread();
+	THREAD *Schedule();
+
 	void Init();
-};
+	void Start(void (*entry)());
+	void Switch();
+}; // namespace Scheduler

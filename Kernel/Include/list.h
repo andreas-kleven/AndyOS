@@ -114,7 +114,6 @@ public:
 
 	void Remove(T rem)
     {
-        //Todo: test this method
         Node<T>* node = root;
 
         for (int i = 0; i < count; i++)
@@ -122,8 +121,8 @@ public:
             Node<T>* next = node->next;
             if (next->value == rem)
             {
-                node->next = next->next;
-                delete next;
+                RemoveAt(i);
+                return;
             }
 
             node = next;

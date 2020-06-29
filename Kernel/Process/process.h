@@ -107,7 +107,6 @@ namespace ProcessManager
 
 	PROCESS *Fork(PROCESS *proc);
 
-	PROCESS *GetCurrent();
 	PROCESS *GetProcess(pid_t id);
 	PROCESS *GetFirst();
 

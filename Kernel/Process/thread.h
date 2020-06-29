@@ -25,4 +25,5 @@ struct THREAD
 	PROCESS* process;
 	void* fpu_state;
 	size_t sleep_until;
+	ADDRESS_SPACE addr_space;
 };

@@ -4,6 +4,11 @@
 
 namespace Task
 {
+	THREAD *ResetKernelThread(THREAD *thread, void (*entry)())
+	{
+		return Arch::ResetKernelThread(thread, entry);
+	}
+
 	THREAD *CreateKernelThread(void (*entry)())
 	{
 		return Arch::CreateKernelThread(entry);
@@ -36,10 +41,5 @@ namespace Task
 	int SetThreadReturn(THREAD *thread, int ret)
 	{
 		return Arch::SetThreadReturn(thread, ret);
-	}
-
-	void Start(void (*entry)())
-	{
-		Arch::Start(entry);
 	}
 } // namespace Task

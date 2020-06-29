@@ -1,28 +1,18 @@
 #include "Arch/task.h"
 #include "Arch/idt.h"
-#include "Arch/pit.h"
-#include "Arch/tss.h"
-#include "Arch/pic.h"
+#include "Arch/regs.h"
 #include "Process/thread.h"
-#include "Process/scheduler.h"
 #include "Memory/memory.h"
-#include "syscalls.h"
-#include "syscall_list.h"
-#include "hal.h"
 #include "string.h"
-
-#define TASK_SCHEDULE_IRQ 32
 
 namespace Task::Arch
 {
 	const int stack_size = 0x1000;
 
-	size_t tmp_stack;
-	uint8 __attribute__((aligned(16))) fpu_state[512];
-
-	THREAD *CreateKernelThread(void (*entry)())
+	THREAD *ResetKernelThread(THREAD *thread, void (*entry)())
 	{
-		THREAD *thread = (THREAD *)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
+		if (!thread)
+			return 0;
 
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
@@ -31,6 +21,7 @@ namespace Task::Arch
 		thread->next = 0;
 		thread->procNext = 0;
 		thread->sleep_until = 0;
+		thread->addr_space.ptr = 0;
 
 		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;
@@ -50,7 +41,14 @@ namespace Task::Arch
 		regs->es = KERNEL_SS;
 		regs->fs = KERNEL_SS;
 		regs->gs = KERNEL_SS;
+
 		return thread;
+	}
+
+	THREAD *CreateKernelThread(void (*entry)())
+	{
+		THREAD *thread = (THREAD *)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
+		return ResetKernelThread(thread, entry);
 	}
 
 	THREAD *CreateUserThread(void (*entry)(), void *stack)
@@ -80,7 +78,9 @@ namespace Task::Arch
 		ssize_t offset = (ssize_t)new_stack - (ssize_t)old_stack;
 		THREAD *thread = (THREAD *)((size_t)old + offset);
 		thread->stack = old->stack + offset;
-		thread->kernel_esp = old->kernel_esp + offset;
+
+		if (thread->kernel_esp)
+			thread->kernel_esp = old->kernel_esp + offset;
 
 		//Copy fpu state
 		thread->fpu_state = new uint8[512];
@@ -94,119 +94,5 @@ namespace Task::Arch
 		REGS *regs = (REGS *)thread->stack;
 		regs->eax = ret;
 		return 1;
-	}
-
-	void ScheduleTask(bool syscall)
-	{
-		if (!syscall)
-			PIT::ticks++;
-
-		THREAD *current_thread = Scheduler::CurrentThread();
-
-		//Save stack
-		current_thread->stack = tmp_stack;
-
-		//Save fpu state
-		//asm volatile("fxsave (%0)" :: "m" (fpu_state));
-		//memcpy(current_thread->fpu_state, fpu_state, 512);
-
-		if (syscall)
-		{
-			REGS *regs = (REGS *)current_thread->stack;
-
-			void *location = (void *)Syscalls::GetSyscall(regs->eax);
-
-			if (!location)
-				panic("Invalid syscall", "Id: %i", regs->eax);
-
-			uint32 ret;
-
-			asm volatile(
-				"push %1\n"
-				"push %2\n"
-				"push %3\n"
-				"push %4\n"
-				"push %5\n"
-				"push %6\n"
-				"call *%7\n"
-				"pop %%ebx\n"
-				"pop %%ebx\n"
-				"pop %%ebx\n"
-				"pop %%ebx\n"
-				"pop %%ebx\n"
-				"pop %%ebx\n"
-				: "=a"(ret)
-				: "g"(regs->ebp), "r"(regs->edi), "r"(regs->esi), "r"(regs->edx), "r"(regs->ecx), "r"(regs->ebx), "r"(location));
-
-			regs->eax = ret;
-		}
-
-		//Schedule
-		current_thread = Scheduler::Schedule();
-
-		//Restore fpu state
-		/*if (current_thread->state != THREAD_STATE_INITIALIZED)
-		{
-			memcpy(fpu_state, current_thread->fpu_state, 512);
-			asm volatile("fxrstor (%0)" : "=m" (fpu_state));
-		}*/
-
-		//Restore stack
-		tmp_stack = current_thread->stack;
-
-		TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
-
-		if (syscall)
-			PIC::InterruptDone(SYSCALL_IRQ);
-		else
-			PIC::InterruptDone(TASK_SCHEDULE_IRQ);
-	}
-
-	void INTERRUPT Task_ISR()
-	{
-		asm volatile(
-			//Save registers
-			"pusha\n"
-			"push %%ds\n"
-			"push %%es\n"
-			"push %%fs\n"
-			"push %%gs\n"
-
-			"mov %%esp, %0\n"
-
-			//Schedule
-			"push $0x0\n"
-			"call %P1\n"
-
-			//Load registers
-			"mov %2, %%esp\n"
-
-			"pop %%gs\n"
-			"pop %%fs\n"
-			"pop %%es\n"
-			"pop %%ds\n"
-			"popa\n"
-
-			"iret"
-			: "=m"(tmp_stack)
-			: "i"(&ScheduleTask), "m"(tmp_stack));
-	}
-
-	void Start(void (*entry)())
-	{
-		THREAD *thread = CreateKernelThread(entry);
-		Scheduler::InsertThread(thread);
-
-		disable();
-		IDT::SetISR(TASK_SCHEDULE_IRQ, Task_ISR, 0);
-
-		asm volatile(
-			"mov %0, %%esp\n"
-			"pop %%gs\n"
-			"pop %%fs\n"
-			"pop %%es\n"
-			"pop %%ds\n"
-			"popa\n"
-			"iret" ::"r"(thread->stack));
 	}
 } // namespace Task::Arch

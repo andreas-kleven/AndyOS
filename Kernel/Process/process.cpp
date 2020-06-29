@@ -108,6 +108,7 @@ namespace ProcessManager
 	bool AddThread(PROCESS *proc, THREAD *thread)
 	{
 		thread->process = proc;
+		thread->addr_space = proc->addr_space;
 
 		//Insert into thread list
 		if (proc->main_thread == 0)
@@ -216,11 +217,6 @@ namespace ProcessManager
 
 		proc->heap_end = next_end;
 		return (void *)prev_end;
-	}
-
-	PROCESS *GetCurrent()
-	{
-		return Scheduler::CurrentThread()->process;
 	}
 
 	PROCESS *GetProcess(pid_t id)

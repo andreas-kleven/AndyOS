@@ -7,6 +7,7 @@
 #include "Drivers/keyboard.h"
 #include "Memory/memory.h"
 #include "Process/scheduler.h"
+#include "Process/dispatcher.h"
 #include "FS/vfs.h"
 #include "video.h"
 #include "task.h"
@@ -17,19 +18,19 @@ extern size_t __KERNEL_START, __KERNEL_END;
 
 namespace Kernel
 {
-	void Setup(size_t mem_start, size_t mem_end, VideoMode* video_mode)
+	void Setup(size_t mem_start, size_t mem_end, VideoMode *video_mode)
 	{
 		size_t kernel_start = (size_t)&__KERNEL_START;
 		size_t kernel_end = (size_t)&__KERNEL_END;
 
-		debug_init(false);
+		debug_init(true);
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
 
 		Arch::Init();
 
-		PMem::Init(mem_start, mem_end, (void*)kernel_end);
-		PMem::InitRegion((void*)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end);
+		PMem::Init(mem_start, mem_end, (void *)kernel_end);
+		PMem::InitRegion((void *)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end - MEMORY_MAP_SIZE);
 		VMem::Init();
 
 		Syscalls::Init();
@@ -49,6 +50,6 @@ namespace Kernel
 		Scheduler::Init();
 		debug_print("Init Scheduler\n");
 
-		Task::Start(Test::Start);
+		Scheduler::Start(Test::Start);
 	}
-}
+} // namespace Kernel

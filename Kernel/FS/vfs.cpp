@@ -4,6 +4,7 @@
 #include "string.h"
 #include "iso.h"
 #include "Lib/debug.h"
+#include "Process/dispatcher.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Drivers/driver.h"
@@ -115,7 +116,7 @@ namespace VFS
 
 	int AddFile(FILE *file)
 	{
-		PROCESS *proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Dispatcher::CurrentThread()->process;
 
 		//Find first empty
 		for (int i = 3; i < FILE_TABLE_SIZE; i++)
@@ -132,7 +133,7 @@ namespace VFS
 
 	FILE *GetFile(int fd)
 	{
-		PROCESS *proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Dispatcher::CurrentThread()->process;
 
 		if (fd >= FILE_TABLE_SIZE)
 			return 0;
@@ -142,7 +143,7 @@ namespace VFS
 
 	bool SetFile(int fd, FILE *file)
 	{
-		PROCESS *proc = Scheduler::CurrentThread()->process;
+		PROCESS *proc = Dispatcher::CurrentThread()->process;
 
 		if (fd >= FILE_TABLE_SIZE)
 			return false;
@@ -183,7 +184,7 @@ namespace VFS
 		if (!node)
 			return -1;
 
-		THREAD *thread = Scheduler::CurrentThread();
+		THREAD *thread = Dispatcher::CurrentThread();
 		FILE *file = new FILE(node, thread);
 		FileIO *io = file->node->io;
 
@@ -279,7 +280,7 @@ namespace VFS
 
 	int CreatePipes(int pipefd[2], int flags)
 	{
-		THREAD *thread = Scheduler::CurrentThread();
+		THREAD *thread = Dispatcher::CurrentThread();
 
 		Pipe *pipe = new Pipe();
 		FNODE *node = new FNODE(0, FILE_TYPE_PIPE, pipe);
@@ -305,7 +306,7 @@ namespace VFS
 
 		FILE file;
 		file.node = GetNode(path);
-		file.thread = Scheduler::CurrentThread();
+		file.thread = Dispatcher::CurrentThread();
 
 		if (!file.node)
 			return 0;

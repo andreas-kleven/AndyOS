@@ -105,8 +105,8 @@ namespace Exceptions
 		const char* msg4 = (err & PAGE_FAULT_RESERVED_WRITE) ? "Reserved write  " : "";
 		const char* msg5 = (err & PAGE_FAULT_INSTRUCTION_FETCH) ? "Instruction fetch  " : "";
 
-		panic("Page fault", "ADDR:%X  ERR:%X  EFLAGS:%X  CS:%X  EIP:%X  %s%s%s%s%s",
-			faultAddr, err, regs->eflags, regs->cs, regs->eip, msg1, msg2, msg3, msg4, msg5);
+		panic("Page fault", "ADDR:%X  ERR:%X  EFLAGS:%X  CS:%X  EIP:%X  ESP:%X  EBP:%X  %s%s%s%s%s",
+			faultAddr, err, regs->eflags, regs->cs, regs->eip, regs->esp, regs->ebp, msg1, msg2, msg3, msg4, msg5);
 	}
 
 	void ISR15(REGS* regs)

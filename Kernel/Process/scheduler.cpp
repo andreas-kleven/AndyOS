@@ -1,12 +1,11 @@
 #include "scheduler.h"
+#include "Arch/scheduler.h"
 #include "hal.h"
 #include "Memory/memory.h"
 #include "Kernel/task.h"
 #include "Kernel/timer.h"
 #include "string.h"
 #include "Lib/debug.h"
-
-#include "Arch/regs.h"
 
 namespace Scheduler
 {
@@ -17,12 +16,6 @@ namespace Scheduler
 
 	bool enabled = false;
 	int disableCount = 0;
-
-	void idle()
-	{
-		while (1)
-			pause();
-	}
 
 	void Enable()
 	{
@@ -68,17 +61,35 @@ namespace Scheduler
 		Disable();
 
 		if (thread->state != THREAD_STATE_TERMINATED)
+		{
 			thread->sleep_until = until;
+
+			if (thread == current_thread)
+			{
+				Enable();
+				Switch();
+				return;
+			}
+		}
 
 		Enable();
 	}
 
-	void BlockThread(THREAD *thread)
+	void BlockThread(THREAD *thread, bool auto_switch)
 	{
 		Disable();
 
 		if (thread->state != THREAD_STATE_TERMINATED)
+		{
 			thread->state = THREAD_STATE_BLOCKING;
+
+			if (auto_switch && thread == current_thread)
+			{
+				Enable();
+				Switch();
+				return;
+			}
+		}
 
 		Enable();
 	}
@@ -133,7 +144,6 @@ namespace Scheduler
 					last_thread = t;
 
 				t->next = thread->next;
-				delete thread;
 
 				Enable();
 				return;
@@ -153,7 +163,18 @@ namespace Scheduler
 	THREAD *Schedule()
 	{
 		if (!enabled)
-			return current_thread;
+		{
+			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_RUNNING || current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))
+				return current_thread;
+
+			debug_print("Scheduling stopped %d %d\n", current_thread->id, current_thread->state);
+
+			current_thread = idle_thread;
+			idle_thread->state = THREAD_STATE_RUNNING;
+			return idle_thread;
+		}
+
+		current_thread->addr_space = VMem::GetAddressSpace();
 
 		if (current_thread->state == THREAD_STATE_RUNNING)
 			current_thread->state = THREAD_STATE_READY;
@@ -181,6 +202,7 @@ namespace Scheduler
 			{
 				THREAD *next = current_thread->next;
 				RemoveThread(current_thread);
+				delete current_thread;
 				current_thread = next;
 			}
 
@@ -195,8 +217,8 @@ namespace Scheduler
 				break;
 		}
 
-		if (current_thread->process)
-			VMem::SwapAddressSpace(current_thread->process->addr_space);
+		if (current_thread->addr_space.ptr)
+			VMem::SwapAddressSpace(current_thread->addr_space);
 
 		current_thread->state = THREAD_STATE_RUNNING;
 
@@ -209,6 +231,18 @@ namespace Scheduler
 		last_thread = 0;
 		current_thread = 0;
 
-		idle_thread = Task::CreateKernelThread(idle);
+		idle_thread = Task::CreateKernelThread(Arch::Idle);
+	}
+
+	void Start(void (*entry)())
+	{
+		THREAD *thread = Task::CreateKernelThread(entry);
+		Scheduler::InsertThread(thread);
+		Arch::Start(thread);
+	}
+
+	void Switch()
+	{
+		Arch::Switch();
 	}
 } // namespace Scheduler

@@ -1,4 +1,5 @@
 #include "syscalls.h"
+#include "Arch/syscalls.h"
 #include "Include/syscall_list.h"
 #include "hal.h"
 #include "irq.h"
@@ -10,6 +11,7 @@
 #include "Drivers/keyboard.h"
 #include "Drivers/rtc.h"
 #include "Memory/memory.h"
+#include "Process/dispatcher.h"
 #include "Process/scheduler.h"
 #include "Process/process.h"
 #include "FS/vfs.h"
@@ -86,26 +88,24 @@ namespace Syscalls
 
 	pid_t fork()
 	{
-		PROCESS *newproc = ProcessManager::Fork(ProcessManager::GetCurrent());
+		PROCESS *newproc = ProcessManager::Fork(Dispatcher::CurrentProcess());
 		return newproc ? newproc->id : -1;
 	}
 
 	pid_t getpid()
 	{
-		return ProcessManager::GetCurrent()->id;
+		return Dispatcher::CurrentProcess()->id;
 	}
 
 	int execve(char const *path, char const *argv[], char const *envp[])
 	{
-		PROCESS *proc = ProcessManager::GetCurrent();
+		PROCESS *proc = Dispatcher::CurrentProcess();
 		return ProcessManager::Exec(proc, path, argv, envp);
 	}
 
 	void *sbrk(intptr_t increment)
 	{
-		PROCESS *proc = ProcessManager::GetCurrent();
-		VMem::SwapAddressSpace(proc->addr_space);
-
+		PROCESS *proc = Dispatcher::CurrentProcess();
 		void *ret = ProcessManager::AdjustHeap(proc, increment);
 
 		if (ret)
@@ -135,13 +135,14 @@ namespace Syscalls
 	int kill(pid_t pid, int signo)
 	{
 		PROCESS *proc = ProcessManager::GetProcess(pid);
-		ProcessManager::HandleSignal(proc, signo);
+		return ProcessManager::HandleSignal(proc, signo);
 	}
 
 	sig_t signal(int signum, sig_t handler)
 	{
-		PROCESS *proc = ProcessManager::GetCurrent();
+		PROCESS *proc = Dispatcher::CurrentProcess();
 		ProcessManager::SetSignalHandler(proc, signum, handler);
+		return 0; // TODO
 	}
 
 	void halt()
@@ -174,17 +175,17 @@ namespace Syscalls
 
 	void exit(int code)
 	{
-		ProcessManager::Terminate(ProcessManager::GetCurrent());
+		ProcessManager::Terminate(Dispatcher::CurrentProcess());
 	}
 
 	void exit_thread(int code)
 	{
-		Scheduler::ExitThread(code, Scheduler::CurrentThread());
+		Scheduler::ExitThread(code, Dispatcher::CurrentThread());
 	}
 
 	void sleep(uint32 ticks)
 	{
-		Scheduler::SleepThread(Timer::Ticks() + ticks, Scheduler::CurrentThread());
+		Scheduler::SleepThread(Timer::Ticks() + ticks, Dispatcher::CurrentThread());
 	}
 
 	uint32 get_ticks()
@@ -232,25 +233,25 @@ namespace Syscalls
 	//
 	int set_message(MESSAGE_HANDLER handler)
 	{
-		ProcessManager::GetCurrent()->message_handler = handler;
+		Dispatcher::CurrentProcess()->message_handler = handler;
 		return 1;
 	}
 
 	void send_message(int proc_id, int type, char *buf, int size, bool async, int &id)
 	{
-		PROCESS *proc = ProcessManager::GetProcess(proc_id);
+		PROCESS *src_proc = Dispatcher::CurrentProcess();
+		PROCESS *dst_proc = ProcessManager::GetProcess(proc_id);
 
-		if (!proc)
+		if (!dst_proc)
 			return;
 
-		int src_proc = ProcessManager::GetCurrent()->id;
 		id = ++msg_id;
 
-		MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, src_proc, type, size);
+		MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, src_proc->id, type, size);
 		msg.data = new char[size];
 		memcpy(msg.data, buf, size);
 
-		proc->messages.Add(msg);
+		dst_proc->messages.Add(msg);
 
 		if (!async)
 		{
@@ -260,21 +261,21 @@ namespace Syscalls
 			msg->next = first_msg;
 			first_msg = msg;
 
-			Scheduler::BlockThread(Scheduler::CurrentThread());
+			Scheduler::BlockThread(msg->thread);
 		}
 	}
 
 	void send_message_reponse(int msg_id, int type, char *buf, int size)
 	{
+		PROCESS *src_proc = Dispatcher::CurrentProcess();
 		TMP_MSG *msg = first_msg;
-		int src_proc = ProcessManager::GetCurrent()->id;
 
 		while (msg)
 		{
 			if (msg->id == msg_id)
 			{
 				msg->received = true;
-				msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, src_proc, type, size);
+				msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, src_proc->id, type, size);
 				memcpy(msg->response.data, buf, size);
 
 				Scheduler::WakeThread(msg->thread);
@@ -338,6 +339,16 @@ namespace Syscalls
 	SYSCALL_HANDLER GetSyscall(int id)
 	{
 		return (SYSCALL_HANDLER)syscalls[id];
+	}
+
+	void DoSyscall(DISPATCHER_CONTEXT &context)
+	{
+		void *location = (void *)Syscalls::GetSyscall(context.syscall);
+
+		if (!location)
+			panic("Invalid syscall", "Id: %i", context.syscall);
+
+		Arch::DoSyscall(context, location);
 	}
 
 	bool Init()

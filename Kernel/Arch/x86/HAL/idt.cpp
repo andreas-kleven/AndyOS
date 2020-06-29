@@ -43,6 +43,8 @@ namespace IDT
 	void INTERRUPT CommonISR()
 	{
 		asm volatile(
+			"cli\n"
+			
 			"pop %%eax\n"
 			"and $0xFF, %%eax\n"
 			"sub $48, %%esp\n"

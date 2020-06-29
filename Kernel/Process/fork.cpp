@@ -1,4 +1,5 @@
 #include "process.h"
+#include "dispatcher.h"
 #include "scheduler.h"
 #include "Kernel/task.h"
 #include "string.h"
@@ -7,7 +8,7 @@ namespace ProcessManager
 {
 	bool CopyThreads(PROCESS *proc, PROCESS *newproc)
 	{
-		THREAD *current_thread = Scheduler::CurrentThread();
+		THREAD *current_thread = Dispatcher::CurrentThread();
 		THREAD *thread = proc->main_thread;
 
 		while (thread)

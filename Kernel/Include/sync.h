@@ -5,7 +5,7 @@
 class Event
 {
 private:
-    Queue<THREAD*> waiting;
+    Queue<THREAD *> waiting;
     bool set;
 
 public:
