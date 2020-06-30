@@ -11,9 +11,9 @@
 namespace Dispatcher
 {
     DISPATCHER_ENTRY entries[DISPATCHER_THREADS];
-    Queue<DISPATCHER_CONTEXT> queue;
+    Queue<DISPATCHER_CONTEXT> queue = Queue<DISPATCHER_CONTEXT>();
     Event queue_event;
-    Event thread_event;
+    Event thread_event = Event(true);
     int active_count;
 
     DISPATCHER_ENTRY *GetFirstAvailable()
@@ -141,9 +141,6 @@ namespace Dispatcher
 
     void Start()
     {
-        queue = Queue<DISPATCHER_CONTEXT>();
-        queue_event = Event();
-        thread_event = Event(true);
         active_count = 0;
 
         memset(entries, 0, sizeof(entries));

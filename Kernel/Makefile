@@ -32,7 +32,10 @@ CPPFLAGS += -Wno-shift-count-overflow -Wno-unused-variable -Wall -g -fno-rtti -f
 
 LDFLAGS := $(BASEFLAGS) -T $(LINKSCRIPT)
 
-$(TARGET): $(OBJ_FILES) $(LINKSCRIPT)
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+
+$(TARGET): $(CRTBEGIN_OBJ) $(OBJ_FILES) $(CRTEND_OBJ)
 ifeq ($(ARCH),x86)
 	$(CC) $(LDFLAGS) -o $@ $^
 else ifeq ($(ARCH),aarch64)
