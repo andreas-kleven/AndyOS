@@ -95,7 +95,7 @@ namespace Test
 #include "Arch/regs.h"
 		while (1)
 		{
-			Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+			Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
 			PROCESS *proc = ProcessManager::GetFirst();
 
 			while (proc)
@@ -220,7 +220,7 @@ namespace Test
 
 		count += 1;
 		debug_print("Before %i, %i\n", i, count);
-		Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+		Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
 		debug_print("After %i, %i\n", i, count);
 
 		if (i == 1)
@@ -229,7 +229,7 @@ namespace Test
 
 			count += 1;
 			debug_print("Before %i, %i\n", i, count);
-			Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+			Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
 			debug_print("After %i, %i\n", i, count);
 		}
 

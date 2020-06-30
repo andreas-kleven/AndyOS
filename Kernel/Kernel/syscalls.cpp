@@ -183,9 +183,9 @@ namespace Syscalls
 		Scheduler::ExitThread(code, Dispatcher::CurrentThread());
 	}
 
-	void sleep(uint32 ticks)
+	void sleep(useconds_t usec)
 	{
-		Scheduler::SleepThread(Timer::Ticks() + ticks, Dispatcher::CurrentThread());
+		Scheduler::SleepThread(Timer::Ticks() + usec, Dispatcher::CurrentThread());
 	}
 
 	uint32 get_ticks()

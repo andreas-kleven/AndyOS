@@ -4,14 +4,14 @@
 
 namespace Timer
 {
-    size_t Ticks()
+    uint64 Ticks()
     {
         return Arch::Ticks();
     }
     
-	void Sleep(size_t time)
+	void Sleep(uint64 time)
 	{
-		size_t end = Ticks() + time;
+		uint64 end = Ticks() + time;
 		while (Ticks() < end) pause();
 	}
 }

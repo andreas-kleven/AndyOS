@@ -9,7 +9,7 @@ namespace Scheduler
 	void Disable();
 
 	void ExitThread(int code, THREAD *thread);
-	void SleepThread(size_t until, THREAD *thread);
+	void SleepThread(uint64 until, THREAD *thread);
 	void BlockThread(THREAD *thread, bool auto_switch = true);
 	void WakeThread(THREAD *thread);
 

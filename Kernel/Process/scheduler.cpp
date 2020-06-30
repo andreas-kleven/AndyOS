@@ -56,7 +56,7 @@ namespace Scheduler
 		thread->state = THREAD_STATE_TERMINATED;
 	}
 
-	void SleepThread(size_t until, THREAD *thread)
+	void SleepThread(uint64 until, THREAD *thread)
 	{
 		Disable();
 
@@ -183,21 +183,11 @@ namespace Scheduler
 		if (current_thread == idle_thread && first_thread != 0)
 			current_thread = first_thread;
 
+		current_thread = current_thread->next;
 		THREAD *first = current_thread;
 
 		while (1)
 		{
-			current_thread = current_thread->next;
-
-			if (current_thread == first)
-			{
-				if (current_thread->sleep_until != 0 || (current_thread->state != THREAD_STATE_READY && current_thread->state != THREAD_STATE_INITIALIZED && current_thread->state != THREAD_STATE_RUNNING))
-				{
-					current_thread = idle_thread;
-				}
-				break;
-			}
-
 			while (current_thread->state == THREAD_STATE_TERMINATED)
 			{
 				THREAD *next = current_thread->next;
@@ -215,6 +205,14 @@ namespace Scheduler
 
 			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))
 				break;
+
+			current_thread = current_thread->next;
+
+			if (current_thread == first)
+			{
+				current_thread = idle_thread;
+				break;
+			}
 		}
 
 		if (current_thread->addr_space.ptr)

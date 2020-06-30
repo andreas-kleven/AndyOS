@@ -3,6 +3,6 @@
 
 namespace Timer
 {
-    size_t Ticks();
-	void Sleep(size_t time);
+    uint64 Ticks();
+	void Sleep(uint64 time);
 }

@@ -464,7 +464,7 @@ namespace GEngine
 							float j = N / (t1 + t2 + t3 + t4);
 							Vector3 force = n * j;
 
-							//usleep(10000);
+							//sleep(10000);
 
 							printf("N %f\n", N);
 							printf("%f\t%f\t%f\t%f\n", t1, t2, t3, t4);
@@ -531,7 +531,7 @@ namespace GEngine
 
 								a->AddImpulse(ffa * deltaTime);
 								b->AddImpulse(ffb * deltaTime);
-								usleep(10);*/
+								usleep(10000);*/
 							}
 						}
 					}

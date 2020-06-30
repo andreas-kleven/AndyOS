@@ -23,6 +23,7 @@ typedef unsigned short gid_t;
 typedef unsigned short nlink_t;
 typedef unsigned long long time_t;
 typedef uint32 mode_t;
+typedef uint32 useconds_t;
 
 #define STATUS_FAILED 0
 #define STATUS_SUCCESS 1

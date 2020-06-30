@@ -60,6 +60,6 @@ int main()
 	sprintf(title, "Test window: %lu", get_ticks());
 	wnd = new MainWindow(title);
 
-	while (true) usleep(100);
+	while (true) sleep(1000);
 	return 0;
 }

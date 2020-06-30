@@ -3,8 +3,8 @@
 
 namespace Timer::Arch
 {
-    size_t Ticks()
+    uint64 Ticks()
     {
-        return PIT::ticks;
+        return (uint64)PIT::ticks * 1000;
     }
 }

@@ -141,5 +141,5 @@ ssize_t write(int fd, const char *buf, size_t size)
 // TODO
 void sleep(unsigned int seconds)
 {
-    usleep(seconds * 1000);
+    usleep(seconds * 1000000);
 }

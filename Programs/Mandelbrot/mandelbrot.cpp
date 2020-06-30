@@ -213,7 +213,7 @@ void run(GC& gc)
 		}
 		else
 		{
-			usleep(10);
+			usleep(10 * 1000);
 			enable_render = false;
 		}
 

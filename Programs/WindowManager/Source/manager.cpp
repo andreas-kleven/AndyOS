@@ -220,7 +220,7 @@ MESSAGE WindowManager::MessageHandler(MESSAGE msg)
 void WindowManager::UpdateLoop()
 {
 	int last_ticks = get_ticks();
-	float target_ticks = 1000.0f / 60;
+	float target_ticks = 1000000.0f / 60;
 
 	while (1)
 	{

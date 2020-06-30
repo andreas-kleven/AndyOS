@@ -3,5 +3,5 @@
 
 namespace Timer::Arch
 {
-    size_t Ticks();
+    uint64 Ticks();
 }
