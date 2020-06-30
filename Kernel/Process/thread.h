@@ -21,7 +21,7 @@ struct THREAD
 	int id;
 	THREAD_STATE state;
 	THREAD* next;
-	THREAD* procNext;
+	THREAD* proc_next;
 	PROCESS* process;
 	void* fpu_state;
 	size_t sleep_until;

@@ -27,7 +27,7 @@ namespace Task
 		THREAD *nt = Arch::CopyThread(thread);
 		nt->id = 0;
 		nt->next = 0;
-		nt->procNext = 0;
+		nt->proc_next = 0;
 		nt->process = 0;
 
 		if (thread->state == THREAD_STATE_RUNNING)

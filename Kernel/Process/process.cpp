@@ -55,7 +55,7 @@ namespace ProcessManager
 		while (thread)
 		{
 			Scheduler::InsertThread(thread);
-			thread = thread->procNext;
+			thread = thread->proc_next;
 		}
 
 		return proc;
@@ -114,12 +114,12 @@ namespace ProcessManager
 		if (proc->main_thread == 0)
 		{
 			proc->main_thread = thread;
-			thread->procNext = 0;
+			thread->proc_next = 0;
 		}
 		else
 		{
-			thread->procNext = proc->main_thread->procNext;
-			proc->main_thread->procNext = thread;
+			thread->proc_next = proc->main_thread->proc_next;
+			proc->main_thread->proc_next = thread;
 		}
 
 		return true;
@@ -139,15 +139,15 @@ namespace ProcessManager
 			if (t == thread)
 			{
 				if (prev)
-					prev->procNext = t->procNext;
+					prev->proc_next = t->proc_next;
 				else
-					proc->main_thread = t->procNext;
+					proc->main_thread = t->proc_next;
 
 				break;
 			}
 
 			prev = t;
-			t = t->procNext;
+			t = t->proc_next;
 		}
 	}
 
@@ -157,7 +157,7 @@ namespace ProcessManager
 		while (thread)
 		{
 			Scheduler::ExitThread(0, thread);
-			thread = thread->procNext;
+			thread = thread->proc_next;
 		}
 
 		return true;

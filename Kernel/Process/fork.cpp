@@ -27,7 +27,7 @@ namespace ProcessManager
 					Task::SetThreadReturn(copy, 0);
 			}
 
-			thread = thread->procNext;
+			thread = thread->proc_next;
 		}
 
 		return true;
