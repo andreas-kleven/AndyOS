@@ -16,6 +16,8 @@
 #include "FS/vfs.h"
 #include "FS/iso.h"
 #include "Process/process.h"
+#include "Process/dispatcher.h"
+#include "sync.h"
 #include "task.h"
 #include "timer.h"
 #include "syscall_list.h"
@@ -39,7 +41,7 @@ namespace Test
 
 		debug_print("COM initialized\n");
 
-		THREAD* t = Task::CreateKernelThread(COM_Receive);
+		THREAD *t = Task::CreateKernelThread(COM_Receive);
 		Scheduler::InsertThread(t);
 
 		while (1)
@@ -57,7 +59,7 @@ namespace Test
 
 	void File()
 	{
-		char* buf;
+		char *buf;
 		int size = VFS::ReadFile("files/bunny.obj", buf);
 
 		if (size)
@@ -70,30 +72,37 @@ namespace Test
 			debug_print("File not found");
 		}
 
-		while (1);
+		while (1)
+			;
 	}
 
 	void GUI()
 	{
+
+		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
+		Scheduler::InsertThread(dispatcher_thread);
+
 		Scheduler::Disable();
-		PROCESS* proc1 = ProcessManager::Exec("1winman");
-		PROCESS* proc2 = ProcessManager::Exec("1term");
+		PROCESS *proc1 = ProcessManager::Exec("1winman");
+		PROCESS *proc2 = ProcessManager::Exec("1term");
+		//PROCESS* proc3 = ProcessManager::Exec("1info");
 		Scheduler::Enable();
 
 		//ProcessManager::Exec("1test");
 		//ProcessManager::Exec("1mndlbrt");
 
-		#ifdef __i386__
-		#include "Arch/regs.h"
+#ifdef __i386__
+#include "Arch/regs.h"
 		while (1)
 		{
-			PROCESS* proc = ProcessManager::GetFirst();
+			Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+			PROCESS *proc = ProcessManager::GetFirst();
 
 			while (proc)
 			{
 				if (!proc->messages.IsEmpty())
 				{
-					MESSAGE* msg = proc->messages.Get();
+					MESSAGE *msg = proc->messages.Get();
 
 					if (msg)
 					{
@@ -102,13 +111,13 @@ namespace Test
 
 						if (proc->message_handler)
 						{
-							THREAD* thread = ProcessManager::CreateThread(proc, (void(*)())proc->message_handler);
+							THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())proc->message_handler);
 
-							REGS* regs = (REGS*)thread->stack;
-							char* data_ptr = (char*)regs->user_stack - msg->size - 4;
+							REGS *regs = (REGS *)thread->stack;
+							char *data_ptr = (char *)regs->user_stack - msg->size - 4;
 							memcpy(data_ptr, msg->data, msg->size);
 
-							uint32* stack_ptr = (uint32*)data_ptr;
+							uint32 *stack_ptr = (uint32 *)data_ptr;
 							*--stack_ptr = msg->size;
 							*--stack_ptr = (int)data_ptr;
 							*--stack_ptr = msg->param;
@@ -128,14 +137,14 @@ namespace Test
 				proc = proc->next;
 			}
 		}
-		#endif
+#endif
 	}
 
 	void _Net()
 	{
 		Net::Init();
 
-		PciDevice* dev = PCI::GetDevice(2, 0, 0);
+		PciDevice *dev = PCI::GetDevice(2, 0, 0);
 
 		if (!dev)
 		{
@@ -145,16 +154,16 @@ namespace Test
 
 		debug_print("Found network card\n");
 
-		E1000* intf = new E1000(dev);
+		E1000 *intf = new E1000(dev);
 		Timer::Sleep(1000);
 
 		//DNS::Query(intf, "google.com");
 		IPv4Address addr(0xc0, 0xa8, 0x00, 0x7b);
 		DHCP::Discover(intf);
 
-		UdpSocket* socket = UDP::CreateSocket(9876);
-		
-		uint8* buffer;
+		UdpSocket *socket = UDP::CreateSocket(9876);
+
+		uint8 *buffer;
 		while (1)
 		{
 			int length = socket->Receive(buffer, Net::BroadcastIPv4);
@@ -167,7 +176,7 @@ namespace Test
 
 		MacAddress dst(0x30, 0x9C, 0x23, 0x21, 0xEB, 0xFE);
 
-		NetPacket* pkt = IPv4::CreatePacket(intf, addr, IP_PROTOCOL_ICMP, 0);
+		NetPacket *pkt = IPv4::CreatePacket(intf, addr, IP_PROTOCOL_ICMP, 0);
 
 		if (pkt)
 		{
@@ -183,20 +192,74 @@ namespace Test
 	{
 		debug_print("Free: %i\n", PMem::NumFree());
 
-		int* ptr1 = (int*)VMem::KernelAlloc(1);
+		int *ptr1 = (int *)VMem::KernelAlloc(1);
 		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr1);
 
-		int* ptr2 = (int*)VMem::KernelAlloc(1);
+		int *ptr2 = (int *)VMem::KernelAlloc(1);
 		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr2);
 
-		int* ptr3 = (int*)VMem::KernelAlloc(1);
+		int *ptr3 = (int *)VMem::KernelAlloc(1);
 		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr3);
 
 		VMem::FreePages(ptr2, 2);
 		debug_print("Free: %i\n", PMem::NumFree());
 
-		int* _ptr1 = (int*)VMem::KernelAlloc(2);
+		int *_ptr1 = (int *)VMem::KernelAlloc(2);
 		debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), _ptr1);
+	}
+
+	Mutex mutex;
+	int count = 0;
+
+	void MutexFunc(int i)
+	{
+		mutex.Aquire();
+
+		if (i == 1)
+			mutex.Aquire();
+
+		count += 1;
+		debug_print("Before %i, %i\n", i, count);
+		Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+		debug_print("After %i, %i\n", i, count);
+
+		if (i == 1)
+		{
+			mutex.Release();
+
+			count += 1;
+			debug_print("Before %i, %i\n", i, count);
+			Scheduler::SleepThread(Timer::Ticks() + 100, Scheduler::CurrentThread());
+			debug_print("After %i, %i\n", i, count);
+		}
+
+		mutex.Release();
+
+		while (1)
+			pause();
+	}
+
+	void MutexFunc1()
+	{
+		MutexFunc(1);
+	}
+
+	void MutexFunc2()
+	{
+		MutexFunc(2);
+	}
+
+	void MutexTest()
+	{
+		mutex = Mutex();
+
+		THREAD *t1 = Task::CreateKernelThread(MutexFunc1);
+		THREAD *t2 = Task::CreateKernelThread(MutexFunc2);
+
+		Scheduler::Disable();
+		Scheduler::InsertThread(t1);
+		Scheduler::InsertThread(t2);
+		Scheduler::Enable();
 	}
 
 	void Start()
@@ -207,6 +270,9 @@ namespace Test
 		//_Net();
 		//Audio();
 		//COM();
-		while (1) pause();
+		//MutexTest();
+
+		while (1)
+			pause();
 	}
-}
+} // namespace Test

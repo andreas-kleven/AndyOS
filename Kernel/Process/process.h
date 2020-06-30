@@ -1,6 +1,7 @@
 #pragma once
 #include "Memory/memory.h"
 #include "thread.h"
+#include "sync.h"
 #include "FS/file.h"
 #include "Lib/types.h"
 #include "Lib/circbuf.h"
@@ -84,6 +85,7 @@ struct PROCESS
 
 	FILE *file_table[FILE_TABLE_SIZE];
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
+	Mutex signal_mutex;
 
 	MESSAGE_HANDLER *message_handler;
 	CircularBuffer<MESSAGE> messages;

@@ -1,5 +1,5 @@
 #include "sync.h"
-#include "scheduler.h"
+#include "Process/scheduler.h"
 
 Event::Event(bool set)
 {

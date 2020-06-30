@@ -1,6 +1,7 @@
 #include "process.h"
 #include "Arch/process.h"
-#include "Lib/debug.h"
+#include "sync.h"
+#include "debug.h"
 
 namespace ProcessManager
 {
@@ -44,7 +45,9 @@ namespace ProcessManager
         }
         else
         {
+            proc->signal_mutex.Aquire();
             Arch::HandleSignal(proc, signo, handler);
+            proc->signal_mutex.Release();
         }
 
         VMem::SwapAddressSpace(old_space);
