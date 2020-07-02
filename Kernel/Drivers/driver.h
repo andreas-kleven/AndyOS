@@ -21,22 +21,22 @@ enum DRIVER_STATUS
 class FileIO
 {
 public:
-    virtual int Open(FILE *file) { return 0; }
-    virtual int Close(FILE *file) { return 0; }
-    virtual int Read(FILE *file, void *buf, size_t size) { return 0; }
-    virtual int Write(FILE *file, const void *buf, size_t size) { return 0; }
-    virtual int Seek(FILE *file, long offset, int origin) { return 0; }
-    virtual int GetChildren(DENTRY *parent, const char *find_name) { return 0; }
+	virtual int Open(FILE *file) { return 0; }
+	virtual int Close(FILE *file) { return 0; }
+	virtual int Read(FILE *file, void *buf, size_t size) { return 0; }
+	virtual int Write(FILE *file, const void *buf, size_t size) { return 0; }
+	virtual int Seek(FILE *file, long offset, int origin) { return 0; }
+	virtual int GetChildren(DENTRY *parent, const char *find_name) { return 0; }
 };
 
 class Driver : public FileIO
 {
 public:
-	const char* name;
-	const char* id;
+	int id;
+	const char *name;
 	DRIVER_TYPE type;
 	DRIVER_STATUS status;
-	Driver* next;
+	Driver *next;
 
 	Driver()
 	{
@@ -47,8 +47,8 @@ public:
 class BlockDriver : public Driver
 {
 public:
-	virtual int Read(fpos_t pos, void* buf, size_t size) { return -1; }
-	virtual int Write(fpos_t pos, const void* buf, size_t size) { return -1; }
+	virtual int Read(fpos_t pos, void *buf, size_t size) { return -1; }
+	virtual int Write(fpos_t pos, const void *buf, size_t size) { return -1; }
 
 	BlockDriver()
 	{
@@ -67,8 +67,8 @@ public:
 
 namespace DriverManager
 {
-	void AddDriver(Driver* driver);
-	Driver* GetDriver();
-	Driver* GetDriver(const char* id);
+	void AddDriver(Driver *driver);
+	Driver *GetDriver();
+	Driver *GetDriver(const char *name);
 	STATUS Init();
-};
+}; // namespace DriverManager

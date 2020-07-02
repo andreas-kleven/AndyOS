@@ -5,15 +5,18 @@
 
 namespace DriverManager
 {
-	Driver* first_driver = 0;
+	Driver *first_driver = 0;
+	int next_id = 0;
 
-	void AddDriver(Driver* driver)
+	void AddDriver(Driver *driver)
 	{
 		if (!driver)
 			return;
 
 		if (driver->status == DRIVER_STATUS_ERROR)
 			return;
+
+		driver->id = next_id++;
 
 		if (first_driver)
 			driver->next = first_driver;
@@ -23,18 +26,18 @@ namespace DriverManager
 		first_driver = driver;
 	}
 
-	Driver* GetDriver()
+	Driver *GetDriver()
 	{
 		return first_driver;
 	}
 
-	Driver* GetDriver(const char* id)
+	Driver *GetDriver(const char *name)
 	{
-		Driver* drv = first_driver;
+		Driver *drv = first_driver;
 
 		while (drv)
 		{
-			if (strcmp(drv->id, id) == 0)
+			if (strcmp(drv->name, name) == 0)
 				return drv;
 
 			drv = drv->next;
@@ -42,12 +45,14 @@ namespace DriverManager
 
 		return drv;
 	}
-	
+
 	STATUS Init()
 	{
+		next_id = 1;
+
 		ATADriver::Init();
 		AddDriver(new MouseDriver());
 
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace DriverManager

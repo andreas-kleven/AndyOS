@@ -138,7 +138,7 @@ static void mouse_init()
 
 MouseDriver::MouseDriver()
 {
-	this->id = "mouse";
+	this->name = "mouse";
 	this->status = DRIVER_STATUS_RUNNING;
 
 	mouse_init();

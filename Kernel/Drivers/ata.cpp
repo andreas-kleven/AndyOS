@@ -17,7 +17,7 @@ ATADriver::ATADriver(int bus, int drive)
 
 	char *id = new char[4]{'h', 'd', ' ', 0};
 	id[2] = 'a' + num;
-	this->id = id;
+	this->name = id;
 
 	this->status = DRIVER_STATUS_RUNNING;
 }
