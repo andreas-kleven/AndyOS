@@ -106,7 +106,7 @@ struct ISO_PRIMARY_DESC
 	char reserved[653];
 } __attribute__((packed));
 
-class ISO_FS : public FileSystem
+class IsoFS : public FileSystem
 {
 private:
 	BlockDriver *driver;
@@ -114,7 +114,7 @@ private:
 	ISO_DIRECTORY *root;
 
 public:
-	ISO_FS();
+	IsoFS();
 
 	int Mount(BlockDriver *driver, DENTRY *root_dentry);
 	int GetChildren(DENTRY *parent, const char *find_name);

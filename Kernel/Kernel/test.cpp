@@ -62,9 +62,9 @@ namespace Test
 	void File()
 	{
 		ATADriver *driver1 = (ATADriver *)DriverManager::GetDriver("hdc");
-		ISO_FS *fs1 = new ISO_FS();
+		IsoFS *fs1 = new IsoFS();
 		ATADriver *driver2 = (ATADriver *)DriverManager::GetDriver("hda");
-		Ext2_FS *fs2 = new Ext2_FS();
+		Ext2FS *fs2 = new Ext2FS();
 
 		if (VFS::Mount(driver1, fs1, "/"))
 		{
@@ -104,7 +104,7 @@ namespace Test
 	void GUI()
 	{
 		ATADriver *driver = (ATADriver *)DriverManager::GetDriver("hdc");
-		ISO_FS *fs = new ISO_FS();
+		IsoFS *fs = new IsoFS();
 		VFS::Mount(driver, fs, "/");
 
 		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);

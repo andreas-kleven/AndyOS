@@ -4,11 +4,11 @@
 #include "Drivers/driver.h"
 #include "Lib/debug.h"
 
-ISO_FS::ISO_FS()
+IsoFS::IsoFS()
 {
 }
 
-int ISO_FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
+int IsoFS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 {
 	this->driver = driver;
 
@@ -26,7 +26,7 @@ int ISO_FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 	return 0;
 }
 
-int ISO_FS::GetChildren(DENTRY *parent, const char *find_name)
+int IsoFS::GetChildren(DENTRY *parent, const char *find_name)
 {
 	INODE *inode = parent->inode;
 	ISO_DIRECTORY *dir = root;
@@ -68,12 +68,12 @@ int ISO_FS::GetChildren(DENTRY *parent, const char *find_name)
 	return 0;
 }
 
-int ISO_FS::Read(FILE *file, void *buf, size_t size)
+int IsoFS::Read(FILE *file, void *buf, size_t size)
 {
 	return driver->Read(file->pos + file->dentry->inode->ino * ISO_SECTOR_SIZE, buf, size);
 }
 
-void ISO_FS::GetName(ISO_DIRECTORY *dir, char *buf)
+void IsoFS::GetName(ISO_DIRECTORY *dir, char *buf)
 {
 	memcpy(buf, &dir->identifier, dir->idLength);
 	buf[dir->idLength] = 0;
@@ -106,7 +106,7 @@ int GetType(ISO_DIRECTORY *dir)
 	return flags;
 }
 
-INODE *ISO_FS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
+INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
 {
 	INODE *inode = VFS::AllocInode(dentry);
 	inode->ino = dir->location_LSB;
@@ -119,12 +119,12 @@ INODE *ISO_FS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
 	return inode;
 }
 
-void ISO_FS::FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry)
+void IsoFS::FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry)
 {
 	dentry->type = GetType(dir);
 }
 
-int ISO_FS::ReadBlock(int block, void *buf, size_t size)
+int IsoFS::ReadBlock(int block, void *buf, size_t size)
 {
 	return driver->Read(block * ISO_SECTOR_SIZE, buf, size);
 }

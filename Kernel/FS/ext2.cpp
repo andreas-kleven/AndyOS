@@ -2,11 +2,11 @@
 #include "string.h"
 #include "debug.h"
 
-Ext2_FS::Ext2_FS()
+Ext2FS::Ext2FS()
 {
 }
 
-int Ext2_FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
+int Ext2FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 {
     this->driver = driver;
     superblock = new EXT2_SUPERBLOCK;
@@ -42,7 +42,7 @@ int Ext2_FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
     return 0;
 }
 
-int Ext2_FS::GetChildren(DENTRY *parent, const char *find_name)
+int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
 {
     EXT_INODE *raw_inode = ReadRawInode(parent->inode->ino);
 
@@ -87,7 +87,7 @@ int Ext2_FS::GetChildren(DENTRY *parent, const char *find_name)
     return 0;
 }
 
-int Ext2_FS::Read(FILE *file, void *buf, size_t size)
+int Ext2FS::Read(FILE *file, void *buf, size_t size)
 {
     DENTRY *dentry = file->dentry;
     uint32 ino = dentry->inode->ino;
@@ -97,7 +97,7 @@ int Ext2_FS::Read(FILE *file, void *buf, size_t size)
     return ret;
 }
 
-INODE *Ext2_FS::ReadInode(int ino, DENTRY *dentry)
+INODE *Ext2FS::ReadInode(int ino, DENTRY *dentry)
 {
     EXT_INODE *raw_inode = ReadRawInode(ino);
 
@@ -113,7 +113,7 @@ INODE *Ext2_FS::ReadInode(int ino, DENTRY *dentry)
     return inode;
 }
 
-EXT_INODE *Ext2_FS::ReadRawInode(int ino)
+EXT_INODE *Ext2FS::ReadRawInode(int ino)
 {
     EXT_INODE *raw_inode = (EXT_INODE *)(new char[superblock->inode_size]);
 
@@ -126,12 +126,12 @@ EXT_INODE *Ext2_FS::ReadRawInode(int ino)
     return raw_inode;
 }
 
-void Ext2_FS::FillDentry(EXT_DIRENT *dirent, DENTRY *dentry)
+void Ext2FS::FillDentry(EXT_DIRENT *dirent, DENTRY *dentry)
 {
     dentry->type = dirent->type;
 }
 
-int Ext2_FS::ReadBlock(int block, void *buf, size_t size)
+int Ext2FS::ReadBlock(int block, void *buf, size_t size)
 {
     return driver->Read(block * this->block_size, buf, size);
 }

@@ -110,7 +110,7 @@ struct EXT_DIRENT
     char name[256];
 } __attribute__((packed));
 
-class Ext2_FS : public FileSystem
+class Ext2FS : public FileSystem
 {
 private:
     BlockDriver *driver;
@@ -120,7 +120,7 @@ private:
     int block_groups;
 
 public:
-    Ext2_FS();
+    Ext2FS();
 
     int Mount(BlockDriver *driver, DENTRY *root_dentry);
     int GetChildren(DENTRY *parent, const char *find_name);
