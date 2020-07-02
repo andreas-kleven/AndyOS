@@ -2,6 +2,7 @@
 #include "filesystem.h"
 #include "pipe.h"
 #include "string.h"
+#include "math.h"
 #include "iso.h"
 #include "Kernel/timer.h"
 #include "Lib/debug.h"
@@ -153,6 +154,82 @@ namespace VFS
 		return filetable.Set(newfd, file);
 	}
 
+	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		GetChildren(file->dentry);
+
+		char *buf = (char *)dirp;
+		unsigned int total = 0;
+		int num_files = file->dentry->children.Count();
+
+		if (file->pos >= num_files)
+			return 0;
+
+		for (int i = file->pos; i < num_files; i++)
+		{
+			dirp = (dirent *)&buf[total];
+			DENTRY *dentry = file->dentry->children[i];
+
+			if (dentry->inode)
+			{
+				int type = 0;
+
+				switch (dentry->inode->type)
+				{
+				case INODE_TYPE_FIFO:
+					type = DT_FIFO;
+					break;
+				case INODE_TYPE_CHAR:
+					type = DT_CHR;
+					break;
+				case INODE_TYPE_DIRECTORY:
+					type = DT_DIR;
+					break;
+				case INODE_TYPE_BLOCK:
+					type = DT_BLK;
+					break;
+				case INODE_TYPE_REGULAR:
+					type = DT_REG;
+					break;
+				case INODE_TYPE_SYMLINK:
+					type = DT_LNK;
+					break;
+				case INODE_TYPE_SOCKET:
+					type = DT_SOCK;
+					break;
+				default:
+					type = DT_UNKNOWN;
+					break;
+				}
+
+				const char *name = dentry->name;
+				int name_len = strlen(name) + 1;
+				int dirp_len = name_len + sizeof(dirp->d_ino) + sizeof(dirp->d_off) + sizeof(dirp->d_reclen) + sizeof(dirp->d_type);
+
+				if (total + dirp_len >= count)
+					break;
+
+				dirp->d_ino = dentry->inode->ino;
+				dirp->d_type = type;
+				dirp->d_reclen = dirp_len;
+				strcpy(dirp->d_name, name);
+
+				total += dirp_len;
+				file->pos += 1;
+			}
+		}
+
+		if (total == 0)
+			return -1;
+
+		return total;
+	}
+
 	int Open(Filetable &filetable, const char *filename)
 	{
 		Path path(filename);
@@ -160,13 +237,13 @@ namespace VFS
 
 		if (!dentry)
 			return -1;
-		
+
 		FILE *file = new FILE(dentry);
 		int fd = filetable.Add(file);
 
 		if (fd < 0)
 			return fd;
-		
+
 		dentry->owner->Open(file);
 		return fd;
 	}
@@ -196,7 +273,16 @@ namespace VFS
 		if (!IsValidInode(file))
 			return 0;
 
-		FileIO *owner = file->dentry->owner;
+		Driver *owner = file->dentry->owner;
+
+		if (file->dentry->inode->size > 0) // TODO
+		{
+			size = min(size, (size_t)(file->dentry->inode->size - file->pos));
+
+			if ((int)size < 0)
+				return -1;
+		}
+
 		int read = owner->Read(file, dst, size);
 
 		if (read < 0)
@@ -213,7 +299,7 @@ namespace VFS
 		if (!IsValidInode(file))
 			return 0;
 
-		FileIO *owner = file->dentry->owner;
+		Driver *owner = file->dentry->owner;
 		int written = owner->Write(file, buf, size);
 
 		if (written < 0)

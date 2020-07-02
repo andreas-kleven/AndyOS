@@ -24,7 +24,7 @@
 #define INODE_TYPE_SYMLINK 0xA000
 #define INODE_TYPE_SOCKET 0xC000
 
-class FileIO;
+class Driver;
 class FileSystem;
 
 enum FILE_TYPE
@@ -40,12 +40,12 @@ struct INODE
 {
     uint32 ino = 0;
     uint16 type = 0;
-    uint32 size = 0;
+    size_t size = 0;
 };
 
 struct DENTRY
 {
-    FileIO *owner = 0;
+    Driver *owner = 0;
     INODE *inode = 0;
     uint16 type = 0;
     char *name = 0;

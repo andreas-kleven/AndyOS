@@ -18,7 +18,7 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->heap_end = 0;
 	this->filetable = Filetable(3);
 
-	for (int i = 0; i < sizeof(this->signal_table); i++)
+	for (int i = 0; i < SIGNAL_TABLE_SIZE; i++)
 		ProcessManager::SetSignalHandler(this, i, SIG_DFL);
 
 	this->messages = CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);

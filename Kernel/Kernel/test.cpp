@@ -62,31 +62,6 @@ namespace Test
 
 	void File()
 	{
-		ATADriver *driver1 = (ATADriver *)DriverManager::GetDriver("hdc");
-		IsoFS *fs1 = new IsoFS();
-		ATADriver *driver2 = (ATADriver *)DriverManager::GetDriver("hda");
-		Ext2FS *fs2 = new Ext2FS();
-
-		DevFS *devfs = new DevFS();
-
-		if (VFS::Mount(driver1, fs1, "/"))
-		{
-			debug_print("Mount 1 failed\n");
-			return;
-		}
-
-		if (VFS::Mount(driver2, fs2, "/mnt"))
-		{
-			debug_print("Mount 2 failed\n");
-			return;
-		}
-
-		if (VFS::Mount(0, devfs, "/dev"))
-		{
-			debug_print("Mount devfs failed\n");
-			return;
-		}
-
 		Filetable filetable;
 
 		int fd1 = VFS::Open(filetable, "/test");
@@ -112,20 +87,13 @@ namespace Test
 
 	void GUI()
 	{
-		ATADriver *driver = (ATADriver *)DriverManager::GetDriver("hdc");
-		IsoFS *fs = new IsoFS();
-		VFS::Mount(driver, fs, "/");
-
-		DevFS *devfs = new DevFS();
-		VFS::Mount(0, devfs, "/dev");
-
 		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
 		Scheduler::InsertThread(dispatcher_thread);
 
 		Scheduler::Disable();
 		PROCESS *proc1 = ProcessManager::Exec("1winman");
 		PROCESS *proc2 = ProcessManager::Exec("1term");
-		//PROCESS* proc3 = ProcessManager::Exec("1info");
+		//PROCESS *proc3 = ProcessManager::Exec("1info");
 		Scheduler::Enable();
 
 		//ProcessManager::Exec("1test");
@@ -302,8 +270,37 @@ namespace Test
 		Scheduler::Enable();
 	}
 
+	void Mount()
+	{
+		ATADriver *driver1 = (ATADriver *)DriverManager::GetDriver("hdc");
+		IsoFS *fs1 = new IsoFS();
+		ATADriver *driver2 = (ATADriver *)DriverManager::GetDriver("hda");
+		Ext2FS *fs2 = new Ext2FS();
+
+		DevFS *devfs = new DevFS();
+
+		if (VFS::Mount(driver1, fs1, "/"))
+		{
+			debug_print("Mount 1 failed\n");
+			return;
+		}
+
+		if (VFS::Mount(driver2, fs2, "/mnt"))
+		{
+			debug_print("Mount 2 failed\n");
+			return;
+		}
+
+		if (VFS::Mount(0, devfs, "/dev"))
+		{
+			debug_print("Mount devfs failed\n");
+			return;
+		}
+	}
+
 	void Start()
 	{
+		Mount();
 		GUI();
 		//_Memory();
 		File();

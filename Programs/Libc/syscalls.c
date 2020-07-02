@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <stdio.h>
+#include <dirent.h>
 #include "syscall_list.h"
 
 char **environ = 0;
@@ -53,6 +54,11 @@ int fstat(int fd, struct stat *st)
 pid_t getpid()
 {
     return syscall0(SYSCALL_GETPID);
+}
+
+int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
+{
+    return syscall3(SYSCALL_GETDENTS, fd, dirp, count);
 }
 
 int gettimeofday(struct timeval *p, void *z)

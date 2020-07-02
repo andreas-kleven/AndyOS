@@ -91,6 +91,11 @@ namespace Syscalls
 		return VFS::DuplicateFile(CurrentFiletable(), oldfd, newfd);
 	}
 
+	int getdents(int fd, dirent *dirp, unsigned int count)
+	{
+		return VFS::Getdents(CurrentFiletable(), fd, dirp, count);
+	}
+
 	pid_t fork()
 	{
 		PROCESS *newproc = ProcessManager::Fork(Dispatcher::CurrentProcess());
@@ -367,6 +372,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
 		InstallSyscall(SYSCALL_DUP, (SYSCALL_HANDLER)dup);
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
+		InstallSyscall(SYSCALL_GETDENTS, (SYSCALL_HANDLER)getdents);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);

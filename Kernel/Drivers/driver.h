@@ -47,13 +47,13 @@ public:
 class BlockDriver : public Driver
 {
 public:
-	virtual int Read(fpos_t pos, void *buf, size_t size) { return -1; }
-	virtual int Write(fpos_t pos, const void *buf, size_t size) { return -1; }
-
 	BlockDriver()
 	{
 		this->type = DRIVER_TYPE_BLOCK;
 	}
+
+	virtual int Read(fpos_t pos, void *buf, size_t size) { return -1; }
+	virtual int Write(fpos_t pos, const void *buf, size_t size) { return -1; }
 };
 
 class CharDriver : public Driver

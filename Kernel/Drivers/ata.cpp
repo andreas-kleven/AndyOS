@@ -107,7 +107,7 @@ int ATADriver::ReadSector(fpos_t pos, uint8 *buf, size_t size)
 	while (inb(bus + ATA_LBA_STATUS) & 0x88)
 		pause();
 
-	return size - offset;
+	return size;
 }
 
 STATUS ATADriver::Init()
