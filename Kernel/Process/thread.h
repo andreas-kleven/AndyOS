@@ -16,10 +16,12 @@ struct PROCESS;
 
 struct THREAD
 {
+	int id;
+	bool inserted;
 	size_t stack;
 	size_t kernel_esp;
-	int id;
 	THREAD_STATE state;
+	THREAD* prev;
 	THREAD* next;
 	THREAD* proc_next;
 	PROCESS* process;

@@ -111,17 +111,22 @@ namespace Scheduler
 
 		if (first_thread)
 		{
+			thread->prev = last_thread;
 			thread->next = first_thread;
-			last_thread->next = thread;
+			thread->prev->next = thread;
+			thread->next->prev = thread;
 			last_thread = thread;
 		}
 		else
 		{
 			thread->next = thread;
+			thread->prev = thread;
 			first_thread = thread;
 			last_thread = thread;
 			current_thread = thread;
 		}
+
+		thread->inserted = true;
 
 		Enable();
 	}
@@ -135,22 +140,19 @@ namespace Scheduler
 
 		ProcessManager::RemoveThread(thread);
 
-		THREAD *t = first_thread;
-		while (t)
-		{
-			if (t->next == thread)
-			{
-				if (thread == last_thread)
-					last_thread = t;
+		THREAD *prev = thread->prev;
+		THREAD *next = thread->next;
+		thread->next->prev = prev;
+		thread->prev->next = next;
+		thread->prev = 0;
+		thread->next = 0;
 
-				t->next = thread->next;
+		if (thread == first_thread)
+			first_thread = next;
+		if (thread == last_thread)
+			last_thread = prev;
 
-				Enable();
-				return;
-			}
-
-			t = t->next;
-		}
+		thread->inserted = false;
 
 		Enable();
 	}
@@ -163,16 +165,7 @@ namespace Scheduler
 	THREAD *Schedule()
 	{
 		if (!enabled)
-		{
-			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_RUNNING || current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))
-				return current_thread;
-
-			debug_print("Scheduling stopped %d %d\n", current_thread->id, current_thread->state);
-
-			current_thread = idle_thread;
-			idle_thread->state = THREAD_STATE_RUNNING;
-			return idle_thread;
-		}
+			return current_thread;
 
 		current_thread->addr_space = VMem::GetAddressSpace();
 
@@ -180,10 +173,14 @@ namespace Scheduler
 			current_thread->state = THREAD_STATE_READY;
 
 		//Schedule
-		if (current_thread == idle_thread && first_thread != 0)
+		if (current_thread == idle_thread)
 			current_thread = first_thread;
 
 		current_thread = current_thread->next;
+
+		if (!current_thread)
+			current_thread = first_thread;
+
 		THREAD *first = current_thread;
 
 		while (1)
@@ -194,6 +191,12 @@ namespace Scheduler
 				RemoveThread(current_thread);
 				delete current_thread;
 				current_thread = next;
+			}
+
+			if (!current_thread->inserted)
+			{
+				debug_print("Not inserted %d\n", current_thread->id);
+				sys_halt();
 			}
 
 			//Waiting

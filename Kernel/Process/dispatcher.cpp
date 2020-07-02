@@ -71,9 +71,12 @@ namespace Dispatcher
 
         VMem::SwapAddressSpace(thread->process->addr_space);
         Syscalls::DoSyscall(context);
-        Scheduler::WakeThread(context.thread);
+
+        Scheduler::Disable();
+        Scheduler::WakeThread(thread);
         ResetThread(entry);
         Scheduler::RemoveThread(handler_thread);
+        Scheduler::Enable();
         Scheduler::Switch();
 
         debug_print("Dispatcher error\n");

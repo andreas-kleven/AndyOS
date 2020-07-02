@@ -18,6 +18,8 @@ namespace Task::Arch
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];
 		thread->kernel_esp = 0;
+		thread->inserted = false;
+		thread->prev = 0;
 		thread->next = 0;
 		thread->proc_next = 0;
 		thread->sleep_until = 0;
