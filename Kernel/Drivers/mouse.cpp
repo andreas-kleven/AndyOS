@@ -14,7 +14,7 @@
 
 static bool initialized;
 static int mouse_cycle = 0;
-static char* mouse_byte;
+static char *mouse_byte;
 static fpos_t buffer_pos;
 static char buffer[BUFFER_SIZE];
 
@@ -26,7 +26,7 @@ void mouse_isr()
 		{
 		default:
 			mouse_byte = &buffer[(buffer_pos + 4) % BUFFER_SIZE];
-			
+
 			memset(mouse_byte, 0, 4);
 			buffer_pos += 4;
 
@@ -113,7 +113,6 @@ static void mouse_init()
 	mouse_write(0xF4);
 	mouse_read();
 
-
 	mouse_write(0xF3);
 	mouse_read();
 	mouse_write(200);
@@ -145,13 +144,13 @@ MouseDriver::MouseDriver()
 	mouse_init();
 }
 
-int MouseDriver::Open(FNODE* node, FILE* file)
+int MouseDriver::Open(FILE *file)
 {
 	file->pos = buffer_pos;
 	return 0;
 }
 
-int MouseDriver::Read(FILE* file, char* buf, size_t size)
+int MouseDriver::Read(FILE *file, void *buf, size_t size)
 {
 	if (file->pos >= buffer_pos)
 		return 0;

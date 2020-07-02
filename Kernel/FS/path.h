@@ -3,17 +3,18 @@
 class Path
 {
 private:
-	char* buf;
+	char *buf;
 
 public:
 	int count;
-	char** parts;
+	char **parts;
 
 	Path();
-	Path(const char* path);
+	Path(const char *path);
 	~Path();
 
 	Path Parent() const;
+	const char *Filename() const;
 
-	bool operator==(const Path& path) const;
+	bool operator==(const Path &path) const;
 };

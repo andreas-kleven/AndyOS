@@ -7,6 +7,7 @@ char* strncpy(char *dest, const char *src, int length);
 unsigned int strlen(const char* str);
 char* strcat(char* dest, const char* src);
 char* strncat(char* dest, const char* src, int n);
+char* strdup(const char *str1);
 
 void stoupper(char* s);
 void stolower(char* s);

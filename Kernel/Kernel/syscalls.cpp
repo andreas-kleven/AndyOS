@@ -46,44 +46,49 @@ namespace Syscalls
 
 	TMP_MSG *first_msg = 0;
 
+	Filetable &CurrentFiletable()
+	{
+		return Dispatcher::CurrentProcess()->filetable;
+	}
+
 	int open(const char *filename, int flags)
 	{
-		return VFS::Open(filename);
+		return VFS::Open(CurrentFiletable(), filename);
 	}
 
 	int close(int fd)
 	{
-		return VFS::Close(fd);
+		return VFS::Close(CurrentFiletable(), fd);
 	}
 
 	size_t read(int fd, char *buf, size_t size)
 	{
-		return VFS::Read(fd, buf, size);
+		return VFS::Read(CurrentFiletable(), fd, buf, size);
 	}
 
 	size_t write(int fd, const char *buf, size_t size)
 	{
-		return VFS::Write(fd, buf, size);
+		return VFS::Write(CurrentFiletable(), fd, buf, size);
 	}
 
 	off_t lseek(int fd, off_t offset, int whence)
 	{
-		return VFS::Seek(fd, offset, whence);
+		return VFS::Seek(CurrentFiletable(), fd, offset, whence);
 	}
 
 	int pipe(int pipefd[2])
 	{
-		return VFS::CreatePipes(pipefd, 0);
+		return VFS::CreatePipes(CurrentFiletable(), pipefd, 0);
 	}
 
 	int dup(int oldfd)
 	{
-		return VFS::DuplicateFile(oldfd);
+		return VFS::DuplicateFile(CurrentFiletable(), oldfd);
 	}
 
 	int dup2(int oldfd, int newfd)
 	{
-		return VFS::DuplicateFile(oldfd, newfd);
+		return VFS::DuplicateFile(CurrentFiletable(), oldfd, newfd);
 	}
 
 	pid_t fork()

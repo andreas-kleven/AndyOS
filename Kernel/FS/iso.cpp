@@ -1,117 +1,83 @@
 #include "iso.h"
 #include "string.h"
+#include "vfs.h"
+#include "Drivers/driver.h"
 #include "Lib/debug.h"
 
-#define FILE_FLAG_HIDDEN			(1 << 0)
-#define FILE_FLAG_DIRECTORY			(1 << 1)
-#define FILE_FLAG_ASSOSCIATED		(1 << 2)
-#define FILE_FLAG_EXTENDED			(1 << 3)
-#define FILE_FLAG_EXTENDED_OWNER	(1 << 4)
-#define FILE_FLAG_NOT_FINAL			(1 << 7)
+ISO_FS::ISO_FS()
+{
+}
 
-ISO_FS::ISO_FS(BlockDriver* driver)
+int ISO_FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 {
 	this->driver = driver;
 
-	char* buf = new char[0x1000];
-	if (!driver->Read(0x10 * ISO_SECTOR_SIZE, buf, 0x1000))
-		return;
+	desc = (ISO_PRIMARY_DESC *)(new char[0x1000]);
+	if (!ReadBlock(0x10, desc, 0x1000))
+		return -1;
 
-	desc = (ISO_PRIMARY_DESC*)buf;
+	ISO_DIRECTORY *table = &desc->rootDirectory;
 
-	ISO_DIRECTORY* table = &desc->rootDirectory;
+	root = (ISO_DIRECTORY *)(new char[table->filesize_LSB]);
+	if (!ReadBlock(table->location_LSB, root, table->filesize_LSB))
+		return -1;
 
-	buf = new char[table->filesize_LSB];
-	if (!driver->Read(table->locationLBA_LSB * ISO_SECTOR_SIZE, buf, table->filesize_LSB))
-		return;
-
-	root = (ISO_DIRECTORY*)buf;
+	root_dentry->inode = GetInode(root, root_dentry);
+	return 0;
 }
 
-int ISO_FS::Read(FILE* file, char* buf, size_t size)
+int ISO_FS::GetChildren(DENTRY *parent, const char *find_name)
 {
-	return driver->Read(file->node->pos, buf, size);
-}
+	INODE *inode = parent->inode;
+	ISO_DIRECTORY *dir = root;
 
-bool ISO_FS::GetFile(const Path& path, FNODE* node)
-{
-	ISO_DIRECTORY* dir = FindDirectory(path);
-
-	if (dir)
+	if (inode->ino > 1)
 	{
-		node->size = dir->filesize_LSB;
-		node->pos = dir->locationLBA_LSB * ISO_SECTOR_SIZE;
-
-		if (dir->flags & FILE_FLAG_DIRECTORY)
-			node->type = FILE_TYPE_REGULAR;
-		else
-			node->type = FILE_TYPE_DIRECTORY;
-
-		return true;
+		dir = (ISO_DIRECTORY *)(new char[inode->size]);
+		if (!ReadBlock(inode->ino, dir, inode->size))
+			return -1;
 	}
 
-	return false;
-}
-
-
-ISO_DIRECTORY* ISO_FS::FindDirectory(const Path& path)
-{
-	ISO_DIRECTORY* start = root;
-	ISO_DIRECTORY* dir = start;
-
-	if (!dir || path.count == 0)
-		return 0;
-
-	int pi = 0;
-	char* part = path.parts[pi++];
-
-	while (part && dir && dir->length)
+	while (dir && dir->length)
 	{
 		char name[32];
 		GetName(dir, name);
 
-		if (stricmp(name, part) == 0)
+		if (!find_name || strcmp(name, find_name) == 0)
 		{
-			if (dir->flags & FILE_FLAG_DIRECTORY)
-			{
-				if (pi < path.count)
-				{
-					char* buffer = new char[dir->filesize_LSB];
-					driver->Read(dir->locationLBA_LSB * ISO_SECTOR_SIZE, buffer, dir->filesize_LSB);
-					start = (ISO_DIRECTORY*)buffer;
-					dir = start;
+			DENTRY *dentry = VFS::AllocDentry(parent, name);
 
-					part = path.parts[pi++];
-				}
-				else
-				{
-					return dir;
-				}
-			}
-			else
+			if (!dentry->inode)
 			{
-				if (!next)
-				{
-					return dir;
-				}
+				FillDentry(dir, dentry);
+				dentry->inode = GetInode(dir, dentry);
+				VFS::AddDentry(parent, dentry);
 			}
+
+			if (find_name)
+				break;
 		}
 
-		dir = (ISO_DIRECTORY*)((size_t)dir + dir->length);
-		if ((size_t)dir - (size_t)start > ISO_SECTOR_SIZE - sizeof(ISO_DIRECTORY))
-		{
-			dir = (ISO_DIRECTORY*)((size_t)start + ISO_SECTOR_SIZE);
-			start = dir;
-		}
+		dir = (ISO_DIRECTORY *)((size_t)dir + dir->length);
+		size_t space_left = ISO_SECTOR_SIZE - (size_t)dir % ISO_SECTOR_SIZE;
+
+		if (space_left < sizeof(ISO_DIRECTORY))
+			dir = (ISO_DIRECTORY *)((size_t)dir + space_left);
 	}
 
 	return 0;
 }
 
-void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
+int ISO_FS::Read(FILE *file, void *buf, size_t size)
+{
+	return driver->Read(file->pos + file->dentry->inode->ino * ISO_SECTOR_SIZE, buf, size);
+}
+
+void ISO_FS::GetName(ISO_DIRECTORY *dir, char *buf)
 {
 	memcpy(buf, &dir->identifier, dir->idLength);
 	buf[dir->idLength] = 0;
+	stolower(buf);
 
 	int length = strlen(buf);
 
@@ -126,4 +92,39 @@ void ISO_FS::GetName(ISO_DIRECTORY* dir, char* buf)
 		if (buf[length - 3] == '.')
 			buf[length - 3] = 0;
 	}
+}
+
+int GetType(ISO_DIRECTORY *dir)
+{
+	int flags = 0;
+
+	if (dir->flags & ISO_FLAG_DIRECTORY)
+		flags |= INODE_TYPE_DIRECTORY;
+	else
+		flags |= INODE_TYPE_REGULAR;
+
+	return flags;
+}
+
+INODE *ISO_FS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
+{
+	INODE *inode = VFS::AllocInode(dentry);
+	inode->ino = dir->location_LSB;
+	inode->size = dir->filesize_LSB;
+	inode->type = GetType(dir);
+
+	if (dir == root)
+		inode->ino = 1;
+
+	return inode;
+}
+
+void ISO_FS::FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry)
+{
+	dentry->type = GetType(dir);
+}
+
+int ISO_FS::ReadBlock(int block, void *buf, size_t size)
+{
+	return driver->Read(block * ISO_SECTOR_SIZE, buf, size);
 }

@@ -1,8 +1,13 @@
 #pragma once
 #include "types.h"
-#include "Process/scheduler.h"
+#include "list.h"
 #include "file.h"
 #include "stdio.h"
+#include "filesystem.h"
+#include "Process/scheduler.h"
+
+class FileSystem;
+class BlockDriver;
 
 struct stat
 {
@@ -27,15 +32,20 @@ struct stat
 
 namespace VFS
 {
-	int DuplicateFile(int oldfd);
-	int DuplicateFile(int oldfd, int newfd);
+	INODE *AllocInode(DENTRY *dentry);
+	DENTRY *AllocDentry(DENTRY *parent, const char *name);
+	void AddDentry(DENTRY *parent, DENTRY *child);
+	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point);
 
-	int Open(const char *filename);
-	int Close(int fd);
-	size_t Read(int fd, char *buf, size_t size);
-	size_t Write(int fd, const char *buf, size_t size);
-	off_t Seek(int fd, off_t offset, int whence);
-	int CreatePipes(int pipefd[2], int flags);
+	int DuplicateFile(Filetable &filetable, int oldfd);
+	int DuplicateFile(Filetable &filetable, int oldfd, int newfd);
+
+	int Open(Filetable &filetable, const char *filename);
+	int Close(Filetable &filetable, int fd);
+	size_t Read(Filetable &filetable, int fd, char *buf, size_t size);
+	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size);
+	off_t Seek(Filetable &filetable, int fd, off_t offset, int whence);
+	int CreatePipes(Filetable &filetable, int pipefd[2], int flags);
 
 	uint32 ReadFile(const char *filename, char *&buffer);
 	STATUS Init();

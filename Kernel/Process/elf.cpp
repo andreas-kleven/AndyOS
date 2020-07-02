@@ -15,7 +15,7 @@ namespace ELF
 
 		if (!size)
 		{
-			debug_print("File not found '%s'", path);
+			debug_print("File not found '%s'\n", path);
 			return 0;
 		}
 

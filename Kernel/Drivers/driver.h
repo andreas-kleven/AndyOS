@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
-#include "FS/vfs.h"
+#include "FS/file.h"
 
 class FileSystem;
 
@@ -16,6 +16,17 @@ enum DRIVER_STATUS
 	DRIVER_STATUS_ERROR,
 	DRIVER_STATUS_RUNNING,
 	DRIVER_STATUS_STOPPED
+};
+
+class FileIO
+{
+public:
+    virtual int Open(FILE *file) { return 0; }
+    virtual int Close(FILE *file) { return 0; }
+    virtual int Read(FILE *file, void *buf, size_t size) { return 0; }
+    virtual int Write(FILE *file, const void *buf, size_t size) { return 0; }
+    virtual int Seek(FILE *file, long offset, int origin) { return 0; }
+    virtual int GetChildren(DENTRY *parent, const char *find_name) { return 0; }
 };
 
 class Driver : public FileIO
@@ -36,8 +47,8 @@ public:
 class BlockDriver : public Driver
 {
 public:
-	virtual int Read(fpos_t pos, char* buf, size_t size) { return -1; }
-	virtual int Write(fpos_t pos, const char* buf, size_t size) { return -1; }
+	virtual int Read(fpos_t pos, void* buf, size_t size) { return -1; }
+	virtual int Write(fpos_t pos, const void* buf, size_t size) { return -1; }
 
 	BlockDriver()
 	{

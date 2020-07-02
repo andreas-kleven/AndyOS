@@ -74,6 +74,14 @@ char* strncat(char * dest, const char* src, int n)
 	return rdest;
 }
 
+char* strdup(const char *str1)
+{
+	int len = strlen(str1);
+	char* dup = new char[len + 1];
+	strcpy(dup, str1);
+	return dup;
+}
+
 void stoupper(char* s)
 {
     for(; *s; s++)

@@ -2,6 +2,7 @@
 #include "Memory/memory.h"
 #include "thread.h"
 #include "sync.h"
+#include "filetable.h"
 #include "FS/file.h"
 #include "Lib/types.h"
 #include "Lib/circbuf.h"
@@ -83,7 +84,7 @@ struct PROCESS
 	size_t heap_start;
 	size_t heap_end;
 
-	FILE *file_table[FILE_TABLE_SIZE];
+	Filetable filetable;
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
 	Mutex signal_mutex;
 

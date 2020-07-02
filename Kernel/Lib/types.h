@@ -25,6 +25,8 @@ typedef unsigned long long time_t;
 typedef uint32 mode_t;
 typedef uint32 useconds_t;
 
+#define DIV_CEIL(a,b) (((a) == 0) ? 0 : (1 + (((a) - 1) / (b))))
+
 #define STATUS_FAILED 0
 #define STATUS_SUCCESS 1
 

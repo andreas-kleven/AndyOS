@@ -3,204 +3,178 @@
 #include "pipe.h"
 #include "string.h"
 #include "iso.h"
+#include "Kernel/timer.h"
 #include "Lib/debug.h"
 #include "Process/dispatcher.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
 #include "Drivers/driver.h"
 
-#define NODE_COUNT 256
-
 namespace VFS
 {
-	FileSystem *first_fs;
-	FileSystem *primary_fs;
+	DENTRY *root_dentry = 0;
 
-	FNODE *nodes[NODE_COUNT];
-
-	bool Mount(BlockDriver *driver, const char *mount_point)
+	inline bool IsValidInode(FILE *file)
 	{
-		FileSystem *fs = new ISO_FS(driver);
-		fs->mount_point = mount_point;
-
-		first_fs = fs;
-		primary_fs = fs;
-		return true;
+		return file && file->dentry && file->dentry->inode;
 	}
 
-	bool AddNode(FNODE *node)
+	DENTRY *GetExistingChild(DENTRY *parent, const char *name)
 	{
-		for (int i = 0; i < NODE_COUNT; i++)
+		for (int i = 0; i < parent->children.Count(); i++)
 		{
-			if (nodes[i] == 0)
-			{
-				nodes[i] = node;
-				return true;
-			}
+			DENTRY *child = parent->children[i];
+
+			if (strcmp(child->name, name) == 0)
+				return child;
 		}
 
-		return false;
+		return 0;
 	}
 
-	FileSystem *GetFS(const Path &path)
+	INODE *AllocInode(DENTRY *dentry)
 	{
-		return primary_fs;
+		if (dentry->inode)
+			return dentry->inode;
+
+		dentry->inode = new INODE;
+		return dentry->inode;
 	}
 
-	FNODE *GetNode(const Path &path)
+	DENTRY *AllocDentry(DENTRY *parent, const char *name)
 	{
-		if (path.count == 0)
+		if (parent && name)
+		{
+			DENTRY *dentry = GetExistingChild(parent, name);
+
+			if (dentry)
+				return dentry;
+		}
+
+		DENTRY *dentry = new DENTRY;
+		dentry->name = strdup(name);
+		return dentry;
+	}
+
+	void AddDentry(DENTRY *parent, DENTRY *child)
+	{
+		if (GetExistingChild(parent, child->name))
+		{
+			debug_print("dentry already added %s\n", child->name);
+			return;
+		}
+
+		child->parent = parent;
+		child->owner = parent->owner;
+		parent->children.Add(child);
+	}
+
+	int GetChildren(DENTRY *parent)
+	{
+		return parent->owner->GetChildren(parent, 0);
+	}
+
+	DENTRY *GetChild(DENTRY *parent, const char *name)
+	{
+		DENTRY *dentry = GetExistingChild(parent, name);
+
+		if (dentry)
+			return dentry;
+
+		parent->owner->GetChildren(parent, name);
+		return GetExistingChild(parent, name);
+	}
+
+	DENTRY *GetDentry(Path path)
+	{
+		DENTRY *current = root_dentry;
+
+		if (!root_dentry)
 			return 0;
 
-		for (int i = 0; i < NODE_COUNT; i++)
+		for (int i = 0; i < path.count; i++)
 		{
-			FNODE *node = nodes[i];
+			const char *part = path.parts[i];
+			current = GetChild(current, part);
 
-			if (node)
-			{
-				if (node->path == path)
-				{
-					return node;
-				}
-			}
+			if (!current)
+				break;
 		}
 
-		FileSystem *fs = GetFS(path);
-		FNODE *node = new FNODE;
-
-		if (fs)
-		{
-			if (fs->GetFile(path, node))
-			{
-				node->io = fs;
-			}
-			else if (path.count >= 2)
-			{
-				if (strcmp(path.parts[0], "dev") == 0)
-				{
-					Driver *drv = DriverManager::GetDriver(path.parts[1]);
-
-					if (drv && drv->type == DRIVER_TYPE_CHAR)
-					{
-						node->io = drv;
-						node->type = FILE_TYPE_CHAR;
-					}
-				}
-			}
-		}
-
-		if (!node->io)
-		{
-			delete node;
-			return 0;
-		}
-
-		node->parent = GetNode(path.Parent());
-
-		if (node->parent)
-		{
-			node->next = node->parent->first_child;
-			node->parent->first_child = node;
-		}
-
-		node->path = path;
-
-		if (!AddNode(node))
-		{
-			delete node;
-			return 0;
-		}
-
-		return node;
+		return current;
 	}
 
-	int AddFile(FILE *file)
+	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
 	{
-		PROCESS *proc = Dispatcher::CurrentThread()->process;
+		Path path = Path(mount_point);
+		DENTRY *dentry = AllocDentry(0, path.Filename());
+		fs->Mount(driver, dentry);
 
-		//Find first empty
-		for (int i = 3; i < FILE_TABLE_SIZE; i++)
-		{
-			if (proc->file_table[i] == 0)
-			{
-				proc->file_table[i] = file;
-				return i;
-			}
-		}
+		if (!dentry->inode)
+			return -1;
 
-		return -1;
+		DENTRY *parent = 0;
+
+		if (path.count > 0)
+			parent = GetDentry(path.Parent());
+
+		if (parent)
+			AddDentry(parent, dentry);
+		else
+			root_dentry = dentry;
+
+		dentry->type = INODE_TYPE_DIRECTORY;
+		dentry->owner = fs;
+
+		return 0;
 	}
 
-	FILE *GetFile(int fd)
+	int DuplicateFile(Filetable &filetable, int oldfd)
 	{
-		PROCESS *proc = Dispatcher::CurrentThread()->process;
-
-		if (fd >= FILE_TABLE_SIZE)
-			return 0;
-
-		return proc->file_table[fd];
-	}
-
-	bool SetFile(int fd, FILE *file)
-	{
-		PROCESS *proc = Dispatcher::CurrentThread()->process;
-
-		if (fd >= FILE_TABLE_SIZE)
-			return false;
-
-		proc->file_table[fd] = file;
-		return true;
-	}
-
-	int DuplicateFile(int oldfd)
-	{
-		FILE *file = GetFile(oldfd);
+		FILE *file = filetable.Get(oldfd);
 
 		if (!file)
 			return -1;
 
-		return AddFile(file);
+		return filetable.Add(file);
 	}
 
-	int DuplicateFile(int oldfd, int newfd)
+	int DuplicateFile(Filetable &filetable, int oldfd, int newfd)
 	{
-		FILE *file = GetFile(oldfd);
+		FILE *file = filetable.Get(oldfd);
 
 		if (!file)
 			return -1;
 
-		//Close existing file if open
-		if (GetFile(newfd))
-			Close(newfd);
+		//Close previous file
+		if (filetable.Get(newfd))
+			Close(filetable, newfd);
 
-		return SetFile(newfd, file);
+		return filetable.Set(newfd, file);
 	}
 
-	int Open(const char *filename)
+	int Open(Filetable &filetable, const char *filename)
 	{
 		Path path(filename);
-		FNODE *node = GetNode(path);
+		DENTRY *dentry = GetDentry(path);
 
-		if (!node)
+		if (!dentry)
 			return -1;
+		
+		FILE *file = new FILE(dentry);
+		int fd = filetable.Add(file);
 
-		THREAD *thread = Dispatcher::CurrentThread();
-		FILE *file = new FILE(node, thread);
-		FileIO *io = file->node->io;
-
-		if (!io)
-			return -1;
-
-		if (io->Open(file->node, file) != 0)
-			return -1;
-
-		return AddFile(file);
+		if (fd < 0)
+			return fd;
+		
+		dentry->owner->Open(file);
+		return fd;
 	}
 
-	int Close(int fd)
+	int Close(Filetable &filetable, int fd)
 	{
 		int ret = 0;
-		FILE *file = GetFile(fd);
+		FILE *file = filetable.Get(fd);
 
 		if (!file)
 			return -1;
@@ -210,54 +184,53 @@ namespace VFS
 
 		debug_print("Close file %d\n", fd);
 
+		filetable.Remove(fd);
 		delete file;
-		SetFile(fd, 0);
-
 		return ret;
 	}
 
-	size_t Read(int fd, char *dst, size_t size)
+	size_t Read(Filetable &filetable, int fd, char *dst, size_t size)
 	{
-		FILE *file = GetFile(fd);
+		FILE *file = filetable.Get(fd);
 
-		if (!file)
+		if (!IsValidInode(file))
 			return 0;
 
-		FNODE *node = file->node;
+		FileIO *owner = file->dentry->owner;
+		int read = owner->Read(file, dst, size);
 
-		int read = node->io->Read(file, dst, size);
-
-		if (read == -1)
-			return -1;
+		if (read < 0)
+			return read;
 
 		file->pos += read;
 		return read;
 	}
 
-	size_t Write(int fd, const char *buf, size_t size)
+	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size)
 	{
-		FILE *file = GetFile(fd);
+		FILE *file = filetable.Get(fd);
 
-		if (!file)
+		if (!IsValidInode(file))
 			return 0;
 
-		FNODE *node = file->node;
+		FileIO *owner = file->dentry->owner;
+		int written = owner->Write(file, buf, size);
 
-		int written = node->io->Write(file, buf, size);
-
-		if (written == -1)
-			return -1;
+		if (written < 0)
+			return written;
 
 		file->pos += written;
 		return written;
 	}
 
-	off_t Seek(int fd, off_t offset, int whence)
+	off_t Seek(Filetable &filetable, int fd, off_t offset, int whence)
 	{
-		FILE *file = GetFile(fd);
+		FILE *file = filetable.Get(fd);
 
-		if (!file)
+		if (!IsValidInode(file))
 			return -1;
+
+		INODE *inode = file->dentry->inode;
 
 		switch (whence)
 		{
@@ -270,7 +243,7 @@ namespace VFS
 			return 0;
 
 		case SEEK_END:
-			file->pos = file->node->size + offset;
+			file->pos = inode->size + offset;
 			return 0;
 
 		default:
@@ -278,21 +251,29 @@ namespace VFS
 		}
 	}
 
-	int CreatePipes(int pipefd[2], int flags)
+	int CreatePipes(Filetable &filetable, int pipefd[2], int flags)
 	{
-		THREAD *thread = Dispatcher::CurrentThread();
-
 		Pipe *pipe = new Pipe();
-		FNODE *node = new FNODE(0, FILE_TYPE_PIPE, pipe);
 
-		if (!AddNode(node))
-			return -1;
+		char namebuf[32];
+		itoa(Timer::Ticks(), namebuf, 10);
 
-		FILE *read = new FILE(node, thread);
-		FILE *write = new FILE(node, thread);
+		// TODO
+		DENTRY *pipes_dentry = AllocDentry(root_dentry, "pipes");
+		INODE *pipes_inode = AllocInode(pipes_dentry);
+		AddDentry(root_dentry, pipes_dentry);
 
-		pipefd[0] = AddFile(read);
-		pipefd[1] = AddFile(write);
+		DENTRY *dentry = AllocDentry(pipes_dentry, namebuf);
+		INODE *inode = AllocInode(dentry);
+		dentry->type = INODE_TYPE_FIFO;
+		inode->type = INODE_TYPE_FIFO;
+		AddDentry(pipes_dentry, dentry);
+
+		FILE *read = new FILE(dentry);
+		FILE *write = new FILE(dentry);
+
+		pipefd[0] = filetable.Add(read);
+		pipefd[1] = filetable.Add(write);
 
 		if (pipefd[0] == -1 || pipefd[1] == -1)
 			return -1;
@@ -302,41 +283,24 @@ namespace VFS
 
 	uint32 ReadFile(const char *filename, char *&buffer)
 	{
-		Path path(filename);
+		Filetable filetable;
+		int fd = Open(filetable, filename);
+		FILE *file = filetable.Get(fd);
 
-		FILE file;
-		file.node = GetNode(path);
-		file.thread = Dispatcher::CurrentThread();
-
-		if (!file.node)
+		if (!file)
 			return 0;
 
-		buffer = new char[file.node->size];
-		int length = file.node->io->Read(&file, buffer, file.node->size);
+		DENTRY *dentry = file->dentry;
+		int size = dentry->inode->size;
+		buffer = new char[size];
+		int length = dentry->owner->Read(file, buffer, size);
 
 		return length;
 	}
 
 	STATUS Init()
 	{
-		memset(nodes, 0, sizeof(FNODE *) * NODE_COUNT);
-
-		first_fs = 0;
-		primary_fs = 0;
-
-		Driver *drv = DriverManager::GetDriver();
-
-		while (drv)
-		{
-			if (drv->type == DRIVER_TYPE_BLOCK)
-			{
-				Mount((BlockDriver *)drv, "/");
-				return STATUS_SUCCESS;
-			}
-
-			drv = drv->next;
-		}
-
+		root_dentry = 0;
 		return STATUS_SUCCESS;
 	}
 } // namespace VFS

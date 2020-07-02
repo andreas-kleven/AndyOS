@@ -7,6 +7,6 @@ class MouseDriver : public CharDriver
 public:
 	MouseDriver();
 
-	int Open(FNODE* node, FILE* file);
-	int Read(FILE* file, char* buf, size_t size);
+	int Open(FILE *file);
+	int Read(FILE *file, void *buf, size_t size);
 };

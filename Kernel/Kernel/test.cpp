@@ -2,6 +2,7 @@
 #include "panic.h"
 #include "stdio.h"
 #include "PCI/pci.h"
+#include "Drivers/ata.h"
 #include "Drivers/ac97.h"
 #include "Drivers/e1000.h"
 #include "Net/net.h"
@@ -15,6 +16,7 @@
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
 #include "FS/iso.h"
+#include "FS/ext2.h"
 #include "Process/process.h"
 #include "Process/dispatcher.h"
 #include "sync.h"
@@ -59,25 +61,51 @@ namespace Test
 
 	void File()
 	{
-		char *buf;
-		int size = VFS::ReadFile("files/bunny.obj", buf);
+		ATADriver *driver1 = (ATADriver *)DriverManager::GetDriver("hdc");
+		ISO_FS *fs1 = new ISO_FS();
+		ATADriver *driver2 = (ATADriver *)DriverManager::GetDriver("hda");
+		Ext2_FS *fs2 = new Ext2_FS();
 
-		if (size)
+		if (VFS::Mount(driver1, fs1, "/"))
 		{
-			for (int i = 0; i < size; i++)
-				debug_print("%c", buf[i]);
-		}
-		else
-		{
-			debug_print("File not found");
+			debug_print("Mount 1 failed\n");
+			return;
 		}
 
-		while (1)
-			;
+		if (VFS::Mount(driver2, fs2, "/mnt"))
+		{
+			debug_print("Mount 2 failed\n");
+			return;
+		}
+
+		Filetable filetable;
+
+		int fd1 = VFS::Open(filetable, "/test");
+		int fd2 = VFS::Open(filetable, "/mnt/files/text.txt");
+
+		debug_print("Open: %d %d\n", fd1, fd2);
+		char buf[100];
+
+		if (fd1 >= 0)
+		{
+			memset(buf, 0, sizeof(buf));
+			VFS::Read(filetable, fd1, buf, sizeof(buf));
+			debug_dump(buf, sizeof(buf), true);
+		}
+
+		if (fd2 >= 0)
+		{
+			memset(buf, 0, sizeof(buf));
+			VFS::Read(filetable, fd2, buf, sizeof(buf));
+			debug_dump(buf, sizeof(buf), true);
+		}
 	}
 
 	void GUI()
 	{
+		ATADriver *driver = (ATADriver *)DriverManager::GetDriver("hdc");
+		ISO_FS *fs = new ISO_FS();
+		VFS::Mount(driver, fs, "/");
 
 		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
 		Scheduler::InsertThread(dispatcher_thread);
@@ -266,13 +294,13 @@ namespace Test
 	{
 		GUI();
 		//_Memory();
-		//File();
+		File();
 		//_Net();
 		//Audio();
 		//COM();
 		//MutexTest();
 
 		while (1)
-			pause();
+			sys_halt();
 	}
 } // namespace Test

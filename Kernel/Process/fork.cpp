@@ -48,14 +48,9 @@ namespace ProcessManager
 		PROCESS *newproc = new PROCESS(proc->flags, space);
 		AssignPid(newproc);
 
+		newproc->filetable = proc->filetable.Clone();
 		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
 		newproc->message_handler = proc->message_handler;
-
-		for (int i = 0; i < FILE_TABLE_SIZE; i++)
-		{
-			if (proc->file_table[i])
-				newproc->file_table[i] = new FILE(*proc->file_table[i]);
-		}
 
 		THREAD *current_thread = Scheduler::CurrentThread();
 

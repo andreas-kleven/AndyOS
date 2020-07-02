@@ -3,6 +3,12 @@
 #include "filesystem.h"
 
 #define ISO_SECTOR_SIZE 2048
+#define ISO_FLAG_HIDDEN (1 << 0)
+#define ISO_FLAG_DIRECTORY (1 << 1)
+#define ISO_FLAG_ASSOSCIATED (1 << 2)
+#define ISO_FLAG_EXTENDED (1 << 3)
+#define ISO_FLAG_EXTENDED_OWNER (1 << 4)
+#define ISO_FLAG_NOT_FINAL (1 << 7)
 
 struct ISO_DATE
 {
@@ -28,7 +34,7 @@ struct ISO_TABLE_ENTRY
 {
 	uint8 length;
 	uint8 attrib;
-	uint32 locationLBA;
+	uint32 location;
 	uint16 parentDir;
 	char name;
 } __attribute__((packed));
@@ -37,8 +43,8 @@ struct ISO_DIRECTORY
 {
 	uint8 length;
 	uint8 attrib;
-	uint32 locationLBA_LSB;
-	uint32 locationLBA_MSB;
+	uint32 location_LSB;
+	uint32 location_MSB;
 	uint32 filesize_LSB;
 	uint32 filesize_MSB;
 	ISO_DATE recording_date;
@@ -103,18 +109,21 @@ struct ISO_PRIMARY_DESC
 class ISO_FS : public FileSystem
 {
 private:
-	BlockDriver* driver;
+	BlockDriver *driver;
+	ISO_PRIMARY_DESC *desc;
+	ISO_DIRECTORY *root;
 
 public:
-	ISO_PRIMARY_DESC* desc;
-	ISO_DIRECTORY* root;
+	ISO_FS();
 
-	ISO_FS(BlockDriver* driver);
-
-    int Read(FILE* file, char* buf, size_t size);
-	bool GetFile(const Path& path, FNODE* node);
+	int Mount(BlockDriver *driver, DENTRY *root_dentry);
+	int GetChildren(DENTRY *parent, const char *find_name);
+	int Read(FILE *file, void *buf, size_t size);
 
 private:
-	ISO_DIRECTORY* FindDirectory(const Path& path);
-	void GetName(ISO_DIRECTORY* dir, char* buf);
+	void GetName(ISO_DIRECTORY *dir, char *buf);
+	int GetFlags(int iso_flags);
+	INODE *GetInode(ISO_DIRECTORY *dir, DENTRY *dentry);
+	void FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry);
+	int ReadBlock(int block, void *buf, size_t size);
 };

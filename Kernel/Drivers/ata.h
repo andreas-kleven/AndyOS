@@ -21,11 +21,11 @@
 
 #define ATA_DRIVE_SELECT 6
 
-#define ATA_STATUS_BSY  0x80
+#define ATA_STATUS_BSY 0x80
 #define ATA_STATUS_DRDY 0x40
-#define ATA_STATUS_DRQ  0x08
-#define ATA_STATUS_ERR  0x01
-#define ATA_STATUS_DF   0x20
+#define ATA_STATUS_DRQ 0x08
+#define ATA_STATUS_ERR 0x01
+#define ATA_STATUS_DF 0x20
 
 class ATADriver : public BlockDriver
 {
@@ -35,12 +35,12 @@ public:
 
 	ATADriver(int bus, int drive);
 
-	int Read(fpos_t pos, char* buf, size_t size);
+	int Read(fpos_t pos, void *buf, size_t size);
 
 	static STATUS Init();
 
 private:
-	int ReadSector(fpos_t pos, char* buf, size_t size);
+	int ReadSector(fpos_t pos, uint8 *buf, size_t size);
 
 	static void ATA_Interrupt();
 };

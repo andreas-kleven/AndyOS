@@ -16,8 +16,7 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->main_thread = 0;
 	this->stack_ptr = USER_END;
 	this->heap_end = 0;
-
-	memset(this->file_table, 0, sizeof(this->file_table));
+	this->filetable = Filetable(3);
 
 	for (int i = 0; i < sizeof(this->signal_table); i++)
 		ProcessManager::SetSignalHandler(this, i, SIG_DFL);
@@ -130,7 +129,7 @@ namespace ProcessManager
 		if (!thread || !thread->process)
 			return false;
 
-		PROCESS* proc = thread->process;
+		PROCESS *proc = thread->process;
 		THREAD *prev = 0;
 		THREAD *t = proc->main_thread;
 
@@ -174,11 +173,12 @@ namespace ProcessManager
 	{
 		for (int fd = 0; fd < FILE_TABLE_SIZE; fd++)
 		{
-			FILE *file = proc->file_table[fd];
+			FILE *file = proc->filetable.Get(fd);
+			proc->filetable.Remove(fd);
 
 			if (file)
 			{
-				if (VFS::Close(fd) == -1)
+				if (VFS::Close(proc->filetable, fd) == -1)
 					return false;
 			}
 		}

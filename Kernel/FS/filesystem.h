@@ -1,16 +1,10 @@
 #pragma once
 #include "types.h"
+#include "file.h"
 #include "Drivers/driver.h"
-#include "vfs.h"
 
 class FileSystem : public Driver
 {
 public:
-	char* name;
-	const char* mount_point;
-
-	FileSystem();
-	
-	virtual bool Mount(FNODE* node) { return false; }
-	virtual bool GetFile(const Path& path, FNODE*) { return false; }
+	virtual int Mount(BlockDriver *driver, DENTRY *root_dentry) { return 0; }
 };

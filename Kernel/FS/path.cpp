@@ -5,21 +5,21 @@
 
 Path::Path()
 {
+	buf = 0;
 	count = 0;
 	parts = 0;
 }
 
-Path::Path(const char* _path)
+Path::Path(const char *_path)
 	: Path()
 {
 	if (!_path)
 		return;
 
-	char* path = new char[strlen(_path) + 1];
-	strcpy(path, _path);
+	buf = strdup(_path);
 
 	//Count parts
-	char* str = path;
+	char *str = buf;
 
 	if (*str == '/')
 		str++;
@@ -38,10 +38,10 @@ Path::Path(const char* _path)
 
 	if (count > 0)
 	{
-		parts = new char*[count];
+		parts = new char *[count];
 
-		char* saveptr;
-		char* part = strtok_r(path, "/", &saveptr);
+		char *saveptr;
+		char *part = strtok_r(buf, "/", &saveptr);
 		parts[0] = part;
 
 		for (int i = 1; i < count; i++)
@@ -66,7 +66,15 @@ Path Path::Parent() const
 	return parent;
 }
 
-bool Path::operator==(const Path& path) const
+const char *Path::Filename() const
+{
+	if (count == 0)
+		return buf;
+
+	return parts[count - 1];
+}
+
+bool Path::operator==(const Path &path) const
 {
 	if (this->count != path.count)
 		return false;
