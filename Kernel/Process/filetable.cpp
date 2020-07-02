@@ -28,7 +28,8 @@ int Filetable::Remove(int fd)
 
     if (file == 0)
         return -1;
-
+    
+    Set(fd, 0);
     return 0;
 }
 
@@ -46,7 +47,7 @@ int Filetable::Set(int fd, FILE *file)
         return -1;
 
     files[fd] = file;
-    return 0;
+    return fd;
 }
 
 Filetable Filetable::Clone()
