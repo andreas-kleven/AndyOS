@@ -31,6 +31,21 @@ namespace DriverManager
 		return first_driver;
 	}
 
+	Driver *GetDriver(int id)
+	{
+		Driver *drv = first_driver;
+
+		while (drv)
+		{
+			if (drv->id == id)
+				return drv;
+
+			drv = drv->next;
+		}
+
+		return 0;
+	}
+
 	Driver *GetDriver(const char *name)
 	{
 		Driver *drv = first_driver;
@@ -43,7 +58,7 @@ namespace DriverManager
 			drv = drv->next;
 		}
 
-		return drv;
+		return 0;
 	}
 
 	STATUS Init()

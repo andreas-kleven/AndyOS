@@ -69,6 +69,7 @@ namespace DriverManager
 {
 	void AddDriver(Driver *driver);
 	Driver *GetDriver();
+	Driver *GetDriver(int id);
 	Driver *GetDriver(const char *name);
 	STATUS Init();
 }; // namespace DriverManager

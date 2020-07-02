@@ -15,6 +15,7 @@
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
+#include "FS/devfs.h"
 #include "FS/iso.h"
 #include "FS/ext2.h"
 #include "Process/process.h"
@@ -66,6 +67,8 @@ namespace Test
 		ATADriver *driver2 = (ATADriver *)DriverManager::GetDriver("hda");
 		Ext2FS *fs2 = new Ext2FS();
 
+		DevFS *devfs = new DevFS();
+
 		if (VFS::Mount(driver1, fs1, "/"))
 		{
 			debug_print("Mount 1 failed\n");
@@ -78,10 +81,16 @@ namespace Test
 			return;
 		}
 
+		if (VFS::Mount(0, devfs, "/dev"))
+		{
+			debug_print("Mount devfs failed\n");
+			return;
+		}
+
 		Filetable filetable;
 
 		int fd1 = VFS::Open(filetable, "/test");
-		int fd2 = VFS::Open(filetable, "/mnt/files/text.txt");
+		int fd2 = VFS::Open(filetable, "/dev/mouse");
 
 		debug_print("Open: %d %d\n", fd1, fd2);
 		char buf[100];
@@ -97,7 +106,7 @@ namespace Test
 		{
 			memset(buf, 0, sizeof(buf));
 			VFS::Read(filetable, fd2, buf, sizeof(buf));
-			debug_dump(buf, sizeof(buf), true);
+			debug_dump(buf, sizeof(buf), false);
 		}
 	}
 
@@ -106,6 +115,9 @@ namespace Test
 		ATADriver *driver = (ATADriver *)DriverManager::GetDriver("hdc");
 		IsoFS *fs = new IsoFS();
 		VFS::Mount(driver, fs, "/");
+
+		DevFS *devfs = new DevFS();
+		VFS::Mount(0, devfs, "/dev");
 
 		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
 		Scheduler::InsertThread(dispatcher_thread);
