@@ -10,17 +10,22 @@ namespace VMem
 {
 	void *MapFirstFree(void *phys, size_t count, pflags_t flags, size_t start, size_t end)
 	{
+		Scheduler::Disable();
 		void *virt = FirstFree(count, start, end);
 
 		if (!virt)
+		{
+			Scheduler::Enable();
 			return 0;
+		}
 
 		if (MapPages(virt, phys, count, flags))
 		{
-			PMem::DeInitRegion(phys, count * PAGE_SIZE);
+			Scheduler::Enable();
 			return (void *)virt;
 		}
 
+		Scheduler::Enable();
 		return 0;
 	}
 

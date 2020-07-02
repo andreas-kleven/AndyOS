@@ -11,5 +11,5 @@ namespace PMem
 	void DeInitRegion(void* addr, size_t size);
 	void* AllocBlocks(size_t size);
 	void FreeBlocks(void* addr, size_t size);
-	STATUS Init(size_t mem_start, size_t mem_end, void* map);
+	STATUS Init(size_t mem_end, void* map);
 };

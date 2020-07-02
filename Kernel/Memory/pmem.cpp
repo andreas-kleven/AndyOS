@@ -1,5 +1,8 @@
 #include "pmem.h"
 #include "memory.h"
+#include "hal.h"
+#include "string.h"
+#include "debug.h"
 #include "Process/scheduler.h"
 
 namespace PMem
@@ -10,26 +13,40 @@ namespace PMem
 	size_t num_blocks;
 	size_t num_free;
 
+	inline uint8 GetBit(size_t bit)
+	{
+		return (mem_map[bit / 32] >> (bit % 32)) & 1;
+	}
+
 	inline void SetBit(size_t bit)
 	{
+		if (GetBit(bit))
+		{
+			debug_print("PMem SetBit error\n");
+			sys_halt();
+		}
+
 		mem_map[bit / 32] |= (1 << (bit % 32));
+		num_free--;
 	}
 
 	inline void UnsetBit(size_t bit)
 	{
-		mem_map[bit / 32] &= ~(1 << (bit % 32));
-	}
+		if (!GetBit(bit))
+		{
+			debug_print("PMem UnsetBit error\n");
+			sys_halt();
+		}
 
-	inline uint8 GetBit(size_t bit)
-	{
-		return (mem_map[bit / 32] >> (bit % 32)) & 1;
+		mem_map[bit / 32] &= ~(1 << (bit % 32));
+		num_free++;
 	}
 
 	size_t FirstFree()
 	{
 		Scheduler::Disable();
 
-		for (size_t i = 0; i < num_blocks; i++)
+		for (size_t i = 1; i < num_blocks; i++)
 		{
 			if (!GetBit(i))
 			{
@@ -102,13 +119,14 @@ namespace PMem
 		int align = (size_t)addr / BLOCK_SIZE;
 		int num = size / BLOCK_SIZE;
 
-		for (int i = 0; i < num; i++)
+		if (align == 0)
 		{
-			UnsetBit(align++);
-			num_free++;
+			align = 1;
+			num -= 1;
 		}
 
-		SetBit(0);
+		for (int i = 0; i < num; i++)
+			UnsetBit(align++);
 	}
 
 	void DeInitRegion(void *addr, size_t size)
@@ -117,28 +135,22 @@ namespace PMem
 		int blocks = size / BLOCK_SIZE;
 
 		for (int i = 0; i < blocks; i++)
-		{
 			SetBit(align++);
-			num_free--;
-		}
-
-		SetBit(0);
 	}
 
 	void *AllocBlocks(size_t size)
 	{
+		Scheduler::Disable();
 		size_t frame = FirstFreeNum(size);
 
 		if (frame == 0)
+		{
+			Scheduler::Enable();
 			return 0;
-
-		Scheduler::Disable();
+		}
 
 		for (size_t i = 0; i < size; i++)
-		{
 			SetBit(frame + i);
-			num_free--;
-		}
 
 		Scheduler::Enable();
 		return (void *)(frame * BLOCK_SIZE);
@@ -156,23 +168,21 @@ namespace PMem
 		for (size_t i = 0; i < size; i++)
 		{
 			if (GetBit(frame + i))
-			{
 				UnsetBit(frame + i);
-				num_free++;
-			}
 		}
 
 		Scheduler::Enable();
 	}
 
-	STATUS Init(size_t mem_start, size_t mem_end, void *map)
+	STATUS Init(size_t mem_end, void *map)
 	{
-		mem_size = mem_end - mem_start;
+		mem_size = mem_end;
 		mem_map = (uint32 *)map;
 
 		num_blocks = BYTES_TO_BLOCKS(mem_size);
 		num_free = num_blocks;
 
+		memset(mem_map, 0, MEMORY_MAP_SIZE);
 		DeInitRegion(0, mem_size);
 		return STATUS_SUCCESS;
 	}

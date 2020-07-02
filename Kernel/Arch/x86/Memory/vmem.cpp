@@ -305,13 +305,13 @@ namespace VMem::Arch
 		uint32 pt_flags = PF_F(flags);
 
 		//Dir
-		PAGE_DIR* dir_phys = (PAGE_DIR*)PMem::AllocBlocks(1);
-		PAGE_DIR* dir_virt = (PAGE_DIR*)KernelMapFirstFree(dir_phys, 1, flags);
+		PAGE_DIR* dir_virt = (PAGE_DIR*)KernelAlloc(1);
+		PAGE_DIR* dir_phys = (PAGE_DIR*)GetAddress((size_t)dir_virt);
 		memset(dir_virt, 0, sizeof(PAGE_DIR));
 
 		//Tables
-		PAGE_TABLE* tables_phys = (PAGE_TABLE*)PMem::AllocBlocks(768);
-		PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelMapFirstFree(tables_phys, 768, flags));
+		PAGE_TABLE* tables_virt = (PAGE_TABLE*)(KernelAlloc(768));
+		PAGE_TABLE* tables_phys = (PAGE_TABLE*)GetAddress((size_t)tables_virt);
 		memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
 
 		tables_phys -= 256;

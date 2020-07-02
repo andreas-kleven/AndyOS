@@ -29,7 +29,7 @@ namespace Kernel
 
 		Arch::Init();
 
-		PMem::Init(mem_start, mem_end, (void *)kernel_end);
+		PMem::Init(mem_end, (void *)kernel_end);
 		PMem::InitRegion((void *)(kernel_end + MEMORY_MAP_SIZE), mem_end - kernel_end - MEMORY_MAP_SIZE);
 		VMem::Init();
 
