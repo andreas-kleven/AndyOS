@@ -36,7 +36,8 @@ public:
 	virtual IPv4Address GetIP();
 
 private:
-	uint32 io_base;
+	int bar_type;
+	size_t io_base;
 	size_t mem_base;
 	uint32 irq;
 	uint8 mac[6];

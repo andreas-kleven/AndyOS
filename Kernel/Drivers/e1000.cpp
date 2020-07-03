@@ -7,74 +7,108 @@
 #include "Memory/memory.h"
 #include "Lib/debug.h"
 
-#define REG_CTRL 		0x0000
-#define REG_EEPROM 		0x0014
-#define REG_IMASK 		0x00D0
-#define REG_RCTRL 		0x0100
-#define REG_RXDESCLO  	0x2800
-#define REG_RXDESCHI  	0x2804
-#define REG_RXDESCLEN 	0x2808
-#define REG_RXDESCHEAD 	0x2810
-#define REG_RXDESCTAIL 	0x2818
+#define REG_CTRL 0x0000
+#define REG_STATUS 0x0008
+#define REG_EEPROM 0x0014
+#define REG_CTRL_EXT 0x0018
+#define REG_IMASK 0x00D0
+#define REG_RCTRL 0x0100
+#define REG_RXDESCLO 0x2800
+#define REG_RXDESCHI 0x2804
+#define REG_RXDESCLEN 0x2808
+#define REG_RXDESCHEAD 0x2810
+#define REG_RXDESCTAIL 0x2818
 
-#define REG_TCTRL 		0x0400
-#define REG_TXDESCLO  	0x3800
-#define REG_TXDESCHI  	0x3804
-#define REG_TXDESCLEN 	0x3808
-#define REG_TXDESCHEAD 	0x3810
-#define REG_TXDESCTAIL 	0x3818
+#define REG_TCTRL 0x0400
+#define REG_TXDESCLO 0x3800
+#define REG_TXDESCHI 0x3804
+#define REG_TXDESCLEN 0x3808
+#define REG_TXDESCHEAD 0x3810
+#define REG_TXDESCTAIL 0x3818
 
-#define RCTL_EN					(1 << 1)    // Receiver Enable
-#define RCTL_SBP				(1 << 2)    // Store Bad Packets
-#define RCTL_UPE				(1 << 3)    // Unicast Promiscuous Enabled
-#define RCTL_MPE				(1 << 4)    // Multicast Promiscuous Enabled
-#define RCTL_LPE				(1 << 5)    // Long Packet Reception Enable
-#define RCTL_LBM_NONE			(0 << 6)    // No Loopback
-#define RCTL_LBM_PHY			(3 << 6)    // PHY or external SerDesc loopback
-#define RTCL_RDMTS_HALF			(0 << 8)    // Free Buffer Threshold is 1/2 of RDLEN
-#define RTCL_RDMTS_QUARTER		(1 << 8)    // Free Buffer Threshold is 1/4 of RDLEN
-#define RTCL_RDMTS_EIGHTH		(2 << 8)    // Free Buffer Threshold is 1/8 of RDLEN
-#define RCTL_MO_36				(0 << 12)   // Multicast Offset - bits 47:36
-#define RCTL_MO_35				(1 << 12)   // Multicast Offset - bits 46:35
-#define RCTL_MO_34				(2 << 12)   // Multicast Offset - bits 45:34
-#define RCTL_MO_32				(3 << 12)   // Multicast Offset - bits 43:32
-#define RCTL_BAM				(1 << 15)   // Broadcast Accept Mode
-#define RCTL_VFE				(1 << 18)   // VLAN Filter Enable
-#define RCTL_CFIEN				(1 << 19)   // Canonical Form Indicator Enable
-#define RCTL_CFI				(1 << 20)   // Canonical Form Indicator Bit Value
-#define RCTL_DPF				(1 << 22)   // Discard Pause Frames
-#define RCTL_PMCF				(1 << 23)   // Pass MAC Control Frames
-#define RCTL_SECRC				(1 << 26)   // Strip Ethernet CRC
+#define REG_RDTR 0x2820	  // RX Delay Timer Register
+#define REG_RXDCTL 0x3828 // RX Descriptor Control
+#define REG_RADV 0x282C	  // RX Int. Absolute Delay Timer
+#define REG_RSRPD 0x2C00  // RX Small Packet Detect Interrupt
 
-#define RCTL_BSIZE_256			(3 << 16)
-#define RCTL_BSIZE_512			(2 << 16)
-#define RCTL_BSIZE_1024			(1 << 16)
-#define RCTL_BSIZE_2048			(0 << 16)
-#define RCTL_BSIZE_4096			((3 << 16) | (1 << 25))
-#define RCTL_BSIZE_8192			((2 << 16) | (1 << 25))
-#define RCTL_BSIZE_16384		((1 << 16) | (1 << 25))
+#define REG_TIPG 0x0410 // Transmit Inter Packet Gap
+#define ECTRL_SLU 0x40	//set link up
 
-#define ECTRL_FD   	0x01 //FULL DUPLEX
-#define ECTRL_ASDE 	0x20 //auto speed enable
-#define ECTRL_SLU  	0x40 //set link up
+#define RCTL_EN (1 << 1)			// Receiver Enable
+#define RCTL_SBP (1 << 2)			// Store Bad Packets
+#define RCTL_UPE (1 << 3)			// Unicast Promiscuous Enabled
+#define RCTL_MPE (1 << 4)			// Multicast Promiscuous Enabled
+#define RCTL_LPE (1 << 5)			// Long Packet Reception Enable
+#define RCTL_LBM_NONE (0 << 6)		// No Loopback
+#define RCTL_LBM_PHY (3 << 6)		// PHY or external SerDesc loopback
+#define RTCL_RDMTS_HALF (0 << 8)	// Free Buffer Threshold is 1/2 of RDLEN
+#define RTCL_RDMTS_QUARTER (1 << 8) // Free Buffer Threshold is 1/4 of RDLEN
+#define RTCL_RDMTS_EIGHTH (2 << 8)	// Free Buffer Threshold is 1/8 of RDLEN
+#define RCTL_MO_36 (0 << 12)		// Multicast Offset - bits 47:36
+#define RCTL_MO_35 (1 << 12)		// Multicast Offset - bits 46:35
+#define RCTL_MO_34 (2 << 12)		// Multicast Offset - bits 45:34
+#define RCTL_MO_32 (3 << 12)		// Multicast Offset - bits 43:32
+#define RCTL_BAM (1 << 15)			// Broadcast Accept Mode
+#define RCTL_VFE (1 << 18)			// VLAN Filter Enable
+#define RCTL_CFIEN (1 << 19)		// Canonical Form Indicator Enable
+#define RCTL_CFI (1 << 20)			// Canonical Form Indicator Bit Value
+#define RCTL_DPF (1 << 22)			// Discard Pause Frames
+#define RCTL_PMCF (1 << 23)			// Pass MAC Control Frames
+#define RCTL_SECRC (1 << 26)		// Strip Ethernet CRC
 
-E1000* instance;
+// Buffer Sizes
+#define RCTL_BSIZE_256 (3 << 16)
+#define RCTL_BSIZE_512 (2 << 16)
+#define RCTL_BSIZE_1024 (1 << 16)
+#define RCTL_BSIZE_2048 (0 << 16)
+#define RCTL_BSIZE_4096 ((3 << 16) | (1 << 25))
+#define RCTL_BSIZE_8192 ((2 << 16) | (1 << 25))
+#define RCTL_BSIZE_16384 ((1 << 16) | (1 << 25))
 
-E1000::E1000(PciDevice* pci_dev) : NetInterface(pci_dev)
+// Transmit Command
+#define CMD_EOP (1 << 0)  // End of Packet
+#define CMD_IFCS (1 << 1) // Insert FCS
+#define CMD_IC (1 << 2)	  // Insert Checksum
+#define CMD_RS (1 << 3)	  // Report Status
+#define CMD_RPS (1 << 4)  // Report Packet Sent
+#define CMD_VLE (1 << 6)  // VLAN Packet Enable
+#define CMD_IDE (1 << 7)  // Interrupt Delay Enable
+
+// TCTL Register
+#define TCTL_EN (1 << 1)	  // Transmit Enable
+#define TCTL_PSP (1 << 3)	  // Pad Short Packets
+#define TCTL_CT_SHIFT 4		  // Collision Threshold
+#define TCTL_COLD_SHIFT 12	  // Collision Distance
+#define TCTL_SWXOFF (1 << 22) // Software XOFF Transmission
+#define TCTL_RTLC (1 << 24)	  // Re-transmit on Late Collision
+
+#define TSTA_DD (1 << 0) // Descriptor Done
+#define TSTA_EC (1 << 1) // Excess Collisions
+#define TSTA_LC (1 << 2) // Late Collision
+#define LSTA_TU (1 << 3) // Transmit Underrun
+
+E1000 *instance;
+
+E1000::E1000(PciDevice *pci_dev) : NetInterface(pci_dev)
 {
 	instance = this;
 
 	irq = dev->config.interruptLine;
 	dev->EnableBusMastering();
 
-	uint32 mmio_base = dev->config.bar0;
-	mem_base = (size_t)VMem::KernelMapFirstFree((void*)mmio_base, 6, PAGE_PRESENT | PAGE_WRITE);
+	uint32 mmio_addr = dev->config.bar0 & 0xFFFFFFF0;
+	uint32 io_addr = dev->config.bar0 & 0xFFFFFFFC;
+	bar_type = (dev->config.bar0 >> 1) & 2;
+	mem_base = (size_t)VMem::KernelMapFirstFree((void *)mmio_addr, 6, PAGE_PRESENT | PAGE_WRITE);
+	io_base = (size_t)VMem::KernelMapFirstFree((void *)io_addr, 6, PAGE_PRESENT | PAGE_WRITE);
 
-	DetectEEPROM();
+	//DetectEEPROM();
+	eeprom_exists = false;
+
 	ReadMac();
 
 	uint32 addr = htonl(0xC0A80001);
-	gateway_addr = *(IPv4Address*)&addr;
+	gateway_addr = *(IPv4Address *)&addr;
 
 	Net::PrintIP("IP: ", GetIP());
 	Net::PrintMac("Mac: ", GetMac());
@@ -83,7 +117,7 @@ E1000::E1000(PciDevice* pci_dev) : NetInterface(pci_dev)
 	Start();
 }
 
-void E1000::Send(NetPacket* pkt)
+void E1000::Send(NetPacket *pkt)
 {
 	size_t phys = VMem::GetAddress((size_t)pkt->start);
 
@@ -96,12 +130,13 @@ void E1000::Send(NetPacket* pkt)
 	tx_cur = (tx_cur + 1) % E1000_NUM_TX_DESC;
 	WriteCommand(REG_TXDESCTAIL, tx_cur);
 
-	while (!(tx_descs[old_cur]->status & 0xff));
+	while (!(tx_descs[old_cur]->status & 0xff))
+		;
 }
 
 MacAddress E1000::GetMac()
 {
-	return *(MacAddress*)mac;
+	return *(MacAddress *)mac;
 }
 
 IPv4Address E1000::GetIP()
@@ -109,7 +144,7 @@ IPv4Address E1000::GetIP()
 	//uint32 ipa = htonl(0xC0A8387E); //192.168.56.126
 	uint32 ipa = htonl(0xC0A8007E); //192.168.0.126
 	//uint32 ipa = htonl(0x0A000001); //10.0.0.1
-	IPv4Address addr = *(IPv4Address*)&ipa;
+	IPv4Address addr = *(IPv4Address *)&ipa;
 	return addr;
 }
 
@@ -138,12 +173,12 @@ void E1000::Linkup()
 void E1000::Poll()
 {
 	uint16 old_cur;
-	
+
 	while (rx_descs[rx_cur]->status & 0x1)
 	{
-		uint8* buf = (uint8*)rx_virt_addr[rx_cur];
+		uint8 *buf = (uint8 *)rx_virt_addr[rx_cur];
 		uint16 len = rx_descs[rx_cur]->length;
-		uint8* end = buf + len;
+		uint8 *end = buf + len;
 
 		NetPacket pkt;
 		pkt.start = buf;
@@ -177,7 +212,9 @@ void E1000::E1000_Interrupt()
 		instance->Linkup();
 	}
 
-	if (status & 0x10) { }
+	if (status & 0x10)
+	{
+	}
 
 	if (status & 0x80)
 	{
@@ -185,13 +222,12 @@ void E1000::E1000_Interrupt()
 	}
 }
 
-
 void E1000::InitRX()
 {
 	int blocks = BYTES_TO_BLOCKS(sizeof(E1000_RX_DESC) * E1000_NUM_RX_DESC + 16);
-	void* ptr = VMem::KernelAlloc(blocks);
+	void *ptr = VMem::KernelAlloc(blocks);
 
-	E1000_RX_DESC* descs = (E1000_RX_DESC*)ptr;
+	E1000_RX_DESC *descs = (E1000_RX_DESC *)ptr;
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++)
 	{
 		size_t addr = (size_t)VMem::KernelAlloc(BYTES_TO_BLOCKS(8192 + 16));
@@ -203,25 +239,26 @@ void E1000::InitRX()
 	}
 
 	size_t addr = VMem::GetAddress((size_t)ptr);
-	WriteCommand(REG_RXDESCLO, addr & 0xFFFFFFFF);
-	WriteCommand(REG_RXDESCHI, addr >> 32);
-
+	WriteCommand(REG_TXDESCLO, (uint32)((uint64)addr >> 32));
+	WriteCommand(REG_TXDESCHI, (uint32)((uint64)addr & 0xFFFFFFFF));
+	WriteCommand(REG_RXDESCLO, (uint64)addr);
+	WriteCommand(REG_RXDESCHI, 0);
 	WriteCommand(REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(E1000_RX_DESC));
-
 	WriteCommand(REG_RXDESCHEAD, 0);
 	WriteCommand(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
+
 	rx_cur = 0;
 
-	uint32 flags = RCTL_EN | RCTL_SBP | RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC | RCTL_BSIZE_8192;
+	uint32 flags = REG_RCTRL | RCTL_EN | RCTL_SBP | RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC | RCTL_BSIZE_8192;
 	WriteCommand(REG_RCTRL, flags);
 }
 
 void E1000::InitTX()
 {
 	int blocks = BYTES_TO_BLOCKS(sizeof(E1000_TX_DESC) * E1000_NUM_TX_DESC + 16);
-	void* ptr = VMem::KernelAlloc(blocks);
+	void *ptr = VMem::KernelAlloc(blocks);
 
-	E1000_TX_DESC* descs = (E1000_TX_DESC*)ptr;
+	E1000_TX_DESC *descs = (E1000_TX_DESC *)ptr;
 	for (int i = 0; i < E1000_NUM_TX_DESC; i++)
 	{
 		tx_descs[i] = &descs[i];
@@ -231,16 +268,16 @@ void E1000::InitTX()
 	}
 
 	size_t addr = VMem::GetAddress((size_t)ptr);
-	WriteCommand(REG_TXDESCLO, addr & 0xFFFFFFFF);
-	WriteCommand(REG_TXDESCHI, addr >> 32);
-
+	WriteCommand(REG_TXDESCHI, (uint32)((uint64)addr >> 32));
+	WriteCommand(REG_TXDESCLO, (uint32)((uint64)addr & 0xFFFFFFFF));
 	WriteCommand(REG_TXDESCLEN, E1000_NUM_TX_DESC * sizeof(E1000_TX_DESC));
-
 	WriteCommand(REG_TXDESCHEAD, 0);
-	WriteCommand(REG_TXDESCTAIL, E1000_NUM_TX_DESC - 1);
+	WriteCommand(REG_TXDESCTAIL, 0);
+
 	tx_cur = 0;
 
-	WriteCommand(REG_TCTRL, (1 << 1) | (1 << 3));
+	uint32 flags = TCTL_EN | TCTL_PSP | (15 << TCTL_CT_SHIFT) | (64 << TCTL_COLD_SHIFT) | TCTL_RTLC;
+	WriteCommand(REG_TCTRL, flags);
 }
 
 bool E1000::DetectEEPROM()
@@ -268,12 +305,14 @@ uint32 E1000::ReadEEPROM(uint8 addr)
 	if (eeprom_exists)
 	{
 		WriteCommand(REG_EEPROM, (1) | ((uint32)(addr) << 8));
-		while (!((tmp = ReadCommand(REG_EEPROM)) & (1 << 4)));
+		while (!((tmp = ReadCommand(REG_EEPROM)) & (1 << 4)))
+			;
 	}
 	else
 	{
 		WriteCommand(REG_EEPROM, (1) | ((uint32)(addr) << 2));
-		while (!((tmp = ReadCommand(REG_EEPROM)) & (1 << 1)));
+		while (!((tmp = ReadCommand(REG_EEPROM)) & (1 << 1)))
+			;
 	}
 
 	data = (uint16)((tmp >> 16) & 0xFFFF);
@@ -282,7 +321,7 @@ uint32 E1000::ReadEEPROM(uint8 addr)
 
 void E1000::WriteCommand(uint16 addr, uint32 val)
 {
-	if (true)
+	if (bar_type == 0)
 	{
 		mmio_write32(mem_base + addr, val);
 	}
@@ -295,20 +334,20 @@ void E1000::WriteCommand(uint16 addr, uint32 val)
 
 uint32 E1000::ReadCommand(uint16 addr)
 {
-	if (true)
-    {
+	if (bar_type == 0)
+	{
 		return mmio_read16(mem_base + addr);
-    }
-    else
-    {
+	}
+	else
+	{
 		outw(io_base, addr);
 		return inl(io_base + 4);
-    }
+	}
 }
 
 void E1000::ReadMac()
 {
-	if (false && eeprom_exists)
+	if (eeprom_exists)
 	{
 		uint32 temp;
 		temp = ReadEEPROM(0);
@@ -323,15 +362,14 @@ void E1000::ReadMac()
 	}
 	else
 	{
-		uint8* mac8 = (uint8*)(mem_base + 0x5400);
-		uint32* mac32 = (uint32*)(mem_base + 0x5400);
+		uint32 p1 = mmio_read32(mem_base + 0x5400);
+		uint16 p2 = mmio_read16(mem_base + 0x5400 + 4);
 
-		if (mac32[0] != 0)
-		{
-			for (int i = 0; i < 6; i++)
-			{
-				mac[i] = mac8[i];
-			}
-		}
+		mac[0] = p1 & 0xFF;
+		mac[1] = p1 >> 8;
+		mac[2] = p1 >> 16;
+		mac[3] = p1 >> 32;
+		mac[4] = p2 & 0xFF;
+		mac[5] = p2 >> 8;
 	}
 }
