@@ -4,9 +4,9 @@
 
 namespace ICMP
 {
-	bool Decode(ICMP_Packet* ih, NetPacket* pkt)
+	bool Decode(ICMP_Packet *ih, NetPacket *pkt)
 	{
-		ICMP_Header* header = (ICMP_Header*)pkt->start;
+		ICMP_Header *header = (ICMP_Header *)pkt->start;
 		ih->header = header;
 
 		ih->header->type = header->type;
@@ -18,7 +18,7 @@ namespace ICMP
 			ih->header->id = ntohs(header->id);
 			ih->header->seq = ntohs(header->seq);
 
-			ih->data = (uint8*)header + sizeof(ICMP_Header);
+			ih->data = (uint8 *)header + sizeof(ICMP_Header);
 			ih->data_length = pkt->end - ih->data;
 			return 1;
 		}
@@ -28,14 +28,14 @@ namespace ICMP
 		}
 	}
 
-	void Send(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip, uint8 type)
+	void Send(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip, uint8 type)
 	{
-		NetPacket* pkt = IPv4::CreatePacket(intf, tip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
+		NetPacket *pkt = IPv4::CreatePacket(intf, tip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
 
 		if (!pkt)
 			return;
 
-		ICMP_Header* header = (ICMP_Header*)pkt->end;
+		ICMP_Header *header = (ICMP_Header *)pkt->end;
 
 		header->type = type;
 		header->code = 0;
@@ -50,12 +50,12 @@ namespace ICMP
 		intf->Send(pkt);
 	}
 
-	void SendReply(NetInterface* intf, ICMP_Packet* icmp, IPv4Address tip)
+	void SendReply(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip)
 	{
 		Send(intf, icmp, tip, ICMP_ECHO_REPLY);
 	}
 
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, NetPacket *pkt)
 	{
 		ICMP_Packet icmp;
 		if (!Decode(&icmp, pkt))
@@ -69,4 +69,4 @@ namespace ICMP
 			break;
 		}
 	}
-}
+} // namespace ICMP

@@ -1,7 +1,7 @@
 #pragma once
 #include "types.h"
 #include "PCI/pci.h"
-#include "netpacket.h"
+#include "packet.h"
 #include "address.h"
 
 class NetInterface /*: public PciDevice*/

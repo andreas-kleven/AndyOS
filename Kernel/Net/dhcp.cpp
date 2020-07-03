@@ -1,44 +1,43 @@
 #include "dhcp.h"
 #include "Lib/debug.h"
 
-#define BOOTREQUEST 	1
-#define BOOTREPLY 		2
-#define DHCP_MAGIC 		0x63825363
+#define BOOTREQUEST 1
+#define BOOTREPLY 2
+#define DHCP_MAGIC 0x63825363
 
-#define TYPE_DISCOVER	1
-#define TYPE_OFFER		2
-#define TYPE_REQUEST	3
-#define TYPE_ACK		5
-#define TYPE_NAK		6
+#define TYPE_DISCOVER 1
+#define TYPE_OFFER 2
+#define TYPE_REQUEST 3
+#define TYPE_ACK 5
+#define TYPE_NAK 6
 
-#define OPT_SUBNET_MASK		1
-#define OPT_ROUTER			3
-#define OPT_DNS				6
-#define OPT_HOSTNAME		12
-#define OPT_REQUESTED		50
-#define OPT_LEASE_TIME		51
-#define OPT_MESSAGE_TYPE	53
-#define OPT_DHCP_SERVER		54
-#define OPT_PARAM_LIST		55
-#define OPT_END				255
-
+#define OPT_SUBNET_MASK 1
+#define OPT_ROUTER 3
+#define OPT_DNS 6
+#define OPT_HOSTNAME 12
+#define OPT_REQUESTED 50
+#define OPT_LEASE_TIME 51
+#define OPT_MESSAGE_TYPE 53
+#define OPT_DHCP_SERVER 54
+#define OPT_PARAM_LIST 55
+#define OPT_END 255
 
 namespace DHCP
 {
 	struct DHCP_Options
 	{
-		IPv4Address* subnet_mask = 0;
-		IPv4Address* router = 0;
-		IPv4Address* dns = 0;
+		IPv4Address *subnet_mask = 0;
+		IPv4Address *router = 0;
+		IPv4Address *dns = 0;
 		uint32 lease = 0;
 		uint8 type = 0;
 	};
 
 	uint32 xid = 0x6AC9D9B2;
 
-	DHCP_Header* CreateHeader(NetInterface* intf, uint8** options)
+	DHCP_Header *CreateHeader(NetInterface *intf, uint8 **options)
 	{
-		DHCP_Header* header = new DHCP_Header;
+		DHCP_Header *header = new DHCP_Header;
 		header->op = BOOTREQUEST;
 		header->htype = 1;
 		header->hlen = 6;
@@ -54,7 +53,7 @@ namespace DHCP
 		header->magic = htonl(DHCP_MAGIC);
 
 		//Options
-		const char* hostname = "AndyOS";
+		const char *hostname = "AndyOS";
 		int hostlen = strlen(hostname);
 
 		int i = 0;
@@ -67,10 +66,10 @@ namespace DHCP
 		return header;
 	}
 
-	void Discover(NetInterface* intf)
+	void Discover(NetInterface *intf)
 	{
-		uint8* options;
-		DHCP_Header* header = CreateHeader(intf, &options);
+		uint8 *options;
+		DHCP_Header *header = CreateHeader(intf, &options);
 		int i = 0;
 
 		options[i++] = OPT_MESSAGE_TYPE;
@@ -86,14 +85,14 @@ namespace DHCP
 		options[i++] = OPT_END;
 		int length = (size_t)&options[i] - (size_t)header;
 
-		NetPacket* pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8*)header, length);
+		NetPacket *pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8 *)header, length);
 		intf->Send(pkt);
 	}
 
-	void Request(NetInterface* intf, IPv4Address* requested, IPv4Address* server)
+	void Request(NetInterface *intf, IPv4Address *requested, IPv4Address *server)
 	{
-		uint8* options;
-		DHCP_Header* header = CreateHeader(intf, &options);
+		uint8 *options;
+		DHCP_Header *header = CreateHeader(intf, &options);
 		int i = 0;
 
 		options[i++] = OPT_MESSAGE_TYPE;
@@ -102,24 +101,24 @@ namespace DHCP
 
 		options[i++] = OPT_REQUESTED;
 		options[i++] = 4;
-		*(uint32*)&options[i] = requested->ToIntNet();
+		*(uint32 *)&options[i] = requested->ToIntNet();
 		i += 4;
 
 		options[i++] = OPT_DHCP_SERVER;
 		options[i++] = 4;
-		*(uint32*)&options[i] = server->ToIntNet();
+		*(uint32 *)&options[i] = server->ToIntNet();
 		i += 4;
 
 		options[i++] = OPT_END;
 		int length = (size_t)&options[i] - (size_t)header;
 
-		NetPacket* pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8*)header, length);
+		NetPacket *pkt = UDP::CreatePacket(intf, Net::BroadcastIPv4, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8 *)header, length);
 		intf->Send(pkt);
 	}
 
-	void ParseOptions(DHCP_Header* offer, DHCP_Options& options)
+	void ParseOptions(DHCP_Header *offer, DHCP_Options &options)
 	{
-		uint8* data = (uint8*)offer->options;
+		uint8 *data = (uint8 *)offer->options;
 		int i = 0;
 
 		while (data[i] != 0xFF && i < 308)
@@ -130,19 +129,19 @@ namespace DHCP
 			switch (type)
 			{
 			case OPT_SUBNET_MASK:
-				options.subnet_mask = (IPv4Address*)&data[i];
+				options.subnet_mask = (IPv4Address *)&data[i];
 				break;
 
 			case OPT_ROUTER:
-				options.router = (IPv4Address*)&data[i];
+				options.router = (IPv4Address *)&data[i];
 				break;
 
 			case OPT_DNS:
-				options.dns = (IPv4Address*)&data[i];
+				options.dns = (IPv4Address *)&data[i];
 				break;
 
 			case OPT_LEASE_TIME:
-				options.lease = htonl(*(uint32*)&data[i]);
+				options.lease = htonl(*(uint32 *)&data[i]);
 				break;
 
 			case OPT_MESSAGE_TYPE:
@@ -154,9 +153,9 @@ namespace DHCP
 		}
 	}
 
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt)
 	{
-		DHCP_Header* offer = (DHCP_Header*)udp->data;
+		DHCP_Header *offer = (DHCP_Header *)udp->data;
 		IPv4Address addr = offer->yiaddr;
 
 		DHCP_Options options;
@@ -183,4 +182,4 @@ namespace DHCP
 			debug_print("dhcp: nak\n");
 		}
 	}
-}
+} // namespace DHCP

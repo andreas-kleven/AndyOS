@@ -28,9 +28,9 @@ struct E1000_TX_DESC
 class E1000 : public NetInterface
 {
 public:
-	E1000(PciDevice* pci_dev);
+	E1000(PciDevice *pci_dev);
 
-	virtual void Send(NetPacket* pkt);
+	virtual void Send(NetPacket *pkt);
 	virtual void Poll();
 	virtual MacAddress GetMac();
 	virtual IPv4Address GetIP();
@@ -49,8 +49,8 @@ private:
 
 	size_t rx_virt_addr[E1000_NUM_RX_DESC];
 
-	E1000_RX_DESC* rx_descs[E1000_NUM_RX_DESC];
-	E1000_TX_DESC* tx_descs[E1000_NUM_TX_DESC];
+	E1000_RX_DESC *rx_descs[E1000_NUM_RX_DESC];
+	E1000_TX_DESC *tx_descs[E1000_NUM_TX_DESC];
 
 	void Start();
 	void Linkup();

@@ -10,7 +10,7 @@
 #include "Net/udpsocket.h"
 #include "Net/dns.h"
 #include "Net/dhcp.h"
-#include "Net/http.h"
+#include "Net/packetmanager.h"
 #include "Process/scheduler.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
@@ -164,6 +164,11 @@ namespace Test
 		debug_print("Found network card\n");
 
 		E1000 *intf = new E1000(dev);
+
+		THREAD *packet_thread = Task::CreateKernelThread(PacketManager::Start);
+		Scheduler::InsertThread(packet_thread);
+		PacketManager::SetInterface(intf);
+
 		Timer::Sleep(1000);
 
 		//DNS::Query(intf, "google.com");
@@ -308,11 +313,11 @@ namespace Test
 
 	void Start()
 	{
-		Mount();
-		GUI();
+		//Mount();
+		//GUI();
 		//_Memory();
-		File();
-		//_Net();
+		//File();
+		_Net();
 		//Audio();
 		//COM();
 		//MutexTest();

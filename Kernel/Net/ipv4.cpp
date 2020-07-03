@@ -12,14 +12,14 @@ namespace IPv4
 {
 	struct IPv4_Packet
 	{
-		IPv4_Header* hdr;
-		uint8* data;
+		IPv4_Header *hdr;
+		uint8 *data;
 		uint32 data_length;
 	};
 
-	bool Decode(IPv4_Header* ih, NetPacket* pkt)
+	bool Decode(IPv4_Header *ih, NetPacket *pkt)
 	{
-		IPv4_Header* header = (IPv4_Header*)pkt->start;
+		IPv4_Header *header = (IPv4_Header *)pkt->start;
 		ih->ver_ihl = header->ver_ihl;
 		ih->dscp_ecn = header->dscp_ecn;
 		ih->length = ntohs(header->length);
@@ -33,7 +33,7 @@ namespace IPv4
 		return 1;
 	}
 
-	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protocol, uint32 size)
+	NetPacket *CreatePacket(NetInterface *intf, IPv4Address dst, uint8 protocol, uint32 size)
 	{
 		MacAddress mac;
 
@@ -51,18 +51,18 @@ namespace IPv4
 				Timer::Sleep(100);
 				//intf->Poll();
 				mac = ARP::LookupMac(dst);
-				
+
 				if (mac == Net::NullMAC)
 					return 0;
 			}
 		}
 
-		NetPacket* pkt = ETH::CreatePacket(intf, mac, ETHERTYPE_IPv4, sizeof(IPv4_Header) + size);
+		NetPacket *pkt = ETH::CreatePacket(intf, mac, ETHERTYPE_IPv4, sizeof(IPv4_Header) + size);
 
 		if (!pkt)
 			return 0;
 
-		IPv4_Header* header = (IPv4_Header*)pkt->end;
+		IPv4_Header *header = (IPv4_Header *)pkt->end;
 
 		header->ver_ihl = 0x45;
 		header->dscp_ecn = 0;
@@ -81,12 +81,12 @@ namespace IPv4
 		return pkt;
 	}
 
-	void Send(NetInterface* intf, NetPacket* pkt)
+	void Send(NetInterface *intf, NetPacket *pkt)
 	{
 		ETH::Send(intf, pkt);
 	}
 
-	void Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt)
 	{
 		//debug_print("IP PACKET\n");
 
@@ -106,14 +106,14 @@ namespace IPv4
 		switch (header.protocol)
 		{
 		case IP_PROTOCOL_ICMP:
-			ICMP::Receive(intf, &header, pkt);
+			ICMP::HandlePacket(intf, &header, pkt);
 			break;
 		case IP_PROTOCOL_UDP:
-			UDP::Receive(intf, &header, pkt);
+			UDP::HandlePacket(intf, &header, pkt);
 			break;
 		case IP_PROTOCOL_TCP:
-			TCP::Receive(intf, &header, pkt);
+			TCP::HandlePacket(intf, &header, pkt);
 			break;
 		}
 	}
-}
+} // namespace IPv4

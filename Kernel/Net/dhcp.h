@@ -1,8 +1,8 @@
 #pragma once
 #include "udp.h"
 
-#define PORT_DHCP_SRC	67
-#define PORT_DHCP_DST	68
+#define PORT_DHCP_SRC 67
+#define PORT_DHCP_DST 68
 
 struct DHCP_Header
 {
@@ -34,6 +34,6 @@ struct DHCP_Header
 
 namespace DHCP
 {
-	void Discover(NetInterface* intf);
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
-}
+	void Discover(NetInterface *intf);
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt);
+} // namespace DHCP

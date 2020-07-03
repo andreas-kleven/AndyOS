@@ -5,7 +5,7 @@
 
 struct NetPacket
 {
-	uint8* start;
-	uint8* end;
-	uint32 length;
+    uint8 *start;
+    uint8 *end;
+    uint32 length;
 };

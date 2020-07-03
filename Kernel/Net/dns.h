@@ -1,8 +1,8 @@
 #pragma once
 #include "udp.h"
 
-#define PORT_DNS		53
-#define DNS_CACHE_SIZE	64
+#define PORT_DNS 53
+#define DNS_CACHE_SIZE 64
 
 struct DNS_Answer
 {
@@ -26,11 +26,11 @@ struct DNS_Header
 
 namespace DNS
 {
-	IPv4Address LookupAddress(char* name);
-	void AddEntry(char* name, IPv4Address addr);
+	IPv4Address LookupAddress(char *name);
+	void AddEntry(char *name, IPv4Address addr);
 
-	void Query(NetInterface* intf, char* name);
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt);
+	void Query(NetInterface *intf, char *name);
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt);
 
 	STATUS Init();
-};
+}; // namespace DNS

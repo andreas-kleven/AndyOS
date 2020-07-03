@@ -1,9 +1,9 @@
 #pragma once
 #include "eth.h"
 
-#define IP_PROTOCOL_ICMP	1
-#define IP_PROTOCOL_TCP		6
-#define IP_PROTOCOL_UDP		17
+#define IP_PROTOCOL_ICMP 1
+#define IP_PROTOCOL_TCP 6
+#define IP_PROTOCOL_UDP 17
 
 struct IPv4_Header
 {
@@ -30,7 +30,7 @@ struct IPv4_PSEUDO_HEADER
 
 namespace IPv4
 {
-	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint8 protocol, uint32 size);
-	void Send(NetInterface* intf, NetPacket* pkt);
-	void Receive(NetInterface* intf, EthPacket* eth, NetPacket* pkt);
-}
+	NetPacket *CreatePacket(NetInterface *intf, IPv4Address dst, uint8 protocol, uint32 size);
+	void Send(NetInterface *intf, NetPacket *pkt);
+	void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt);
+} // namespace IPv4

@@ -6,22 +6,22 @@ namespace DNS
 {
 	struct DNS_Packet
 	{
-		DNS_Header* hdr;
-		uint8* data;
+		DNS_Header *hdr;
+		uint8 *data;
 		uint32 data_length;
 	} __attribute__((packed));
 
 	struct DNS_TABLE_ENTRY
 	{
-		char* name;
+		char *name;
 		IPv4Address addr;
 	};
 
 	DNS_TABLE_ENTRY dns_cache[DNS_CACHE_SIZE];
 
-	bool Decode(DNS_Packet* dns, UDP_Packet* udp)
+	bool Decode(DNS_Packet *dns, UDP_Packet *udp)
 	{
-		DNS_Header* header = (DNS_Header*)udp->data;
+		DNS_Header *header = (DNS_Header *)udp->data;
 		dns->hdr = header;
 
 		header->id = ntohs(header->id);
@@ -31,15 +31,15 @@ namespace DNS
 		header->auth_count = ntohs(header->auth_count);
 		header->add_count = ntohs(header->add_count);
 
-		dns->data = (uint8*)header + sizeof(DNS_Header);
+		dns->data = (uint8 *)header + sizeof(DNS_Header);
 		dns->data_length = udp->data_length - sizeof(DNS_Header);
 		return 1;
 	}
 
-	uint8* AppendDomain(uint8* ptr, char* name)
+	uint8 *AppendDomain(uint8 *ptr, char *name)
 	{
-		uint8* labelHead = ptr++;
-		char* p = name;
+		uint8 *labelHead = ptr++;
+		char *p = name;
 
 		while (1)
 		{
@@ -61,7 +61,7 @@ namespace DNS
 		return ptr;
 	}
 
-	uint8* ParseDomain(char* buf, uint8* ptr)
+	uint8 *ParseDomain(char *buf, uint8 *ptr)
 	{
 		int len = *ptr++;
 		while (len--)
@@ -82,16 +82,16 @@ namespace DNS
 			}
 		}
 
-		uint16* end = (uint16*)ptr;
+		uint16 *end = (uint16 *)ptr;
 		uint16 type = *end++;
 		uint16 clas = *end++;
 
-		return (uint8*)end;
+		return (uint8 *)end;
 	}
 
-	uint8* ParseAnswer(DNS_Answer* ans, uint8* ptr)
+	uint8 *ParseAnswer(DNS_Answer *ans, uint8 *ptr)
 	{
-		DNS_Answer* da = (DNS_Answer*)ptr;
+		DNS_Answer *da = (DNS_Answer *)ptr;
 
 		ans->name = ntohs(da->name);
 		ans->type = ntohs(da->type);
@@ -103,7 +103,7 @@ namespace DNS
 		return ptr + sizeof(DNS_Answer);
 	}
 
-	IPv4Address LookupAddress(char* name)
+	IPv4Address LookupAddress(char *name)
 	{
 		for (int i = 0; i < DNS_CACHE_SIZE; i++)
 		{
@@ -116,7 +116,7 @@ namespace DNS
 		return Net::NullIPv4;
 	}
 
-	void AddEntry(char* name, IPv4Address addr)
+	void AddEntry(char *name, IPv4Address addr)
 	{
 		for (int i = 0; i < DNS_CACHE_SIZE; i++)
 		{
@@ -135,12 +135,12 @@ namespace DNS
 		}
 	}
 
-	void Query(NetInterface* intf, char* name)
+	void Query(NetInterface *intf, char *name)
 	{
 		int dom_len = strlen(name) + 2;
-		uint8* data = new uint8[sizeof(DNS_Header) + dom_len + 4];
+		uint8 *data = new uint8[sizeof(DNS_Header) + dom_len + 4];
 
-		DNS_Header* dns = (DNS_Header*)data;
+		DNS_Header *dns = (DNS_Header *)data;
 		dns->id = htons(42);
 		dns->flags = htons(0x0100);
 		dns->quest_count = htons(1);
@@ -150,16 +150,16 @@ namespace DNS
 
 		AppendDomain(data + sizeof(DNS_Header), name);
 
-		data[sizeof(DNS_Header) + dom_len + 1] = 1;	//type
-		data[sizeof(DNS_Header) + dom_len + 3] = 1;	//class
+		data[sizeof(DNS_Header) + dom_len + 1] = 1; //type
+		data[sizeof(DNS_Header) + dom_len + 3] = 1; //class
 
-		NetPacket* pkt = UDP::CreatePacket(intf, intf->gateway_addr, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
+		NetPacket *pkt = UDP::CreatePacket(intf, intf->gateway_addr, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
 		intf->Send(pkt);
 
 		delete[] data;
 	}
 
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, UDP_Packet* udp, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt)
 	{
 		debug_print("Received DNS\n");
 
@@ -170,7 +170,7 @@ namespace DNS
 		char buf[256];
 		DNS_Answer ans;
 
-		uint8* ptr = dns.data;
+		uint8 *ptr = dns.data;
 		ptr = ParseDomain(buf, ptr);
 		ptr = ParseAnswer(&ans, ptr);
 
@@ -188,4 +188,4 @@ namespace DNS
 
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace DNS

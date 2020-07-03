@@ -1,15 +1,16 @@
 #include "eth.h"
 #include "Lib/debug.h"
+#include "packetmanager.h"
 #include "ipv4.h"
 #include "arp.h"
 #include "string.h"
 
 namespace ETH
 {
-	bool Decode(EthPacket* ep, NetPacket* pkt)
+	bool Decode(EthPacket *ep, NetPacket *pkt)
 	{
-		uint8* data = pkt->start;
-		EthHeader* hdr = (EthHeader*)data;
+		uint8 *data = pkt->start;
+		EthHeader *hdr = (EthHeader *)data;
 		ep->header = hdr;
 
 		// Determine which frame type is being used.
@@ -39,26 +40,26 @@ namespace ETH
 		return 1;
 	}
 
-	NetPacket* CreatePacket(NetInterface* intf, MacAddress dst, uint16 type, uint32 size)
+	NetPacket *CreatePacket(NetInterface *intf, MacAddress dst, uint16 type, uint32 size)
 	{
-		NetPacket* pkt = new NetPacket;
+		NetPacket *pkt = new NetPacket;
 		pkt->start = new uint8[sizeof(EthHeader) + size];
 		pkt->end = pkt->start + sizeof(EthHeader);
 		pkt->length = sizeof(EthHeader) + size;
 
-		EthHeader* header = (EthHeader*)pkt->start;
+		EthHeader *header = (EthHeader *)pkt->start;
 		header->dst = dst;
 		header->src = intf->GetMac();
 		header->type = htons(type);
 		return pkt;
 	}
 
-	void Send(NetInterface* intf, NetPacket* pkt)
+	void Send(NetInterface *intf, NetPacket *pkt)
 	{
-		intf->Send(pkt);
+		PacketManager::Send(intf, pkt);
 	}
 
-	void Receive(NetInterface* intf, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, NetPacket *pkt)
 	{
 		EthPacket ep;
 		if (!Decode(&ep, pkt))
@@ -69,12 +70,12 @@ namespace ETH
 		switch (ep.type)
 		{
 		case ETHERTYPE_IPv4:
-			IPv4::Receive(intf, &ep, pkt);
+			IPv4::HandlePacket(intf, &ep, pkt);
 			break;
 
 		case ETHERTYPE_ARP:
-			ARP::Receive(intf, pkt);
+			ARP::HandlePacket(intf, pkt);
 			break;
 		}
 	}
-}
+} // namespace ETH

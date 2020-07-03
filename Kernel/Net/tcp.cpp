@@ -81,7 +81,7 @@ namespace TCP
 		IPv4::Send(intf, pkt);
 	}
 
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
+	void HandlePacket(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
 	{
 		TCP_Packet tcp;
 		//debug_dump(pkt->start, 127);

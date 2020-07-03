@@ -1,8 +1,8 @@
 #pragma once
 #include "eth.h"
 
-#define ARP_HTYPE		1
-#define ARP_CACHE_SIZE	32
+#define ARP_HTYPE 1
+#define ARP_CACHE_SIZE 32
 
 struct ARP_Header
 {
@@ -22,8 +22,8 @@ namespace ARP
 	MacAddress LookupMac(IPv4Address ip);
 	void AddEntry(MacAddress mac, IPv4Address ip);
 
-	void SendRequest(NetInterface* intf, IPv4Address tip);
-	void Receive(NetInterface* intf, NetPacket* pkt);
+	void SendRequest(NetInterface *intf, IPv4Address tip);
+	void HandlePacket(NetInterface *intf, NetPacket *pkt);
 
 	STATUS Init();
-};
+}; // namespace ARP

@@ -7,11 +7,11 @@
 
 namespace UDP
 {
-	UdpSocket** sockets;
+	UdpSocket **sockets;
 
-	bool Decode(UDP_Packet* up, NetPacket* pkt)
+	bool Decode(UDP_Packet *up, NetPacket *pkt)
 	{
-		UDP_Header* header = (UDP_Header*)pkt->start;
+		UDP_Header *header = (UDP_Header *)pkt->start;
 		up->header = header;
 
 		header->src_port = ntohs(header->src_port);
@@ -19,15 +19,15 @@ namespace UDP
 		header->length = ntohs(header->length);
 		header->checksum = ntohs(header->checksum);
 
-		up->data = (uint8*)header + sizeof(UDP_Header);
+		up->data = (uint8 *)header + sizeof(UDP_Header);
 		up->data_length = up->header->length - sizeof(UDP_Header);
 		return 1;
 	}
 
-	UdpSocket* CreateSocket(int port)
+	UdpSocket *CreateSocket(int port)
 	{
 		int src_port = 123;
-		UdpSocket* socket = new UdpSocket(src_port, port);
+		UdpSocket *socket = new UdpSocket(src_port, port);
 
 		if (sockets[port])
 			return 0;
@@ -36,14 +36,14 @@ namespace UDP
 		return socket;
 	}
 
-	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8* data, uint32 data_length)
+	NetPacket *CreatePacket(NetInterface *intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8 *data, uint32 data_length)
 	{
-		NetPacket* pkt = IPv4::CreatePacket(intf, dst, IP_PROTOCOL_UDP, sizeof(UDP_Header) + data_length);
+		NetPacket *pkt = IPv4::CreatePacket(intf, dst, IP_PROTOCOL_UDP, sizeof(UDP_Header) + data_length);
 
 		if (!pkt)
 			return 0;
 
-		UDP_Header* header = (UDP_Header*)pkt->end;
+		UDP_Header *header = (UDP_Header *)pkt->end;
 		header->src_port = htons(src_port);
 		header->dst_port = htons(dst_port);
 		header->length = htons(sizeof(UDP_Header) + data_length);
@@ -63,13 +63,13 @@ namespace UDP
 		return pkt;
 	}
 
-	void Send(NetInterface* intf, NetPacket* pkt)
+	void Send(NetInterface *intf, NetPacket *pkt)
 	{
 		//checksum
 		IPv4::Send(intf, pkt);
 	}
 
-	void Receive(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, NetPacket *pkt)
 	{
 		//Net::PrintIP("UDP from: ", ip_hdr->src);
 
@@ -86,11 +86,11 @@ namespace UDP
 		switch (udp.header->src_port)
 		{
 		case PORT_DNS:
-			DNS::Receive(intf, ip_hdr, &udp, pkt);
+			DNS::HandlePacket(intf, ip_hdr, &udp, pkt);
 			return;
 
 		case PORT_DHCP_SRC:
-			DHCP::Receive(intf, ip_hdr, &udp, pkt);
+			DHCP::HandlePacket(intf, ip_hdr, &udp, pkt);
 			return;
 
 		default:
@@ -100,7 +100,7 @@ namespace UDP
 		switch (dst_port)
 		{
 		default:
-			UdpSocket* socket = sockets[dst_port];
+			UdpSocket *socket = sockets[dst_port];
 			if (socket)
 			{
 				socket->SetReceivedData(ip_hdr->src, udp.data, udp.data_length);
@@ -111,8 +111,8 @@ namespace UDP
 
 	STATUS Init()
 	{
-		sockets = new UdpSocket*[UDP_MAX_PORTS];
-		memset(sockets, 0, sizeof(UdpSocket*) * UDP_MAX_PORTS);
+		sockets = new UdpSocket *[UDP_MAX_PORTS];
+		memset(sockets, 0, sizeof(UdpSocket *) * UDP_MAX_PORTS);
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace UDP

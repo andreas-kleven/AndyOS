@@ -2,8 +2,8 @@
 #include "net.h"
 #include "Lib/debug.h"
 
-#define ARP_REQUEST		1
-#define ARP_REPLY		2
+#define ARP_REQUEST 1
+#define ARP_REPLY 2
 
 namespace ARP
 {
@@ -15,14 +15,14 @@ namespace ARP
 
 	ARP_TABLE_ENTRY arp_cache[ARP_CACHE_SIZE];
 
-	void Send(NetInterface* intf, MacAddress dst, IPv4Address tip, uint16 op)
+	void Send(NetInterface *intf, MacAddress dst, IPv4Address tip, uint16 op)
 	{
-		NetPacket* pkt = ETH::CreatePacket(intf, dst, ETHERTYPE_ARP, sizeof(ARP_Header));
+		NetPacket *pkt = ETH::CreatePacket(intf, dst, ETHERTYPE_ARP, sizeof(ARP_Header));
 
 		if (!pkt)
 			return;
 
-		ARP_Header* header = (ARP_Header*)pkt->end;
+		ARP_Header *header = (ARP_Header *)pkt->end;
 
 		header->htype = htons(ARP_HTYPE);
 		header->ptype = htons(ETHERTYPE_IPv4);
@@ -38,15 +38,15 @@ namespace ARP
 		intf->Send(pkt);
 	}
 
-	void SendReply(NetInterface* intf, ARP_Header* ah)
+	void SendReply(NetInterface *intf, ARP_Header *ah)
 	{
 		Net::PrintIP("arp: sending reply to ", ah->send_ip);
 		Send(intf, ah->send_mac, ah->send_ip, ARP_REPLY);
 	}
 
-	bool Decode(ARP_Header* ah, NetPacket* pkt)
+	bool Decode(ARP_Header *ah, NetPacket *pkt)
 	{
-		ARP_Header* hdr = (ARP_Header*)pkt->start;
+		ARP_Header *hdr = (ARP_Header *)pkt->start;
 
 		ah->htype = ntohs(hdr->htype);
 		ah->ptype = ntohs(hdr->ptype);
@@ -96,7 +96,7 @@ namespace ARP
 		}
 	}
 
-	void Receive(NetInterface* intf, NetPacket* pkt)
+	void HandlePacket(NetInterface *intf, NetPacket *pkt)
 	{
 		ARP_Header header;
 		if (!Decode(&header, pkt))
@@ -117,7 +117,7 @@ namespace ARP
 		}
 	}
 
-	void SendRequest(NetInterface* intf, IPv4Address tip)
+	void SendRequest(NetInterface *intf, IPv4Address tip)
 	{
 		Net::PrintIP("arp: sending request to ", tip);
 		Send(intf, Net::BroadcastMAC, tip, ARP_REQUEST);
@@ -134,4 +134,4 @@ namespace ARP
 
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace ARP

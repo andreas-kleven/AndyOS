@@ -4,6 +4,7 @@
 #include "hal.h"
 #include "Net/net.h"
 #include "Net/eth.h"
+#include "Net/packetmanager.h"
 #include "Memory/memory.h"
 #include "Lib/debug.h"
 
@@ -185,8 +186,9 @@ void E1000::Poll()
 		pkt.end = end;
 		pkt.length = len;
 
-		ETH::Receive(this, &pkt);
+		ETH::HandlePacket(this, &pkt);
 
+		// TODO: Put in syscall handler?
 		rx_descs[rx_cur]->status = 0;
 		old_cur = rx_cur;
 		rx_cur = (rx_cur + 1) % E1000_NUM_RX_DESC;
@@ -218,7 +220,7 @@ void E1000::E1000_Interrupt()
 
 	if (status & 0x80)
 	{
-		instance->Poll();
+		PacketManager::NotifyReceived();
 	}
 }
 

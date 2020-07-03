@@ -1,7 +1,6 @@
 #pragma once
 #include "types.h"
 #include "netinterface.h"
-#include "netpacket.h"
 #include "address.h"
 
 uint16 htons(uint16 val);
@@ -17,9 +16,9 @@ namespace Net
 	extern IPv4Address NullIPv4;
 
 	STATUS Init();
-	uint16 Checksum(void* data, int length);
-	uint16 ChecksumDouble(void* d0, int l0, void* d1, int l1);
+	uint16 Checksum(void *data, int length);
+	uint16 ChecksumDouble(void *d0, int l0, void *d1, int l1);
 
-	void PrintIP(const char* str, IPv4Address ip);
-	void PrintMac(const char* str, MacAddress mac);
-}
+	void PrintIP(const char *str, IPv4Address ip);
+	void PrintMac(const char *str, MacAddress mac);
+} // namespace Net
