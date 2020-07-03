@@ -38,22 +38,26 @@ public:
 		this->empty = true;
 	}
 
-	int Write(const char *data, size_t length)
+	int Write(const void *data, size_t length)
 	{
+		char *ptr = (char *)data;
+
 		for (size_t i = 0; i < length; i++)
 		{
-			if (!WriteOne(data[i]))
+			if (!WriteOne(ptr[i]))
 				return i;
 		}
 
 		return length;
 	}
 
-	int Read(int length, char *data)
+	int Read(int length, void *data)
 	{
+		char *ptr = (char *)data;
+
 		for (int i = 0; i < length; i++)
 		{
-			if (!ReadOne(&data[i]))
+			if (!ReadOne(&ptr[i]))
 				return i;
 		}
 

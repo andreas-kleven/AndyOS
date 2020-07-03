@@ -4,10 +4,6 @@
 #include "Drivers/driver.h"
 #include "Lib/debug.h"
 
-IsoFS::IsoFS()
-{
-}
-
 int IsoFS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 {
 	this->driver = driver;

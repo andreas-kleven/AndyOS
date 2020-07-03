@@ -3,9 +3,8 @@
 #include "pipe.h"
 #include "string.h"
 #include "math.h"
-#include "iso.h"
+#include "pipefs.h"
 #include "Kernel/timer.h"
-#include "Lib/debug.h"
 #include "Process/dispatcher.h"
 #include "Process/process.h"
 #include "Process/scheduler.h"
@@ -14,6 +13,7 @@
 namespace VFS
 {
 	DENTRY *root_dentry = 0;
+	PipeFS *pipefs = 0;
 
 	inline bool IsValidInode(FILE *file)
 	{
@@ -107,6 +107,9 @@ namespace VFS
 
 	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
 	{
+		if (strcmp(fs->name, "pipefs") == 0)
+			pipefs = (PipeFS *)fs;
+
 		Path path = Path(mount_point);
 		DENTRY *dentry = AllocDentry(0, path.Filename());
 		fs->Mount(driver, dentry);
@@ -256,8 +259,8 @@ namespace VFS
 		if (!file)
 			return -1;
 
-		//if ((ret = file->node->io->Close(file)))
-		//	return ret;
+		if ((ret = file->dentry->owner->Close(file)))
+			return ret;
 
 		debug_print("Close file %d\n", fd);
 
@@ -339,21 +342,15 @@ namespace VFS
 
 	int CreatePipes(Filetable &filetable, int pipefd[2], int flags)
 	{
-		Pipe *pipe = new Pipe();
+		DENTRY *dentry;
 
-		char namebuf[32];
-		itoa(Timer::Ticks(), namebuf, 10);
+		int ret = 0;
 
-		// TODO
-		DENTRY *pipes_dentry = AllocDentry(root_dentry, "pipes");
-		INODE *pipes_inode = AllocInode(pipes_dentry);
-		AddDentry(root_dentry, pipes_dentry);
+		if ((ret = pipefs->Create(dentry, flags)))
+			return ret;
 
-		DENTRY *dentry = AllocDentry(pipes_dentry, namebuf);
-		INODE *inode = AllocInode(dentry);
-		dentry->type = INODE_TYPE_FIFO;
-		inode->type = INODE_TYPE_FIFO;
-		AddDentry(pipes_dentry, dentry);
+		DENTRY *parent = AllocDentry(root_dentry, "pipe");
+		AddDentry(parent, dentry);
 
 		FILE *read = new FILE(dentry);
 		FILE *write = new FILE(dentry);
@@ -362,7 +359,15 @@ namespace VFS
 		pipefd[1] = filetable.Add(write);
 
 		if (pipefd[0] == -1 || pipefd[1] == -1)
+		{
+			if (pipefd[0] == -1)
+				filetable.Remove(pipefd[0]);
+
+			if (pipefd[1] == -1)
+				filetable.Remove(pipefd[1]);
+
 			return -1;
+		}
 
 		return 0;
 	}

@@ -16,6 +16,7 @@
 #include "Drivers/keyboard.h"
 #include "FS/vfs.h"
 #include "FS/devfs.h"
+#include "FS/pipefs.h"
 #include "FS/iso.h"
 #include "FS/ext2.h"
 #include "Process/process.h"
@@ -278,6 +279,7 @@ namespace Test
 		Ext2FS *fs2 = new Ext2FS();
 
 		DevFS *devfs = new DevFS();
+		PipeFS *pipefs = new PipeFS();
 
 		if (VFS::Mount(driver1, fs1, "/"))
 		{
@@ -294,6 +296,12 @@ namespace Test
 		if (VFS::Mount(0, devfs, "/dev"))
 		{
 			debug_print("Mount devfs failed\n");
+			return;
+		}
+
+		if (VFS::Mount(0, pipefs, "/pipe"))
+		{
+			debug_print("Mount pipefs failed\n");
 			return;
 		}
 	}

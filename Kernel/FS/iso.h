@@ -114,7 +114,10 @@ private:
 	ISO_DIRECTORY *root;
 
 public:
-	IsoFS();
+	IsoFS()
+    {
+        name = "iso";
+    }
 
 	int Mount(BlockDriver *driver, DENTRY *root_dentry);
 	int GetChildren(DENTRY *parent, const char *find_name);

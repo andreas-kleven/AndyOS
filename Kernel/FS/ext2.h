@@ -120,7 +120,10 @@ private:
     int block_groups;
 
 public:
-    Ext2FS();
+    Ext2FS()
+    {
+        name = "ext2";
+    }
 
     int Mount(BlockDriver *driver, DENTRY *root_dentry);
     int GetChildren(DENTRY *parent, const char *find_name);

@@ -2,10 +2,6 @@
 #include "string.h"
 #include "debug.h"
 
-Ext2FS::Ext2FS()
-{
-}
-
 int Ext2FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
 {
     this->driver = driver;

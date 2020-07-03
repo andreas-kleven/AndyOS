@@ -1,13 +1,18 @@
 #pragma once
 #include "filesystem.h"
+#include "pipe.h"
+#include "list.h"
 #include "Drivers/driver.h"
 
-class DevFS : public FileSystem
+class PipeFS : public FileSystem
 {
+private:
+    List<Pipe> pipes;
+
 public:
-    DevFS()
+    PipeFS()
     {
-        name = "devfs";
+        name = "pipefs";
     }
 
     int Mount(BlockDriver *driver, DENTRY *root_dentry);
@@ -18,6 +23,8 @@ public:
     int Seek(FILE *file, long offset, int origin);
     int GetChildren(DENTRY *parent, const char *find_name);
 
+    int Create(DENTRY *&dentry, int flags);
+
 private:
-    Driver* GetDriver(FILE *file);
+    Pipe *GetPipe(FILE *file);
 };

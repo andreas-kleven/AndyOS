@@ -51,6 +51,7 @@ struct DENTRY
     char *name = 0;
     DENTRY *parent = 0;
     List<DENTRY *> children;
+    int refs = 0;
 };
 
 struct FILE
