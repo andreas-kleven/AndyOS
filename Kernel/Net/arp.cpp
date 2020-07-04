@@ -1,5 +1,8 @@
 #include "arp.h"
 #include "net.h"
+#include "sync.h"
+#include "Process/scheduler.h"
+#include "Kernel/timer.h"
 #include "Lib/debug.h"
 
 #define ARP_REQUEST 1
@@ -7,6 +10,9 @@
 
 namespace ARP
 {
+	Mutex table_mutex;
+	Event lookup_event = Event(false, true);
+
 	struct ARP_TABLE_ENTRY
 	{
 		MacAddress mac;
@@ -61,39 +67,79 @@ namespace ARP
 		return 1;
 	}
 
-	MacAddress LookupMac(IPv4Address ip)
+	MacAddress LookupMac(const IPv4Address &ip)
 	{
 		if (ip == Net::BroadcastIPv4)
 			return Net::BroadcastMAC;
+
+		table_mutex.Aquire();
 
 		for (int i = 0; i < ARP_CACHE_SIZE; i++)
 		{
 			if (arp_cache[i].ip == ip)
 			{
+				table_mutex.Release();
 				return arp_cache[i].mac;
 			}
 		}
 
+		table_mutex.Release();
+
 		return Net::NullMAC;
 	}
 
-	void AddEntry(MacAddress mac, IPv4Address ip)
+	MacAddress GetMac(NetInterface *intf, const IPv4Address &ip)
 	{
+		MacAddress mac = ARP::LookupMac(ip);
+
+		if (mac != Net::NullMAC)
+			return mac;
+
+		ARP::SendRequest(intf, ip);
+
+		while (true)
+		{
+			lookup_event.Wait();
+			MacAddress mac = ARP::LookupMac(ip);
+
+			if (mac != Net::NullMAC)
+				return mac;
+		}
+	}
+
+	void AddEntry(const MacAddress &mac, const IPv4Address &ip)
+	{
+		bool add = LookupMac(ip) == Net::NullMAC;
+		bool replace = !add;
+
+		table_mutex.Aquire();
+
 		for (int i = 0; i < ARP_CACHE_SIZE; i++)
 		{
-			if (arp_cache[i].mac == Net::NullMAC || arp_cache[i].mac == mac)
+			if ((add && arp_cache[i].mac == Net::NullMAC) || (replace && arp_cache[i].ip == ip))
 			{
+				arp_cache[i].mac = mac;
+				arp_cache[i].ip = ip;
+
 				if (arp_cache[i].mac == Net::NullMAC)
 				{
 					Net::PrintIP("ARP added entry ", ip);
 					Net::PrintMac("MAC: ", mac);
 				}
+				else
+				{
+					Net::PrintIP("ARP replaced entry ", ip);
+					Net::PrintMac("MAC: ", mac);
+				}
 
-				arp_cache[i].mac = mac;
-				arp_cache[i].ip = ip;
-				break;
+				lookup_event.Set();
+				table_mutex.Release();
+				return;
 			}
 		}
+
+		table_mutex.Release();
+		debug_print("ARP add entry failed\n");
 	}
 
 	void HandlePacket(NetInterface *intf, NetPacket *pkt)
@@ -117,10 +163,10 @@ namespace ARP
 		}
 	}
 
-	void SendRequest(NetInterface *intf, IPv4Address tip)
+	void SendRequest(NetInterface *intf, const IPv4Address &ip)
 	{
-		Net::PrintIP("arp: sending request to ", tip);
-		Send(intf, Net::BroadcastMAC, tip, ARP_REQUEST);
+		Net::PrintIP("arp: sending request to ", ip);
+		Send(intf, Net::BroadcastMAC, ip, ARP_REQUEST);
 	}
 
 	STATUS Init()

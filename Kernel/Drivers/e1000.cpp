@@ -137,16 +137,12 @@ void E1000::Send(NetPacket *pkt)
 
 MacAddress E1000::GetMac()
 {
-	return *(MacAddress *)mac;
+	return mac;
 }
 
 IPv4Address E1000::GetIP()
 {
-	//uint32 ipa = htonl(0xC0A8387E); //192.168.56.126
-	uint32 ipa = htonl(0xC0A8007E); //192.168.0.126
-	//uint32 ipa = htonl(0x0A000001); //10.0.0.1
-	IPv4Address addr = *(IPv4Address *)&ipa;
-	return addr;
+	return IPv4Address(192, 168, 0, 254);
 }
 
 void E1000::Start()
@@ -353,25 +349,25 @@ void E1000::ReadMac()
 	{
 		uint32 temp;
 		temp = ReadEEPROM(0);
-		mac[0] = temp & 0xff;
-		mac[1] = temp >> 8;
+		mac.n[0] = temp & 0xff;
+		mac.n[1] = temp >> 8;
 		temp = ReadEEPROM(1);
-		mac[2] = temp & 0xff;
-		mac[3] = temp >> 8;
+		mac.n[2] = temp & 0xff;
+		mac.n[3] = temp >> 8;
 		temp = ReadEEPROM(2);
-		mac[4] = temp & 0xff;
-		mac[5] = temp >> 8;
+		mac.n[4] = temp & 0xff;
+		mac.n[5] = temp >> 8;
 	}
 	else
 	{
 		uint32 p1 = mmio_read32(mem_base + 0x5400);
 		uint16 p2 = mmio_read16(mem_base + 0x5400 + 4);
 
-		mac[0] = p1 & 0xFF;
-		mac[1] = p1 >> 8;
-		mac[2] = p1 >> 16;
-		mac[3] = p1 >> 32;
-		mac[4] = p2 & 0xFF;
-		mac[5] = p2 >> 8;
+		mac.n[0] = p1 & 0xFF;
+		mac.n[1] = p1 >> 8;
+		mac.n[2] = p1 >> 16;
+		mac.n[3] = p1 >> 24;
+		mac.n[4] = p2 & 0xFF;
+		mac.n[5] = p2 >> 8;
 	}
 }

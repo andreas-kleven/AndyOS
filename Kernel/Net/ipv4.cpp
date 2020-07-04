@@ -1,6 +1,4 @@
 #include "ipv4.h"
-#include "hal.h"
-#include "Kernel/timer.h"
 #include "net.h"
 #include "arp.h"
 #include "icmp.h"
@@ -43,19 +41,16 @@ namespace IPv4
 		}
 		else if (!memcmp(&dst, &intf->gateway_addr, 3))
 		{
-			mac = ARP::LookupMac(dst);
-
-			if (mac == Net::NullMAC)
-			{
-				ARP::SendRequest(intf, dst);
-				Timer::Sleep(100);
-				//intf->Poll();
-				mac = ARP::LookupMac(dst);
-
-				if (mac == Net::NullMAC)
-					return 0;
-			}
+			mac = ARP::GetMac(intf, dst);
 		}
+		else
+		{
+			mac = ARP::GetMac(intf, intf->gateway_addr);
+		}
+		
+
+		if (mac == Net::NullMAC)
+			return 0;
 
 		NetPacket *pkt = ETH::CreatePacket(intf, mac, ETHERTYPE_IPv4, sizeof(IPv4_Header) + size);
 

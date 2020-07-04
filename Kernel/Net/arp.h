@@ -19,10 +19,10 @@ struct ARP_Header
 
 namespace ARP
 {
-	MacAddress LookupMac(IPv4Address ip);
-	void AddEntry(MacAddress mac, IPv4Address ip);
+	MacAddress GetMac(NetInterface *intf, const IPv4Address &ip);
+	void AddEntry(const MacAddress &mac, const IPv4Address &ip);
 
-	void SendRequest(NetInterface *intf, IPv4Address tip);
+	void SendRequest(NetInterface *intf, const IPv4Address &ip);
 	void HandlePacket(NetInterface *intf, NetPacket *pkt);
 
 	STATUS Init();

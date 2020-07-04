@@ -5,9 +5,11 @@
 #include "Drivers/ata.h"
 #include "Drivers/ac97.h"
 #include "Drivers/e1000.h"
+#include "Net/arp.h"
 #include "Net/net.h"
 #include "Net/tcpsocket.h"
 #include "Net/udpsocket.h"
+#include "Net/udp.h"
 #include "Net/dns.h"
 #include "Net/dhcp.h"
 #include "Net/packetmanager.h"
@@ -169,7 +171,19 @@ namespace Test
 		Scheduler::InsertThread(packet_thread);
 		PacketManager::SetInterface(intf);
 
-		Timer::Sleep(1000);
+		Timer::Sleep(1000000);
+
+		const char *udpdata = "Hello\n";
+		IPv4Address dstip(192, 168, 0, 123);
+
+		//ARP::GetMac(intf, dstip);
+		//return;
+
+		NetPacket *udppkt = UDP::CreatePacket(intf, dstip, 9999, 8080, (uint8 *)udpdata, strlen(udpdata) + 1);
+		debug_print("Sending %p\n", udppkt);
+		UDP::Send(intf, udppkt);
+
+		return;
 
 		//DNS::Query(intf, "google.com");
 		IPv4Address addr(0xc0, 0xa8, 0x00, 0x7b);
