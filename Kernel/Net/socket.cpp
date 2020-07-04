@@ -10,8 +10,9 @@ Socket::Socket()
 {
 }
 
-Socket::Socket(int domain, int type, int protocol)
+Socket::Socket(int id, int domain, int type, int protocol)
 {
+    this->id = id;
     this->domain = domain;
     this->type = type;
     this->protocol = protocol;

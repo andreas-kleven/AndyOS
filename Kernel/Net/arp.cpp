@@ -118,9 +118,6 @@ namespace ARP
 		{
 			if ((add && arp_cache[i].mac == Net::NullMAC) || (replace && arp_cache[i].ip == ip))
 			{
-				arp_cache[i].mac = mac;
-				arp_cache[i].ip = ip;
-
 				if (arp_cache[i].mac == Net::NullMAC)
 				{
 					Net::PrintIP("ARP added entry ", ip);
@@ -131,6 +128,9 @@ namespace ARP
 					Net::PrintIP("ARP replaced entry ", ip);
 					Net::PrintMac("MAC: ", mac);
 				}
+
+				arp_cache[i].mac = mac;
+				arp_cache[i].ip = ip;
 
 				lookup_event.Set();
 				table_mutex.Release();
@@ -170,7 +170,7 @@ namespace ARP
 
 	STATUS Init()
 	{
-		memset(arp_cache, 0, sizeof(ARP_TABLE_ENTRY) * ARP_CACHE_SIZE);
+		memset(arp_cache, 0, sizeof(arp_cache));
 		return STATUS_SUCCESS;
 	}
 } // namespace ARP

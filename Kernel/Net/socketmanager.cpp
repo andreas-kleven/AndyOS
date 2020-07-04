@@ -8,11 +8,13 @@ namespace SocketManager
     Mutex mutex;
     List<Socket> sockets;
     int next_port = 32768;
+    int next_id = 1;
 
     Socket *CreateSocket(int domain, int type, int protocol)
     {
         mutex.Aquire();
-        sockets.Add(Socket(domain, type, protocol));
+        int id = next_id++;
+        sockets.Add(Socket(id, domain, type, protocol));
         Socket *socket = &sockets.Last();
         mutex.Release();
         return socket;
@@ -31,6 +33,24 @@ namespace SocketManager
     int AllocPort()
     {
         return next_port++;
+    }
+
+    Socket *GetSocket(int id)
+    {
+        mutex.Aquire();
+
+        for (int i = 0; i < sockets.Count(); i++)
+        {
+            Socket *socket = &sockets[i];
+
+            if (socket->id == id)
+            {
+                mutex.Release();
+                return socket;
+            }
+        }
+
+        mutex.Release();
     }
 
     Socket *GetSocket(int domain, int type, int protocol, sockaddr *addr)

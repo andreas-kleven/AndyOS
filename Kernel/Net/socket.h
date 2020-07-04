@@ -8,6 +8,7 @@
 class Socket
 {
 public:
+    int id;
     int domain;
     int type;
     int protocol;
@@ -18,7 +19,7 @@ public:
     Event read_event;
 
     Socket();
-    Socket(int domain, int type, int protocol);
+    Socket(int id, int domain, int type, int protocol);
 
     int Accept(sockaddr *addr, socklen_t *addrlen, int flags);
     int Bind(const sockaddr *addr, socklen_t addrlen);

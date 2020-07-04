@@ -4,6 +4,7 @@
 #include "string.h"
 #include "math.h"
 #include "pipefs.h"
+#include "sockfs.h"
 #include "Kernel/timer.h"
 #include "Process/dispatcher.h"
 #include "Process/process.h"
@@ -14,6 +15,7 @@ namespace VFS
 {
 	DENTRY *root_dentry = 0;
 	PipeFS *pipefs = 0;
+	SockFS *sockfs = 0;
 
 	inline bool IsValidInode(FILE *file)
 	{
@@ -53,7 +55,10 @@ namespace VFS
 		}
 
 		DENTRY *dentry = new DENTRY;
-		dentry->name = strdup(name);
+
+		if (name)
+			dentry->name = strdup(name);
+
 		return dentry;
 	}
 
@@ -109,6 +114,9 @@ namespace VFS
 	{
 		if (strcmp(fs->name, "pipefs") == 0)
 			pipefs = (PipeFS *)fs;
+
+		if (strcmp(fs->name, "sockfs") == 0)
+			sockfs = (SockFS *)fs;
 
 		Path path = Path(mount_point);
 		DENTRY *dentry = AllocDentry(0, path.Filename());
@@ -349,7 +357,7 @@ namespace VFS
 		if ((ret = pipefs->Create(dentry, flags)))
 			return ret;
 
-		DENTRY *parent = AllocDentry(root_dentry, "pipe");
+		DENTRY *parent = AllocDentry(root_dentry, 0);
 		AddDentry(parent, dentry);
 
 		FILE *read = new FILE(dentry);
@@ -358,18 +366,81 @@ namespace VFS
 		pipefd[0] = filetable.Add(read);
 		pipefd[1] = filetable.Add(write);
 
-		if (pipefd[0] == -1 || pipefd[1] == -1)
+		if (pipefd[0] < 0 || pipefd[1] < 0)
 		{
-			if (pipefd[0] == -1)
+			if (pipefd[0] < 0)
 				filetable.Remove(pipefd[0]);
 
-			if (pipefd[1] == -1)
+			if (pipefd[1] < 0)
 				filetable.Remove(pipefd[1]);
 
+			delete read;
+			delete write;
 			return -1;
 		}
 
 		return 0;
+	}
+
+	int CreateSocket(Filetable &filetable, int domain, int type, int protocol)
+	{
+		int ret = 0;
+
+		DENTRY *dentry;
+
+		if ((ret = sockfs->Create(dentry, domain, type, protocol)))
+			return ret;
+
+		DENTRY *parent = AllocDentry(root_dentry, 0);
+		AddDentry(parent, dentry);
+
+		FILE *file = new FILE(dentry);
+		int fd = filetable.Add(file);
+
+		if (fd < 0)
+			delete file;
+
+		return fd;
+	}
+
+	int SocketBind(Filetable &filetable, int fd, const struct sockaddr *addr, socklen_t addrlen)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Bind(file, addr, addrlen);
+	}
+
+	int SocketRecv(Filetable &filetable, int fd, void *buf, size_t len, int flags)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Recv(file, buf, len, flags);
+	}
+
+	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Sendto(file, buf, len, flags, dest_addr, addrlen);
+	}
+
+	int SocketShutdown(Filetable &filetable, int fd, int how)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Shutdown(file, how);
 	}
 
 	uint32 ReadFile(const char *filename, char *&buffer)

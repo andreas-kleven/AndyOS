@@ -62,8 +62,6 @@ namespace UDP
 
 	void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt)
 	{
-		Net::PrintIP("UDP from: ", ip_hdr->src);
-
 		UDP_Packet udp;
 		if (!Decode(&udp, pkt))
 			return;

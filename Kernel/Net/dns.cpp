@@ -178,7 +178,7 @@ namespace DNS
 
 	STATUS Init()
 	{
-		memset(dns_cache, 0, sizeof(DNS_TABLE_ENTRY) * DNS_CACHE_SIZE);
+		memset(dns_cache, 0, sizeof(dns_cache));
 		return STATUS_SUCCESS;
 	}
 } // namespace DNS

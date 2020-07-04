@@ -1,9 +1,10 @@
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/fcntl.h>
-#include <sys/times.h>
 #include <sys/errno.h>
+#include <sys/fcntl.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/times.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -106,12 +107,12 @@ ssize_t read(int fd, char *buf, size_t size)
 
 void *sbrk(intptr_t increment)
 {
-    return syscall1(SYSCALL_SBRK, increment);
+    return (void *)syscall1(SYSCALL_SBRK, increment);
 }
 
 sig_t signal(int signum, sig_t handler)
 {
-    return syscall2(SYSCALL_SIGNAL, signum, handler);
+    return (sig_t)syscall2(SYSCALL_SIGNAL, signum, handler);
 }
 
 int stat(const char *file, struct stat *st)
@@ -141,7 +142,69 @@ int wait(int *status)
 
 ssize_t write(int fd, const char *buf, size_t size)
 {
-    return syscall3(SYSCALL_WRITE, fd, buf, size);
+    return (ssize_t)syscall3(SYSCALL_WRITE, fd, buf, size);
+}
+
+//
+
+int socket(int domain, int type, int protocol)
+{
+    return syscall3(SYSCALL_SOCKET, domain, type, protocol);
+}
+
+int accept(int fd, struct sockaddr *addr, socklen_t *addrlen, int flags)
+{
+    return syscall4(SYSCALL_ACCEPT, fd, addr, addrlen, flags);
+}
+
+int bind(int fd, const struct sockaddr *addr, socklen_t addrlen)
+{
+    return syscall3(SYSCALL_BIND, fd, addr, addrlen);
+}
+
+int connect(int fd, const struct sockaddr *addr, socklen_t addrlen)
+{
+    return syscall3(SYSCALL_CONNECT, fd, addr, addrlen);
+}
+
+int listen(int fd, int backlog)
+{
+    return syscall2(SYSCALL_LISTEN, fd, backlog);
+}
+
+int recv(int fd, void *buf, size_t len, int flags)
+{
+    return syscall4(SYSCALL_RECV, fd, buf, len, flags);
+}
+
+int recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen)
+{
+    return syscall6(SYSCALL_RECVFROM, fd, buf, len, flags, src_addr, addrlen);
+}
+
+int recvmsg(int fd, struct msghdr *msg, int flags)
+{
+    return syscall3(SYSCALL_RECVMSG, fd, msg, flags);
+}
+
+int send(int fd, const void *buf, size_t len, int flags)
+{
+    return syscall4(SYSCALL_SEND, fd, buf, len, flags);
+}
+
+int sendmsg(int fd, const struct msghdr *msg, int flags)
+{
+    return syscall3(SYSCALL_SENDMSG, fd, msg, flags);
+}
+
+int sendto(int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+{
+    return syscall6(SYSCALL_SENDTO, fd, buf, len, flags, dest_addr, addrlen);
+}
+
+int shutdown(int fd, int how)
+{
+    return syscall2(SYSCALL_SHUTDOWN, fd, how);
 }
 
 // TODO

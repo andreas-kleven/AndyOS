@@ -14,6 +14,7 @@
 #include "Process/dispatcher.h"
 #include "Process/scheduler.h"
 #include "Process/process.h"
+#include "Net/socket.h"
 #include "FS/vfs.h"
 
 namespace Syscalls
@@ -153,6 +154,31 @@ namespace Syscalls
 		PROCESS *proc = Dispatcher::CurrentProcess();
 		ProcessManager::SetSignalHandler(proc, signum, handler);
 		return 0; // TODO
+	}
+
+	int socket(int domain, int type, int protocol)
+	{
+		return VFS::CreateSocket(CurrentFiletable(), domain, type, protocol);
+	}
+
+	int bind(int fd, const sockaddr *addr, socklen_t addrlen)
+	{
+		return VFS::SocketBind(CurrentFiletable(), fd, addr, addrlen);
+	}
+
+	int recv(int fd, void *buf, size_t len, int flags)
+	{
+		return VFS::SocketRecv(CurrentFiletable(), fd, buf, len, flags);
+	}
+
+	int sendto(int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen)
+	{
+		return VFS::SocketSendto(CurrentFiletable(), fd, buf, len, flags, dest_addr, addrlen);
+	}
+
+	int shutdown(int fd, int how)
+	{
+		return VFS::SocketShutdown(CurrentFiletable(), fd, how);
 	}
 
 	void halt()
@@ -380,6 +406,12 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)fstat);
 		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)kill);
 		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)signal);
+
+		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)socket);
+		InstallSyscall(SYSCALL_BIND, (SYSCALL_HANDLER)bind);
+		InstallSyscall(SYSCALL_RECV, (SYSCALL_HANDLER)recv);
+		InstallSyscall(SYSCALL_SENDTO, (SYSCALL_HANDLER)sendto);
+		InstallSyscall(SYSCALL_SHUTDOWN, (SYSCALL_HANDLER)shutdown);
 
 		InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)halt);
 		InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)print);

@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "filesystem.h"
 #include "Process/scheduler.h"
+#include "Net/address.h"
 
 class FileSystem;
 class BlockDriver;
@@ -47,6 +48,12 @@ namespace VFS
 	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size);
 	off_t Seek(Filetable &filetable, int fd, off_t offset, int whence);
 	int CreatePipes(Filetable &filetable, int pipefd[2], int flags);
+
+	int CreateSocket(Filetable &filetable, int domain, int type, int protocol);
+	int SocketBind(Filetable &filetable, int fd, const struct sockaddr *addr, socklen_t addrlen);
+	int SocketRecv(Filetable &filetable, int fd, void *buf, size_t len, int flags);
+	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
+	int SocketShutdown(Filetable &filetable, int fd, int how);
 
 	uint32 ReadFile(const char *filename, char *&buffer);
 	STATUS Init();

@@ -66,3 +66,4 @@ make -j6 install
 
 mkdir -p $SYSROOT/usr
 cp -R $PREFIX/$TARGET/* $SYSROOT/usr
+cp -R $syssrc/arpa $SYSROOT/usr/include/arpa

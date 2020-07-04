@@ -19,6 +19,7 @@
 #include "FS/vfs.h"
 #include "FS/devfs.h"
 #include "FS/pipefs.h"
+#include "FS/sockfs.h"
 #include "FS/iso.h"
 #include "FS/ext2.h"
 #include "Process/process.h"
@@ -151,7 +152,7 @@ namespace Test
 #endif
 	}
 
-	void _Net()
+	void InitNet()
 	{
 		Net::Init();
 
@@ -170,7 +171,10 @@ namespace Test
 		THREAD *packet_thread = Task::CreateKernelThread(PacketManager::Start);
 		Scheduler::InsertThread(packet_thread);
 		PacketManager::SetInterface(intf);
+	}
 
+	void _Net()
+	{
 		sockaddr_in servaddr;
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_addr.s_addr = INADDR_ANY;
@@ -197,7 +201,7 @@ namespace Test
 			sprintf(buf, "Hello %d\n", (int)Timer::Ticks() / 1000);
 			len = strlen(buf);
 			socket->Sendto(buf, len, 0, (sockaddr *)&clientaddr, sizeof(clientaddr));
-			
+
 			Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
 		}
 	}
@@ -285,6 +289,7 @@ namespace Test
 
 		DevFS *devfs = new DevFS();
 		PipeFS *pipefs = new PipeFS();
+		SockFS *sockfs = new SockFS();
 
 		if (VFS::Mount(driver1, fs1, "/"))
 		{
@@ -309,15 +314,22 @@ namespace Test
 			debug_print("Mount pipefs failed\n");
 			return;
 		}
+
+		if (VFS::Mount(0, sockfs, "/sock"))
+		{
+			debug_print("Mount sockfs failed\n");
+			return;
+		}
 	}
 
 	void Start()
 	{
-		//Mount();
-		//GUI();
+		Mount();
+		InitNet();
+		GUI();
 		//_Memory();
 		//File();
-		_Net();
+		//_Net();
 		//Audio();
 		//COM();
 		//MutexTest();
