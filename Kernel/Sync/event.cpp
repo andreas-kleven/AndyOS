@@ -1,9 +1,10 @@
 #include "sync.h"
 #include "Process/scheduler.h"
 
-Event::Event(bool set)
+Event::Event(bool set, bool auto_reset)
 {
     this->set = set;
+    this->auto_reset = auto_reset;
 }
 
 void Event::Wait()
@@ -34,7 +35,9 @@ void Event::Set()
         Scheduler::WakeThread(thread);
     }
 
-    this->set = true;
+    if (!auto_reset)
+        this->set = true;
+
     Scheduler::Enable();
 }
 

@@ -21,9 +21,10 @@ class Event
 private:
     Queue<THREAD *> waiting;
     bool set;
+    bool auto_reset;
 
 public:
-    Event(bool set = false);
+    Event(bool set = false, bool auto_reset = false);
 
     void Wait();
     void Set();
