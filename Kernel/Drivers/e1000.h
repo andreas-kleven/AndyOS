@@ -33,7 +33,7 @@ public:
 	virtual void Send(NetPacket *pkt);
 	virtual void Poll();
 	virtual MacAddress GetMac();
-	virtual IPv4Address GetIP();
+	virtual uint32 GetIP();
 
 private:
 	int bar_type;

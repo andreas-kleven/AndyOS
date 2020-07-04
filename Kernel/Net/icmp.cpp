@@ -28,9 +28,9 @@ namespace ICMP
 		}
 	}
 
-	void Send(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip, uint8 type)
+	void Send(NetInterface *intf, ICMP_Packet *icmp, uint32 ip, uint8 type)
 	{
-		NetPacket *pkt = IPv4::CreatePacket(intf, tip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
+		/*NetPacket *pkt = IPv4::CreatePacket(ip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
 
 		if (!pkt)
 			return;
@@ -47,12 +47,12 @@ namespace ICMP
 		header->checksum = Net::Checksum(header, sizeof(ICMP_Header) + icmp->data_length);
 
 		pkt->end += sizeof(ICMP_Header) + icmp->data_length;
-		intf->Send(pkt);
+		IPv4::Send(pkt);*/
 	}
 
-	void SendReply(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip)
+	void SendReply(NetInterface *intf, ICMP_Packet *icmp, uint32 ip)
 	{
-		Send(intf, icmp, tip, ICMP_ECHO_REPLY);
+		Send(intf, icmp, ip, ICMP_ECHO_REPLY);
 	}
 
 	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, NetPacket *pkt)

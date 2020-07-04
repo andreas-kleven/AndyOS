@@ -11,14 +11,12 @@ uint32 ntohl(uint32 val);
 namespace Net
 {
 	extern MacAddress BroadcastMAC;
-	extern IPv4Address BroadcastIPv4;
 	extern MacAddress NullMAC;
-	extern IPv4Address NullIPv4;
 
 	STATUS Init();
 	uint16 Checksum(void *data, int length);
 	uint16 ChecksumDouble(void *d0, int l0, void *d1, int l1);
 
-	void PrintIP(const char *str, IPv4Address ip);
+	void PrintIP(const char *str, uint32 ip);
 	void PrintMac(const char *str, MacAddress mac);
 } // namespace Net

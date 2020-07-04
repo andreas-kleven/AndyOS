@@ -16,10 +16,10 @@ struct DHCP_Header
 	uint16 secs;
 	uint16 flags;
 
-	IPv4Address ciaddr;
-	IPv4Address yiaddr;
-	IPv4Address siaddr;
-	IPv4Address giaddr;
+	uint32 ciaddr;
+	uint32 yiaddr;
+	uint32 siaddr;
+	uint32 giaddr;
 	MacAddress chaddr;
 
 	char pad[10];

@@ -168,6 +168,16 @@ public:
         return count;
     }
 
+    inline T& First()
+    {
+        return root->value;
+    }
+
+    inline T& Last()
+    {
+        return last->value;
+    }
+
 	T& operator[](int index)
     {
         if (index > count)

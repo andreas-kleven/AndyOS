@@ -23,8 +23,8 @@ struct EthPacket
 
 namespace ETH
 {
-	NetPacket *CreatePacket(NetInterface *intf, MacAddress dst, uint16 type, uint32 size);
+	NetPacket *CreatePacket(NetInterface *intf, const MacAddress &dst, uint16 type, uint32 size);
 
-	void Send(NetInterface *intf, NetPacket *pkt);
+	int Send(NetPacket *pkt);
 	void HandlePacket(NetInterface *intf, NetPacket *pkt);
 } // namespace ETH

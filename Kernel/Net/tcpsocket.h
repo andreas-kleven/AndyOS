@@ -6,7 +6,7 @@ class TcpSocket
 public:
 	TcpSocket();
 
-	bool Connect(IPv4Address dst, uint16 port);
+	bool Connect(uint32 dst, uint16 port);
 	bool Listen(uint16 port);
 
 	bool Send(uint8* data, uint32 length);

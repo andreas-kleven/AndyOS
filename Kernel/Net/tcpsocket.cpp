@@ -7,7 +7,7 @@ TcpSocket::TcpSocket()
 	session = TCP::CreateSession();
 }
 
-bool TcpSocket::Connect(IPv4Address dst, uint16 port)
+bool TcpSocket::Connect(uint32 dst, uint16 port)
 {
 	if (session->state != TCP_CLOSED)
 		return 0;

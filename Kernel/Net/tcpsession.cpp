@@ -7,7 +7,7 @@
 
 TcpSession::TcpSession()
 {
-	dst_ip = Net::NullIPv4;
+	dst_ip = 0;
 	dst_port = 0;
 	src_port = 0;
 
@@ -101,7 +101,7 @@ void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
 	}
 }
 
-void TcpSession::Connect(IPv4Address dst, uint16 port)
+void TcpSession::Connect(uint32 dst, uint16 port)
 {
 	if (state != TCP_CLOSED)
 		return;
@@ -132,7 +132,7 @@ void TcpSession::Listen(uint16 port)
 		return;
 
 	src_port = port;
-	dst_ip = Net::BroadcastIPv4;
+	dst_ip = INADDR_BROADCAST;
 	state = TCP_LISTEN;
 }
 

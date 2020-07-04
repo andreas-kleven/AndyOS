@@ -10,7 +10,7 @@ protected:
 	PciDevice *dev;
 
 public:
-	IPv4Address gateway_addr;
+	uint32 gateway_addr;
 
 	NetInterface(PciDevice *pci_dev);
 
@@ -20,5 +20,5 @@ public:
 	//static void(*EthReceive)(NetInterface* intf, NetPacket* pkt);
 
 	virtual MacAddress GetMac() { return MacAddress(); }
-	virtual IPv4Address GetIP() { return IPv4Address(); }
+	virtual uint32 GetIP() { return 0; }
 };

@@ -108,8 +108,7 @@ E1000::E1000(PciDevice *pci_dev) : NetInterface(pci_dev)
 
 	ReadMac();
 
-	uint32 addr = htonl(0xC0A80001);
-	gateway_addr = *(IPv4Address *)&addr;
+	gateway_addr = htonl(0xC0A80001);
 
 	Net::PrintIP("IP: ", GetIP());
 	Net::PrintMac("Mac: ", GetMac());
@@ -140,9 +139,9 @@ MacAddress E1000::GetMac()
 	return mac;
 }
 
-IPv4Address E1000::GetIP()
+uint32 E1000::GetIP()
 {
-	return IPv4Address(192, 168, 0, 254);
+	return htonl(0xC0A800FE); //192.168.0.254
 }
 
 void E1000::Start()

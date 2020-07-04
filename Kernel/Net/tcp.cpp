@@ -42,9 +42,9 @@ namespace TCP
 		return 0;
 	}
 
-	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8 flags, uint32 seq, uint32 ack, uint8* data, uint32 data_length)
+	NetPacket* CreatePacket(NetInterface* intf, uint32 dst, uint16 src_port, uint16 dst_port, uint8 flags, uint32 seq, uint32 ack, uint8* data, uint32 data_length)
 	{
-		NetPacket* pkt = IPv4::CreatePacket(intf, dst, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
+		/*NetPacket* pkt = IPv4::CreatePacket(dst, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
 
 		if (!pkt)
 			return 0;
@@ -72,13 +72,13 @@ namespace TCP
 
 		header->checksum = Net::ChecksumDouble(&pseudo, sizeof(IPv4_PSEUDO_HEADER), header, sizeof(TCP_Header) + data_length);
 		pkt->end += sizeof(TCP_Header) + data_length;
-		return pkt;
+		return pkt;*/
 	}
 
 	void Send(NetInterface* intf, NetPacket* pkt)
 	{
 		//checksum
-		IPv4::Send(intf, pkt);
+		IPv4::Send(pkt);
 	}
 
 	void HandlePacket(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt)
@@ -96,7 +96,7 @@ namespace TCP
 			if (session)
 			{
 				bool valid_port = session->src_port == tcp.header->dst_port;
-				bool valid_ip = session->dst_ip == ip_hdr->src || session->dst_ip == Net::BroadcastIPv4;
+				bool valid_ip = session->dst_ip == ip_hdr->src || session->dst_ip == INADDR_BROADCAST;
 
 				if (valid_port || valid_ip)
 				{

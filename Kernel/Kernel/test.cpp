@@ -7,8 +7,8 @@
 #include "Drivers/e1000.h"
 #include "Net/arp.h"
 #include "Net/net.h"
+#include "Net/socketmanager.h"
 #include "Net/tcpsocket.h"
-#include "Net/udpsocket.h"
 #include "Net/udp.h"
 #include "Net/dns.h"
 #include "Net/dhcp.h"
@@ -171,48 +171,34 @@ namespace Test
 		Scheduler::InsertThread(packet_thread);
 		PacketManager::SetInterface(intf);
 
-		Timer::Sleep(1000000);
+		sockaddr_in servaddr;
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_addr.s_addr = INADDR_ANY;
+		servaddr.sin_port = htons(8080);
 
-		const char *udpdata = "Hello\n";
-		IPv4Address dstip(192, 168, 0, 123);
+		sockaddr_in clientaddr;
+		clientaddr.sin_family = AF_INET;
+		clientaddr.sin_addr.s_addr = htonl(0xC0A8007B); // 192.168.0.123
+		clientaddr.sin_port = htons(8080);
 
-		//ARP::GetMac(intf, dstip);
-		//return;
+		Socket *socket = SocketManager::CreateSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		socket->Bind((sockaddr *)&servaddr, sizeof(servaddr));
 
-		NetPacket *udppkt = UDP::CreatePacket(intf, dstip, 9999, 8080, (uint8 *)udpdata, strlen(udpdata) + 1);
-		debug_print("Sending %p\n", udppkt);
-		UDP::Send(intf, udppkt);
+		char buf[1024];
 
-		return;
-
-		//DNS::Query(intf, "google.com");
-		IPv4Address addr(0xc0, 0xa8, 0x00, 0x7b);
-		DHCP::Discover(intf);
-
-		UdpSocket *socket = UDP::CreateSocket(9876);
-
-		uint8 *buffer;
-		while (1)
+		while (true)
 		{
-			int length = socket->Receive(buffer, Net::BroadcastIPv4);
-			debug_dump(buffer, length, 1);
+			int len;
 
-			//char* data = "Hello";
-			//socket->Send(addr, (uint8*)data, 5);
-		}
-		return;
+			//len = socket->Recv(buf, sizeof(buf), 0);
+			//debug_dump(buf, len, true);
+			//continue;
 
-		MacAddress dst(0x30, 0x9C, 0x23, 0x21, 0xEB, 0xFE);
-
-		NetPacket *pkt = IPv4::CreatePacket(intf, addr, IP_PROTOCOL_ICMP, 0);
-
-		if (pkt)
-		{
-			intf->Send(pkt);
-		}
-		else
-		{
-			debug_print("PACKET ERR\n");
+			sprintf(buf, "Hello %d\n", (int)Timer::Ticks() / 1000);
+			len = strlen(buf);
+			socket->Sendto(buf, len, 0, (sockaddr *)&clientaddr, sizeof(clientaddr));
+			
+			Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
 		}
 	}
 
@@ -337,6 +323,6 @@ namespace Test
 		//MutexTest();
 
 		while (1)
-			sys_halt();
+			pause();
 	}
 } // namespace Test

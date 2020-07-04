@@ -4,6 +4,7 @@
 #include "icmp.h"
 #include "udp.h"
 #include "tcp.h"
+#include "packetmanager.h"
 #include "Lib/debug.h"
 
 namespace IPv4
@@ -31,23 +32,24 @@ namespace IPv4
 		return 1;
 	}
 
-	NetPacket *CreatePacket(NetInterface *intf, IPv4Address dst, uint8 protocol, uint32 size)
+	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint8 protocol, uint32 size)
 	{
+		uint32 dst_addr = dest_addr->sin_addr.s_addr;
+		NetInterface *intf = PacketManager::GetInterface(dest_addr);
 		MacAddress mac;
 
-		if (dst == Net::BroadcastIPv4)
+		if (dst_addr == INADDR_BROADCAST)
 		{
 			mac = Net::BroadcastMAC;
 		}
-		else if (!memcmp(&dst, &intf->gateway_addr, 3))
+		else if (!memcmp(&dst_addr, &intf->gateway_addr, 3))
 		{
-			mac = ARP::GetMac(intf, dst);
+			mac = ARP::GetMac(intf, dst_addr);
 		}
 		else
 		{
 			mac = ARP::GetMac(intf, intf->gateway_addr);
 		}
-		
 
 		if (mac == Net::NullMAC)
 			return 0;
@@ -68,7 +70,7 @@ namespace IPv4
 		header->protocol = protocol;
 		header->checksum = 0;
 		header->src = intf->GetIP();
-		header->dst = dst;
+		header->dst = dst_addr;
 
 		header->checksum = Net::Checksum(header, sizeof(IPv4_Header));
 		pkt->end += sizeof(IPv4_Header);
@@ -76,9 +78,9 @@ namespace IPv4
 		return pkt;
 	}
 
-	void Send(NetInterface *intf, NetPacket *pkt)
+	int Send(NetPacket *pkt)
 	{
-		ETH::Send(intf, pkt);
+		return ETH::Send(pkt);
 	}
 
 	void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt)
@@ -89,8 +91,8 @@ namespace IPv4
 		if (!Decode(&header, pkt))
 			return;
 
-		IPv4Address intf_addr = intf->GetIP();
-		if (header.dst != intf_addr && header.dst != Net::BroadcastIPv4)
+		uint32 intf_addr = intf->GetIP();
+		if (header.dst != intf_addr && header.dst != INADDR_BROADCAST)
 			return;
 
 		ARP::AddEntry(eth->header->src, header.src);
@@ -101,13 +103,13 @@ namespace IPv4
 		switch (header.protocol)
 		{
 		case IP_PROTOCOL_ICMP:
-			ICMP::HandlePacket(intf, &header, pkt);
+			//ICMP::HandlePacket(intf, &header, pkt);
 			break;
 		case IP_PROTOCOL_UDP:
-			UDP::HandlePacket(intf, &header, pkt);
+			UDP::HandlePacket(&header, pkt);
 			break;
 		case IP_PROTOCOL_TCP:
-			TCP::HandlePacket(intf, &header, pkt);
+			//TCP::HandlePacket(intf, &header, pkt);
 			break;
 		}
 	}

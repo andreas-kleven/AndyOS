@@ -16,12 +16,12 @@ namespace ARP
 	struct ARP_TABLE_ENTRY
 	{
 		MacAddress mac;
-		IPv4Address ip;
+		uint32 ip;
 	};
 
 	ARP_TABLE_ENTRY arp_cache[ARP_CACHE_SIZE];
 
-	void Send(NetInterface *intf, MacAddress dst, IPv4Address tip, uint16 op)
+	void Send(NetInterface *intf, MacAddress dst, uint32 ip, uint16 op)
 	{
 		NetPacket *pkt = ETH::CreatePacket(intf, dst, ETHERTYPE_ARP, sizeof(ARP_Header));
 
@@ -38,7 +38,7 @@ namespace ARP
 		header->send_mac = intf->GetMac();
 		header->send_ip = intf->GetIP();
 		header->recv_mac = dst;
-		header->recv_ip = tip;
+		header->recv_ip = ip;
 
 		pkt->end += sizeof(ARP_Header);
 		intf->Send(pkt);
@@ -67,9 +67,9 @@ namespace ARP
 		return 1;
 	}
 
-	MacAddress LookupMac(const IPv4Address &ip)
+	MacAddress LookupMac(uint32 ip)
 	{
-		if (ip == Net::BroadcastIPv4)
+		if (ip == INADDR_BROADCAST)
 			return Net::BroadcastMAC;
 
 		table_mutex.Aquire();
@@ -88,7 +88,7 @@ namespace ARP
 		return Net::NullMAC;
 	}
 
-	MacAddress GetMac(NetInterface *intf, const IPv4Address &ip)
+	MacAddress GetMac(NetInterface *intf, uint32 ip)
 	{
 		MacAddress mac = ARP::LookupMac(ip);
 
@@ -107,7 +107,7 @@ namespace ARP
 		}
 	}
 
-	void AddEntry(const MacAddress &mac, const IPv4Address &ip)
+	void AddEntry(const MacAddress &mac, uint32 ip)
 	{
 		bool add = LookupMac(ip) == Net::NullMAC;
 		bool replace = !add;
@@ -148,8 +148,7 @@ namespace ARP
 		if (!Decode(&header, pkt))
 			return;
 
-		IPv4Address intf_addr = intf->GetIP();
-		if (header.recv_ip != intf_addr)
+		if (header.recv_ip != intf->GetIP())
 			return;
 
 		switch (header.op)
@@ -163,7 +162,7 @@ namespace ARP
 		}
 	}
 
-	void SendRequest(NetInterface *intf, const IPv4Address &ip)
+	void SendRequest(NetInterface *intf, uint32 ip)
 	{
 		Net::PrintIP("arp: sending request to ", ip);
 		Send(intf, Net::BroadcastMAC, ip, ARP_REQUEST);
@@ -171,13 +170,7 @@ namespace ARP
 
 	STATUS Init()
 	{
-		ARP_TABLE_ENTRY entry;
-		entry.ip = Net::NullIPv4;
-		entry.mac = Net::NullMAC;
-
-		for (int i = 0; i < ARP_CACHE_SIZE; i++)
-			arp_cache[i] = entry;
-
+		memset(arp_cache, 0, sizeof(ARP_TABLE_ENTRY) * ARP_CACHE_SIZE);
 		return STATUS_SUCCESS;
 	}
 } // namespace ARP

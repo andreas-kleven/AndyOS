@@ -33,10 +33,7 @@ uint32 ntohl(uint32 val)
 namespace Net
 {
 	MacAddress BroadcastMAC;
-	IPv4Address BroadcastIPv4;
-
 	MacAddress NullMAC;
-	IPv4Address NullIPv4;
 
 	STATUS Init()
 	{
@@ -45,10 +42,7 @@ namespace Net
 		UDP::Init();
 
 		memset(&BroadcastMAC, 0xFF, 6);
-		memset(&BroadcastIPv4, 0xFF, 4);
-
 		memset(&NullMAC, 0, 6);
-		memset(&NullIPv4, 0, 4);
 
 		return STATUS_SUCCESS;
 	}
@@ -120,7 +114,7 @@ namespace Net
 		return htons(~acc);
 	}
 
-	void PrintIP(const char* str, IPv4Address ip)
+	void PrintIP(const char* str, uint32 ip)
 	{
 		uint8* addr = (uint8*)&ip;
 		debug_print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);

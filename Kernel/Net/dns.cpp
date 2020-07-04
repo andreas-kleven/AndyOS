@@ -1,5 +1,4 @@
 #include "dns.h"
-#include "udpsocket.h"
 #include "Lib/debug.h"
 
 namespace DNS
@@ -14,7 +13,7 @@ namespace DNS
 	struct DNS_TABLE_ENTRY
 	{
 		char *name;
-		IPv4Address addr;
+		uint32 addr;
 	};
 
 	DNS_TABLE_ENTRY dns_cache[DNS_CACHE_SIZE];
@@ -103,7 +102,7 @@ namespace DNS
 		return ptr + sizeof(DNS_Answer);
 	}
 
-	IPv4Address LookupAddress(char *name)
+	uint32 LookupAddress(char *name)
 	{
 		for (int i = 0; i < DNS_CACHE_SIZE; i++)
 		{
@@ -113,10 +112,10 @@ namespace DNS
 			}
 		}
 
-		return Net::NullIPv4;
+		return 0;
 	}
 
-	void AddEntry(char *name, IPv4Address addr)
+	void AddEntry(char *name, uint32 addr)
 	{
 		for (int i = 0; i < DNS_CACHE_SIZE; i++)
 		{
@@ -153,8 +152,8 @@ namespace DNS
 		data[sizeof(DNS_Header) + dom_len + 1] = 1; //type
 		data[sizeof(DNS_Header) + dom_len + 3] = 1; //class
 
-		NetPacket *pkt = UDP::CreatePacket(intf, intf->gateway_addr, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
-		intf->Send(pkt);
+		//NetPacket *pkt = UDP::CreatePacket(intf->gateway_addr, 53, 53, data, sizeof(DNS_Header) + dom_len + 4);
+		//intf->Send(pkt);
 
 		delete[] data;
 	}
@@ -179,13 +178,7 @@ namespace DNS
 
 	STATUS Init()
 	{
-		for (int i = 0; i < DNS_CACHE_SIZE; i++)
-		{
-			dns_cache[i].name = new char[256];
-			dns_cache[i].name[0] = 0;
-			dns_cache[i].addr = Net::NullIPv4;
-		}
-
+		memset(dns_cache, 0, sizeof(DNS_TABLE_ENTRY) * DNS_CACHE_SIZE);
 		return STATUS_SUCCESS;
 	}
 } // namespace DNS

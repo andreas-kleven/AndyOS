@@ -15,14 +15,14 @@ struct IPv4_Header
 	uint8 ttl;
 	uint8 protocol;
 	uint16 checksum;
-	IPv4Address src;
-	IPv4Address dst;
+	uint32 src;
+	uint32 dst;
 } __attribute__((packed));
 
 struct IPv4_PSEUDO_HEADER
 {
-	IPv4Address src;
-	IPv4Address dst;
+	uint32 src;
+	uint32 dst;
 	uint8 reserved;
 	uint8 protocol;
 	uint16 length;
@@ -30,7 +30,7 @@ struct IPv4_PSEUDO_HEADER
 
 namespace IPv4
 {
-	NetPacket *CreatePacket(NetInterface *intf, IPv4Address dst, uint8 protocol, uint32 size);
-	void Send(NetInterface *intf, NetPacket *pkt);
+	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint8 protocol, uint32 size);
+	int Send(NetPacket *pkt);
 	void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt);
 } // namespace IPv4

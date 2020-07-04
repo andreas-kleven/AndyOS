@@ -3,7 +3,7 @@
 
 class UdpSocket;
 
-#define UDP_MAX_PORTS		65536
+#define UDP_MAX_PORTS 65536
 #define UDP_MAX_PACKET_SIZE 65536
 
 struct UDP_Header
@@ -16,18 +16,17 @@ struct UDP_Header
 
 struct UDP_Packet
 {
-	UDP_Header* header;
+	UDP_Header *header;
 	uint16 data_length;
-	uint8* data;
+	uint8 *data;
 } __attribute__((packed));
 
 namespace UDP
 {
-	UdpSocket* CreateSocket(int port);
-	NetPacket* CreatePacket(NetInterface* intf, IPv4Address dst, uint16 src_port, uint16 dst_port, uint8* data, uint32 data_length);
+	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, const void *data, size_t len);
 
-	void Send(NetInterface* intf, NetPacket* pkt);
-	void HandlePacket(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
-	
+	int Send(NetPacket *pkt);
+	void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt);
+
 	STATUS Init();
-}
+} // namespace UDP

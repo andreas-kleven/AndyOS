@@ -14,14 +14,14 @@ class TcpSession
 public:
 	int state;
 
-	IPv4Address dst_ip;
+	uint32 dst_ip;
 	uint16 dst_port;
 	uint16 src_port;
 
 	TcpSession();
 	void Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp);
 
-	void Connect(IPv4Address dst, uint16 port);
+	void Connect(uint32 dst, uint16 port);
 	void Listen(uint16 port);
 	void Close();
 	

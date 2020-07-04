@@ -11,7 +11,7 @@ struct DNS_Answer
 	uint16 clas;
 	uint32 ttl;
 	uint16 data_length;
-	IPv4Address addr;
+	uint32 addr;
 } __attribute__((packed));
 
 struct DNS_Header
@@ -26,8 +26,8 @@ struct DNS_Header
 
 namespace DNS
 {
-	IPv4Address LookupAddress(char *name);
-	void AddEntry(char *name, IPv4Address addr);
+	uint32 LookupAddress(char *name);
+	void AddEntry(char *name, uint32 addr);
 
 	void Query(NetInterface *intf, char *name);
 	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt);

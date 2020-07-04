@@ -27,8 +27,8 @@ struct ICMP_Packet
 
 namespace ICMP
 {
-	void Send(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip, uint8 type);
-	void SendReply(NetInterface *intf, ICMP_Packet *icmp, IPv4Address tip);
+	void Send(NetInterface *intf, ICMP_Packet *icmp, uint32 tip, uint8 type);
+	void SendReply(NetInterface *intf, ICMP_Packet *icmp, uint32 tip);
 
 	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, NetPacket *pkt);
 } // namespace ICMP

@@ -40,7 +40,7 @@ namespace ETH
 		return 1;
 	}
 
-	NetPacket *CreatePacket(NetInterface *intf, MacAddress dst, uint16 type, uint32 size)
+	NetPacket *CreatePacket(NetInterface *intf, const MacAddress &dst, uint16 type, uint32 size)
 	{
 		NetPacket *pkt = new NetPacket;
 		pkt->start = new uint8[sizeof(EthHeader) + size];
@@ -54,9 +54,9 @@ namespace ETH
 		return pkt;
 	}
 
-	void Send(NetInterface *intf, NetPacket *pkt)
+	int Send(NetPacket *pkt)
 	{
-		PacketManager::Send(intf, pkt);
+		return PacketManager::Send(pkt);
 	}
 
 	void HandlePacket(NetInterface *intf, NetPacket *pkt)

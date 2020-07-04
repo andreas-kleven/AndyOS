@@ -12,17 +12,17 @@ struct ARP_Header
 	uint8 plen;
 	uint16 op;
 	MacAddress send_mac;
-	IPv4Address send_ip;
+	uint32 send_ip;
 	MacAddress recv_mac;
-	IPv4Address recv_ip;
+	uint32 recv_ip;
 } __attribute__((packed));
 
 namespace ARP
 {
-	MacAddress GetMac(NetInterface *intf, const IPv4Address &ip);
-	void AddEntry(const MacAddress &mac, const IPv4Address &ip);
+	MacAddress GetMac(NetInterface *intf, uint32 ip);
+	void AddEntry(const MacAddress &mac, uint32 ip);
 
-	void SendRequest(NetInterface *intf, const IPv4Address &ip);
+	void SendRequest(NetInterface *intf, uint32 ip);
 	void HandlePacket(NetInterface *intf, NetPacket *pkt);
 
 	STATUS Init();

@@ -9,22 +9,36 @@ namespace PacketManager
     Mutex send_mutex;
     int ready_count = 0;
 
-    void Send(NetInterface *intf, NetPacket *pkt)
+    int Send(NetPacket *pkt)
     {
+        if (!pkt)
+            return -1;
+
         send_mutex.Aquire();
-        intf->Send(pkt);
+        interface->Send(pkt);
         send_mutex.Release();
+        return 0;
+    }
+
+    void SetInterface(NetInterface *intf)
+    {
+        interface = intf;
+    }
+
+    NetInterface *GetInterface(const sockaddr *addr)
+    {
+        return interface;
+    }
+
+    NetInterface *GetInterface(const sockaddr_in *addr)
+    {
+        return interface;
     }
 
     void NotifyReceived()
     {
         ready_count += 1;
         receive_event.Set();
-    }
-
-    void SetInterface(NetInterface *intf)
-    {
-        interface = intf;
     }
 
     void Start()

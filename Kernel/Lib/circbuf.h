@@ -51,11 +51,11 @@ public:
 		return length;
 	}
 
-	int Read(int length, void *data)
+	int Read(size_t length, void *data)
 	{
 		char *ptr = (char *)data;
 
-		for (int i = 0; i < length; i++)
+		for (size_t i = 0; i < length; i++)
 		{
 			if (!ReadOne(&ptr[i]))
 				return i;
