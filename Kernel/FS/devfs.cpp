@@ -3,7 +3,7 @@
 #include "string.h"
 #include "Drivers/driver.h"
 
-int DevFS::Mount(BlockDriver *driver, DENTRY *root_dentry)
+int DevFS::Mount(BlockDriver *driver)
 {
     root_dentry->inode = VFS::AllocInode(root_dentry);
     return 0;

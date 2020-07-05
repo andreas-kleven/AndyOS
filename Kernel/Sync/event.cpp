@@ -11,7 +11,7 @@ void Event::Wait()
 {
     Scheduler::Disable();
 
-    if (!this->set)
+    if (!set)
     {
         THREAD *thread = Scheduler::CurrentThread();
         waiting.Enqueue(thread);
@@ -21,6 +21,9 @@ void Event::Wait()
     }
     else
     {
+        if (auto_reset)
+            set = false;
+
         Scheduler::Enable();
     }
 }
@@ -29,19 +32,19 @@ void Event::Set()
 {
     Scheduler::Disable();
 
+    if (!auto_reset || waiting.Count() == 0)
+        set = true;
+
     while (waiting.Count() > 0)
     {
         THREAD *thread = waiting.Dequeue();
         Scheduler::WakeThread(thread);
     }
 
-    if (!auto_reset)
-        this->set = true;
-
     Scheduler::Enable();
 }
 
 void Event::Clear()
 {
-    this->set = false;
+    set = false;
 }

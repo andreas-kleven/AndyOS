@@ -15,7 +15,7 @@ public:
         name = "pipefs";
     }
 
-    int Mount(BlockDriver *driver, DENTRY *root_dentry);
+    int Mount(BlockDriver *driver);
     int Open(FILE *file);
     int Close(FILE *file);
     int Read(FILE *file, void *buf, size_t size);

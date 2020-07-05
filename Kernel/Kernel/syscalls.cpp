@@ -161,14 +161,34 @@ namespace Syscalls
 		return VFS::CreateSocket(CurrentFiletable(), domain, type, protocol);
 	}
 
+	int accept(int fd, struct sockaddr *addr, socklen_t addrlen, int flags)
+	{
+		return VFS::SocketAccept(CurrentFiletable(), fd, addr, addrlen, flags);
+	}
+
 	int bind(int fd, const sockaddr *addr, socklen_t addrlen)
 	{
 		return VFS::SocketBind(CurrentFiletable(), fd, addr, addrlen);
 	}
 
+	int connect(int fd, const struct sockaddr *addr, socklen_t addrlen)
+	{
+		return VFS::SocketConnect(CurrentFiletable(), fd, addr, addrlen);
+	}
+
+	int listen(int fd, int backlog)
+	{
+		return VFS::SocketListen(CurrentFiletable(), fd, backlog);
+	}
+
 	int recv(int fd, void *buf, size_t len, int flags)
 	{
 		return VFS::SocketRecv(CurrentFiletable(), fd, buf, len, flags);
+	}
+
+	int send(int fd, const void *buf, size_t len, int flags)
+	{
+		return VFS::SocketSend(CurrentFiletable(), fd, buf, len, flags);
 	}
 
 	int sendto(int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen)
@@ -408,8 +428,12 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)signal);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)socket);
+		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)accept);
 		InstallSyscall(SYSCALL_BIND, (SYSCALL_HANDLER)bind);
+		InstallSyscall(SYSCALL_CONNECT, (SYSCALL_HANDLER)connect);
+		InstallSyscall(SYSCALL_LISTEN, (SYSCALL_HANDLER)listen);
 		InstallSyscall(SYSCALL_RECV, (SYSCALL_HANDLER)recv);
+		InstallSyscall(SYSCALL_SEND, (SYSCALL_HANDLER)send);
 		InstallSyscall(SYSCALL_SENDTO, (SYSCALL_HANDLER)sendto);
 		InstallSyscall(SYSCALL_SHUTDOWN, (SYSCALL_HANDLER)shutdown);
 

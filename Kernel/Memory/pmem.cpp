@@ -56,6 +56,7 @@ namespace PMem
 		}
 
 		Scheduler::Enable();
+		debug_print("Out of memory\n");
 		return 0;
 	}
 

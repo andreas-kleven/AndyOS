@@ -2,7 +2,7 @@
 #include "string.h"
 #include "debug.h"
 
-int Ext2FS::Mount(BlockDriver *driver, DENTRY *root_dentry)
+int Ext2FS::Mount(BlockDriver *driver)
 {
     this->driver = driver;
     superblock = new EXT2_SUPERBLOCK;

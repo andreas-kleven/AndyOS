@@ -4,7 +4,7 @@
 #include "Drivers/driver.h"
 #include "Lib/debug.h"
 
-int PipeFS::Mount(BlockDriver *driver, DENTRY *root_dentry)
+int PipeFS::Mount(BlockDriver *driver)
 {
     root_dentry->inode = VFS::AllocInode(root_dentry);
     return -1;

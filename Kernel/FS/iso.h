@@ -119,7 +119,7 @@ public:
         name = "iso";
     }
 
-	int Mount(BlockDriver *driver, DENTRY *root_dentry);
+	int Mount(BlockDriver *driver);
 	int GetChildren(DENTRY *parent, const char *find_name);
 	int Read(FILE *file, void *buf, size_t size);
 

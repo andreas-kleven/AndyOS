@@ -2,6 +2,7 @@
 #include "net.h"
 #include "sync.h"
 #include "list.h"
+#include "FS/vfs.h"
 
 namespace SocketManager
 {
@@ -67,7 +68,7 @@ namespace SocketManager
             if (socket->domain == AF_INET)
             {
                 sockaddr_in *inet_addr = (sockaddr_in *)addr;
-                sockaddr_in *sock_addr = (sockaddr_in *)&socket->addr;
+                sockaddr_in *sock_addr = (sockaddr_in *)socket->addr;
 
                 if (sock_addr->sin_port == inet_addr->sin_port)
                 {
@@ -86,5 +87,16 @@ namespace SocketManager
         sockaddr_in addr;
         addr.sin_port = htons(port);
         return GetSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, (sockaddr *)&addr);
+    }
+
+    Socket *GetUnixSocket(const sockaddr_un *addr)
+    {
+        DENTRY *dentry = VFS::GetDentry(addr->sun_path);
+
+        if (!dentry)
+            return 0;
+
+        int id = dentry->inode->ino;
+        return GetSocket(id);
     }
 } // namespace SocketManager

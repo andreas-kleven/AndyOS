@@ -3,6 +3,7 @@
 
 #define AF_UNSPEC 0
 #define AF_LOCAL 1
+#define AF_UNIX 1
 #define AF_INET 2
 #define AF_PACKET 3
 
@@ -39,6 +40,12 @@ struct sockaddr_in
     char sin_zero[8];
 } __attribute__((packed));
 
+struct sockaddr_un
+{
+    unsigned short sun_family;
+    char sun_path[108];
+} __attribute__((packed));
+
 struct iovec
 {
     void *iov_base;
@@ -57,12 +64,12 @@ struct msghdr
 } __attribute__((packed));
 
 int socket(int domain, int type, int protocol);
-int accept(int fd, struct sockaddr *addr, socklen_t *addrlen, int flags);
+int accept(int fd, struct sockaddr *addr, socklen_t addrlen, int flags);
 int bind(int fd, const struct sockaddr *addr, socklen_t addrlen);
 int connect(int fd, const struct sockaddr *addr, socklen_t addrlen);
 int listen(int fd, int backlog);
 int recv(int fd, void *buf, size_t len, int flags);
-int recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
+int recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t addrlen);
 int recvmsg(int fd, struct msghdr *msg, int flags);
 int send(int fd, const void *buf, size_t len, int flags);
 int sendmsg(int fd, const struct msghdr *msg, int flags);

@@ -152,7 +152,7 @@ int socket(int domain, int type, int protocol)
     return syscall3(SYSCALL_SOCKET, domain, type, protocol);
 }
 
-int accept(int fd, struct sockaddr *addr, socklen_t *addrlen, int flags)
+int accept(int fd, struct sockaddr *addr, socklen_t addrlen, int flags)
 {
     return syscall4(SYSCALL_ACCEPT, fd, addr, addrlen, flags);
 }
@@ -177,7 +177,7 @@ int recv(int fd, void *buf, size_t len, int flags)
     return syscall4(SYSCALL_RECV, fd, buf, len, flags);
 }
 
-int recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen)
+int recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t addrlen)
 {
     return syscall6(SYSCALL_RECVFROM, fd, buf, len, flags, src_addr, addrlen);
 }

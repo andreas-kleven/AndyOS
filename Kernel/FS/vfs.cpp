@@ -64,10 +64,18 @@ namespace VFS
 
 	void AddDentry(DENTRY *parent, DENTRY *child)
 	{
-		if (GetExistingChild(parent, child->name))
+		if (child->name)
 		{
-			debug_print("dentry already added %s\n", child->name);
-			return;
+			if (GetExistingChild(parent, child->name))
+			{
+				debug_print("dentry already added %s\n", child->name);
+				return;
+			}
+		}
+
+		if (!child->inode)
+		{
+			debug_print("Missing inode\n");
 		}
 
 		child->parent = parent;
@@ -120,7 +128,8 @@ namespace VFS
 
 		Path path = Path(mount_point);
 		DENTRY *dentry = AllocDentry(0, path.Filename());
-		fs->Mount(driver, dentry);
+		fs->root_dentry = dentry;
+		fs->Mount(driver);
 
 		if (!dentry->inode)
 			return -1;
@@ -388,11 +397,8 @@ namespace VFS
 
 		DENTRY *dentry;
 
-		if ((ret = sockfs->Create(dentry, domain, type, protocol)))
+		if ((ret = sockfs->Create(domain, type, protocol, dentry)))
 			return ret;
-
-		DENTRY *parent = AllocDentry(root_dentry, 0);
-		AddDentry(parent, dentry);
 
 		FILE *file = new FILE(dentry);
 		int fd = filetable.Add(file);
@@ -403,7 +409,32 @@ namespace VFS
 		return fd;
 	}
 
-	int SocketBind(Filetable &filetable, int fd, const struct sockaddr *addr, socklen_t addrlen)
+	int SocketAccept(Filetable &filetable, int fd, sockaddr *addr, socklen_t addrlen, int flags)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		DENTRY *dentry;
+		int ret = 0;
+
+		if ((ret = sockfs->Accept(file, addr, addrlen, flags, dentry)))
+			return -1;
+
+		FILE *client_file = new FILE(dentry);
+		int client_fd = filetable.Add(client_file);
+
+		if (client_fd < 0)
+		{
+			delete client_file;
+			return client_fd;
+		}
+
+		return client_fd;
+	}
+
+	int SocketBind(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen)
 	{
 		FILE *file = filetable.Get(fd);
 
@@ -411,6 +442,26 @@ namespace VFS
 			return -1;
 
 		return sockfs->Bind(file, addr, addrlen);
+	}
+
+	int SocketConnect(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Connect(file, addr, addrlen);
+	}
+
+	int SocketListen(Filetable &filetable, int fd, int backlog)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Listen(file, backlog);
 	}
 
 	int SocketRecv(Filetable &filetable, int fd, void *buf, size_t len, int flags)
@@ -423,7 +474,17 @@ namespace VFS
 		return sockfs->Recv(file, buf, len, flags);
 	}
 
-	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+	int SocketSend(Filetable &filetable, int fd, const void *buf, size_t len, int flags)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Send(file, buf, len, flags);
+	}
+
+	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen)
 	{
 		FILE *file = filetable.Get(fd);
 

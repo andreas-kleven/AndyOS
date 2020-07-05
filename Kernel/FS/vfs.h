@@ -35,6 +35,7 @@ namespace VFS
 {
 	INODE *AllocInode(DENTRY *dentry);
 	DENTRY *AllocDentry(DENTRY *parent, const char *name);
+	DENTRY *GetDentry(Path path);
 	void AddDentry(DENTRY *parent, DENTRY *child);
 	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point);
 
@@ -50,9 +51,13 @@ namespace VFS
 	int CreatePipes(Filetable &filetable, int pipefd[2], int flags);
 
 	int CreateSocket(Filetable &filetable, int domain, int type, int protocol);
-	int SocketBind(Filetable &filetable, int fd, const struct sockaddr *addr, socklen_t addrlen);
+	int SocketAccept(Filetable &filetable, int fd, sockaddr *addr, socklen_t addrlen, int flags);
+	int SocketBind(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen);
+	int SocketConnect(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen);
+	int SocketListen(Filetable &filetable, int fd, int backlog);
 	int SocketRecv(Filetable &filetable, int fd, void *buf, size_t len, int flags);
-	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
+	int SocketSend(Filetable &filetable, int fd, const void *buf, size_t len, int flags);
+	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen);
 	int SocketShutdown(Filetable &filetable, int fd, int how);
 
 	uint32 ReadFile(const char *filename, char *&buffer);

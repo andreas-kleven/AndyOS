@@ -4,6 +4,7 @@
 
 #define AF_UNSPEC 0
 #define AF_LOCAL 1
+#define AF_UNIX AF_LOCAL
 #define AF_INET 2
 #define AF_PACKET 3
 
@@ -38,6 +39,12 @@ struct sockaddr_in
 	unsigned short sin_port;
 	struct in_addr sin_addr;
 	char sin_zero[8];
+} __attribute__((packed));
+
+struct sockaddr_un
+{
+	unsigned short sun_family;
+	char sun_path[108];
 } __attribute__((packed));
 
 struct iovec
