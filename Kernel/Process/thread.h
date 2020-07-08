@@ -13,6 +13,7 @@ enum THREAD_STATE
 };
 
 struct PROCESS;
+class Event;
 
 struct THREAD
 {
@@ -21,11 +22,13 @@ struct THREAD
 	size_t stack;
 	size_t kernel_esp;
 	THREAD_STATE state;
-	THREAD* prev;
-	THREAD* next;
-	THREAD* proc_next;
-	PROCESS* process;
-	void* fpu_state;
+	THREAD *prev;
+	THREAD *next;
+	THREAD *proc_next;
+	PROCESS *process;
+	void *fpu_state;
 	uint64 sleep_until;
 	ADDRESS_SPACE addr_space;
+	Event *event;
+	uint64 event_until;
 };

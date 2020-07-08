@@ -1,4 +1,5 @@
 #include "sync.h"
+#include "Kernel/timer.h"
 #include "Process/scheduler.h"
 
 Event::Event(bool set, bool auto_reset)
@@ -7,7 +8,7 @@ Event::Event(bool set, bool auto_reset)
     this->auto_reset = auto_reset;
 }
 
-void Event::Wait()
+bool Event::Wait(int timeout)
 {
     Scheduler::Disable();
 
@@ -15,9 +16,23 @@ void Event::Wait()
     {
         THREAD *thread = Scheduler::CurrentThread();
         waiting.Enqueue(thread);
+
+        thread->event = this;
+
+        if (timeout > 0)
+            thread->event_until = Timer::Ticks() + timeout * 1000;
+        else
+            thread->event_until = 0;
+
         Scheduler::BlockThread(thread, false);
         Scheduler::Enable();
         Scheduler::Switch();
+
+        if (thread->event)
+        {
+            thread->event = 0;
+            return false; // timed out
+        }
     }
     else
     {
@@ -26,6 +41,8 @@ void Event::Wait()
 
         Scheduler::Enable();
     }
+
+    return true;
 }
 
 void Event::Set()
@@ -38,6 +55,8 @@ void Event::Set()
     while (waiting.Count() > 0)
     {
         THREAD *thread = waiting.Dequeue();
+        thread->event = 0;
+        thread->event_until = 0;
         Scheduler::WakeThread(thread);
     }
 

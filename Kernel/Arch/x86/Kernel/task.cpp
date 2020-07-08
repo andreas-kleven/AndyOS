@@ -24,6 +24,7 @@ namespace Task::Arch
 		thread->proc_next = 0;
 		thread->sleep_until = 0;
 		thread->addr_space.ptr = 0;
+		thread->event = 0;
 
 		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;

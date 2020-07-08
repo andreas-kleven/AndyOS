@@ -199,11 +199,30 @@ namespace Scheduler
 				sys_halt();
 			}
 
-			//Waiting
+			// sleeping threads
 			if (current_thread->sleep_until)
 			{
 				if (Timer::Ticks() >= current_thread->sleep_until)
 					current_thread->sleep_until = 0;
+			}
+
+			// events
+			if (current_thread->event && current_thread->event_until)
+			{
+				if (Timer::Ticks() >= current_thread->event_until)
+				{
+					current_thread->event_until = 0;
+
+					if (current_thread->state == THREAD_STATE_BLOCKING)
+						current_thread->state = THREAD_STATE_READY;
+					else
+					{
+						debug_print("Event error\n");
+						// TODO
+						//if (current_thread->state == THREAD_STATE_TERMINATED)
+						//	current_thread->event->Reset();
+					}
+				}
 			}
 
 			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))

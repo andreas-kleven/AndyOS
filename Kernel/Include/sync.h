@@ -26,7 +26,7 @@ private:
 public:
     Event(bool set = false, bool auto_reset = false);
 
-    void Wait();
+    bool Wait(int timeout = 0);
     void Set();
     void Clear();
 };
