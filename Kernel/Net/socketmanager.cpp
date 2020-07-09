@@ -71,7 +71,7 @@ namespace SocketManager
                 sockaddr_in *inet_addr = (sockaddr_in *)addr;
                 sockaddr_in *sock_addr = (sockaddr_in *)socket->addr;
 
-                if (sock_addr->sin_port == inet_addr->sin_port)
+                if ((sock_addr && sock_addr->sin_port == inet_addr->sin_port) || (!sock_addr && htons(socket->src_port) == inet_addr->sin_port))
                 {
                     mutex.Release();
                     return socket;
@@ -81,7 +81,7 @@ namespace SocketManager
 
         mutex.Release();
         return 0;
-    }
+    } // namespace SocketManager
 
     Socket *GetUdpSocket(unsigned short port)
     {

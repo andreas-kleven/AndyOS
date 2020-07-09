@@ -186,6 +186,11 @@ namespace Syscalls
 		return VFS::SocketRecv(CurrentFiletable(), fd, buf, len, flags);
 	}
 
+	int recvfrom(int fd, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
+	{
+		return VFS::SocketRecvfrom(CurrentFiletable(), fd, buf, len, flags, src_addr, addrlen);
+	}
+
 	int send(int fd, const void *buf, size_t len, int flags)
 	{
 		return VFS::SocketSend(CurrentFiletable(), fd, buf, len, flags);
@@ -433,6 +438,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_CONNECT, (SYSCALL_HANDLER)connect);
 		InstallSyscall(SYSCALL_LISTEN, (SYSCALL_HANDLER)listen);
 		InstallSyscall(SYSCALL_RECV, (SYSCALL_HANDLER)recv);
+		InstallSyscall(SYSCALL_RECVFROM, (SYSCALL_HANDLER)recvfrom);
 		InstallSyscall(SYSCALL_SEND, (SYSCALL_HANDLER)send);
 		InstallSyscall(SYSCALL_SENDTO, (SYSCALL_HANDLER)sendto);
 		InstallSyscall(SYSCALL_SHUTDOWN, (SYSCALL_HANDLER)shutdown);

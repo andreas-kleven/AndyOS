@@ -109,7 +109,7 @@ int Socket::Connect(const sockaddr *addr, socklen_t addrlen)
 
         return Unix::Connect(this, server);
     }
-    else if (protocol = IPPROTO_TCP)
+    else if (protocol == IPPROTO_TCP)
     {
         sockaddr_in *inet_addr = (sockaddr_in *)addr;
         return TCP::SessionConnect(this, inet_addr);
@@ -131,7 +131,7 @@ int Socket::Listen(int backlog)
     {
         return Unix::Listen(this);
     }
-    else if (protocol = IPPROTO_TCP)
+    else if (protocol == IPPROTO_TCP)
     {
         return TCP::SessionListen(this, backlog);
     }
@@ -163,7 +163,8 @@ int Socket::Recv(void *buf, size_t len, int flags)
 
 int Socket::Recvfrom(void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
 {
-    return 0;
+    // TODO
+    return Recv(buf, len, flags);
 }
 
 int Socket::Recvmsg(msghdr *msg, int flags)
@@ -196,7 +197,7 @@ int Socket::Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_
     {
         sockaddr_in *inet_addr = (sockaddr_in *)dest_addr;
         NetPacket *pkt = UDP::CreatePacket(inet_addr, src_port, buf, len);
-        UDP::Send(pkt);
+        return UDP::Send(pkt);
     }
     else
     {

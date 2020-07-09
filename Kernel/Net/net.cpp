@@ -1,7 +1,7 @@
 #include "net.h"
 #include "eth.h"
 #include "arp.h"
-#include "dns.h"
+#include "udp.h"
 #include "Lib/debug.h"
 
 uint16 htons(uint16 val)
@@ -38,7 +38,6 @@ namespace Net
 	STATUS Init()
 	{
 		ARP::Init();
-		DNS::Init();
 		UDP::Init();
 
 		memset(&BroadcastMAC, 0xFF, 6);

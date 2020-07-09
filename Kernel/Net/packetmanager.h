@@ -7,8 +7,7 @@ namespace PacketManager
 {
     int Send(NetPacket *pkt);
     void SetInterface(NetInterface *intf);
-    NetInterface *GetInterface(const sockaddr *addr);
-    NetInterface *GetInterface(const sockaddr_in *addr);
+    NetInterface *GetInterface(uint32 ip);
     void NotifyReceived();
     void Start();
 } // namespace PacketManager

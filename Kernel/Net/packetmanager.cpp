@@ -17,7 +17,7 @@ namespace PacketManager
         send_mutex.Aquire();
         interface->Send(pkt);
         send_mutex.Release();
-        return 0;
+        return pkt->length;
     }
 
     void SetInterface(NetInterface *intf)
@@ -25,12 +25,7 @@ namespace PacketManager
         interface = intf;
     }
 
-    NetInterface *GetInterface(const sockaddr *addr)
-    {
-        return interface;
-    }
-
-    NetInterface *GetInterface(const sockaddr_in *addr)
+    NetInterface *GetInterface(uint32 ip)
     {
         return interface;
     }

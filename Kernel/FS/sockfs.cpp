@@ -146,6 +146,16 @@ int SockFS::Recv(FILE *file, void *buf, size_t len, int flags)
     return socket->Recv(buf, len, flags);
 }
 
+int SockFS::Recvfrom(FILE *file, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
+{
+    Socket *socket = GetSocket(file);
+
+    if (!socket)
+        return -1;
+
+    return socket->Recvfrom(buf, len, flags, src_addr, addrlen);
+}
+
 int SockFS::Send(FILE *file, const void *buf, size_t len, int flags)
 {
     Socket *socket = GetSocket(file);

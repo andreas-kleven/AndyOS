@@ -474,6 +474,16 @@ namespace VFS
 		return sockfs->Recv(file, buf, len, flags);
 	}
 
+	int SocketRecvfrom(Filetable &filetable, int fd, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		return sockfs->Recvfrom(file, buf, len, flags, src_addr, addrlen);
+	}
+
 	int SocketSend(Filetable &filetable, int fd, const void *buf, size_t len, int flags)
 	{
 		FILE *file = filetable.Get(fd);

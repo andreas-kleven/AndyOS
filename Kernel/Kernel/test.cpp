@@ -11,8 +11,6 @@
 #include "Net/socketmanager.h"
 #include "Net/tcpsession.h"
 #include "Net/udp.h"
-#include "Net/dns.h"
-#include "Net/dhcp.h"
 #include "Net/packetmanager.h"
 #include "Process/scheduler.h"
 #include "Drivers/serial.h"
@@ -102,10 +100,10 @@ namespace Test
 		PROCESS *proc3 = ProcessManager::Exec("1info");
 		Scheduler::Enable();
 
-		Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
+		/*Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
 		Scheduler::Disable();
 		PROCESS *proc4 = ProcessManager::Exec("1info");
-		Scheduler::Enable();
+		Scheduler::Enable();*/
 
 		//ProcessManager::Exec("1test");
 		//ProcessManager::Exec("1mndlbrt");
