@@ -19,7 +19,9 @@ namespace Unix
         server->connect_mutex.Aquire();
         server->accept_event.Wait();
 
-        Socket *socket = SocketManager::CreateSocket(server->domain, server->type, server->protocol);
+        Socket *socket = SocketManager::CreateSocket();
+        socket->Init(server->domain, server->type, server->protocol);
+        
         socket->unix_socket = client;
         client->unix_socket = socket;
         server->tmp_client = socket;
@@ -35,6 +37,7 @@ namespace Unix
         server->accept_event = Event(false, true);
         server->connect_event = Event(false, true);
         server->listening = true;
+        return 0;
     }
 
     int Send(Socket *socket, const void *buf, size_t len, int flags)
@@ -43,6 +46,7 @@ namespace Unix
             return -1;
 
         socket->unix_socket->HandleData(buf, len);
+        return len;
     }
 
 } // namespace Unix

@@ -6,6 +6,8 @@
 #define SOCKET_BUFFER_SIZE 16384
 #define SOCKET_ADDR_SIZE 256
 
+class TcpSession;
+
 class Socket
 {
 public:
@@ -14,7 +16,7 @@ public:
     int type;
     int protocol;
     int options;
-    int src_port;
+    uint16 src_port;
     sockaddr *addr;
     CircularDataBuffer buffer;
     Mutex buffer_mutex;
@@ -24,12 +26,15 @@ public:
     Mutex connect_mutex;
     Socket *tmp_client;
     Socket *unix_socket;
-    bool listening;
+    TcpSession *tcp_session;
+    bool listening = false;
+    bool closed = false;
 
     Socket();
-    Socket(int id, int domain, int type, int protocol);
+    Socket(int id);
     ~Socket();
 
+    int Init(int domain, int type, int protocol);
     int Accept(sockaddr *addr, socklen_t addrlen, int flags);
     int Bind(const sockaddr *addr, socklen_t addrlen);
     int Connect(const sockaddr *addr, socklen_t addrlen);
@@ -43,4 +48,5 @@ public:
     int Shutdown(int how);
 
     void HandleData(const void *data, int length);
+    void HandleClose();
 };

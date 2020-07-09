@@ -49,7 +49,16 @@ int SockFS::GetChildren(DENTRY *parent, const char *find_name)
 
 int SockFS::Create(int domain, int type, int protocol, DENTRY *&dentry)
 {
-    Socket *socket = SocketManager::CreateSocket(domain, type, protocol);
+    Socket *socket = SocketManager::CreateSocket();
+
+    int ret = 0;
+
+    if ((ret = socket->Init(domain, type, protocol)))
+    {
+        //TODO: SocketManager::RemoveSocket(socket);
+        return ret;
+    }
+
     dentry = CreateSocketDentry(socket->id);
     return 0;
 }

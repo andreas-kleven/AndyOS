@@ -1,6 +1,7 @@
 #include "test.h"
 #include "panic.h"
 #include "stdio.h"
+#include "math.h"
 #include "PCI/pci.h"
 #include "Drivers/ata.h"
 #include "Drivers/ac97.h"
@@ -8,7 +9,7 @@
 #include "Net/arp.h"
 #include "Net/net.h"
 #include "Net/socketmanager.h"
-#include "Net/tcpsocket.h"
+#include "Net/tcpsession.h"
 #include "Net/udp.h"
 #include "Net/dns.h"
 #include "Net/dhcp.h"
@@ -16,6 +17,7 @@
 #include "Process/scheduler.h"
 #include "Drivers/serial.h"
 #include "Drivers/keyboard.h"
+#include "Drivers/rtc.h"
 #include "FS/vfs.h"
 #include "FS/devfs.h"
 #include "FS/pipefs.h"
@@ -95,9 +97,14 @@ namespace Test
 		Scheduler::InsertThread(dispatcher_thread);
 
 		Scheduler::Disable();
-		PROCESS *proc1 = ProcessManager::Exec("1winman");
-		PROCESS *proc2 = ProcessManager::Exec("1term");
-		//PROCESS *proc3 = ProcessManager::Exec("1info");
+		//PROCESS *proc1 = ProcessManager::Exec("1winman");
+		//PROCESS *proc2 = ProcessManager::Exec("1term");
+		PROCESS *proc3 = ProcessManager::Exec("1info");
+		Scheduler::Enable();
+
+		Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
+		Scheduler::Disable();
+		PROCESS *proc4 = ProcessManager::Exec("1info");
 		Scheduler::Enable();
 
 		//ProcessManager::Exec("1test");
@@ -175,20 +182,62 @@ namespace Test
 
 	void _Net()
 	{
+		char buf[1024];
+
 		sockaddr_in servaddr;
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_addr.s_addr = INADDR_ANY;
-		servaddr.sin_port = htons(8080);
+		servaddr.sin_port = htons(10001);
 
 		sockaddr_in clientaddr;
 		clientaddr.sin_family = AF_INET;
 		clientaddr.sin_addr.s_addr = htonl(0xC0A8007B); // 192.168.0.123
-		clientaddr.sin_port = htons(8080);
+		clientaddr.sin_port = htons(10001);
 
-		Socket *socket = SocketManager::CreateSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		//TcpSession *session = TCP::CreateSession();
+		Socket *server = SocketManager::CreateSocket();
+		server->Init(AF_INET, SOCK_STREAM, 0);
+
+		srand(Timer::Ticks() + RTC::Minute() * 1000 + RTC::Second());
+
+		//while (true)
+		{
+			//session->Connect(clientaddr, rand());
+			//Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
+		}
+
+		server->Bind((sockaddr *)&servaddr, sizeof(sockaddr_in));
+		server->Listen(10);
+		debug_print("%p %p %d\n", server, server->tcp_session->socket, server->listening);
+
+		while (true)
+		{
+			int id = server->Accept((sockaddr *)&servaddr, sizeof(sockaddr_in), 0);
+			Socket *client = SocketManager::GetSocket(id);
+			debug_print("Client: %p\n", client);
+
+			if (client)
+			{
+				sprintf(buf, "Hello tcp %d\n", (int)Timer::Ticks() / 1000);
+				client->Send(buf, strlen(buf), 0);
+
+				char recvbuf[1024];
+				int recv = client->Recv(recvbuf, sizeof(recvbuf), 0);
+				debug_dump(recvbuf, recv, true);
+
+				client->Shutdown(0);
+			}
+		}
+
+		//Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
+		//session->Close();
+
+		//session->Listen(10001);
+		return;
+
+		/*Socket *socket = SocketManager::CreateSocket();
+		socket->init(AF_INET, SOCK_DGRAM, 0);
 		socket->Bind((sockaddr *)&servaddr, sizeof(servaddr));
-
-		char buf[1024];
 
 		while (true)
 		{
@@ -199,11 +248,10 @@ namespace Test
 			//continue;
 
 			sprintf(buf, "Hello %d\n", (int)Timer::Ticks() / 1000);
-			len = strlen(buf);
-			socket->Sendto(buf, len, 0, (sockaddr *)&clientaddr, sizeof(clientaddr));
+			socket->Sendto(buf, strlen(buf), 0, (sockaddr *)&clientaddr, sizeof(clientaddr));
 
 			Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
-		}
+		}*/
 	}
 
 	void _Memory()
@@ -292,34 +340,19 @@ namespace Test
 		SockFS *sockfs = new SockFS();
 
 		if (VFS::Mount(driver1, fs1, "/"))
-		{
 			debug_print("Mount 1 failed\n");
-			return;
-		}
 
 		if (VFS::Mount(driver2, fs2, "/mnt"))
-		{
 			debug_print("Mount 2 failed\n");
-			return;
-		}
 
 		if (VFS::Mount(0, devfs, "/dev"))
-		{
 			debug_print("Mount devfs failed\n");
-			return;
-		}
 
 		if (VFS::Mount(0, pipefs, "/pipe"))
-		{
 			debug_print("Mount pipefs failed\n");
-			return;
-		}
 
 		if (VFS::Mount(0, sockfs, "/sock"))
-		{
 			debug_print("Mount sockfs failed\n");
-			return;
-		}
 	}
 
 	void Start()

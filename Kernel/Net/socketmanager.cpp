@@ -11,11 +11,11 @@ namespace SocketManager
     int next_port = 32768;
     int next_id = 1;
 
-    Socket *CreateSocket(int domain, int type, int protocol)
+    Socket *CreateSocket()
     {
         mutex.Aquire();
         int id = next_id++;
-        sockets.Add(Socket(id, domain, type, protocol));
+        sockets.Add(Socket(id));
         Socket *socket = &sockets.Last();
         mutex.Release();
         return socket;
@@ -52,6 +52,7 @@ namespace SocketManager
         }
 
         mutex.Release();
+        return 0;
     }
 
     Socket *GetSocket(int domain, int type, int protocol, sockaddr *addr)

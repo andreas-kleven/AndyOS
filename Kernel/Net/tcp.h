@@ -3,13 +3,16 @@
 #include "ipv4.h"
 #include "tcpsession.h"
 
-#define MAX_SESSIONS 32
-
 namespace TCP
 {
-	TcpSession* CreateSession();
-	NetPacket* CreatePacket(NetInterface* intf, uint32 dst, uint16 src_port, uint16 dst_port, uint8 flags, uint32 seq, uint32 ack, uint8* data, uint32 data_length);
+	int CreateSession(Socket *socket);
+	Socket *SessionAccept(Socket *socket, const sockaddr_in *addr, int flags);
+	int SessionClose(Socket *socket, int how);
+	int SessionListen(Socket *socket, int backlog);
+	int SessionConnect(Socket *socket, const sockaddr_in *addr);
+	int SessionSend(Socket *socket, const void *buf, size_t len, int flags);
 
-	void Send(NetInterface* intf, NetPacket* pkt);
-	void HandlePacket(NetInterface* intf, IPv4_Header* ip_hdr, NetPacket* pkt);
-};
+	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, uint8 flags, uint32 seq, uint32 ack, const void *data, uint32 data_length);
+	void Send(NetPacket *pkt);
+	void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt);
+}; // namespace TCP

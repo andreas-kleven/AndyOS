@@ -29,6 +29,8 @@ namespace IPv4
 		ih->checksum = ntohs(header->checksum);
 		ih->src = header->src;
 		ih->dst = header->dst;
+
+		pkt->end = pkt->start + ih->length;
 		return 1;
 	}
 
@@ -109,7 +111,7 @@ namespace IPv4
 			UDP::HandlePacket(&header, pkt);
 			break;
 		case IP_PROTOCOL_TCP:
-			//TCP::HandlePacket(intf, &header, pkt);
+			TCP::HandlePacket(&header, pkt);
 			break;
 		}
 	}

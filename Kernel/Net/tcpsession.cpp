@@ -1,210 +1,376 @@
 #include "tcpsession.h"
 #include "tcp.h"
+#include "socketmanager.h"
 #include "math.h"
-#include "hal.h"
-#include "Kernel/timer.h"
-#include "Lib/debug.h"
+#include "errno.h"
+#include "debug.h"
 
 TcpSession::TcpSession()
 {
-	dst_ip = 0;
-	dst_port = 0;
-	src_port = 0;
-
-	state = TCP_CLOSED;
+	ack_event = Event(false, true);
+	fin_event = Event(false, true);
+	Reset();
 }
 
-void TcpSession::Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp)
+int TcpSession::Connect(const sockaddr_in *addr)
 {
-	TCP_Header* header = tcp->header;
+	mutex.Aquire();
+	debug_print("Connecting...\n");
 
-	flags = tcp->header->flags;
-	next_seq = header->ack;
-	next_ack = header->seq + 1;
+	if (state != TCP_CLOSED)
+	{
+		mutex.Release();
+		return -1;
+	}
 
-	//if (header->flags & PSH)
-	//{
-	//	debug_print("-DATA-");
-	//	debug_print("%i");
-	//	return;
-	//}
+	socket->addr = (sockaddr *)(new sockaddr_in(*addr));
 
-	debug_print("Flags: %X\tACK: %ui\tSEQ: %ui\n", header->flags, header->ack, header->seq);
+	state = TCP_SYN_SENT;
+
+	if (!SendWait(TCP_SYN))
+	{
+		mutex.Release();
+		return -ETIMEDOUT;
+	}
+
+	if (state != TCP_ESTABLISHED)
+	{
+		Reset();
+		mutex.Release();
+		return -ECONNREFUSED;
+	}
+
+	debug_print("Connected\n");
+	mutex.Release();
+	return 0;
+}
+
+int TcpSession::Close(int how)
+{
+	mutex.Aquire();
+
+	debug_print("Closing...\n");
+
+	if (state == TCP_CLOSED)
+		return -1;
+	// else if (state == ...)
+
+	if (state == TCP_CLOSE_WAIT)
+	{
+		state = TCP_LAST_ACK;
+		SendWait(TCP_FIN | TCP_ACK);
+		debug_print("Closed\n");
+		Reset();
+		socket->HandleClose();
+	}
+	else
+	{
+		state = TCP_FIN_WAIT_1;
+
+		if (!SendWait(TCP_FIN | TCP_ACK))
+		{
+			mutex.Release();
+			return 0;
+		}
+
+		if (state == TCP_FIN_WAIT_2)
+			fin_event.Wait(TCP_TIMEOUT);
+
+		if (state == TCP_TIME_WAIT)
+		{
+			// TODO: delay
+			debug_print("Wait closed\n");
+			Reset();
+			socket->HandleClose();
+			mutex.Release();
+		}
+		else
+		{
+			debug_print("Closed with state: %d\n", state);
+			Reset();
+			socket->HandleClose();
+			mutex.Release();
+		}
+	}
+
+	return 0;
+}
+
+Socket *TcpSession::Accept(const sockaddr_in *addr, int flags)
+{
+	while (state == TCP_LISTEN)
+	{
+		session_event.Wait();
+		sessions_mutex.Aquire();
+
+		if (new_sockets.Count() > 0)
+		{
+			Socket *new_socket = new_sockets.Dequeue();
+
+			if (new_sockets.Count() == 0)
+				session_event.Clear();
+
+			sessions_mutex.Release();
+
+			if (new_socket->tcp_session->SendWait(TCP_SYN | TCP_ACK))
+				return new_socket;
+		}
+		else
+		{
+			sessions_mutex.Release();
+		}
+	}
+
+	return 0;
+}
+
+int TcpSession::Listen(int backlog)
+{
+	mutex.Aquire();
+
+	if (state != TCP_CLOSED)
+	{
+		mutex.Release();
+		return -1;
+	}
+
+	this->backlog = backlog;
+	state = TCP_LISTEN;
+	socket->listening = true;
+	mutex.Release();
+	return 0;
+}
+
+int TcpSession::SendData(const void *buf, size_t len, int flags)
+{
+	mutex.Aquire();
+
+	if (state != TCP_ESTABLISHED)
+	{
+		mutex.Release();
+		return -1;
+	}
+
+	if (SendWait(TCP_PSH | TCP_ACK, buf, len))
+	{
+		seq += len;
+	}
+
+	mutex.Release();
+	return 0;
+}
+
+bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
+{
+	TCP_Header *header = tcp->header;
+	uint8 flags = tcp->header->flags;
+	bool has_data = tcp->data_length > 0;
+
+	if ((state == TCP_CLOSED || state == TCP_LISTEN) && flags != TCP_SYN)
+		return false;
 
 	switch (state)
 	{
+	case TCP_CLOSED:
+		if (flags == TCP_SYN)
+		{
+			if (state == TCP_CLOSED)
+			{
+				seq = rand();
+				ack = header->seq + 1;
+				state = TCP_SYN_RECEIVED;
+			}
+		}
+		break;
+
 	case TCP_LISTEN:
+		if (flags == TCP_SYN)
+		{
+			seq = rand();
+			ack = header->seq + 1;
+
+			debug_print("New session\n");
+
+			sessions_mutex.Aquire();
+
+			if (new_sockets.Count() >= backlog)
+			{
+				sessions_mutex.Release();
+				return false;
+			}
+
+			sockaddr_in *addr = new sockaddr_in;
+			addr->sin_family = AF_INET;
+			addr->sin_port = htons(tcp->header->src_port);
+			addr->sin_family = AF_INET;
+			addr->sin_addr.s_addr = ip_hdr->src;
+
+			Socket *new_socket = SocketManager::CreateSocket();
+			new_socket->Init(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+			new_socket->addr = (sockaddr *)addr;
+			new_socket->src_port = tcp->header->dst_port;
+			new_socket->tcp_session->HandlePacket(ip_hdr, tcp);
+			new_sockets.Enqueue(new_socket);
+
+			sessions_mutex.Release();
+			session_event.Set();
+		}
 		break;
 
 	case TCP_SYN_RECEIVED:
+		if (flags & TCP_ACK)
+		{
+			seq += 1;
+
+			state = TCP_ESTABLISHED;
+			ack_event.Set();
+			debug_print("Connected\n");
+		}
 		break;
 
 	case TCP_SYN_SENT:
-		if (flags & SYN && flags & ACK)
+		if (flags & TCP_RST)
 		{
-			debug_print("Connected\n");
+			Send(TCP_ACK);
+			Reset();
+			ack_event.Set();
+		}
 
-			Send(ACK);
+		if (flags & TCP_SYN && flags & TCP_ACK)
+		{
+			Send(TCP_ACK);
 			state = TCP_ESTABLISHED;
+			ack_event.Set();
 		}
 		break;
 
 	case TCP_ESTABLISHED:
-		if (flags & FIN)
+		if (flags & TCP_FIN)
 		{
-			//if (Send(ACK))
-			//{
-			//	state = TCP_CLOSE_WAIT;
-			//	//Close application
-			//
-			//	if (Send(FIN))
-			//	{
-			//		//debug_print("FIN\n");
-			//		debug_print("LAST ACK\n");
-			//		state = TCP_LAST_ACK;
-			//	}
-			//}
-			Send(ACK | FIN);
-			state = TCP_LAST_ACK;
-		}
+			state = TCP_CLOSE_WAIT;
+			Send(TCP_ACK);
 
-		if (flags & PSH && flags & ACK)
-		{
-			ReceivedData(ip_hdr, tcp);
-		}
-		break;
-
-	case TCP_LAST_ACK:
-		if (flags & ACK)
-		{
-			debug_print("Closed\n");
 			Reset();
+			socket->HandleClose();
 		}
+		else if (has_data)
+		{
+			if (header->seq == ack)
+			{
+				ack += tcp->data_length;
+				socket->HandleData(tcp->data, tcp->data_length);
+			}
+			else
+			{
+				debug_print("Missing packet\n");
+			}
+
+			Send(TCP_ACK);
+		}
+
+		if (flags & TCP_ACK)
+			ack_event.Set();
 		break;
 
 	case TCP_FIN_WAIT_1:
-		if (flags & ACK)
+		seq += 1;
+
+		if (flags == TCP_FIN)
 		{
-			if (flags & FIN)
+			state = TCP_CLOSING;
+		}
+		else if (flags & TCP_ACK)
+		{
+			if (flags & TCP_FIN)
 				state = TCP_TIME_WAIT;
 			else
 				state = TCP_FIN_WAIT_2;
+
+			Send(TCP_ACK);
+			ack_event.Set();
 		}
 		break;
 
 	case TCP_FIN_WAIT_2:
-		if (flags & FIN)
+		if (flags & TCP_FIN)
+		{
+			Send(TCP_ACK);
+			state = TCP_TIME_WAIT;
+			fin_event.Set();
+		}
+		break;
+
+	case TCP_LAST_ACK:
+		if (flags & TCP_ACK)
+		{
+			// TODO
+			seq += 1;
+			state = TCP_TIME_WAIT;
+			Send(TCP_ACK); //
+			debug_print("Passive close\n");
+			Reset();
+			socket->HandleClose();
+		}
+		break;
+
+	case TCP_CLOSING:
+		if (flags & TCP_ACK)
 		{
 			state = TCP_TIME_WAIT;
+			ack_event.Set();
 		}
 		break;
 	}
+
+	return true;
 }
 
-void TcpSession::Connect(uint32 dst, uint16 port)
+bool TcpSession::SendWait(uint8 flags, int timeout)
 {
-	if (state != TCP_CLOSED)
-		return;
-
-	dst_ip = dst;
-	dst_port = port;
-	src_port = rand();
-
-	if (!Send(SYN))
-		return;
-
-	state = TCP_SYN_SENT;
-
-	size_t t_out = Timer::Ticks() + 1000000;
-	while (state == TCP_SYN_SENT && Timer::Ticks() < t_out)
-		pause();
-
-	if (state == TCP_SYN_SENT)
-	{
-		Close();
-		return;
-	}
+	return SendWait(flags, 0, 0, timeout);
 }
 
-void TcpSession::Listen(uint16 port)
+bool TcpSession::SendWait(uint8 flags, const void *buf, size_t len, int timeout)
 {
-	if (state != TCP_CLOSED)
-		return;
+	ack_event.Clear();
 
-	src_port = port;
-	dst_ip = INADDR_BROADCAST;
-	state = TCP_LISTEN;
+	if (!Send(flags, buf, len))
+		return false;
+
+	if (ack_event.Wait(timeout))
+		return true;
+
+	debug_print("Timed out\n");
+	return false;
 }
 
-void TcpSession::Close()
+bool TcpSession::Send(uint8 flags)
 {
-	//Fix this for all states
-
-	Send(FIN);
-	state = TCP_FIN_WAIT_1;
-
-	size_t t_out = Timer::Ticks() + 1000000;
-	while (state == TCP_FIN_WAIT_1 && Timer::Ticks() < t_out)
-		pause();
-
-	if (state == TCP_FIN_WAIT_1)
-	{
-		//timeout
-		debug_print("Timeout closed\n");
-		Reset();
-		return;
-	}
-
-	t_out = Timer::Ticks() + 1000000;
-	while (state == TCP_FIN_WAIT_2 && Timer::Ticks() < t_out)
-		pause();
-
-	if (state == TCP_TIME_WAIT)
-	{
-		Send(ACK);
-	}
-
-	//delay here?
-	debug_print("Closed\n");
-	Reset();
+	return Send(flags, 0, 0);
 }
 
-bool TcpSession::SendData(uint8* data, uint32 data_length)
+bool TcpSession::Send(uint8 flags, const void *buf, size_t len)
 {
-	if (state != TCP_ESTABLISHED)
-		return 0;
-
-	bool sent = Send(PSH | ACK, data, data_length);
-	return sent;
-}
-
-void TcpSession::ReceivedData(IPv4_Header* ip_hdr, TCP_Packet* tcp)
-{
-	next_ack = tcp->header->seq + tcp->data_length;
-	Send(ACK);
-
-	debug_dump(tcp->data, tcp->data_length, 1);
-}
-
-bool TcpSession::Send(uint8 flags, uint8* data, uint32 data_length)
-{
-	NetPacket* pkt = TCP::CreatePacket(/*Net::intf*/0, dst_ip, src_port, dst_port, flags, next_seq, next_ack, data, data_length);
+	NetPacket *pkt = TCP::CreatePacket((sockaddr_in *)socket->addr, socket->src_port, flags, seq, ack, buf, len);
 
 	if (!pkt)
-		return 0;
+		return false;
 
-	//last_seq = seq;
-	//last_ack = ack;
-
-	//Net::intf->Send(pkt);
-	return 1;
+	TCP::Send(pkt);
+	return true;
 }
 
 void TcpSession::Reset()
 {
-	flags = 0;
-	next_seq = 0;
-	next_ack = 0;
-
+	seq = 0;
+	ack = 0;
 	state = TCP_CLOSED;
+
+	ack_event.Set();
+	fin_event.Set();
+	session_event.Set();
+
+	ack_event.Clear();
+	fin_event.Clear();
+	session_event.Clear();
 }

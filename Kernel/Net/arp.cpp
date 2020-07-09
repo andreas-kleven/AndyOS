@@ -121,12 +121,7 @@ namespace ARP
 				if (arp_cache[i].mac == Net::NullMAC)
 				{
 					Net::PrintIP("ARP added entry ", ip);
-					Net::PrintMac("MAC: ", mac);
-				}
-				else
-				{
-					Net::PrintIP("ARP replaced entry ", ip);
-					Net::PrintMac("MAC: ", mac);
+					//Net::PrintMac("MAC: ", mac);
 				}
 
 				arp_cache[i].mac = mac;

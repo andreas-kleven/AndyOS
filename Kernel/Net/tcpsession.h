@@ -1,38 +1,53 @@
 #pragma once
+#include "socket.h"
 #include "ipv4.h"
+#include "address.h"
 #include "tcptypes.h"
+#include "queue.h"
+#include "sync.h"
+
+#define TCP_TIMEOUT 3000
+#define TCP_WINDOW_SIZE 4096
 
 struct TcpLinkPacket
 {
-	TCP_Packet* pkt;
-	TcpLinkPacket* next;
-	TcpLinkPacket* prev;
+	TCP_Packet *pkt;
+	TcpLinkPacket *next;
+	TcpLinkPacket *prev;
 } __attribute__((packed));
 
 class TcpSession
 {
 public:
+	Socket *socket;
+	//sockaddr_in addr;
 	int state;
-
-	uint32 dst_ip;
-	uint16 dst_port;
-	uint16 src_port;
+	int backlog;
+	Mutex mutex;
+	Mutex sessions_mutex;
+	Event ack_event;
+	Event fin_event;
+	Event session_event;
+	Queue<Socket *> new_sockets;
 
 	TcpSession();
-	void Receive(IPv4_Header* ip_hdr, TCP_Packet* tcp);
 
-	void Connect(uint32 dst, uint16 port);
-	void Listen(uint16 port);
-	void Close();
-	
-	bool SendData(uint8* data, uint32 data_length);
-	void ReceivedData(IPv4_Header* ip_hdr, TCP_Packet* tcp);
+	int Connect(const sockaddr_in *addr);
+	int Close(int how);
+	Socket *Accept(const sockaddr_in *addr, int flags);
+	int Listen(int backlog);
+	int SendData(const void *buf, size_t len, int flags);
+
+	bool HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp);
 
 private:
-	uint8 flags;
-	int next_seq;
-	int next_ack;
+	uint32 seq;
+	uint32 ack;
 
-	bool Send(uint8 flags, uint8* data = 0, uint32 data_length = 0);
+	bool SendWait(uint8 flags, int timeout = TCP_TIMEOUT);
+	bool SendWait(uint8 flags, const void *buf, size_t len, int timeout = TCP_TIMEOUT);
+	bool Send(uint8 flags);
+	bool Send(uint8 flags, const void *buf, size_t len);
 	void Reset();
+	void CloseSocket();
 };

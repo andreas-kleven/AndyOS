@@ -3,7 +3,7 @@
 
 namespace SocketManager
 {
-    Socket *CreateSocket(int domain, int type, int protocol);
+    Socket *CreateSocket();
     int Shutdown(Socket *socket, int how);
     int AllocPort();
     Socket *GetSocket(int id);

@@ -2,6 +2,7 @@
 #include "socketmanager.h"
 #include "packetmanager.h"
 #include "udp.h"
+#include "tcp.h"
 #include "unix.h"
 #include "errno.h"
 #include "string.h"
@@ -11,10 +12,14 @@ Socket::Socket()
 {
 }
 
-Socket::Socket(int id, int domain, int type, int protocol)
+Socket::Socket(int id)
+{
+    this->id = id;
+}
+
+int Socket::Init(int domain, int type, int protocol)
 {
     this->buffer = CircularDataBuffer(SOCKET_BUFFER_SIZE);
-    this->id = id;
     this->domain = domain;
     this->type = type;
     this->addr = 0;
@@ -34,8 +39,13 @@ Socket::Socket(int id, int domain, int type, int protocol)
         this->protocol = protocol;
     }
 
-    if (protocol == IP_PROTOCOL_UDP || protocol == IP_PROTOCOL_TCP)
+    if (this->protocol == IP_PROTOCOL_UDP || this->protocol == IP_PROTOCOL_TCP)
         this->src_port = SocketManager::AllocPort();
+
+    if (this->protocol == IP_PROTOCOL_TCP)
+        TCP::CreateSession(this);
+
+    return 0;
 }
 
 Socket::~Socket()
@@ -55,12 +65,20 @@ int Socket::Accept(sockaddr *addr, socklen_t addrlen, int flags)
         if (socket)
             return socket->id;
     }
+    else if (protocol == IPPROTO_TCP)
+    {
+        sockaddr_in *inet_addr = (sockaddr_in *)addr;
+        Socket *socket = TCP::SessionAccept(this, inet_addr, flags);
+
+        if (socket)
+            return socket->id;
+    }
     else
     {
         return -EINVAL;
     }
 
-    return 0;
+    return -1;
 }
 
 int Socket::Bind(const sockaddr *addr, socklen_t addrlen)
@@ -91,6 +109,11 @@ int Socket::Connect(const sockaddr *addr, socklen_t addrlen)
 
         return Unix::Connect(this, server);
     }
+    else if (protocol = IPPROTO_TCP)
+    {
+        sockaddr_in *inet_addr = (sockaddr_in *)addr;
+        return TCP::SessionConnect(this, inet_addr);
+    }
     else
     {
         return -EINVAL;
@@ -108,6 +131,10 @@ int Socket::Listen(int backlog)
     {
         return Unix::Listen(this);
     }
+    else if (protocol = IPPROTO_TCP)
+    {
+        return TCP::SessionListen(this, backlog);
+    }
     else
     {
         return -1;
@@ -118,6 +145,12 @@ int Socket::Recv(void *buf, size_t len, int flags)
 {
     read_event.Wait();
     buffer_mutex.Aquire();
+
+    if (closed)
+    {
+        buffer_mutex.Release();
+        return -1;
+    }
 
     int ret = buffer.Read(len, buf);
 
@@ -144,6 +177,10 @@ int Socket::Send(const void *buf, size_t len, int flags)
     {
         return Unix::Send(this, buf, len, flags);
     }
+    else if (protocol == IPPROTO_TCP)
+    {
+        return TCP::SessionSend(this, buf, len, flags);
+    }
 
     return -1;
 }
@@ -158,7 +195,6 @@ int Socket::Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_
     if (protocol == IPPROTO_UDP)
     {
         sockaddr_in *inet_addr = (sockaddr_in *)dest_addr;
-        NetInterface *intf = PacketManager::GetInterface(inet_addr);
         NetPacket *pkt = UDP::CreatePacket(inet_addr, src_port, buf, len);
         UDP::Send(pkt);
     }
@@ -172,6 +208,11 @@ int Socket::Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_
 
 int Socket::Shutdown(int how)
 {
+    if (protocol == IPPROTO_TCP)
+    {
+        return TCP::SessionClose(this, how);
+    }
+
     return 0;
 }
 
@@ -188,5 +229,13 @@ void Socket::HandleData(const void *data, int length)
     if (!buffer.IsEmpty())
         read_event.Set();
 
+    buffer_mutex.Release();
+}
+
+void Socket::HandleClose()
+{
+    buffer_mutex.Aquire();
+    closed = true;
+    read_event.Set();
     buffer_mutex.Release();
 }
