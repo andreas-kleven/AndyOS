@@ -34,19 +34,18 @@ namespace IPv4
 		return 1;
 	}
 
-	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint8 protocol, uint32 size)
+	NetPacket *CreatePacket(uint32 dst, uint8 protocol, uint32 size)
 	{
-		uint32 dst_addr = dest_addr->sin_addr.s_addr;
-		NetInterface *intf = PacketManager::GetInterface(dest_addr);
+		NetInterface *intf = PacketManager::GetInterface(dst);
 		MacAddress mac;
 
-		if (dst_addr == INADDR_BROADCAST)
+		if (dst == INADDR_BROADCAST)
 		{
 			mac = Net::BroadcastMAC;
 		}
-		else if (!memcmp(&dst_addr, &intf->gateway_addr, 3))
+		else if (!memcmp(&dst, &intf->gateway_addr, 3))
 		{
-			mac = ARP::GetMac(intf, dst_addr);
+			mac = ARP::GetMac(intf, dst);
 		}
 		else
 		{
@@ -72,7 +71,7 @@ namespace IPv4
 		header->protocol = protocol;
 		header->checksum = 0;
 		header->src = intf->GetIP();
-		header->dst = dst_addr;
+		header->dst = dst;
 
 		header->checksum = Net::Checksum(header, sizeof(IPv4_Header));
 		pkt->end += sizeof(IPv4_Header);
@@ -105,7 +104,7 @@ namespace IPv4
 		switch (header.protocol)
 		{
 		case IP_PROTOCOL_ICMP:
-			//ICMP::HandlePacket(intf, &header, pkt);
+			ICMP::HandlePacket(&header, pkt);
 			break;
 		case IP_PROTOCOL_UDP:
 			UDP::HandlePacket(&header, pkt);

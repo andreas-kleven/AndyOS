@@ -1,7 +1,5 @@
 #include "net.h"
 #include "udp.h"
-#include "dhcp.h"
-#include "dns.h"
 #include "packetmanager.h"
 #include "socketmanager.h"
 #include "Lib/debug.h"
@@ -25,8 +23,9 @@ namespace UDP
 
 	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, const void *data, size_t len)
 	{
-		NetInterface *intf = PacketManager::GetInterface(dest_addr);
-		NetPacket *pkt = IPv4::CreatePacket(dest_addr, IP_PROTOCOL_UDP, sizeof(UDP_Header) + len);
+		uint32 dst = dest_addr->sin_addr.s_addr;
+		NetInterface *intf = PacketManager::GetInterface(dst);
+		NetPacket *pkt = IPv4::CreatePacket(dst, IP_PROTOCOL_UDP, sizeof(UDP_Header) + len);
 
 		if (!pkt)
 			return 0;
@@ -66,25 +65,10 @@ namespace UDP
 		if (!Decode(&udp, pkt))
 			return;
 
-		//debug_dump(udp.data, udp.data_length, 1);
 		pkt->start += udp.header->length;
 
 		uint16 src_port = udp.header->src_port;
 		uint16 dst_port = udp.header->dst_port;
-
-		switch (udp.header->src_port)
-		{
-		case PORT_DNS:
-			//DNS::HandlePacket(intf, ip_hdr, &udp, pkt);
-			return;
-
-		case PORT_DHCP_SRC:
-			//DHCP::HandlePacket(intf, ip_hdr, &udp, pkt);
-			return;
-
-		default:
-			break;
-		}
 
 		switch (dst_port)
 		{

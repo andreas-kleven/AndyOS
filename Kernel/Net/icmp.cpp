@@ -1,6 +1,7 @@
 #include "icmp.h"
 #include "net.h"
-#include "Lib/debug.h"
+#include "packetmanager.h"
+#include "debug.h"
 
 namespace ICMP
 {
@@ -28,9 +29,10 @@ namespace ICMP
 		}
 	}
 
-	void Send(NetInterface *intf, ICMP_Packet *icmp, uint32 ip, uint8 type)
+	void Send(ICMP_Packet *icmp, uint32 ip, uint8 type)
 	{
-		/*NetPacket *pkt = IPv4::CreatePacket(ip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
+		NetInterface *intf = PacketManager::GetInterface(ip);
+		NetPacket *pkt = IPv4::CreatePacket(ip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
 
 		if (!pkt)
 			return;
@@ -47,15 +49,15 @@ namespace ICMP
 		header->checksum = Net::Checksum(header, sizeof(ICMP_Header) + icmp->data_length);
 
 		pkt->end += sizeof(ICMP_Header) + icmp->data_length;
-		IPv4::Send(pkt);*/
+		IPv4::Send(pkt);
 	}
 
-	void SendReply(NetInterface *intf, ICMP_Packet *icmp, uint32 ip)
+	void SendReply(ICMP_Packet *icmp, uint32 ip)
 	{
-		Send(intf, icmp, ip, ICMP_ECHO_REPLY);
+		Send(icmp, ip, ICMP_ECHO_REPLY);
 	}
 
-	void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, NetPacket *pkt)
+	void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt)
 	{
 		ICMP_Packet icmp;
 		if (!Decode(&icmp, pkt))
@@ -65,7 +67,7 @@ namespace ICMP
 		{
 		case ICMP_ECHO_REQUEST:
 			Net::PrintIP("icmp: echo from ", ip_hdr->src);
-			SendReply(intf, &icmp, ip_hdr->src);
+			SendReply(&icmp, ip_hdr->src);
 			break;
 		}
 	}

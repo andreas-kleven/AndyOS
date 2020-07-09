@@ -30,7 +30,7 @@ struct IPv4_PSEUDO_HEADER
 
 namespace IPv4
 {
-	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint8 protocol, uint32 size);
+	NetPacket *CreatePacket(uint32 dst, uint8 protocol, uint32 size);
 	int Send(NetPacket *pkt);
 	void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt);
 } // namespace IPv4

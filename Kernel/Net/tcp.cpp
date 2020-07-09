@@ -128,8 +128,9 @@ namespace TCP
 
 	NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, uint8 flags, uint32 seq, uint32 ack, const void *data, uint32 data_length)
 	{
-		NetInterface *intf = PacketManager::GetInterface(dest_addr);
-		NetPacket *pkt = IPv4::CreatePacket(dest_addr, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
+		uint32 dst = dest_addr->sin_addr.s_addr;
+		NetInterface *intf = PacketManager::GetInterface(dst);
+		NetPacket *pkt = IPv4::CreatePacket(dst, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
 
 		if (!pkt)
 			return 0;
@@ -150,7 +151,7 @@ namespace TCP
 
 		IPv4_PSEUDO_HEADER pseudo;
 		pseudo.src = intf->GetIP();
-		pseudo.dst = dest_addr->sin_addr.s_addr;
+		pseudo.dst = dst;
 		pseudo.reserved = 0;
 		pseudo.protocol = IP_PROTOCOL_TCP;
 		pseudo.length = ntohs(sizeof(TCP_Header) + data_length);
