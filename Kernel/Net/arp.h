@@ -3,6 +3,7 @@
 
 #define ARP_HTYPE 1
 #define ARP_CACHE_SIZE 32
+#define ARP_TIMEOUT 3000
 
 struct ARP_Header
 {

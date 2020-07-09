@@ -99,11 +99,18 @@ namespace ARP
 
 		while (true)
 		{
-			lookup_event.Wait();
-			MacAddress mac = ARP::LookupMac(ip);
+			if (lookup_event.Wait(ARP_TIMEOUT))
+			{
+				MacAddress mac = ARP::LookupMac(ip);
 
-			if (mac != Net::NullMAC)
-				return mac;
+				if (mac != Net::NullMAC)
+					return mac;
+			}
+			else
+			{
+				debug_print("ARP timeout\n");
+				return Net::NullMAC;
+			}
 		}
 	}
 
