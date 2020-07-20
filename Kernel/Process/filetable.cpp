@@ -67,7 +67,12 @@ Filetable Filetable::Clone()
     Filetable clone;
 
     for (int i = 0; i < files.Count(); i++)
-        clone.Set(i, new FILE(*files[i]));
+    {
+        if (files[i])
+            clone.Set(i, new FILE(*files[i]));
+        else
+            clone.Set(i, 0);
+    }
 
     return clone;
 }

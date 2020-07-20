@@ -365,9 +365,8 @@ namespace VFS
 
 		if ((ret = pipefs->Create(dentry, flags)))
 			return ret;
-
-		DENTRY *parent = AllocDentry(root_dentry, 0);
-		AddDentry(parent, dentry);
+		
+		AddDentry(pipefs->root_dentry, dentry);
 
 		FILE *read = new FILE(dentry);
 		FILE *write = new FILE(dentry);
