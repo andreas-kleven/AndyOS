@@ -95,9 +95,9 @@ namespace Test
 		Scheduler::InsertThread(dispatcher_thread);
 
 		Scheduler::Disable();
-		//PROCESS *proc1 = ProcessManager::Exec("1winman");
-		//PROCESS *proc2 = ProcessManager::Exec("1term");
-		PROCESS *proc3 = ProcessManager::Exec("1info");
+		PROCESS *proc1 = ProcessManager::Exec("1winman");
+		PROCESS *proc2 = ProcessManager::Exec("1term");
+		//PROCESS *proc3 = ProcessManager::Exec("1info");
 		Scheduler::Enable();
 
 		/*Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());

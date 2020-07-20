@@ -47,8 +47,11 @@ FILE *Filetable::Get(int fd)
 
 int Filetable::Set(int fd, FILE *file)
 {
-    if (fd < 0 || fd >= files.Count())
+    if (fd < 0)
         return -1;
+
+    while (fd >= files.Count()) // TODO
+        Add(0);
 
     if (files[fd] != file)
     {

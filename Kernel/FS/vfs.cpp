@@ -357,16 +357,24 @@ namespace VFS
 		}
 	}
 
-	int CreatePipes(Filetable &filetable, int pipefd[2], int flags)
+	int CreatePipeDentry(DENTRY *&dentry, int flags)
 	{
-		DENTRY *dentry;
-
 		int ret = 0;
 
 		if ((ret = pipefs->Create(dentry, flags)))
 			return ret;
-		
+
 		AddDentry(pipefs->root_dentry, dentry);
+		return 0;
+	}
+
+	int CreatePipes(Filetable &filetable, int pipefd[2], int flags)
+	{
+		int ret = 0;
+		DENTRY *dentry;
+
+		if ((ret = CreatePipeDentry(dentry, flags)))
+			return ret;
 
 		FILE *read = new FILE(dentry);
 		FILE *write = new FILE(dentry);

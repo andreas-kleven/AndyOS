@@ -48,6 +48,7 @@ namespace VFS
 	size_t Read(Filetable &filetable, int fd, char *buf, size_t size);
 	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size);
 	off_t Seek(Filetable &filetable, int fd, off_t offset, int whence);
+	int CreatePipeDentry(DENTRY *&dentry, int flags);
 	int CreatePipes(Filetable &filetable, int pipefd[2], int flags);
 
 	int CreateSocket(Filetable &filetable, int domain, int type, int protocol);
