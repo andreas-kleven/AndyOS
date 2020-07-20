@@ -14,17 +14,11 @@ namespace Task::Arch
 		if (!thread)
 			return 0;
 
+		memset(thread, 0, sizeof(THREAD));
+
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];
-		thread->kernel_esp = 0;
-		thread->inserted = false;
-		thread->prev = 0;
-		thread->next = 0;
-		thread->proc_next = 0;
-		thread->sleep_until = 0;
-		thread->addr_space.ptr = 0;
-		thread->event = 0;
 
 		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;

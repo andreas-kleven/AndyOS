@@ -24,7 +24,10 @@ namespace ProcessManager
 					return false;
 
 				if (thread == current_thread)
+				{
+					copy->state = THREAD_STATE_READY;
 					Task::SetThreadReturn(copy, 0);
+				}
 			}
 
 			thread = thread->proc_next;
@@ -50,7 +53,8 @@ namespace ProcessManager
 
 		newproc->filetable = proc->filetable.Clone();
 		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
-		newproc->message_handler = proc->message_handler;
+		//newproc->message_handler = proc->message_handler;
+		newproc->message_handler = 0;
 
 		THREAD *current_thread = Scheduler::CurrentThread();
 

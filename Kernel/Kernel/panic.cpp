@@ -25,8 +25,9 @@ void panic(const char* err, const char* msg_fmt, ...)
 	debug_print("%s\n", buffer);
 
 	THREAD* thread = Scheduler::CurrentThread();
+
 	if (thread && thread->process)
-		debug_print("Proc: %X\n", Scheduler::CurrentThread()->process->id);
+		debug_print("proc:%d thread:%d\n", thread->process->id, thread->id);
 
 	sys_halt();
 }
