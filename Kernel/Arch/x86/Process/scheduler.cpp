@@ -12,6 +12,7 @@
 #include "syscalls.h"
 #include "syscall_list.h"
 #include "hal.h"
+#include "string.h"
 #include "debug.h"
 
 namespace Scheduler::Arch
@@ -35,8 +36,8 @@ namespace Scheduler::Arch
         current_thread->stack = tmp_stack;
 
         //Save fpu state
-        //asm volatile("fxsave (%0)" :: "m" (fpu_state));
-        //memcpy(current_thread->fpu_state, fpu_state, 512);
+        asm volatile("fxsave (%0)" ::"m"(fpu_state));
+        memcpy(current_thread->fpu_state, fpu_state, 512);
 
         if (syscall)
         {
@@ -60,11 +61,9 @@ namespace Scheduler::Arch
         current_thread = Scheduler::Schedule();
 
         //Restore fpu state
-        /*if (current_thread->state != THREAD_STATE_INITIALIZED)
-		{
-			memcpy(fpu_state, current_thread->fpu_state, 512);
-			asm volatile("fxrstor (%0)" : "=m" (fpu_state));
-		}*/
+        memcpy(fpu_state, current_thread->fpu_state, 512);
+        asm volatile("fxrstor (%0)"
+                     : "=m"(fpu_state));
 
         //Restore stack
         tmp_stack = current_thread->stack;

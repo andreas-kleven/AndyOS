@@ -241,7 +241,6 @@ namespace Scheduler
 			VMem::SwapAddressSpace(current_thread->addr_space);
 
 		current_thread->state = THREAD_STATE_RUNNING;
-
 		return current_thread;
 	}
 

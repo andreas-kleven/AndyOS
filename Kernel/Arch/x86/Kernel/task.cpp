@@ -5,6 +5,8 @@
 #include "Memory/memory.h"
 #include "string.h"
 
+uint8 __attribute__((aligned(16))) fpu_state[512];
+
 namespace Task::Arch
 {
 	const int stack_size = 0x1000;
@@ -19,6 +21,9 @@ namespace Task::Arch
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];
+		
+		asm volatile("fxsave (%0)" : "=m" (fpu_state));
+		memcpy(thread->fpu_state, fpu_state, 512);
 
 		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;
