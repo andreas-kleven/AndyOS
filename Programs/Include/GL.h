@@ -5,3 +5,4 @@
 #include "GL/Vector4.h"
 #include "GL/Matrix3.h"
 #include "GL/Matrix4.h"
+#include "GL/Quaternion.h"

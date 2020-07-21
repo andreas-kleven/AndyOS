@@ -415,7 +415,12 @@ void WindowManager::HandleMouseInput()
 
 	if (dx != 0 || dy != 0)
 	{
-		if (hovering_content)
+		bool capture = active_window && active_window->capture;
+		
+		if (capture)
+			wnd = active_window;
+
+		if (hovering_content || capture)
 		{
 			int relx = cursor_x - wnd->bounds.x;
 			int rely = cursor_y - wnd->bounds.y - GUI_TITLEBAR_HEIGHT;

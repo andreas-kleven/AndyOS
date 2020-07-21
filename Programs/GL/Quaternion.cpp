@@ -47,11 +47,11 @@ Quaternion Quaternion::LookAt(const Vector3& from, const Vector3& to)
 {
 	Vector3 forwardVector = (to - from).Normalized();
 
-	float dot = Vector3::Dot(Vector3::forward, forwardVector);
+	float dot = Vector3::Dot(Vector3(0, 0, 1), forwardVector);
 
 	if (fabs(dot - (-1.0f)) < 0.000001f)
 	{
-		return Quaternion(Vector3::up, M_PI);
+		return Quaternion(Vector3(0, 1, 0), M_PI);
 	}
 
 	if (fabs(dot - (1.0f)) < 0.000001f)
@@ -60,7 +60,7 @@ Quaternion Quaternion::LookAt(const Vector3& from, const Vector3& to)
 	}
 
 	float rotAngle = (float)acos(dot);
-	Vector3 rotAxis = Vector3::Cross(Vector3::forward, forwardVector);
+	Vector3 rotAxis = Vector3::Cross(Vector3(0, 0, 1), forwardVector);
 	rotAxis = rotAxis.Normalized();
 
 	return FromAxisAngle(rotAxis, rotAngle);

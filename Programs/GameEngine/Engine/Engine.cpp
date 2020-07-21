@@ -29,8 +29,6 @@ namespace GEngine
 	float deltaTime;
 	Game* game;
 	gui::Window* window;
-
-	Raymarcher marcher;
 	
 	float err = 0;
 
@@ -187,7 +185,7 @@ namespace GEngine
 
 	void Update()
 	{
-		deltaTime = (get_ticks() - ticks) / 1000.f;
+		deltaTime = (get_ticks() - ticks) / 1000000.f;
 		ticks = get_ticks();
 
 		Input::Update();
@@ -681,15 +679,13 @@ namespace GEngine
 		Drawing::Draw(gc);
 		}*/
 
-		marcher = Raymarcher();
-
 		while (1)
 		{
 			debug_reset();
 			
 			if (get_ticks() != ticks && totalFrames > 0)
 			{
-				printf("FPS: %i\tDT:%i\tAvgDT: %i\tTicks: %i\n", 1000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames, ticks);
+				printf("FPS: %i\tDT:%i\tAvgDT: %i\tTicks: %i\n", 1000000 / (get_ticks() - ticks), get_ticks() - ticks, (ticks - startTicks) / totalFrames, ticks);
 				char buf[20];
 				//printf("AVG: %i\n", frames * 1000 / get_ticks());
 			}
