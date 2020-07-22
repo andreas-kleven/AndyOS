@@ -23,7 +23,6 @@ public:
 
 int main()
 {
-    Drawing::Init();
     GameWindow wnd;
 	return 0;
 }

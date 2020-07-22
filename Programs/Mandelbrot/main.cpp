@@ -175,7 +175,6 @@ public:
 
 int main()
 {
-	Drawing::Init();
 	MainWindow wnd;
 	return 0;
 }

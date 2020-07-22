@@ -2,10 +2,9 @@
 #include "Vector4.h"
 #include <AndyOS.h>
 
-// Not working
-//Vector3 Vector3::right = Vector3(1, 0, 0);
-//Vector3 Vector3::up = Vector3(0, 1, 0);
-//Vector3 Vector3::forward = Vector3(0, 0, 1);
+Vector3 Vector3::right = Vector3(1, 0, 0);
+Vector3 Vector3::up = Vector3(0, 1, 0);
+Vector3 Vector3::forward = Vector3(0, 0, 1);
 
 Vector3::Vector3()
 {

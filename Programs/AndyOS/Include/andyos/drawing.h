@@ -110,8 +110,3 @@ struct GC
 private:
 	inline uint32_t BlendAlpha(uint32_t src, uint32_t dst);
 };
-
-namespace Drawing
-{
-	void Init();
-}

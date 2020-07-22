@@ -54,8 +54,6 @@ void btnClick()
 
 int main()
 {
-	Drawing::Init();
-
 	char title[256];
 	sprintf(title, "Test window: %lu", get_ticks());
 	wnd = new MainWindow(title);

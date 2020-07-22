@@ -3,7 +3,6 @@
 
 int main()
 {
-	Drawing::Init();
 	WindowManager::Start();
 	return 0;
 }

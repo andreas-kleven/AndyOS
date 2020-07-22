@@ -17,7 +17,7 @@ const double epsilon = 0.001f;
 double power = 7;
 int iterations = 16;
 
-Vector3 cam_pos;
+Vector3 cam_pos = Vector3(0, 0, -3);
 Quaternion cam_rot;
 Vector3 cam_euler;
 Vector3 light_dir;
@@ -149,21 +149,21 @@ void raymarch_update(double delta)
     cam_rot = Quaternion::FromEuler(cam_euler);
 
     if (InputManager::GetKeyDown(KEY_W))
-        cam_pos += cam_rot * Vector3(0, 0, 1) * mov_multiplier;
+        cam_pos += cam_rot * Vector3::forward * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_S))
-        cam_pos -= cam_rot * Vector3(0, 0, 1) * mov_multiplier;
+        cam_pos -= cam_rot * Vector3::forward * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_Q))
-        cam_pos -= cam_rot * Vector3(0, 1, 0) * mov_multiplier;
+        cam_pos -= cam_rot * Vector3::up* mov_multiplier;
     if (InputManager::GetKeyDown(KEY_E))
-        cam_pos += cam_rot * Vector3(0, 1, 0) * mov_multiplier;
+        cam_pos += cam_rot * Vector3::up * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_A))
-        cam_pos -= cam_rot * Vector3(1, 0, 0) * mov_multiplier;
+        cam_pos -= cam_rot * Vector3::right * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_D))
-        cam_pos += cam_rot * Vector3(1, 0, 0) * mov_multiplier;
+        cam_pos += cam_rot * Vector3::right * mov_multiplier;
 }
 
 void raymarch_init()
 {
-    cam_pos = Vector3(0, 0, -3);
+    //cam_pos = Vector3(0, 0, -3);
     light_dir = -Vector3(0, 0, 1).Normalized();
 }
