@@ -10,8 +10,8 @@ OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 CPPFLAGS += $(INC_SRCH_PATH)
 LDFLAGS += $(INC_SRCH_PATH)
 
-$(TARGET): $(OBJ_FILES) $(BUILD_DIR)/engine.a $(BUILD_DIR)/gl.a $(BUILD_DIR)/gui.a
-	$(LD) -o $@ $^ $(LDFLAGS)
+$(TARGET): $(OBJ_FILES) $(BUILD_DIR)/engine.a $(BUILD_DIR)/gl.a $(BUILD_DIR)/gui.a $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)

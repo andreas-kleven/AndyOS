@@ -10,8 +10,6 @@
 #include <dirent.h>
 #include "syscall_list.h"
 
-char **environ = 0;
-
 int *__errno()
 {
     return &_REENT->_errno;

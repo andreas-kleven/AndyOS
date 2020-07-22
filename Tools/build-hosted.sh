@@ -244,4 +244,9 @@ cp -R $PREFIX/$TARGET/* $SYSROOT/usr
 cp -R $PREFIX/lib/gcc/i686-andyos/8.1.0/* $SYSROOT/usr/lib
 
 mkdir -p $HOME/opt/cross
-cp -R $PREFIX/* $HOME/opt/cross
+cp -R $PREFIX/i686-andyos $HOME/opt/cross/
+cp -R $PREFIX/include $HOME/opt/cross/
+cp -R $PREFIX/lib $HOME/opt/cross/
+cp -R $PREFIX/libexec $HOME/opt/cross/
+cp -R $PREFIX/share $HOME/opt/cross/
+cp -R $PREFIX/bin/i686-andyos-* $HOME/opt/cross/bin

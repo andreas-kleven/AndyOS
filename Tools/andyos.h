@@ -5,7 +5,7 @@
 /* Default arguments you want when running your
    i686-andyos-gcc/x86_64-andyos-gcc toolchain */
 #undef LIB_SPEC
-#define LIB_SPEC "-lc" /* link against C standard library */
+#define LIB_SPEC "-lstdc++ -lsupc++ -lgcc -lc -lg -lm" /* link against standard libraries */
  
 /* Files that are linked before user code.
    The %s tells GCC to look for these files in the library directory. */

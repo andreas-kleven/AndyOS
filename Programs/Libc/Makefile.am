@@ -10,15 +10,15 @@ else                    # syscalls.c into multiple files in the previous step
 extra_objs =
 endif
  
-lib_a_SOURCES =
+lib_a_SOURCES = crti.S crtn.S
 lib_a_LIBADD = $(extra_objs)
-EXTRA_lib_a_SOURCES = arpa.c syscalls.c crt0.c # add more source files here if you split up
+EXTRA_lib_a_SOURCES = arpa.c syscalls.c crt0.c crti.S crtn.S # add more source files here if you split up
 lib_a_DEPENDENCIES = $(extra_objs)      # syscalls.c into multiple files
 lib_a_CCASFLAGS = $(AM_CCASFLAGS)
 lib_a_CFLAGS = $(AM_CFLAGS)
  
 if MAY_SUPPLY_SYSCALLS
-all: crt0.o
+all: crt0.o crti.o crtn.o
 endif
  
 ACLOCAL_AMFLAGS = -I ../../..

@@ -6,28 +6,21 @@ OBJCOPY := $(PREFIX)objcopy
 
 export CC AR LD OBJCOPY
 
-INC_SRCH_PATH := -isystem$(SYSROOT)/usr/include
-INC_SRCH_PATH += -I$(PROGRAMS_DIR)/AndyOS/Include
-INC_SRCH_PATH += -I$(SYSROOT)/usr/include/c++/8.1.0
-INC_SRCH_PATH += -I.
+INC_SRCH_PATH := -I.
 INC_SRCH_PATH += -I$(MAKE_DIR)/Kernel/Include
+INC_SRCH_PATH += -I$(PROGRAMS_DIR)/AndyOS/Include
 INC_SRCH_PATH += -I$(PROGRAMS_DIR)
 INC_SRCH_PATH += -I$(PROGRAMS_DIR)/Include
 
-LIB_SRCH_PATH := -L$(BUILD_DIR) -L$(SYSROOT)/usr/lib
-
-LIB_FILES := $(BUILD_DIR)/andyos.a $(SYSROOT)/usr/lib/crt0.o $(SYSROOT)/usr/lib/crtbegin.o $(SYSROOT)/usr/lib/crtend.o $(SYSROOT)/usr/lib/crti.o $(SYSROOT)/usr/lib/crtn.o -lstdc++ -lsupc++ -lgcc -lc -lg -lm
-
-CPPFLAGS := $(INC_SRCH_PATH) $(LIB_SRCH_PATH)
-CPPFLAGS += -g -O0
+CPPFLAGS := $(INC_SRCH_PATH)
+CPPFLAGS += -g
 CPPFLAGS += -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wall
-CPPFLAGS += -fno-omit-frame-pointer
 
-LDFLAGS := $(LIB_SRCH_PATH)
-LDFLAGS += $(LIB_FILES)
-LDFLAGS += --allow-multiple-definition # __errno
+LDFLAGS := -Wl,--allow-multiple-definition # __errno
 
-export CPPFLAGS LDFLAGS INC_SRCH_PATH PROGRAMS_DIR
+LIBS := $(BUILD_DIR)/andyos.a
+
+export CPPFLAGS LDFLAGS LIBS
 
 create_dir:
 	mkdir -p $(BUILD_DIR)
