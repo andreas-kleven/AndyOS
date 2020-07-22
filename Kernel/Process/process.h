@@ -114,7 +114,7 @@ namespace ProcessManager
 	PROCESS *GetFirst();
 
 	PROCESS *Exec(const char *path);
-	bool Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[]);
+	int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[]);
 
 	int SetSignalHandler(PROCESS *proc, int signo, sig_t handler);
 	int HandleSignal(PROCESS *proc, int signo);
