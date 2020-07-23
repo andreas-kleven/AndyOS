@@ -299,7 +299,7 @@ namespace VMem::Arch
 		return true;
     }
 
-    bool CreateAddressSpace(ADDRESS_SPACE* space)
+    bool CreateAddressSpace(ADDRESS_SPACE& space)
     {
         pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
 		uint32 pt_flags = PF_F(flags);
@@ -347,16 +347,16 @@ namespace VMem::Arch
 		last_table->SetFlags(PAGE_TABLE_LENGTH - 1, pt_flags);
 		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, dir_phys);
 
-        space->ptr = dir_phys;
+        space.ptr = dir_phys;
 		return true;
     }
 
-	bool CopyAddressSpace(ADDRESS_SPACE* space)
+	bool CopyAddressSpace(ADDRESS_SPACE& space)
 	{
 		if (!CreateAddressSpace(space))
 			return false;
 
-		if (!CopyMemoryTo(*space))
+		if (!CopyMemoryTo(space))
 			return false;
 
 		return true;

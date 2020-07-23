@@ -114,7 +114,7 @@ namespace ProcessManager
         if (MoveStringsUser(psi))
             return -1;
 
-        Exec::Arch::SetupMain(thread, psi->argenv_size, psi->argv, psi->envp);
+        Exec::Arch::SetupMain(thread, psi->argv, psi->envp);
     }
 
     PROCESS *Exec(const char *path)
@@ -122,7 +122,7 @@ namespace ProcessManager
         ADDRESS_SPACE old_space = VMem::GetAddressSpace();
         ADDRESS_SPACE addr_space;
 
-        if (!VMem::CreateAddressSpace(&addr_space))
+        if (!VMem::CreateAddressSpace(addr_space))
             return 0;
 
         VMem::SwapAddressSpace(addr_space);

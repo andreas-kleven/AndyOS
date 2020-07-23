@@ -30,11 +30,7 @@ namespace Task
 		nt->next = 0;
 		nt->proc_next = 0;
 		nt->process = 0;
-
-		if (thread->state == THREAD_STATE_RUNNING)
-			nt->state = THREAD_STATE_READY;
-		else
-			nt->state = thread->state;
+		nt->state = thread->state;
 
 		return nt;
 	}

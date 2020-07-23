@@ -14,7 +14,7 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->addr_space = addr_space;
 	this->next = 0;
 	this->main_thread = 0;
-	this->stack_ptr = USER_END;
+	this->stack_ptr = STACK_BASE;
 	this->heap_end = 0;
 	this->filetable = Filetable(3);
 
@@ -89,12 +89,19 @@ namespace ProcessManager
 			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
 			int blocks = 1;
 
-			void *virt = (void *)(proc->stack_ptr - blocks * BLOCK_SIZE);
+			void *virt = (void *)proc->stack_ptr;
+			proc->stack_ptr = (size_t)virt + blocks * BLOCK_SIZE;
+
+			if (proc->stack_ptr > STACK_END)
+			{
+				debug_print("Out of stack memory\n");
+				sys_halt();
+			}
+
 			void *phys = PMem::AllocBlocks(blocks);
 			VMem::MapPages(virt, phys, blocks, flags);
 
-			thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
-			proc->stack_ptr = (size_t)virt;
+			thread = Task::CreateUserThread(entry, (void*)proc->stack_ptr);
 			break;
 		}
 
@@ -148,6 +155,8 @@ namespace ProcessManager
 			prev = t;
 			t = t->proc_next;
 		}
+
+		return true;
 	}
 
 	bool StopThreads(PROCESS *proc)

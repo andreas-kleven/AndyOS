@@ -43,13 +43,17 @@ namespace ProcessManager
 		VMem::SwapAddressSpace(proc->addr_space);
 		ADDRESS_SPACE space;
 
-		if (!VMem::CopyAddressSpace(&space))
+		if (!VMem::CopyAddressSpace(space))
 			return 0;
 
 		VMem::SwapAddressSpace(space);
 
 		PROCESS *newproc = new PROCESS(proc->flags, space);
 		AssignPid(newproc);
+
+		newproc->stack_ptr = proc->stack_ptr;
+		newproc->heap_start = proc->heap_start;
+		newproc->heap_end = proc->heap_end;
 
 		newproc->filetable = proc->filetable.Clone();
 		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);

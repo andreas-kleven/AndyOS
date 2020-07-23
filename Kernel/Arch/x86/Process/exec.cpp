@@ -5,7 +5,7 @@
 
 namespace Exec::Arch
 {
-    int SetupMain(THREAD *thread, int offset, char const *argv[], char const *envp[])
+    int SetupMain(THREAD *thread, char const *argv[], char const *envp[])
     {
         int argc = 0;
         char const **arg_ptr = argv;
@@ -14,7 +14,7 @@ namespace Exec::Arch
             argc++;
 
         REGS *regs = (REGS *)thread->stack;
-        uint32 *ptr = (uint32 *)(regs->user_stack - offset);
+        uint32 *ptr = (uint32 *)(regs->user_stack - 4);
         *ptr-- = (uint32)envp;
         *ptr-- = (uint32)argv;
         *ptr-- = argc;

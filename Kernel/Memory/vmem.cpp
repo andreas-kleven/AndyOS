@@ -93,7 +93,7 @@ namespace VMem
 		return ret;
 	}
 
-	bool CreateAddressSpace(ADDRESS_SPACE *space)
+	bool CreateAddressSpace(ADDRESS_SPACE &space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::CreateAddressSpace(space);
@@ -101,7 +101,7 @@ namespace VMem
 		return ret;
 	}
 
-	bool CopyAddressSpace(ADDRESS_SPACE *space)
+	bool CopyAddressSpace(ADDRESS_SPACE &space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::CopyAddressSpace(space);

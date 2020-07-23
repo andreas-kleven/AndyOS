@@ -92,8 +92,8 @@ namespace VMem::Arch
 	
 	ADDRESS_SPACE GetAddressSpace();
 	bool SwapAddressSpace(ADDRESS_SPACE& space);
-	bool CreateAddressSpace(ADDRESS_SPACE* space);
-	bool CopyAddressSpace(ADDRESS_SPACE* space);
+	bool CreateAddressSpace(ADDRESS_SPACE& space);
+	bool CopyAddressSpace(ADDRESS_SPACE& space);
 
 	void* FirstFree(size_t count, size_t start, size_t end);
 	bool MapPages(void* virt, void* phys, size_t count, pflags_t flags);
