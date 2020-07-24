@@ -58,7 +58,7 @@ void debug_print(const char* str, ...)
 
 	va_list va;
 	va_start(va, str);
-	int len = vsprintf(buffer, str, va);
+	int len = vsnprintf(buffer, sizeof(buffer), str, va);
 	va_end(va);
 
 	str = buffer;

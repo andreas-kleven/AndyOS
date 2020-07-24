@@ -6,17 +6,19 @@
 #include "Process/scheduler.h"
 #include "Lib/debug.h"
 
-void panic(const char* err, const char* msg_fmt, ...)
+bool prev_panic = false;
+
+void panic(const char *err, const char *msg_fmt, ...)
 {
 	disable();
 
 	char buffer[256];
-	memset(buffer, 0, 256);
+	memset(buffer, 0, sizeof(buffer));
 
 	va_list args;
 	va_start(args, msg_fmt);
 
-	vsprintf(buffer, msg_fmt, args);
+	vsnprintf(buffer, sizeof(buffer), msg_fmt, args);
 
 	debug_clear(0xFF000000);
 	debug_color(0xFFFF0000);
@@ -24,10 +26,15 @@ void panic(const char* err, const char* msg_fmt, ...)
 	debug_print("%s\n", err);
 	debug_print("%s\n", buffer);
 
-	THREAD* thread = Scheduler::CurrentThread();
+	if (!prev_panic)
+	{
+		prev_panic = true;
 
-	if (thread && thread->process)
-		debug_print("proc:%d thread:%d\n", thread->process->id, thread->id);
+		THREAD *thread = Scheduler::CurrentThread();
+
+		if (thread && thread->process)
+			debug_print("proc:%d thread:%d\n", thread->process->id, thread->id);
+	}
 
 	sys_halt();
 }
