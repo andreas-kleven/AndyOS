@@ -175,6 +175,7 @@ public:
 
 int main()
 {
+	setlinebuf(stdout);
 	MainWindow wnd;
 	return 0;
 }

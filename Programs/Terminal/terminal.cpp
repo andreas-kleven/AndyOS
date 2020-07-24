@@ -4,11 +4,15 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <dirent.h>
+#include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <AndyOS.h>
 #include <andyos/msg.h>
 #include <andyos/math.h>
@@ -33,6 +37,8 @@ public:
 	int x = 0;
 	int y = 0;
 
+	int program_fd = 0;
+
 	MainWindow()
 		: Window("Terminal", 424, 288, Color::Black)
 	{
@@ -50,6 +56,13 @@ public:
 
 	void KeyPress(KEY_PACKET packet)
 	{
+		if (program_fd)
+		{
+			Putc(packet.character);
+			write(program_fd, &packet.character, 1);
+			return;
+		}
+
 		if (packet.code == KEY_BACK)
 		{
 			if (command.length() > 0)
@@ -62,7 +75,6 @@ public:
 		{
 			Putc('\n');
 			HandleCommand(command);
-			Putc('\n');
 			ResetCommand();
 		}
 		else if (packet.code == KEY_UP)
@@ -124,25 +136,38 @@ public:
 		std::string arg1 = tokens.size() > 0 ? tokens[0] : "";
 		std::string arg2 = tokens.size() > 1 ? tokens[1] : "";
 		std::string arg3 = tokens.size() > 2 ? tokens[2] : "";
+		std::string arg4 = tokens.size() > 3 ? tokens[3] : "";
+		std::string arg5 = tokens.size() > 4 ? tokens[4] : "";
 
 		if (arg1 == "ls")
 		{
-			/*FILE_INFO* files;
-			DIRECTORY_INFO* dirs;
-			int file_count;
-			int dir_count;
+			char buf[1024];
+			int fd = open(terminal_path.c_str(), O_RDONLY /* | O_DIRECTORY*/);
 
-			VFS::List(terminal_path, files, dirs, file_count, dir_count);
-
-			for (int i = 0; i < file_count; i++)
+			while (true)
 			{
-				Debug::Print("%s\n", files[i].name);
+				int read = getdents(fd, (dirent *)buf, sizeof(buf));
+				Print("Read %d\n", read);
+
+				if (read == 0)
+					break;
+
+				if (read < 0)
+				{
+					Print("Error\n");
+					break;
+				}
+
+				int pos = 0;
+				while (pos < read)
+				{
+					dirent *dirp = (dirent *)&buf[pos];
+					Print("%d %d %d %s\n", dirp->d_ino, dirp->d_type, dirp->d_reclen, dirp->d_name);
+					pos += dirp->d_reclen;
+				}
 			}
 
-			for (int i = 0; i < dir_count; i++)
-			{
-				Debug::Print("%s\n", dirs[i].name);
-			}*/
+			close(fd);
 		}
 		else if (arg1 == "cd")
 		{
@@ -165,28 +190,42 @@ public:
 				PrintString(terminal_path);
 			}
 		}
-		else if (arg1 == "read")
+		else if (arg1 == "cat")
 		{
 			std::string path = terminal_path + "/" + arg2;
 
-			char *buf;
-			uint32_t size = read_file(buf, path.c_str());;
+			FILE *file = fopen(path.c_str(), "r");
 
-			if (size == 0)
+			if (!file)
 			{
-				Print("File not found\n");
+				Print("Open error\n");
+				return;
 			}
-			else
+
+			char buf[1024];
+
+			while (true)
 			{
-				for (int i = 0; i < size; i++)
+				int read = fread(buf, 1, sizeof(buf), file);
+
+				if (read < 0)
 				{
-					Putc(buf[i]);
+					Print("Read error\n");
+					break;
 				}
+
+				if (read == 0)
+					break;
+
+				for (int i = 0; i < read; i++)
+					Putc(buf[i]);
 			}
+
+			fclose(file);
 		}
 		else if (arg1 == "open")
 		{
-			Open(arg2.c_str());
+			Open(arg2.c_str(), arg3.c_str(), arg4.c_str(), arg5.c_str());
 		}
 		else if (arg1 == "color")
 		{
@@ -251,7 +290,7 @@ public:
 
 			Print("%i\t%i\n", pipefd[0], pipefd[1]);
 
-			int len = 6;
+			int len = 100;
 			char buf[len];
 			memset(buf, 0, len);
 
@@ -263,22 +302,32 @@ public:
 
 			while (1)
 			{
+				Print("Wait...\n");
 				int l = read(pipefd[0], buf, len);
+				Print("Read %d\n", l);
+
+				if (l == 0 || counter == 100)
+				{
+					close(pipefd[0]);
+					close(pipefd[1]);
+					Print("Done\n");
+					break;
+				}
 
 				if (l > 0)
 				{
 					for (int i = 0; i < l; i++)
 						Putc(buf[i]);
-				}
-				else if (l == 0)
-				{
+
 					char sb[100];
 					itoa(counter++, sb, 10);
+					sb[strlen(sb) + 1] = 0;
+					sb[strlen(sb)] = '\n';
 					write(pipefd[1], sb, strlen(sb));
 				}
 				else
 				{
-					Print("Read error");
+					Print("Read error\n");
 					//usleep(1000);
 				}
 			}
@@ -286,71 +335,139 @@ public:
 			//close(pipefd[0]);
 			//close(pipefd[1]);
 		}
+		else if (arg1 == "udpc")
+		{
+			int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+			if (sockfd < 0)
+			{
+				debug_print("Error %d\n", sockfd);
+				return;
+			}
+
+			sockaddr_in clientaddr;
+			clientaddr.sin_family = AF_INET;
+			clientaddr.sin_addr.s_addr = htonl(0xC0A8007B); // 192.168.0.123
+			clientaddr.sin_port = htons(8080);
+
+			const char *msg = arg2.c_str();
+			int r = sendto(sockfd, msg, strlen(msg), 0, (sockaddr *)&clientaddr, sizeof(sockaddr_in));
+			debug_print("%d\n", r);
+		}
+		else if (arg1 == "udpl")
+		{
+			int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+			if (sockfd < 0)
+			{
+				debug_print("Error %d\n", sockfd);
+				return;
+			}
+
+			sockaddr_in servaddr;
+			servaddr.sin_family = AF_INET;
+			servaddr.sin_addr.s_addr = INADDR_ANY;
+			servaddr.sin_port = htons(10001);
+
+			int b = bind(sockfd, (sockaddr *)&servaddr, sizeof(servaddr));
+
+			if (b < 0)
+			{
+				debug_print("Bind error %d\n", b);
+				return;
+			}
+
+			debug_print("Waiting...\n");
+
+			while (true)
+			{
+				char buf[256];
+				int len = recv(sockfd, buf, sizeof(buf) - 1, 0);
+				buf[len] = 0;
+				Print("%s\n", buf);
+			}
+		}
 		else
 		{
 			Print("Invalid command");
 		}
 	}
 
-	void Open(const char *file)
+	void Open(const char *file, const char *arg1, const char *arg2, const char *arg3)
 	{
-		int pipefd[2];
-		pid_t pid;
+		int fd1[2];
+		int fd2[2];
 
-		if (pipe(pipefd) == -1)
+		if (pipe(fd1) == -1)
 		{
-			Print("Error\n");
+			debug_print("Pipe Failed");
 			return;
 		}
 
-		if ((pid = fork()) == -1)
+		if (pipe(fd2) == -1)
 		{
-			Print("Error\n");
+			debug_print("Pipe Failed");
 			return;
 		}
 
-		debug_print("pid: %i\n", pid);
+		pid_t p = fork();
+		debug_print("pid:%d\n", p);
 
-		if (pid == 0)
+		if (p < 0)
 		{
-			close(pipefd[1]);
+			debug_print("fork Failed");
+			return;
+		}
+		else if (p > 0)
+		{
+			close(fd1[1]);
+			close(fd2[0]);
+
+			program_fd = fd2[1];
 
 			char buf[BUF_SIZE];
 
 			while (true)
 			{
-				int len = read(pipefd[0], buf, BUF_SIZE);
+				int len = read(fd1[0], buf, BUF_SIZE);
+				debug_print("Read: %d\n", len);
 
-				if (len == -1)
+				if (len <= 0)
 					break;
 
 				for (int i = 0; i < len; i++)
 					Putc(buf[i]);
-
-				usleep(10);
 			}
+
+			program_fd = 0;
+
+			close(fd1[0]);
+			close(fd2[1]);
+			Print("Exited\n");
 		}
 		else
 		{
-			int fd = dup2(pipefd[1], STDOUT_FILENO);
-			close(pipefd[0]);
-			close(pipefd[1]);
+			close(fd1[0]);
+			close(fd2[1]);
 
-			if (fd == STDOUT_FILENO)
+			int fd_stdout = dup2(fd1[1], STDOUT_FILENO);
+			int fd_stdin = dup2(fd2[0], STDIN_FILENO);
+			dup2(STDOUT_FILENO, STDERR_FILENO);
+
+			if (fd_stdout == STDOUT_FILENO && fd_stdin == STDIN_FILENO)
 			{
-				char *argv[] = {(char *)file, NULL};
-				char *envp[] = {NULL};
+				char *const argv[] = {(char *)file, (char *)(strcmp(arg1, "") ? arg1 : NULL), (char *)(strcmp(arg2, "") ? arg2 : NULL), (char *)(strcmp(arg3, "") ? arg3 : NULL), NULL};
+				char *const envp[] = {"PATH=", NULL};
 				execve(file, argv, envp);
-				//execl(file, file, 0);
+
+				//execl(file, file, arg1, arg2, arg3, NULL);
 			}
 			else
 			{
 				debug_print("Error\n");
 			}
 
-			while (1)
-			{
-			}
+			exit(0);
 		}
 	}
 
@@ -442,9 +559,8 @@ public:
 
 int main()
 {
-	Drawing::Init();
 	MainWindow *wnd = new MainWindow();
 
 	while (true)
-		usleep(100);
+		sleep(1000);
 }

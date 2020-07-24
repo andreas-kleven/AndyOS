@@ -92,6 +92,11 @@ namespace Syscalls
 		return VFS::DuplicateFile(CurrentFiletable(), oldfd, newfd);
 	}
 
+	int fcntl(int fd, int cmd, void *arg)
+	{
+		return VFS::Fcntl(CurrentFiletable(), fd, cmd, arg);
+	}
+
 	int getdents(int fd, dirent *dirp, unsigned int count)
 	{
 		return VFS::Getdents(CurrentFiletable(), fd, dirp, count);
@@ -125,7 +130,7 @@ namespace Syscalls
 		return (void *)-1;
 	}
 
-	int fstat(int fd, stat *st)
+	int fd_stat(const char *file, stat *st)
 	{
 		st->st_dev = 1;
 		st->st_ino = 1;
@@ -141,6 +146,11 @@ namespace Syscalls
 		st->st_mtime = 0;
 		st->st_ctime = 0;
 		return 0;
+	}
+
+	int fstat(int fd, stat *st)
+	{
+		return fd_stat(0, st);
 	}
 
 	int kill(pid_t pid, int signo)
@@ -244,9 +254,10 @@ namespace Syscalls
 		Scheduler::ExitThread(code, Dispatcher::CurrentThread());
 	}
 
-	void sleep(useconds_t usec)
+	int sleep(useconds_t usec)
 	{
 		Scheduler::SleepThread(Timer::Ticks() + usec, Dispatcher::CurrentThread());
+		return 0;
 	}
 
 	uint32 get_ticks()
@@ -423,11 +434,13 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_PIPE, (SYSCALL_HANDLER)pipe);
 		InstallSyscall(SYSCALL_DUP, (SYSCALL_HANDLER)dup);
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)dup2);
+		InstallSyscall(SYSCALL_FCNTL, (SYSCALL_HANDLER)fcntl);
 		InstallSyscall(SYSCALL_GETDENTS, (SYSCALL_HANDLER)getdents);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)getpid);
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)execve);
 		InstallSyscall(SYSCALL_SBRK, (SYSCALL_HANDLER)sbrk);
+		InstallSyscall(SYSCALL_STAT, (SYSCALL_HANDLER)fd_stat);
 		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)fstat);
 		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)kill);
 		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)signal);

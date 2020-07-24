@@ -3,6 +3,7 @@
 #include "pipe.h"
 #include "string.h"
 #include "math.h"
+#include "fcntl.h"
 #include "pipefs.h"
 #include "sockfs.h"
 #include "Kernel/timer.h"
@@ -174,6 +175,29 @@ namespace VFS
 		return filetable.Set(newfd, file);
 	}
 
+	int Fcntl(Filetable &filetable, int fd, int cmd, void *arg)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -1;
+
+		if (cmd == F_DUPFD)
+		{
+			return filetable.Add(file, (int)arg);
+		}
+		else if (cmd == F_SETFD)
+		{
+			return 0;
+		}
+		else if (cmd == F_GETFD)
+		{
+			return 0;
+		}
+
+		return -1;
+	}
+
 	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count)
 	{
 		FILE *file = filetable.Get(fd);
@@ -252,6 +276,9 @@ namespace VFS
 
 	int Open(Filetable &filetable, const char *filename)
 	{
+		if (strcmp(filename, "") == 0) // TODO
+			return -1;
+
 		Path path(filename);
 		DENTRY *dentry = GetDentry(path);
 
@@ -291,7 +318,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!IsValidInode(file))
-			return 0;
+			return -1;
 
 		Driver *owner = file->dentry->owner;
 
@@ -317,7 +344,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!IsValidInode(file))
-			return 0;
+			return -1;
 
 		Driver *owner = file->dentry->owner;
 		int written = owner->Write(file, buf, size);

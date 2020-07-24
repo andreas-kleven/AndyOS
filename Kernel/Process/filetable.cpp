@@ -1,4 +1,5 @@
 #include "filetable.h"
+#include "math.h"
 #include "debug.h"
 
 Filetable::Filetable(int reserved)
@@ -9,13 +10,19 @@ Filetable::Filetable(int reserved)
         Add(0);
 }
 
-int Filetable::Add(FILE *file)
+int Filetable::Add(FILE *file, int lowest_fd)
 {
-    for (int i = reserved; i < files.Count(); i++)
+    if (file)
     {
-        if (files[i] == 0)
-            return Set(i, file);
+        for (int i = max(reserved, lowest_fd); i < files.Count(); i++)
+        {
+            if (files[i] == 0)
+                return Set(i, file);
+        }
     }
+
+    for (int i = files.Count(); i < lowest_fd; i++)
+        files.Add(0);
 
     int fd = files.Count();
     files.Add(file);

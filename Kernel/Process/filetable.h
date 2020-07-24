@@ -10,7 +10,7 @@ private:
 
 public:
     Filetable(int reserved = 3);
-    int Add(FILE *file);
+    int Add(FILE *file, int lowest_fd = 0);
     int Remove(int fd);
     FILE *Get(int fd);
     int Set(int fd, FILE *file);

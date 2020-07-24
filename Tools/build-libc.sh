@@ -30,9 +30,25 @@ if ! grep -q $SYSTEM "config.sub"; then
     mv config.sub.tmp config.sub
 fi
 
+text1="\
+  i[3-7]86-*-$SYSTEM*)\n\
+	sys_dir=$SYSTEM\n\
+	posix_dir=posix\n\
+    unix_dir=unix\n\
+	newlib_cflags=\\\"\${newlib_cflags} -DSIGNAL_PROVIDED -DHAVE_FCNTL\\\"\n\
+    ;;"
+
+text2="\
+  i[3-7]86-*-$SYSTEM*)\n\
+	syscall_dir=syscalls\n\
+    ;;"
+
 cd newlib
 if ! grep -q $SYSTEM "configure.host"; then
-    awk "/Get the source directories to use for the host./,/case/ { if(\$0 ~ /case/) { print; print \"  i[3-7]86-*-$SYSTEM*)\"; print \"    sys_dir=$SYSTEM\"; print \"    newlib_cflags=\\\"\${newlib_cflags} -DSIGNAL_PROVIDED\\\"\"; print \"    ;;\"; next }}1" configure.host > configure.host.tmp
+    awk "/Get the source directories to use for the host./,/case/ { if(\$0 ~ /case/) { print; print \"$text1\"; next }}1" configure.host > configure.host.tmp
+    mv configure.host.tmp configure.host
+
+    awk "/Host specific flag settings/,/case/ { if(\$0 ~ /case/) { print; print \"$text2\"; next }}1" configure.host > configure.host.tmp
     mv configure.host.tmp configure.host
 fi
 
@@ -42,6 +58,7 @@ if ! grep -q $SYSTEM "configure.in"; then
     mv configure.in.tmp configure.in
 fi
 
+rm -rf $SYSTEM 
 mkdir $SYSTEM
 cd $SYSTEM
 cp -R $syssrc/* .

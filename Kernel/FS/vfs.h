@@ -41,6 +41,7 @@ namespace VFS
 
 	int DuplicateFile(Filetable &filetable, int oldfd);
 	int DuplicateFile(Filetable &filetable, int oldfd, int newfd);
+	int Fcntl(Filetable &filetable, int fd, int cmd, void *arg);
 	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count);
 
 	int Open(Filetable &filetable, const char *filename);
