@@ -1,0 +1,13 @@
+diff --git a/src/system.h b/src/system.h
+index 007952c..5120485 100644
+--- a/src/system.h
++++ b/src/system.h
+@@ -92,7 +92,7 @@ void *bsearch(const void *, const void *, size_t, size_t,
+ #endif
+ 
+ #ifndef HAVE_KILLPG
+-static inline int killpg(pid_t pid, int signal)
++inline int killpg(pid_t pid, int signal)
+ {
+ #ifdef DEBUG
+        if (pid < 0)

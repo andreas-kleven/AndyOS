@@ -2,7 +2,8 @@
 Build/
 *.iso
 *.code-workspace
-Tools/*/*
+Tools/build/
+Tools/src/
 **/.DS_Store
 
 ### iso dir
