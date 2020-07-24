@@ -15,7 +15,7 @@ namespace ProcessManager
         char const **envp;
         int arg_count;
         int env_count;
-        void *argenv_ptr;
+        char *argenv_ptr;
         size_t argenv_size;
     };
 
@@ -114,7 +114,7 @@ namespace ProcessManager
         if (MoveStringsUser(psi))
             return -1;
 
-        Exec::Arch::SetupMain(thread, psi->argv, psi->envp);
+        return Exec::Arch::SetupMain(thread, psi->argv, psi->envp);
     }
 
     PROCESS *Exec(const char *path)
