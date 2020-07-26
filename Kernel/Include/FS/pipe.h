@@ -10,6 +10,7 @@ class Pipe
 private:
     Event read_event;
     Event write_event;
+    Mutex buffer_mutex;
     CircularDataBuffer buffer;
 
 public:

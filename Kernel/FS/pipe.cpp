@@ -10,6 +10,8 @@ Pipe::Pipe(int buf_size)
 int Pipe::Read(FILE *file, void *buf, size_t size)
 {
     read_event.Wait();
+    buffer_mutex.Aquire();
+
     int ret = buffer.Read(size, buf);
 
     if (buffer.IsEmpty())
@@ -18,13 +20,15 @@ int Pipe::Read(FILE *file, void *buf, size_t size)
     if (!buffer.IsFull())
         write_event.Set();
 
+    buffer_mutex.Release();
     return ret;
 }
 
 int Pipe::Write(FILE *file, const void *buf, size_t size)
 {
     write_event.Wait();
-    read_event.Set();
+    buffer_mutex.Aquire();
+    
     int ret = buffer.Write(buf, size);
 
     if (!buffer.IsEmpty())
@@ -33,6 +37,7 @@ int Pipe::Write(FILE *file, const void *buf, size_t size)
     if (buffer.IsFull())
         write_event.Clear();
 
+    buffer_mutex.Release();
     return ret;
 }
 
