@@ -1,22 +1,29 @@
 #include "process.h"
 #include "Arch/process.h"
+#include "dispatcher.h"
+#include "scheduler.h"
 #include "sync.h"
+#include "errno.h"
 #include "debug.h"
 
 namespace ProcessManager
 {
-    int SetSignalHandler(PROCESS *proc, int signo, sig_t handler)
+    sig_t SetSignalHandler(PROCESS *proc, int signo, sig_t handler)
     {
         if (!proc)
-            return -1;
+            return (sig_t)-1;
 
         if (signo < 0 || signo >= SIGNAL_TABLE_SIZE)
-            return -1;
+            return (sig_t)-EINVAL;
+
+        sig_t prev = proc->signal_table[signo];
 
         if (signo == SIGKILL || signo == SIGSTOP)
             proc->signal_table[signo] = SIG_DFL;
         else
             proc->signal_table[signo] = handler;
+
+        return prev;
     }
 
     int HandleSignal(PROCESS *proc, int signo)
@@ -41,7 +48,42 @@ namespace ProcessManager
 
         if (handler == SIG_DFL)
         {
-            Terminate(proc);
+            Scheduler::Disable();
+
+            if (signo == SIGSTOP)
+            {
+                if (proc->state == PROCESS_STATE_RUNABLE)
+                {
+                    proc->siginfo.si_pid = proc->id;
+                    proc->siginfo.si_status = signo;
+                    proc->siginfo.si_code = CLD_STOPPED;
+                    proc->state = PROCESS_STATE_STOPPED;
+                    Dispatcher::HandleSignal(proc);
+                }
+            }
+            else if (signo == SIGCONT)
+            {
+                if (proc->state == PROCESS_STATE_STOPPED)
+                {
+                    proc->siginfo.si_pid = proc->id;
+                    proc->siginfo.si_status = signo;
+                    proc->siginfo.si_code = CLD_CONTINUED;
+                    proc->state = PROCESS_STATE_RUNABLE;
+                    Dispatcher::HandleSignal(proc);
+                }
+            }
+            else
+            {
+                proc->siginfo.si_pid = proc->id;
+                proc->siginfo.si_status = signo;
+                proc->siginfo.si_code = CLD_KILLED;
+                proc->state = PROCESS_STATE_ZOMBIE;
+                Dispatcher::HandleSignal(proc);
+
+                Terminate(proc);
+            }
+
+            Scheduler::Enable();
         }
         else
         {

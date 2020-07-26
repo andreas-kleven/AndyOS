@@ -4,9 +4,10 @@
 #include "hal.h"
 #include "irq.h"
 #include "video.h"
-#include "Kernel/timer.h"
 #include "string.h"
-#include "Lib/debug.h"
+#include "errno.h"
+#include "debug.h"
+#include "Kernel/timer.h"
 #include "Drivers/mouse.h"
 #include "Drivers/keyboard.h"
 #include "Drivers/rtc.h"
@@ -132,6 +133,9 @@ namespace Syscalls
 
 	int fd_stat(const char *file, stat *st)
 	{
+		if (file && !VFS::GetDentry(Path(file)))
+			return -ENOENT;
+
 		st->st_dev = 1;
 		st->st_ino = 1;
 		st->st_mode = 1;
@@ -155,6 +159,10 @@ namespace Syscalls
 
 	int kill(pid_t pid, int signo)
 	{
+		// TODO
+		if (pid < 0)
+			pid = -pid;
+
 		PROCESS *proc = ProcessManager::GetProcess(pid);
 		return ProcessManager::HandleSignal(proc, signo);
 	}
@@ -162,8 +170,12 @@ namespace Syscalls
 	sig_t signal(int signum, sig_t handler)
 	{
 		PROCESS *proc = Dispatcher::CurrentProcess();
-		ProcessManager::SetSignalHandler(proc, signum, handler);
-		return 0; // TODO
+		return ProcessManager::SetSignalHandler(proc, signum, handler);
+	}
+
+	int waitpid(pid_t pid, int *status, int options)
+	{
+		return Dispatcher::Waitpid(pid, status, options);
 	}
 
 	int socket(int domain, int type, int protocol)
@@ -246,7 +258,7 @@ namespace Syscalls
 
 	void exit(int code)
 	{
-		ProcessManager::Terminate(Dispatcher::CurrentProcess());
+		ProcessManager::Exit(Dispatcher::CurrentProcess(), code);
 	}
 
 	void exit_thread(int code)
@@ -294,7 +306,7 @@ namespace Syscalls
 		if (proc)
 			return proc->id;
 
-		return 0;
+		return -1;
 	}
 
 	void debug_reset()
@@ -444,6 +456,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)fstat);
 		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)kill);
 		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)signal);
+		InstallSyscall(SYSCALL_WAITPID, (SYSCALL_HANDLER)waitpid);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)socket);
 		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)accept);

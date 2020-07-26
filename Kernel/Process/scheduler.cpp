@@ -225,7 +225,7 @@ namespace Scheduler
 				}
 			}
 
-			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED))
+			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED) && (!current_thread->process || current_thread->process->state == PROCESS_STATE_RUNABLE))
 				break;
 
 			current_thread = current_thread->next;

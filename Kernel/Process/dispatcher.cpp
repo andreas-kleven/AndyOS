@@ -7,6 +7,7 @@
 #include "list.h"
 #include "sync.h"
 #include "string.h"
+#include "errno.h"
 
 namespace Dispatcher
 {
@@ -24,7 +25,7 @@ namespace Dispatcher
         {
             DISPATCHER_ENTRY *entry = &entries[i];
 
-            if (entry->handler_thread && !entry->context.thread)
+            if (entry->handler_thread && !entry->used)
             {
                 Scheduler::Enable();
                 return entry;
@@ -56,7 +57,7 @@ namespace Dispatcher
     {
         Scheduler::Disable();
         active_count -= 1;
-        entry->context.thread = 0;
+        entry->used = false;
         queue_event.Clear();
         thread_event.Set();
         Scheduler::Enable();
@@ -64,7 +65,7 @@ namespace Dispatcher
 
     void HandlerFunc()
     {
-        DISPATCHER_ENTRY *entry = CurrentDispatcherThread();
+        DISPATCHER_ENTRY *entry = CurrentEntry();
         DISPATCHER_CONTEXT &context = entry->context;
         THREAD *handler_thread = entry->handler_thread;
         THREAD *thread = context.thread;
@@ -121,6 +122,7 @@ namespace Dispatcher
 
         if (entry)
         {
+            entry->used = true;
             entry->context = context;
             active_count += 1;
 
@@ -146,8 +148,6 @@ namespace Dispatcher
     {
         active_count = 0;
 
-        memset(entries, 0, sizeof(entries));
-
         debug_print("Started dispatcher\n");
 
         while (true)
@@ -171,7 +171,7 @@ namespace Dispatcher
         }
     }
 
-    DISPATCHER_ENTRY *CurrentDispatcherThread()
+    DISPATCHER_ENTRY *CurrentEntry()
     {
         for (int i = 0; i < DISPATCHER_THREADS; i++)
         {
@@ -186,7 +186,7 @@ namespace Dispatcher
 
     THREAD *CurrentThread()
     {
-        DISPATCHER_ENTRY *entry = CurrentDispatcherThread();
+        DISPATCHER_ENTRY *entry = CurrentEntry();
 
         if (entry)
             return entry->context.thread;
@@ -202,5 +202,210 @@ namespace Dispatcher
             return thread->process;
 
         return 0;
+    }
+
+    siginfo_t GetSiginfo(DISPATCHER_ENTRY *entry, PROCESS *child, bool consume)
+    {
+        siginfo_t info;
+        info.si_code = 0;
+
+        if (!entry)
+            return info;
+
+        DISPATCHER_WAIT_INFO *wait = &entry->wait_info;
+        PROCESS *parent = entry->context.thread->process;
+
+        if (child->parent != parent || !SIGINFO_ANY(child->siginfo))
+            return info;
+
+        if (wait->type == P_ALL)
+        {
+            info = child->siginfo;
+
+            if (consume)
+                child->siginfo.si_code = 0;
+        }
+        else if (wait->type == P_PID)
+        {
+            if (wait->pid == child->id)
+            {
+                info = child->siginfo;
+
+                if (consume)
+                    child->siginfo.si_code = 0;
+            }
+        }
+        else
+        {
+            panic("wait type", "%d", wait->type);
+        }
+
+        return info;
+    }
+
+    siginfo_t GetChildrenSiginfo(DISPATCHER_ENTRY *entry, bool consume)
+    {
+        PROCESS *parent = entry->context.thread->process;
+        PROCESS *child = parent->first_child;
+
+        while (child)
+        {
+            siginfo_t info = GetSiginfo(entry, child, consume);
+
+            if (SIGINFO_ANY(info))
+                return info;
+
+            child = child->next_sibling;
+        }
+
+        siginfo_t info;
+        info.si_code = 0;
+        return info;
+    }
+
+    int SiginfoStatus(const siginfo_t &info)
+    {
+        int status = 0;
+        int code = info.si_code;
+
+        if (code == CLD_EXITED)
+        {
+            status |= (info.si_status) << 8;
+        }
+        else if (code == CLD_KILLED)
+        {
+            status |= (info.si_status) & 0x7f;
+        }
+        else if (code == CLD_STOPPED)
+        {
+            status |= 0x7f;
+            status |= (info.si_status) << 8;
+        }
+        else if (code == CLD_CONTINUED)
+        {
+        }
+
+        return status;
+    }
+
+    bool AnyUnwaitedForChildren(PROCESS *parent)
+    {
+        PROCESS *child = parent->first_child;
+
+        while (child)
+        {
+            if (child->state != PROCESS_STATE_ZOMBIE || SIGINFO_ANY(child->siginfo))
+                return true;
+
+            child = child->next_sibling;
+        }
+
+        return false;
+    }
+
+    void HandleSignal(PROCESS *process)
+    {
+        siginfo_t info = process->siginfo;
+
+        if (!info.si_code)
+            return;
+
+        Scheduler::Disable();
+
+        for (int i = 0; i < DISPATCHER_THREADS; i++)
+        {
+            DISPATCHER_ENTRY *entry = &entries[i];
+            DISPATCHER_WAIT_INFO *wait = &entry->wait_info;
+
+            if (wait->waiting)
+            {
+                siginfo_t info = GetSiginfo(entry, process, true);
+
+                if (SIGINFO_ANY(info))
+                {
+                    wait->siginfo = info;
+                    wait->event.Set();
+                }
+            }
+        }
+
+        Scheduler::Enable();
+    }
+
+    int Waitpid(pid_t pid, int *status, int options)
+    {
+        Scheduler::Disable();
+
+        debug_print("Waitpid %d %d\n", pid, options);
+
+        DISPATCHER_ENTRY *entry = Dispatcher::CurrentEntry();
+        PROCESS *parent = entry->context.thread->process;
+        DISPATCHER_WAIT_INFO *wait = &entry->wait_info;
+
+        if (pid < -1)
+        {
+            panic("Waitpid pid < -1", "");
+        }
+        else if (pid == -1)
+        {
+            if (!AnyUnwaitedForChildren(parent))
+            {
+                Scheduler::Enable();
+                return -ECHILD;
+            }
+
+            wait->pid = -pid;
+            wait->type = P_ALL;
+        }
+        else if (pid == 0)
+        {
+            panic("Waitpid pid = 0", "");
+        }
+        else
+        {
+            PROCESS *proc = ProcessManager::GetProcess(pid);
+
+            if (!proc || proc->parent != parent)
+            {
+                Scheduler::Enable();
+                return -ECHILD;
+            }
+
+            wait->pid = pid;
+            wait->type = P_PID;
+        }
+
+        siginfo_t info = GetChildrenSiginfo(entry, true);
+
+        if (SIGINFO_ANY(info))
+        {
+            if (status)
+                *status = SiginfoStatus(info);
+
+            Scheduler::Enable();
+            return info.si_pid;
+        }
+        else
+        {
+            if (options & WNOHANG)
+            {
+                if (status)
+                    *status = 0;
+
+                Scheduler::Enable();
+                return 0;
+            }
+        }
+
+        wait->waiting = true;
+        wait->event.Clear();
+        Scheduler::Enable();
+        wait->event.Wait();
+
+        if (status)
+            *status = SiginfoStatus(wait->siginfo);
+
+        debug_print("Waitpid done\n");
+        return wait->siginfo.si_pid;
     }
 } // namespace Dispatcher

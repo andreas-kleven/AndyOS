@@ -4,6 +4,7 @@
 #include "Memory/memory.h"
 #include "elf.h"
 #include "scheduler.h"
+#include "dispatcher.h"
 #include "Kernel/task.h"
 #include "string.h"
 #include "Lib/debug.h"
@@ -12,10 +13,7 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 {
 	this->flags = flags;
 	this->addr_space = addr_space;
-	this->next = 0;
-	this->main_thread = 0;
 	this->stack_ptr = STACK_BASE;
-	this->heap_end = 0;
 	this->filetable = Filetable(3);
 
 	for (int i = 0; i < SIGNAL_TABLE_SIZE; i++)
@@ -38,7 +36,7 @@ namespace ProcessManager
 		return proc->id;
 	}
 
-	PROCESS *AddProcess(PROCESS *proc)
+	PROCESS *AddProcess(PROCESS *proc, PROCESS *parent)
 	{
 		if (!proc)
 			return 0;
@@ -46,8 +44,23 @@ namespace ProcessManager
 		if (proc->id <= 0)
 			AssignPid(proc);
 
+		proc->parent = parent;
 		proc->next = first;
 		first = proc;
+
+		if (parent)
+		{
+			if (parent->first_child)
+			{
+				proc->next_sibling = proc->first_child;
+				proc->first_child = proc;
+			}
+			else
+			{
+				parent->first_child = proc;
+				proc->next_sibling = 0;
+			}
+		}
 
 		//Start threads
 		THREAD *thread = proc->main_thread;
@@ -60,16 +73,8 @@ namespace ProcessManager
 		return proc;
 	}
 
-	STATUS Terminate(PROCESS *proc)
+	void RemoveProcess(PROCESS *proc)
 	{
-		debug_print("Terminate pid:%d\n", proc->id);
-		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
-		VMem::SwapAddressSpace(proc->addr_space);
-		FreeAllMemory(proc);
-		CloseFiles(proc);
-		StopThreads(proc);
-		VMem::SwapAddressSpace(old_space);
-		return STATUS_SUCCESS;
 	}
 
 	THREAD *CreateThread(PROCESS *proc, void (*entry)())
@@ -101,7 +106,7 @@ namespace ProcessManager
 			void *phys = PMem::AllocBlocks(blocks);
 			VMem::MapPages(virt, phys, blocks, flags);
 
-			thread = Task::CreateUserThread(entry, (void*)proc->stack_ptr);
+			thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
 			break;
 		}
 
@@ -195,6 +200,16 @@ namespace ProcessManager
 		return true;
 	}
 
+	void Terminate(PROCESS *proc)
+	{
+		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
+		VMem::SwapAddressSpace(proc->addr_space);
+		FreeAllMemory(proc);
+		CloseFiles(proc);
+		StopThreads(proc);
+		VMem::SwapAddressSpace(old_space);
+	}
+
 	void *AdjustHeap(PROCESS *proc, int increment)
 	{
 		size_t prev_end = proc->heap_end;
@@ -226,6 +241,22 @@ namespace ProcessManager
 
 		proc->heap_end = next_end;
 		return (void *)prev_end;
+	}
+
+	void Exit(PROCESS *proc, int code)
+	{
+		Scheduler::Disable();
+		debug_print("Exit code:%d pid:%d\n", code, proc->id);
+
+		proc->siginfo.si_pid = proc->id;
+		proc->siginfo.si_status = code;
+		proc->siginfo.si_code = CLD_EXITED;
+		proc->state = PROCESS_STATE_ZOMBIE;
+
+		Scheduler::Enable();
+
+		Dispatcher::HandleSignal(proc);
+		Terminate(proc);
 	}
 
 	PROCESS *GetProcess(pid_t id)

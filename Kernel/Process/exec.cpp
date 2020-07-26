@@ -148,7 +148,7 @@ namespace ProcessManager
                     return 0;
 
                 VMem::SwapAddressSpace(old_space);
-                return AddProcess(proc);
+                return AddProcess(proc, NULL);
             }
         }
 

@@ -70,7 +70,7 @@ namespace ProcessManager
 
 		VMem::SwapAddressSpace(proc->addr_space);
 
-		if (!AddProcess(newproc))
+		if (!AddProcess(newproc, proc))
 			return 0;
 
 		debug_print("Fork complete\n");

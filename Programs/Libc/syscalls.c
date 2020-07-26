@@ -17,7 +17,7 @@ int set_err(int ret)
 {
     if (ret < 0)
     {
-        errno = ret;
+        errno = -ret;
         return -1;
     }
 
@@ -52,11 +52,6 @@ mode_t umask(mode_t mask)
 }
 
 int lstat(const char *path, struct stat *buf)
-{
-    return 0;
-}
-
-pid_t wait3(int *wstatus, int options, struct rusage *rusage)
 {
     return 0;
 }
@@ -116,27 +111,6 @@ int tcsetpgrp(int fd, pid_t pgrp)
     return 0;
 }
 
-pid_t vfork()
-{
-    pid_t pid;
-
-    pid = fork();
-
-    if (!pid)
-    {
-        return 0;
-    }
-    else
-    {
-        //TODO
-        while (true)
-            sleep(1000);
-        
-        //if (waitpid(pid, NULL, 0) < 0)
-            return pid;
-    }
-}
-
 ////
 
 int *__errno()
@@ -188,6 +162,11 @@ pid_t _fork()
     return set_err(syscall0(SYSCALL_FORK));
 }
 
+pid_t vfork()
+{
+    return fork();
+}
+
 int _fstat(int fd, struct stat *st)
 {
     return set_err(syscall2(SYSCALL_FSTAT, fd, st));
@@ -215,7 +194,7 @@ int _gettimeofday(struct timeval *p, void *z)
 
 int _isatty(int fd)
 {
-    return 0;
+    return 1;
 }
 
 int _kill(int pid, int sig)
@@ -236,7 +215,7 @@ off_t _lseek(int fd, off_t offset, int whence)
 // TODO
 //int open(const char *pathname, int flags);
 //int open(const char *pathname, int flags, mode_t mode);
-int open(const char *name, int flags, ...)
+int _open(const char *name, int flags, ...)
 {
     return set_err(syscall2(SYSCALL_OPEN, name, flags));
 }
@@ -258,7 +237,15 @@ caddr_t _sbrk(intptr_t increment)
 
 sig_t signal(int signum, sig_t handler)
 {
-    return (sig_t)set_err(syscall2(SYSCALL_SIGNAL, signum, handler));
+    int ret = syscall2(SYSCALL_SIGNAL, signum, handler);
+
+    if (ret < 0)
+    {
+        errno = -ret;
+        return SIG_ERR;
+    }
+
+    return (sig_t)ret;
 }
 
 int _stat(const char *file, struct stat *st)
@@ -283,8 +270,28 @@ int usleep(useconds_t usec)
 
 int _wait(int *status)
 {
-    return set_err(syscall1(SYSCALL_WAIT, status));
+    return waitpid(-1, status, 0);
 }
+
+pid_t wait3(int *status, int options, struct rusage *rusage)
+{
+    return waitpid(-1, status, options);
+}
+
+pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage)
+{
+    return waitpid(pid, status, options);
+}
+
+int waitpid(pid_t pid, int *status, int options)
+{
+    return set_err(syscall3(SYSCALL_WAITPID, pid, status, options));
+}
+
+/*int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options)
+{
+    return set_err(syscall4(SYSCALL_WAITID, idtype, id, infop, options));
+}*/
 
 ssize_t _write(int fd, const char *buf, size_t size)
 {
