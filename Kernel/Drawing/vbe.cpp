@@ -1,6 +1,6 @@
-#include "vbe.h"
-#include "video.h"
-#include "string.h"
+#include <Drawing/vbe.h>
+#include <video.h>
+#include <string.h>
 
 VBEVideoMode::VBEVideoMode(VBE_MODE_INFO* info) 
 	: VideoMode(info->width, info->height, info->bpp, info->framebuffer)

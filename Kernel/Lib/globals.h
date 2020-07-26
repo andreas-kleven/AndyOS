@@ -1,9 +1,9 @@
 #pragma once
-#include "Memory/memory.h"
-#include "math.h"
-#include "types.h"
-#include "string.h"
-#include "Lib/debug.h"
+#include <memory.h>
+#include <math.h>
+#include <types.h>
+#include <string.h>
+#include <debug.h>
 
 size_t mem_left = 0;
 uint8* mem_ptr = 0;

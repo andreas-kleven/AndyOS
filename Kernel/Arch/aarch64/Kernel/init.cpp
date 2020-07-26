@@ -1,4 +1,4 @@
-#include "Arch/init.h"
+#include <Arch/init.h>
 
 namespace Kernel::Arch
 {

@@ -1,6 +1,6 @@
-#include "task.h"
-#include "Arch/task.h"
-#include "Lib/debug.h"
+#include <Kernel/task.h>
+#include <Arch/task.h>
+#include <debug.h>
 
 namespace Task
 {

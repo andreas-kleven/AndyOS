@@ -1,34 +1,34 @@
-#include "test.h"
-#include "panic.h"
-#include "stdio.h"
-#include "math.h"
-#include "PCI/pci.h"
-#include "Drivers/ata.h"
-#include "Drivers/ac97.h"
-#include "Drivers/e1000.h"
-#include "Net/arp.h"
-#include "Net/net.h"
-#include "Net/socketmanager.h"
-#include "Net/tcpsession.h"
-#include "Net/udp.h"
-#include "Net/packetmanager.h"
-#include "Process/scheduler.h"
-#include "Drivers/serial.h"
-#include "Drivers/keyboard.h"
-#include "Drivers/rtc.h"
-#include "FS/vfs.h"
-#include "FS/devfs.h"
-#include "FS/pipefs.h"
-#include "FS/sockfs.h"
-#include "FS/iso.h"
-#include "FS/ext2.h"
-#include "Process/process.h"
-#include "Process/dispatcher.h"
-#include "sync.h"
-#include "task.h"
-#include "timer.h"
-#include "syscall_list.h"
-#include "debug.h"
+#include <Kernel/test.h>
+#include <panic.h>
+#include <stdio.h>
+#include <math.h>
+#include <pci.h>
+#include <Drivers/ata.h>
+#include <Drivers/ac97.h>
+#include <Drivers/e1000.h>
+#include <Net/arp.h>
+#include <net.h>
+#include <Net/socketmanager.h>
+#include <Net/tcpsession.h>
+#include <Net/udp.h>
+#include <Net/packetmanager.h>
+#include <Process/scheduler.h>
+#include <Drivers/serial.h>
+#include <Drivers/keyboard.h>
+#include <Drivers/rtc.h>
+#include <FS/vfs.h>
+#include <FS/devfs.h>
+#include <FS/pipefs.h>
+#include <FS/sockfs.h>
+#include <FS/iso.h>
+#include <FS/ext2.h>
+#include <Process/process.h>
+#include <Process/dispatcher.h>
+#include <sync.h>
+#include <Kernel/task.h>
+#include <Kernel/timer.h>
+#include <syscall_list.h>
+#include <debug.h>
 
 namespace Test
 {
@@ -109,7 +109,7 @@ namespace Test
 		//ProcessManager::Exec("1mndlbrt");
 
 #ifdef __i386__
-#include "Arch/regs.h"
+#include <Arch/regs.h>
 		while (1)
 		{
 			Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
@@ -356,7 +356,7 @@ namespace Test
 	void Start()
 	{
 		Mount();
-		InitNet();
+		//InitNet();
 		GUI();
 		//_Memory();
 		//File();

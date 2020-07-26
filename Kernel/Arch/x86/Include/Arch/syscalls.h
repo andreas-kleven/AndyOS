@@ -1,5 +1,5 @@
 #pragma once
-#include "Process/dispatcher.h"
+#include <Process/dispatcher.h>
 
 namespace Syscalls::Arch
 {

@@ -1,5 +1,5 @@
-#include "pipe.h"
-#include "string.h"
+#include <FS/pipe.h>
+#include <string.h>
 
 Pipe::Pipe(int buf_size)
 {

@@ -1,5 +1,5 @@
-#include "Arch/timer.h"
-#include "Arch/pit.h"
+#include <Arch/timer.h>
+#include <Arch/pit.h>
 
 namespace Timer::Arch
 {

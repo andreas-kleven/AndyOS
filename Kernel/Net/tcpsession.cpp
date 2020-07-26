@@ -1,9 +1,8 @@
-#include "tcpsession.h"
-#include "tcp.h"
-#include "socketmanager.h"
-#include "math.h"
-#include "errno.h"
-#include "debug.h"
+#include <Net/tcp.h>
+#include <Net/socketmanager.h>
+#include <math.h>
+#include <errno.h>
+#include <debug.h>
 
 TcpSession::TcpSession()
 {

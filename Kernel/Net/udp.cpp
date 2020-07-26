@@ -1,8 +1,8 @@
-#include "net.h"
-#include "udp.h"
-#include "packetmanager.h"
-#include "socketmanager.h"
-#include "Lib/debug.h"
+#include <net.h>
+#include <Net/udp.h>
+#include <Net/packetmanager.h>
+#include <Net/socketmanager.h>
+#include <debug.h>
 
 namespace UDP
 {

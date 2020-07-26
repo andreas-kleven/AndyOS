@@ -1,12 +1,11 @@
-#include "tcp.h"
-#include "tcp.h"
-#include "tcpsession.h"
-#include "packetmanager.h"
-#include "hal.h"
-#include "math.h"
-#include "list.h"
-#include "sync.h"
-#include "debug.h"
+#include <Net/tcp.h>
+#include <Net/tcpsession.h>
+#include <Net/packetmanager.h>
+#include <hal.h>
+#include <math.h>
+#include <list.h>
+#include <sync.h>
+#include <debug.h>
 
 namespace TCP
 {

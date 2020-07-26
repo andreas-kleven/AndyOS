@@ -1,9 +1,9 @@
-#include "eth.h"
-#include "Lib/debug.h"
-#include "packetmanager.h"
-#include "ipv4.h"
-#include "arp.h"
-#include "string.h"
+#include <Net/eth.h>
+#include <Net/arp.h>
+#include <Net/ipv4.h>
+#include <Net/packetmanager.h>
+#include <string.h>
+#include <debug.h>
 
 namespace ETH
 {

@@ -1,8 +1,8 @@
-#include "iso.h"
-#include "string.h"
-#include "vfs.h"
-#include "Drivers/driver.h"
-#include "Lib/debug.h"
+#include <FS/iso.h>
+#include <string.h>
+#include <FS/vfs.h>
+#include <driver.h>
+#include <debug.h>
 
 int IsoFS::Mount(BlockDriver *driver)
 {

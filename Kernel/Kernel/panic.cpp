@@ -1,10 +1,10 @@
-#include "panic.h"
-#include "string.h"
-#include "stdio.h"
-#include "hal.h"
-#include "Process/process.h"
-#include "Process/scheduler.h"
-#include "Lib/debug.h"
+#include <panic.h>
+#include <string.h>
+#include <stdio.h>
+#include <hal.h>
+#include <Process/process.h>
+#include <Process/scheduler.h>
+#include <debug.h>
 
 bool prev_panic = false;
 

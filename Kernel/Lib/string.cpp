@@ -1,6 +1,6 @@
-#include "string.h"
-#include "types.h"
-#include "ctype.h"
+#include <string.h>
+#include <types.h>
+#include <ctype.h>
 
 int strcmp(const char* str1, const char* str2)
 {

@@ -1,13 +1,13 @@
-#include "dispatcher.h"
-#include "Kernel/task.h"
-#include "Process/scheduler.h"
-#include "hal.h"
-#include "syscalls.h"
-#include "queue.h"
-#include "list.h"
-#include "sync.h"
-#include "string.h"
-#include "errno.h"
+#include <Process/dispatcher.h>
+#include <Kernel/task.h>
+#include <Process/scheduler.h>
+#include <hal.h>
+#include <syscalls.h>
+#include <queue.h>
+#include <list.h>
+#include <sync.h>
+#include <string.h>
+#include <errno.h>
 
 namespace Dispatcher
 {

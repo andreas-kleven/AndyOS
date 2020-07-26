@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Memory/memory.h"
+#include <types.h>
+#include <memory.h>
 
 namespace VMem::Arch
 {

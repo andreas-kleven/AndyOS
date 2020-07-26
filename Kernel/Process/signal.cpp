@@ -1,10 +1,10 @@
-#include "process.h"
-#include "Arch/process.h"
-#include "dispatcher.h"
-#include "scheduler.h"
-#include "sync.h"
-#include "errno.h"
-#include "debug.h"
+#include <Process/process.h>
+#include <Arch/process.h>
+#include <Process/dispatcher.h>
+#include <Process/scheduler.h>
+#include <sync.h>
+#include <errno.h>
+#include <debug.h>
 
 namespace ProcessManager
 {

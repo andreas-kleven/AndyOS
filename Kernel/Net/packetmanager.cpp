@@ -1,6 +1,6 @@
-#include "packetmanager.h"
-#include "sync.h"
-#include "Process/scheduler.h"
+#include <Net/packetmanager.h>
+#include <sync.h>
+#include <Process/scheduler.h>
 
 namespace PacketManager
 {

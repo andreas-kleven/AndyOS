@@ -1,11 +1,11 @@
-#include "Arch/exec.h"
-#include "process.h"
-#include "hal.h"
-#include "elf.h"
-#include "string.h"
-#include "Kernel/task.h"
-#include "scheduler.h"
-#include "debug.h"
+#include <Arch/exec.h>
+#include <Process/process.h>
+#include <hal.h>
+#include <Process/elf.h>
+#include <string.h>
+#include <Kernel/task.h>
+#include <Process/scheduler.h>
+#include <debug.h>
 
 namespace ProcessManager
 {

@@ -1,13 +1,13 @@
-#include "process.h"
-#include "FS/vfs.h"
-#include "hal.h"
-#include "Memory/memory.h"
-#include "elf.h"
-#include "scheduler.h"
-#include "dispatcher.h"
-#include "Kernel/task.h"
-#include "string.h"
-#include "Lib/debug.h"
+#include <Process/process.h>
+#include <FS/vfs.h>
+#include <hal.h>
+#include <memory.h>
+#include <Process/elf.h>
+#include <Process/scheduler.h>
+#include <Process/dispatcher.h>
+#include <Kernel/task.h>
+#include <string.h>
+#include <debug.h>
 
 PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 {

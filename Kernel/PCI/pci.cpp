@@ -1,6 +1,6 @@
-#include "PCI/pci.h"
-#include "hal.h"
-#include "Lib/debug.h"
+#include <pci.h>
+#include <hal.h>
+#include <debug.h>
 
 PciDevice::PciDevice(int bus, int device, int func)
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include <types.h>
 
 #define SIGINFO_ANY(siginfo) (siginfo.si_code != 0)
 

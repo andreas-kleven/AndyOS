@@ -1,9 +1,8 @@
-#include "pmem.h"
-#include "memory.h"
-#include "hal.h"
-#include "string.h"
-#include "debug.h"
-#include "Process/scheduler.h"
+#include <memory.h>
+#include <hal.h>
+#include <string.h>
+#include <debug.h>
+#include <Process/scheduler.h>
 
 namespace PMem
 {

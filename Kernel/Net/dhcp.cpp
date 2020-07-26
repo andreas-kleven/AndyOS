@@ -1,5 +1,5 @@
-#include "dhcp.h"
-#include "Lib/debug.h"
+#include <Net/dhcp.h>
+#include <debug.h>
 
 #define BOOTREQUEST 1
 #define BOOTREPLY 2

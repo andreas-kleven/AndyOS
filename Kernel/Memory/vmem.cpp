@@ -1,10 +1,9 @@
-#include "vmem.h"
-#include "memory.h"
-#include "Arch/memory.h"
-#include "Kernel/kernel.h"
-#include "string.h"
-#include "Lib/debug.h"
-#include "Process/scheduler.h"
+#include <memory.h>
+#include <Arch/memory.h>
+#include <kernel.h>
+#include <string.h>
+#include <debug.h>
+#include <Process/scheduler.h>
 
 namespace VMem
 {

@@ -1,9 +1,9 @@
-#include "sockfs.h"
-#include "vfs.h"
-#include "string.h"
-#include "errno.h"
-#include "Net/socketmanager.h"
-#include "Lib/debug.h"
+#include <FS/sockfs.h>
+#include <FS/vfs.h>
+#include <string.h>
+#include <errno.h>
+#include <Net/socketmanager.h>
+#include <debug.h>
 
 int SockFS::Mount(BlockDriver *driver)
 {

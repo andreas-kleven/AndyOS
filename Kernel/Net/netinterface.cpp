@@ -1,4 +1,4 @@
-#include "netinterface.h"
+#include <Net/netinterface.h>
 
 NetInterface::NetInterface(PciDevice *pci_dev)
 {

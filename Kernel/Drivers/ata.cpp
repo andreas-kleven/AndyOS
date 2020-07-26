@@ -1,12 +1,12 @@
-#include "ata.h"
-#include "io.h"
-#include "irq.h"
-#include "hal.h"
-#include "FS/iso.h"
-#include "string.h"
-#include "math.h"
-#include "Lib/debug.h"
-#include "Process/scheduler.h"
+#include <Drivers/ata.h>
+#include <io.h>
+#include <irq.h>
+#include <hal.h>
+#include <FS/iso.h>
+#include <string.h>
+#include <math.h>
+#include <debug.h>
+#include <Process/scheduler.h>
 
 ATADriver::ATADriver(int bus, int drive)
 {

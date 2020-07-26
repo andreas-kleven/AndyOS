@@ -1,7 +1,7 @@
-#include "Arch/process.h"
-#include "Arch/regs.h"
-#include "Process/thread.h"
-#include "Lib/debug.h"
+#include <Arch/process.h>
+#include <Arch/regs.h>
+#include <Process/thread.h>
+#include <debug.h>
 
 namespace ProcessManager::Arch
 {

@@ -1,11 +1,11 @@
-#include "scheduler.h"
-#include "Arch/scheduler.h"
-#include "hal.h"
-#include "Memory/memory.h"
-#include "Kernel/task.h"
-#include "Kernel/timer.h"
-#include "string.h"
-#include "Lib/debug.h"
+#include <Process/scheduler.h>
+#include <Arch/scheduler.h>
+#include <hal.h>
+#include <memory.h>
+#include <Kernel/task.h>
+#include <Kernel/timer.h>
+#include <string.h>
+#include <debug.h>
 
 namespace Scheduler
 {

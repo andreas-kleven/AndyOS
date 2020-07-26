@@ -1,7 +1,7 @@
-#include "icmp.h"
-#include "net.h"
-#include "packetmanager.h"
-#include "debug.h"
+#include <Net/icmp.h>
+#include <net.h>
+#include <Net/packetmanager.h>
+#include <debug.h>
 
 namespace ICMP
 {

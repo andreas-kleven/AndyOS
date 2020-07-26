@@ -1,7 +1,7 @@
-#include "driver.h"
-#include "ata.h"
-#include "mouse.h"
-#include "string.h"
+#include <driver.h>
+#include <Drivers/ata.h>
+#include <Drivers/mouse.h>
+#include <string.h>
 
 namespace DriverManager
 {

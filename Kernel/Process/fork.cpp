@@ -1,8 +1,8 @@
-#include "process.h"
-#include "dispatcher.h"
-#include "scheduler.h"
-#include "Kernel/task.h"
-#include "string.h"
+#include <Process/process.h>
+#include <Process/dispatcher.h>
+#include <Process/scheduler.h>
+#include <Kernel/task.h>
+#include <string.h>
 
 namespace ProcessManager
 {

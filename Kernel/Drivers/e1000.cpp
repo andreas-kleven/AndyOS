@@ -1,12 +1,12 @@
-#include "e1000.h"
-#include "io.h"
-#include "irq.h"
-#include "hal.h"
-#include "Net/net.h"
-#include "Net/eth.h"
-#include "Net/packetmanager.h"
-#include "Memory/memory.h"
-#include "Lib/debug.h"
+#include <Drivers/e1000.h>
+#include <io.h>
+#include <irq.h>
+#include <hal.h>
+#include <net.h>
+#include <Net/eth.h>
+#include <Net/packetmanager.h>
+#include <memory.h>
+#include <debug.h>
 
 #define REG_CTRL 0x0000
 #define REG_STATUS 0x0008

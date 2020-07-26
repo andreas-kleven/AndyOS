@@ -1,19 +1,19 @@
-#include "Arch/scheduler.h"
-#include "Arch/task.h"
-#include "Arch/idt.h"
-#include "Arch/pit.h"
-#include "Arch/tss.h"
-#include "Arch/pic.h"
-#include "Kernel/task.h"
-#include "Process/thread.h"
-#include "Process/scheduler.h"
-#include "Process/dispatcher.h"
-#include "Memory/memory.h"
-#include "syscalls.h"
-#include "syscall_list.h"
-#include "hal.h"
-#include "string.h"
-#include "debug.h"
+#include <Arch/scheduler.h>
+#include <Arch/task.h>
+#include <Arch/idt.h>
+#include <Arch/pit.h>
+#include <Arch/tss.h>
+#include <Arch/pic.h>
+#include <Kernel/task.h>
+#include <Process/thread.h>
+#include <Process/scheduler.h>
+#include <Process/dispatcher.h>
+#include <memory.h>
+#include <syscalls.h>
+#include <syscall_list.h>
+#include <hal.h>
+#include <string.h>
+#include <debug.h>
 
 namespace Scheduler::Arch
 {

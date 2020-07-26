@@ -1,6 +1,6 @@
-#include "sync.h"
-#include "Kernel/timer.h"
-#include "Process/scheduler.h"
+#include <sync.h>
+#include <Kernel/timer.h>
+#include <Process/scheduler.h>
 
 Event::Event(bool set, bool auto_reset)
 {

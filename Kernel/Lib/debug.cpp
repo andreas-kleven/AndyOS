@@ -1,10 +1,10 @@
-#include "debug.h"
-#include "Drivers/serial.h"
-#include "Drawing/font.h"
-#include "video.h"
-#include "string.h"
-#include "stdio.h"
-#include "math.h"
+#include <debug.h>
+#include <Drivers/serial.h>
+#include <Drawing/font.h>
+#include <video.h>
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
 
 static bool serial;
 static int x;

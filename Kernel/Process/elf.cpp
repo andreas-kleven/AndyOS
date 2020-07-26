@@ -1,8 +1,8 @@
-#include "elf.h"
-#include "hal.h"
-#include "FS/vfs.h"
-#include "Lib/debug.h"
-#include "string.h"
+#include <Process/elf.h>
+#include <hal.h>
+#include <FS/vfs.h>
+#include <debug.h>
+#include <string.h>
 
 namespace ELF
 {

@@ -1,8 +1,8 @@
-#include "socketmanager.h"
-#include "net.h"
-#include "sync.h"
-#include "list.h"
-#include "FS/vfs.h"
+#include <Net/socketmanager.h>
+#include <net.h>
+#include <sync.h>
+#include <list.h>
+#include <FS/vfs.h>
 
 namespace SocketManager
 {

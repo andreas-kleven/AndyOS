@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Kernel/task.h"
+#include <types.h>
+#include <Kernel/task.h>
 
 #define SCHEDULE_IRQ 32
 

@@ -1,8 +1,8 @@
-#include "types.h"
-#include "multiboot.h"
-#include "Kernel/kernel.h"
-#include "Drawing/vbe.h"
-#include "Lib/globals.h"
+#include <types.h>
+#include <Boot/multiboot.h>
+#include <kernel.h>
+#include <Drawing/vbe.h>
+#include <globals.h>
 
 extern size_t __START_CTORS, __END_CTORS;
 

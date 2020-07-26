@@ -1,5 +1,5 @@
-#include "address.h"
-#include "net.h"
+#include <net.h>
+#include <Net/address.h>
 
 MacAddress::MacAddress()
 {

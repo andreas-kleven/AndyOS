@@ -1,18 +1,18 @@
-#include "kernel.h"
-#include "test.h"
-#include "Arch/init.h"
-#include "Drivers/serial.h"
-#include "Drivers/ata.h"
-#include "Drivers/mouse.h"
-#include "Drivers/keyboard.h"
-#include "Memory/memory.h"
-#include "Process/scheduler.h"
-#include "Process/dispatcher.h"
-#include "FS/vfs.h"
-#include "video.h"
-#include "task.h"
-#include "syscalls.h"
-#include "debug.h"
+#include <kernel.h>
+#include <Kernel/test.h>
+#include <Arch/init.h>
+#include <Drivers/serial.h>
+#include <Drivers/ata.h>
+#include <Drivers/mouse.h>
+#include <Drivers/keyboard.h>
+#include <memory.h>
+#include <Process/scheduler.h>
+#include <Process/dispatcher.h>
+#include <FS/vfs.h>
+#include <video.h>
+#include <Kernel/task.h>
+#include <syscalls.h>
+#include <debug.h>
 
 extern size_t __KERNEL_START, __KERNEL_END;
 

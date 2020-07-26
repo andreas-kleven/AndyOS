@@ -1,6 +1,6 @@
-#include "filetable.h"
-#include "math.h"
-#include "debug.h"
+#include <Process/filetable.h>
+#include <math.h>
+#include <debug.h>
 
 Filetable::Filetable(int reserved)
 {

@@ -1,6 +1,6 @@
-#include "ext2.h"
-#include "string.h"
-#include "debug.h"
+#include <FS/ext2.h>
+#include <string.h>
+#include <debug.h>
 
 int Ext2FS::Mount(BlockDriver *driver)
 {

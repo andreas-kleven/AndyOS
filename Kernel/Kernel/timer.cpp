@@ -1,6 +1,6 @@
-#include "timer.h"
-#include "Arch/timer.h"
-#include "hal.h"
+#include <Kernel/timer.h>
+#include <Arch/timer.h>
+#include <hal.h>
 
 namespace Timer
 {

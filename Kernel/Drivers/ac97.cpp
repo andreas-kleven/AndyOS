@@ -1,11 +1,11 @@
-#include "ac97.h"
-#include "hal.h"
-#include "io.h"
-#include "irq.h"
-#include "Kernel/timer.h"
-#include "Lib/debug.h"
-#include "string.h"
-#include "math.h"
+#include <Drivers/ac97.h>
+#include <hal.h>
+#include <io.h>
+#include <irq.h>
+#include <Kernel/timer.h>
+#include <debug.h>
+#include <string.h>
+#include <math.h>
 
 #define AC97_NAM_RESET			0x00
 #define AC97_NAM_MASTER_VOLUME	0x02

@@ -1,7 +1,7 @@
-#include "devfs.h"
-#include "vfs.h"
-#include "string.h"
-#include "Drivers/driver.h"
+#include <FS/devfs.h>
+#include <FS/vfs.h>
+#include <string.h>
+#include <driver.h>
 
 int DevFS::Mount(BlockDriver *driver)
 {

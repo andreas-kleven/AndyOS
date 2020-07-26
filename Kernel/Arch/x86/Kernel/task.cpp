@@ -1,9 +1,9 @@
-#include "Arch/task.h"
-#include "Arch/idt.h"
-#include "Arch/regs.h"
-#include "Process/thread.h"
-#include "Memory/memory.h"
-#include "string.h"
+#include <Arch/task.h>
+#include <Arch/idt.h>
+#include <Arch/regs.h>
+#include <Process/thread.h>
+#include <memory.h>
+#include <string.h>
 
 uint8 __attribute__((aligned(16))) fpu_state[512];
 

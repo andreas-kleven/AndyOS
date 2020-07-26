@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Process/process.h"
+#include <types.h>
+#include <Process/process.h>
 
 namespace ProcessManager::Arch
 {

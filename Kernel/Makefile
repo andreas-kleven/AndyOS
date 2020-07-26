@@ -19,8 +19,7 @@ ASM_FILES2 += $(wildcard $(ARCH_DIR)/**/*.asm)
 OBJ_FILES += $(patsubst %.asm,$(OBJ_DIR)/%_.o,$(ASM_FILES2))
 endif
 
-INC_SRCH_PATH := -I.
-INC_SRCH_PATH += -IInclude
+INC_SRCH_PATH := -IInclude
 INC_SRCH_PATH += -ILib
 INC_SRCH_PATH += -I$(ARCH_DIR)/Include
 

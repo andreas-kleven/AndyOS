@@ -1,8 +1,8 @@
-#include "net.h"
-#include "eth.h"
-#include "arp.h"
-#include "udp.h"
-#include "Lib/debug.h"
+#include <net.h>
+#include <Net/eth.h>
+#include <Net/arp.h>
+#include <Net/udp.h>
+#include <debug.h>
 
 uint16 htons(uint16 val)
 {

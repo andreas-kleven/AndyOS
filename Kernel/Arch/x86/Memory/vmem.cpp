@@ -1,6 +1,6 @@
-#include "Arch/memory.h"
-#include "string.h"
-#include "debug.h"
+#include <Arch/memory.h>
+#include <string.h>
+#include <debug.h>
 
 #define PAGE_DIR_INDEX(x) 	((size_t(x) >> 22) & 0x3FF)
 #define PAGE_TABLE_INDEX(x) ((size_t(x) >> 12) & 0x3FF)

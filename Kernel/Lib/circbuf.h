@@ -1,6 +1,6 @@
 #pragma once
-#include "Lib/debug.h"
-#include "sync.h"
+#include <debug.h>
+#include <sync.h>
 
 class CircularDataBuffer
 {

@@ -1,9 +1,9 @@
-#include "stdio.h"
-#include "string.h"
-#include "stdio.h"
-#include "ctype.h"
-#include "limits.h"
-#include "math.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <limits.h>
+#include <math.h>
 
 static char digitchars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 

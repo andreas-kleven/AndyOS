@@ -1,9 +1,9 @@
-#include "syscalls.h"
-#include "Arch/scheduler.h"
-#include "Arch/idt.h"
-#include "Kernel/task.h"
-#include "syscall_list.h"
-#include "debug.h"
+#include <syscalls.h>
+#include <Arch/scheduler.h>
+#include <Arch/idt.h>
+#include <Kernel/task.h>
+#include <syscall_list.h>
+#include <debug.h>
 
 namespace Syscalls::Arch
 {

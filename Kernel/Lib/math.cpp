@@ -1,5 +1,5 @@
-#include "math.h"
-#include "types.h"
+#include <math.h>
+#include <types.h>
 
 float fact(float number)
 {

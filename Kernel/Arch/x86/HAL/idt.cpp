@@ -1,6 +1,6 @@
-#include "Arch/idt.h"
-#include "Arch/pic.h"
-#include "string.h"
+#include <Arch/idt.h>
+#include <Arch/pic.h>
+#include <string.h>
 
 namespace IDT
 {

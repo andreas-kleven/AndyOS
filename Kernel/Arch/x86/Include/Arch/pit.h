@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "idt.h"
+#include <types.h>
+#include <Arch/idt.h>
 
 #define PIT_FREQUENCY 1000
 

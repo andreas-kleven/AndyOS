@@ -1,12 +1,12 @@
-#include "socket.h"
-#include "socketmanager.h"
-#include "packetmanager.h"
-#include "udp.h"
-#include "tcp.h"
-#include "unix.h"
-#include "errno.h"
-#include "string.h"
-#include "debug.h"
+#include <Net/socket.h>
+#include <Net/socketmanager.h>
+#include <Net/packetmanager.h>
+#include <Net/udp.h>
+#include <Net/tcp.h>
+#include <Net/unix.h>
+#include <errno.h>
+#include <string.h>
+#include <debug.h>
 
 Socket::Socket()
 {

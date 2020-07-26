@@ -1,7 +1,7 @@
-#include "Arch/mvideo.h"
-#include "Arch/uart.h"
-#include "Arch/mailbox.h"
-#include "string.h"
+#include <Arch/mvideo.h>
+#include <Arch/uart.h>
+#include <Arch/mailbox.h>
+#include <string.h>
 
 MVideoMode::MVideoMode(int width, int height, int depth)
 {

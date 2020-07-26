@@ -1,10 +1,10 @@
-#include "mouse.h"
-#include "hal.h"
-#include "io.h"
-#include "irq.h"
-#include "circbuf.h"
-#include "math.h"
-#include "string.h"
+#include <Drivers/mouse.h>
+#include <hal.h>
+#include <io.h>
+#include <irq.h>
+#include <circbuf.h>
+#include <math.h>
+#include <string.h>
 
 #define MOUSE_IRQ 12
 #define MOUSE_PORT0 0x60

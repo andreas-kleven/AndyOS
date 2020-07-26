@@ -1,9 +1,9 @@
-#include "arp.h"
-#include "net.h"
-#include "sync.h"
-#include "Process/scheduler.h"
-#include "Kernel/timer.h"
-#include "Lib/debug.h"
+#include <Net/arp.h>
+#include <net.h>
+#include <sync.h>
+#include <Process/scheduler.h>
+#include <Kernel/timer.h>
+#include <debug.h>
 
 #define ARP_REQUEST 1
 #define ARP_REPLY 2

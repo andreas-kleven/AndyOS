@@ -1,6 +1,6 @@
-#include "video.h"
-#include "Memory/memory.h"
-#include "string.h"
+#include <video.h>
+#include <memory.h>
+#include <string.h>
 
 namespace Video
 {

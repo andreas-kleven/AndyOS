@@ -1,7 +1,7 @@
-#include "path.h"
-#include "ctype.h"
-#include "string.h"
-#include "debug.h"
+#include <FS/path.h>
+#include <ctype.h>
+#include <string.h>
+#include <debug.h>
 
 Path::Path()
 {

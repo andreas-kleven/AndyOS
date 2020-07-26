@@ -1,5 +1,5 @@
-#include "sync.h"
-#include "Process/scheduler.h"
+#include <sync.h>
+#include <Process/scheduler.h>
 
 Mutex::Mutex()
 {

@@ -1,6 +1,6 @@
-#include "Arch/memory.h"
-#include "Memory/memory.h"
-#include "types.h"
+#include <Arch/memory.h>
+#include <memory.h>
+#include <types.h>
 
 namespace VMem::Arch
 {

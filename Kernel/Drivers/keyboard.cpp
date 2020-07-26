@@ -1,11 +1,11 @@
-#include "keyboard.h"
-#include "hal.h"
-#include "io.h"
-#include "irq.h"
-#include "string.h"
-#include "ctype.h"
-#include "Lib/circbuf.h"
-#include "Lib/debug.h"
+#include <Drivers/keyboard.h>
+#include <hal.h>
+#include <io.h>
+#include <irq.h>
+#include <string.h>
+#include <ctype.h>
+#include <circbuf.h>
+#include <debug.h>
 
 #define KEY_BUFFER_SIZE 32
 

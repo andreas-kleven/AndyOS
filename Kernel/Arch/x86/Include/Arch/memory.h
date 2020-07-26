@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Memory/memory.h"
+#include <types.h>
+#include <memory.h>
 
 #define PAGE_TABLE_LENGTH	1024
 #define PAGE_DIR_LENGTH		1024

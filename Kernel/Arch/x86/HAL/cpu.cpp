@@ -1,4 +1,4 @@
-#include "Arch/cpu.h"
+#include <Arch/cpu.h>
 
 namespace CPU
 {

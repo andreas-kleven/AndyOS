@@ -1,7 +1,7 @@
 #pragma once
-#include "types.h"
-#include "regs.h"
-#include "irq.h"
+#include <types.h>
+#include <Arch/regs.h>
+#include <irq.h>
 
 #define MAX_INTERRUPTS 256
 #define INTERRUPT __attribute__((naked))

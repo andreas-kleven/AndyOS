@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Process/dispatcher.h"
+#include <types.h>
+#include <Process/dispatcher.h>
 
 typedef void (*SYSCALL_HANDLER)();
 

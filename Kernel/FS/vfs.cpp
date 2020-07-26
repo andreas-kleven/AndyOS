@@ -1,16 +1,16 @@
-#include "vfs.h"
-#include "filesystem.h"
-#include "pipe.h"
-#include "string.h"
-#include "math.h"
-#include "fcntl.h"
-#include "pipefs.h"
-#include "sockfs.h"
-#include "Kernel/timer.h"
-#include "Process/dispatcher.h"
-#include "Process/process.h"
-#include "Process/scheduler.h"
-#include "Drivers/driver.h"
+#include <FS/vfs.h>
+#include <FS/filesystem.h>
+#include <FS/pipe.h>
+#include <string.h>
+#include <math.h>
+#include <fcntl.h>
+#include <FS/pipefs.h>
+#include <FS/sockfs.h>
+#include <Kernel/timer.h>
+#include <Process/dispatcher.h>
+#include <Process/process.h>
+#include <Process/scheduler.h>
+#include <driver.h>
 
 namespace VFS
 {

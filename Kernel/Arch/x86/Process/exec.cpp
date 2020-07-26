@@ -1,7 +1,7 @@
-#include "Arch/exec.h"
-#include "Arch/regs.h"
-#include "string.h"
-#include "debug.h"
+#include <Arch/exec.h>
+#include <Arch/regs.h>
+#include <string.h>
+#include <debug.h>
 
 namespace Exec::Arch
 {

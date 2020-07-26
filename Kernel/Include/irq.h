@@ -1,5 +1,5 @@
 #pragma once
-#include "Arch/irqfuncs.h"
+#include <Arch/irqfuncs.h>
 
 namespace IRQ
 {

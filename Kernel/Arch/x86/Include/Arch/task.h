@@ -1,5 +1,5 @@
 #pragma once
-#include "Process/thread.h"
+#include <Process/thread.h>
 
 namespace Task::Arch
 {

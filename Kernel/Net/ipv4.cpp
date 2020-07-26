@@ -1,11 +1,11 @@
-#include "ipv4.h"
-#include "net.h"
-#include "arp.h"
-#include "icmp.h"
-#include "udp.h"
-#include "tcp.h"
-#include "packetmanager.h"
-#include "Lib/debug.h"
+#include <net.h>
+#include <Net/ipv4.h>
+#include <Net/arp.h>
+#include <Net/icmp.h>
+#include <Net/udp.h>
+#include <Net/tcp.h>
+#include <Net/packetmanager.h>
+#include <debug.h>
 
 namespace IPv4
 {

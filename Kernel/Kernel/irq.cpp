@@ -1,5 +1,5 @@
-#include "irq.h"
-#include "Arch/irq.h"
+#include <irq.h>
+#include <Arch/irq.h>
 
 namespace IRQ
 {

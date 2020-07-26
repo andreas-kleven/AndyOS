@@ -1,8 +1,7 @@
-#include "Arch/idt.h"
-
+#include <Arch/idt.h>
+#include <panic.h>
+#include <debug.h>
 #include "exceptions.h"
-#include "panic.h"
-#include "debug.h"
 
 #define PAGE_FAULT_PRESENT				(1 << 0)
 #define PAGE_FAULT_WRITE				(1 << 1)

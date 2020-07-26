@@ -1,8 +1,8 @@
-#include "pipefs.h"
-#include "vfs.h"
-#include "string.h"
-#include "Drivers/driver.h"
-#include "Lib/debug.h"
+#include <FS/pipefs.h>
+#include <FS/vfs.h>
+#include <string.h>
+#include <driver.h>
+#include <debug.h>
 
 int PipeFS::Mount(BlockDriver *driver)
 {

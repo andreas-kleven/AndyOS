@@ -1,5 +1,5 @@
 #pragma once
-#include "panic.h"
+#include <panic.h>
 
 template <class T>
 struct Node
