@@ -92,7 +92,7 @@ namespace ProcessManager
 			VMem::SwapAddressSpace(proc->addr_space);
 
 			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
-			int blocks = 1;
+			int blocks = 16;
 
 			void *virt = (void *)proc->stack_ptr;
 			proc->stack_ptr = (size_t)virt + blocks * BLOCK_SIZE;
