@@ -125,8 +125,7 @@ public:
 
 private:
 	void GetName(ISO_DIRECTORY *dir, char *buf);
-	int GetFlags(int iso_flags);
+	int GetMode(ISO_DIRECTORY *dir);
 	INODE *GetInode(ISO_DIRECTORY *dir, DENTRY *dentry);
-	void FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry);
 	int ReadBlock(int block, void *buf, size_t size);
 };

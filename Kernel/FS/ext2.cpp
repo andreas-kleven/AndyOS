@@ -69,7 +69,6 @@ int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
 
             if (!dentry->inode)
             {
-                FillDentry(dirent, dentry);
                 dentry->inode = ReadInode(dirent->ino, dentry);
                 VFS::AddDentry(parent, dentry);
             }
@@ -102,8 +101,14 @@ INODE *Ext2FS::ReadInode(int ino, DENTRY *dentry)
 
     INODE *inode = VFS::AllocInode(dentry);
     inode->ino = ino;
-    inode->type = raw_inode->type;
+    inode->mode = raw_inode->type;
     inode->size = raw_inode->size;
+    inode->uid = raw_inode->uid;
+    inode->gid = raw_inode->gid;
+    inode->atime = raw_inode->atime;
+    inode->ctime = raw_inode->ctime;
+    inode->mtime = raw_inode->mtime;
+    inode->dtime = raw_inode->dtime;
 
     delete raw_inode;
     return inode;
@@ -120,11 +125,6 @@ EXT_INODE *Ext2FS::ReadRawInode(int ino)
     EXT_BLOCK_GROUP *group = &group_table[block_group];
     driver->Read(group->inode_table * this->block_size + offset, raw_inode, superblock->inode_size);
     return raw_inode;
-}
-
-void Ext2FS::FillDentry(EXT_DIRENT *dirent, DENTRY *dentry)
-{
-    dentry->type = dirent->type;
 }
 
 int Ext2FS::ReadBlock(int block, void *buf, size_t size)

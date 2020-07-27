@@ -196,8 +196,7 @@ DENTRY *SockFS::CreateSocketDentry(int socket_id)
 {
     DENTRY *dentry = VFS::AllocDentry(0, 0);
     dentry->inode = VFS::AllocInode(dentry);
-    dentry->type = INODE_TYPE_SOCKET;
-    dentry->inode->type = INODE_TYPE_SOCKET;
+    dentry->inode->mode = S_IFSOCK;
     dentry->inode->ino = socket_id;
     VFS::AddDentry(root_dentry, dentry);
     return dentry;

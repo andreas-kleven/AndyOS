@@ -131,30 +131,14 @@ namespace Syscalls
 		return (void *)-1;
 	}
 
-	int sys_stat(const char *file, stat *st)
+	int sys_stat(const char *filename, stat *st)
 	{
-		if (file && !VFS::GetDentry(Path(file)))
-			return -ENOENT;
-
-		st->st_dev = 1;
-		st->st_ino = 1;
-		st->st_mode = 1;
-		st->st_nlink = 0;
-		st->st_uid = 0;
-		st->st_gid = 0;
-		st->st_rdev = 0;
-		st->st_size = 100;
-		st->st_blksize = 512;
-		st->st_blocks = 1;
-		st->st_atime = 0;
-		st->st_mtime = 0;
-		st->st_ctime = 0;
-		return 0;
+		return VFS::Stat(filename, st);
 	}
 
 	int sys_fstat(int fd, stat *st)
 	{
-		return sys_stat(0, st);
+		return VFS::Fstat(CurrentFiletable(), fd, st);
 	}
 
 	int sys_kill(pid_t pid, int signo)

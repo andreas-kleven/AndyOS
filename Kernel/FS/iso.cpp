@@ -45,7 +45,6 @@ int IsoFS::GetChildren(DENTRY *parent, const char *find_name)
 
 			if (!dentry->inode)
 			{
-				FillDentry(dir, dentry);
 				dentry->inode = GetInode(dir, dentry);
 				VFS::AddDentry(parent, dentry);
 			}
@@ -90,16 +89,18 @@ void IsoFS::GetName(ISO_DIRECTORY *dir, char *buf)
 	}
 }
 
-int GetType(ISO_DIRECTORY *dir)
+int IsoFS::GetMode(ISO_DIRECTORY *dir)
 {
-	int flags = 0;
+	mode_t mode = 0;
+
+	mode |= S_IRWXU | S_IRWXG | S_IRWXO;
 
 	if (dir->flags & ISO_FLAG_DIRECTORY)
-		flags |= INODE_TYPE_DIRECTORY;
+		mode |= S_IFDIR;
 	else
-		flags |= INODE_TYPE_REGULAR;
+		mode |= S_IFREG;
 
-	return flags;
+	return mode;
 }
 
 INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
@@ -107,17 +108,12 @@ INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
 	INODE *inode = VFS::AllocInode(dentry);
 	inode->ino = dir->location_LSB;
 	inode->size = dir->filesize_LSB;
-	inode->type = GetType(dir);
+	inode->mode = GetMode(dir);
 
 	if (dir == root)
 		inode->ino = 1;
 
 	return inode;
-}
-
-void IsoFS::FillDentry(ISO_DIRECTORY *dir, DENTRY *dentry)
-{
-	dentry->type = GetType(dir);
 }
 
 int IsoFS::ReadBlock(int block, void *buf, size_t size)

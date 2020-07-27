@@ -21,6 +21,27 @@
 #define EXT_DIRENT_SOCKET 6
 #define EXT_DIRENT_SYMLINK 7
 
+#define EXT_PERM_OX (1 << 0)
+#define EXT_PERM_OW (1 << 1)
+#define EXT_PERM_OR (1 << 2)
+#define EXT_PERM_GX (1 << 3)
+#define EXT_PERM_GW (1 << 4)
+#define EXT_PERM_GR (1 << 5)
+#define EXT_PERM_UX (1 << 6)
+#define EXT_PERM_UW (1 << 7)
+#define EXT_PERM_UR (1 << 8)
+#define EXT_PERM_STICKY (1 << 9)
+#define EXT_PERM_SGID (1 << 10)
+#define EXT_PERM_SUID (1 << 11)
+
+#define EXT_INODE_FIFO 0x1000
+#define EXT_INODE_CHAR 0x2000
+#define EXT_INODE_DIRECTORY 0x4000
+#define EXT_INODE_BLOCK 0x6000
+#define EXT_INODE_REGULAR 0x8000
+#define EXT_INODE_SYMLINK 0xA000
+#define EXT_INODE_SOCKET 0xC000
+
 struct EXT2_SUPERBLOCK
 {
     uint32 inodes;
@@ -70,10 +91,10 @@ struct EXT_INODE
     uint16 type;
     uint16 uid;
     uint32 size;
-    uint32 a_time;
-    uint32 c_time;
-    uint32 m_time;
-    uint32 d_time;
+    uint32 atime;
+    uint32 ctime;
+    uint32 mtime;
+    uint32 dtime;
     uint16 gid;
     uint16 hard_links;
     uint32 sectors;
@@ -132,6 +153,5 @@ public:
 private:
     INODE *ReadInode(int ino, DENTRY *dentry);
     EXT_INODE *ReadRawInode(int ino);
-    void FillDentry(EXT_DIRENT *dirent, DENTRY *dentry);
     int ReadBlock(int block, void *buf, size_t size);
 };

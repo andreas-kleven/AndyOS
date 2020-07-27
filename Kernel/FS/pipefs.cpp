@@ -73,8 +73,7 @@ int PipeFS::Create(DENTRY *&dentry, int flags)
     Pipe pipe;
     pipes.Add(pipe);
 
-    dentry->type = INODE_TYPE_FIFO;
-    inode->type = INODE_TYPE_FIFO;
+    inode->mode = S_IFIFO;
     inode->ino = ino;
 
     return 0;

@@ -75,11 +75,12 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 
                 if (!dentry->inode)
                 {
-                    int type = driver_type == DRIVER_TYPE_BLOCK ? INODE_TYPE_BLOCK : INODE_TYPE_CHAR;
-                    dentry->type = type;
+                    int type = driver_type == DRIVER_TYPE_BLOCK ? S_IFBLK : S_IFCHR;
+                    mode_t mode = type;
+                    
                     dentry->inode = VFS::AllocInode(dentry);
                     dentry->inode->ino = driver->id;
-                    dentry->inode->type = type;
+                    dentry->inode->mode = mode;
                     VFS::AddDentry(parent, dentry);
 
                     if (find_name)

@@ -3,6 +3,7 @@
 #include <FS/pipe.h>
 #include <string.h>
 #include <math.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <FS/pipefs.h>
 #include <FS/sockfs.h>
@@ -145,7 +146,7 @@ namespace VFS
 		else
 			root_dentry = dentry;
 
-		dentry->type = INODE_TYPE_DIRECTORY;
+		dentry->inode->mode = S_IFDIR;
 		dentry->owner = fs;
 
 		return 0;
@@ -156,7 +157,7 @@ namespace VFS
 		FILE *file = filetable.Get(oldfd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return filetable.Add(file);
 	}
@@ -166,7 +167,7 @@ namespace VFS
 		FILE *file = filetable.Get(oldfd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		//Close previous file
 		if (filetable.Get(newfd))
@@ -180,7 +181,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		if (cmd == F_DUPFD)
 		{
@@ -203,7 +204,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		GetChildren(file->dentry);
 
@@ -223,27 +224,27 @@ namespace VFS
 			{
 				int type = 0;
 
-				switch (dentry->inode->type)
+				switch (dentry->inode->mode & S_IFMT)
 				{
-				case INODE_TYPE_FIFO:
+				case S_IFIFO:
 					type = DT_FIFO;
 					break;
-				case INODE_TYPE_CHAR:
+				case S_IFCHR:
 					type = DT_CHR;
 					break;
-				case INODE_TYPE_DIRECTORY:
+				case S_IFDIR:
 					type = DT_DIR;
 					break;
-				case INODE_TYPE_BLOCK:
+				case S_IFBLK:
 					type = DT_BLK;
 					break;
-				case INODE_TYPE_REGULAR:
+				case S_IFREG:
 					type = DT_REG;
 					break;
-				case INODE_TYPE_SYMLINK:
+				case S_IFLNK:
 					type = DT_LNK;
 					break;
-				case INODE_TYPE_SOCKET:
+				case S_IFSOCK:
 					type = DT_SOCK;
 					break;
 				default:
@@ -268,22 +269,63 @@ namespace VFS
 			}
 		}
 
-		if (total == 0)
-			return -1;
-
 		return total;
 	}
 
-	int Open(Filetable &filetable, const char *filename)
+	int StatDentry(DENTRY *dentry, stat *st)
+	{
+		if (!dentry || !dentry->inode)
+			return -ENOENT;
+
+		INODE *inode = dentry->inode;
+
+		st->st_dev = 1;
+		st->st_ino = inode->ino;
+		st->st_mode = inode->mode;
+		st->st_nlink = 1;
+		st->st_uid = 0;
+		st->st_gid = 0;
+		st->st_rdev = 0;
+		st->st_size = inode->size;
+		st->st_blksize = 512;
+		st->st_blocks = 1;
+		st->st_atime = inode->atime;
+		st->st_mtime = inode->mtime;
+		st->st_ctime = inode->ctime;
+		return 0;
+	}
+
+	int Stat(const char *filename, stat *st)
 	{
 		if (strcmp(filename, "") == 0) // TODO
-			return -1;
+			return -ENOENT;
 
 		Path path(filename);
 		DENTRY *dentry = GetDentry(path);
 
 		if (!dentry)
-			return -1;
+			return -ENOENT;
+
+		return StatDentry(dentry, st);
+	}
+
+	int Fstat(Filetable &filetable, int fd, stat *st)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -EBADF;
+
+		return StatDentry(file->dentry, st);
+	}
+
+	int Open(Filetable &filetable, const char *filename)
+	{
+		Path path(filename);
+		DENTRY *dentry = GetDentry(path);
+
+		if (!dentry)
+			return -ENOENT;
 
 		FILE *file = new FILE(dentry);
 		int fd = filetable.Add(file);
@@ -301,7 +343,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		if ((ret = file->dentry->owner->Close(file)))
 			return ret;
@@ -318,7 +360,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!IsValidInode(file))
-			return -1;
+			return -ENOENT;
 
 		Driver *owner = file->dentry->owner;
 
@@ -326,8 +368,8 @@ namespace VFS
 		{
 			size = min(size, (size_t)(file->dentry->inode->size - file->pos));
 
-			if ((int)size < 0)
-				return -1;
+			if ((int)size <= 0)
+				return 0;
 		}
 
 		int read = owner->Read(file, dst, size);
@@ -344,7 +386,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!IsValidInode(file))
-			return -1;
+			return -ENOENT;
 
 		Driver *owner = file->dentry->owner;
 		int written = owner->Write(file, buf, size);
@@ -361,7 +403,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!IsValidInode(file))
-			return -1;
+			return -ENOENT;
 
 		INODE *inode = file->dentry->inode;
 
@@ -380,7 +422,7 @@ namespace VFS
 			return 0;
 
 		default:
-			return -1;
+			return -EINVAL;
 		}
 	}
 
@@ -448,13 +490,13 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		DENTRY *dentry;
 		int ret = 0;
 
 		if ((ret = sockfs->Accept(file, addr, addrlen, flags, dentry)))
-			return -1;
+			return ret;
 
 		FILE *client_file = new FILE(dentry);
 		int client_fd = filetable.Add(client_file);
@@ -473,7 +515,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Bind(file, addr, addrlen);
 	}
@@ -483,7 +525,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Connect(file, addr, addrlen);
 	}
@@ -493,7 +535,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Listen(file, backlog);
 	}
@@ -503,7 +545,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Recv(file, buf, len, flags);
 	}
@@ -513,7 +555,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Recvfrom(file, buf, len, flags, src_addr, addrlen);
 	}
@@ -523,7 +565,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Send(file, buf, len, flags);
 	}
@@ -533,7 +575,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Sendto(file, buf, len, flags, dest_addr, addrlen);
 	}
@@ -543,7 +585,7 @@ namespace VFS
 		FILE *file = filetable.Get(fd);
 
 		if (!file)
-			return -1;
+			return -EBADF;
 
 		return sockfs->Shutdown(file, how);
 	}

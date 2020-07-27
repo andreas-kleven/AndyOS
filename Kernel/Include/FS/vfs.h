@@ -2,6 +2,7 @@
 #include <types.h>
 #include <list.h>
 #include <stdio.h>
+#include <stat.h>
 #include <FS/file.h>
 #include <FS/filesystem.h>
 #include <Process/scheduler.h>
@@ -9,27 +10,6 @@
 
 class FileSystem;
 class BlockDriver;
-
-struct stat
-{
-	dev_t st_dev;
-	ino_t st_ino;
-	mode_t st_mode;
-	nlink_t st_nlink;
-	uid_t st_uid;
-	gid_t st_gid;
-	dev_t st_rdev;
-	off_t st_size;
-	time_t st_atime;
-	long st_spare1;
-	time_t st_mtime;
-	long st_spare2;
-	time_t st_ctime;
-	long st_spare3;
-	blksize_t st_blksize;
-	blkcnt_t st_blocks;
-	long st_spare4[2];
-};
 
 namespace VFS
 {
@@ -43,6 +23,9 @@ namespace VFS
 	int DuplicateFile(Filetable &filetable, int oldfd, int newfd);
 	int Fcntl(Filetable &filetable, int fd, int cmd, void *arg);
 	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count);
+	int StatDentry(DENTRY *dentry, stat *st);
+	int Stat(const char *filename, stat *st);
+	int Fstat(Filetable &filetable, int fd, stat *st);
 
 	int Open(Filetable &filetable, const char *filename);
 	int Close(Filetable &filetable, int fd);

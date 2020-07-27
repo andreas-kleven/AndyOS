@@ -42,7 +42,7 @@ int ATADriver::Read(fpos_t pos, void *buf, size_t length)
 		if (!r)
 		{
 			Scheduler::Enable();
-			return -1;
+			return 0;
 		}
 
 		read += r;
