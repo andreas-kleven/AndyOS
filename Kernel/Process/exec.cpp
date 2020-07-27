@@ -1,10 +1,12 @@
 #include <Arch/exec.h>
 #include <Process/process.h>
-#include <hal.h>
 #include <Process/elf.h>
-#include <string.h>
-#include <Kernel/task.h>
 #include <Process/scheduler.h>
+#include <Kernel/task.h>
+#include <FS/vfs.h>
+#include <hal.h>
+#include <string.h>
+#include <errno.h>
 #include <debug.h>
 
 namespace ProcessManager
@@ -159,8 +161,8 @@ namespace ProcessManager
 
     int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[])
     {
-        if (!path)
-            return -1;
+        if (!VFS::GetDentry(Path(path)))
+            return -ENOENT;
 
         int count = 0;
 
