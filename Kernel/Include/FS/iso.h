@@ -10,6 +10,19 @@
 #define ISO_FLAG_EXTENDED_OWNER (1 << 4)
 #define ISO_FLAG_NOT_FINAL (1 << 7)
 
+#define ISO_NM_CONTINUE 0
+#define ISO_NM_CURRENT 1
+#define ISO_NM_PARENT 2
+
+#define ISO_TF_CREATION (1 << 0)
+#define ISO_TF_MODIFY (1 << 1)
+#define ISO_TF_ACCESS (1 << 2)
+#define ISO_TF_ATTRIBUTES (1 << 3)
+#define ISO_TF_BACKUP (1 << 4)
+#define ISO_TF_EXPIRATION (1 << 5)
+#define ISO_TF_EFFECTIVE (1 << 6)
+#define ISO_TF_LONGFORM (1 << 7)
+
 struct ISO_DATE
 {
 	uint8 years;
@@ -106,6 +119,20 @@ struct ISO_PRIMARY_DESC
 	char reserved[653];
 } __attribute__((packed));
 
+struct ISO_RR_DATA
+{
+	const char *name = 0;
+	uint8 name_len = 0;
+	mode_t mode = 0;
+	nlink_t links = 0;
+	uid_t uid = 0;
+	gid_t gid = 0;
+	ino_t ino = 0;
+	time_t atime = 0;
+	time_t ctime = 0;
+	time_t mtime = 0;
+};
+
 class IsoFS : public FileSystem
 {
 private:
@@ -115,17 +142,18 @@ private:
 
 public:
 	IsoFS()
-    {
-        name = "iso";
-    }
+	{
+		name = "iso";
+	}
 
 	int Mount(BlockDriver *driver);
 	int GetChildren(DENTRY *parent, const char *find_name);
 	int Read(FILE *file, void *buf, size_t size);
 
 private:
-	void GetName(ISO_DIRECTORY *dir, char *buf);
+	void ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr);
+	void GetName(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, char *buf);
 	int GetMode(ISO_DIRECTORY *dir);
-	INODE *GetInode(ISO_DIRECTORY *dir, DENTRY *dentry);
+	INODE *GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry);
 	int ReadBlock(int block, void *buf, size_t size);
 };

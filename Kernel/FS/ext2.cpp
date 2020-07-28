@@ -69,7 +69,7 @@ int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
 
             if (!dentry->inode)
             {
-                dentry->inode = ReadInode(dirent->ino, dentry);
+                ReadInode(dirent->ino, dentry);
                 VFS::AddDentry(parent, dentry);
             }
 

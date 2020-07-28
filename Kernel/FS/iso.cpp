@@ -18,7 +18,9 @@ int IsoFS::Mount(BlockDriver *driver)
 	if (!ReadBlock(table->location_LSB, root, table->filesize_LSB))
 		return -1;
 
-	root_dentry->inode = GetInode(root, root_dentry);
+	ISO_RR_DATA rr_data;
+	ReadRockRidge(root, &rr_data);
+	root_dentry->inode = GetInode(root, &rr_data, root_dentry);
 	return 0;
 }
 
@@ -26,18 +28,24 @@ int IsoFS::GetChildren(DENTRY *parent, const char *find_name)
 {
 	INODE *inode = parent->inode;
 	ISO_DIRECTORY *dir = root;
+	ISO_DIRECTORY *end = (ISO_DIRECTORY *)((uint8 *)root + desc->rootDirectory.filesize_LSB);
 
 	if (inode->ino > 1)
 	{
 		dir = (ISO_DIRECTORY *)(new char[inode->size]);
+		end = (ISO_DIRECTORY *)((uint8 *)dir + inode->size);
+
 		if (!ReadBlock(inode->ino, dir, inode->size))
 			return -1;
 	}
 
-	while (dir && dir->length)
+	char name[256];
+
+	while (dir < end)
 	{
-		char name[32];
-		GetName(dir, name);
+		ISO_RR_DATA rr_data;
+		ReadRockRidge(dir, &rr_data);
+		GetName(dir, &rr_data, name);
 
 		if (!find_name || strcmp(name, find_name) == 0)
 		{
@@ -45,7 +53,7 @@ int IsoFS::GetChildren(DENTRY *parent, const char *find_name)
 
 			if (!dentry->inode)
 			{
-				dentry->inode = GetInode(dir, dentry);
+				dentry->inode = GetInode(dir, &rr_data, dentry);
 				VFS::AddDentry(parent, dentry);
 			}
 
@@ -54,9 +62,9 @@ int IsoFS::GetChildren(DENTRY *parent, const char *find_name)
 		}
 
 		dir = (ISO_DIRECTORY *)((size_t)dir + dir->length);
-		size_t space_left = ISO_SECTOR_SIZE - (size_t)dir % ISO_SECTOR_SIZE;
+		size_t space_left = ISO_SECTOR_SIZE - ((size_t)dir % ISO_SECTOR_SIZE);
 
-		if (space_left < sizeof(ISO_DIRECTORY))
+		if (!dir->length)
 			dir = (ISO_DIRECTORY *)((size_t)dir + space_left);
 	}
 
@@ -68,24 +76,107 @@ int IsoFS::Read(FILE *file, void *buf, size_t size)
 	return driver->Read(file->pos + file->dentry->inode->ino * ISO_SECTOR_SIZE, buf, size);
 }
 
-void IsoFS::GetName(ISO_DIRECTORY *dir, char *buf)
+void IsoFS::ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr)
 {
-	memcpy(buf, &dir->identifier, dir->idLength);
-	buf[dir->idLength] = 0;
-	stolower(buf);
+	char *end = (char *)dir + dir->length;
+	char *ptr = &dir->identifier + dir->idLength;
 
-	int length = strlen(buf);
-
-	if (length >= 2)
+	while (end - ptr > 3)
 	{
-		if (buf[length - 2] == ';')
-			buf[length - 2] = 0;
+		uint8 length = ptr[2];
+
+		if (ptr[0] == 'P' && ptr[1] == 'X')
+		{
+			rr->mode = *(mode_t *)&ptr[4];
+			rr->links = *(nlink_t *)&ptr[12];
+			rr->uid = *(uid_t *)&ptr[20];
+			rr->gid = *(gid_t *)&ptr[28];
+			rr->ino = *(ino_t *)&ptr[36];
+		}
+		else if (ptr[0] == 'N' && ptr[1] == 'M')
+		{
+			int flags = ptr[4];
+
+			if (flags & ISO_NM_CURRENT)
+			{
+				rr->name = ".";
+				rr->name_len = 1;
+			}
+			else if (flags & ISO_NM_PARENT)
+			{
+				rr->name = "..";
+				rr->name_len = 2;
+			}
+			else
+			{
+				rr->name = &ptr[5];
+				rr->name_len = length - 5;
+			}
+		}
+		else if (ptr[0] == 'T' && ptr[1] == 'F')
+		{
+			// TODO
+			int flags = ptr[4];
+			uint64 *timestamps = (uint64 *)&ptr[5];
+			int idx = 0;
+
+			bool long_format = flags & ISO_TF_LONGFORM;
+
+			if (flags & ISO_TF_CREATION)
+				idx++;
+
+			if (flags & ISO_TF_MODIFY)
+				rr->mtime = (time_t)timestamps[idx++];
+
+			if (flags & ISO_TF_ACCESS)
+				rr->atime = (time_t)timestamps[idx++];
+
+			if (flags & ISO_TF_ATTRIBUTES)
+				rr->ctime = (time_t)timestamps[idx++];
+		}
+
+		ptr += length;
 	}
+}
 
-	if (length >= 3)
+void IsoFS::GetName(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, char *buf)
+{
+	if (rr->name && rr->name_len < 256)
 	{
-		if (buf[length - 3] == '.')
-			buf[length - 3] = 0;
+		memcpy(buf, rr->name, rr->name_len);
+		buf[rr->name_len] = 0;
+	}
+	else
+	{
+		memcpy(buf, &dir->identifier, dir->idLength);
+		buf[dir->idLength] = 0;
+		stolower(buf);
+
+		int length = strlen(buf);
+
+		if (length == 1 || length == 2)
+		{
+			if (buf[0] == 0)
+			{
+				strcpy(buf, ".");
+			}
+			else if (buf[0] == 1)
+			{
+				strcpy(buf, "..");
+			}
+		}
+
+		if (length >= 2)
+		{
+			if (buf[length - 2] == ';')
+				buf[length - 2] = 0;
+		}
+
+		if (length >= 3)
+		{
+			if (buf[length - 3] == '.')
+				buf[length - 3] = 0;
+		}
 	}
 }
 
@@ -103,12 +194,21 @@ int IsoFS::GetMode(ISO_DIRECTORY *dir)
 	return mode;
 }
 
-INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, DENTRY *dentry)
+INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry)
 {
 	INODE *inode = VFS::AllocInode(dentry);
 	inode->ino = dir->location_LSB;
 	inode->size = dir->filesize_LSB;
-	inode->mode = GetMode(dir);
+	inode->uid = rr->uid;
+	inode->gid = rr->gid;
+	inode->atime = rr->atime;
+	inode->ctime = rr->ctime;
+	inode->mtime = rr->mtime;
+
+	if (rr->mode)
+		inode->mode = rr->mode;
+	else
+		inode->mode = GetMode(dir);
 
 	if (dir == root)
 		inode->ino = 1;

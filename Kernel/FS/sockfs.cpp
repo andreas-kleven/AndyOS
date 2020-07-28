@@ -7,7 +7,7 @@
 
 int SockFS::Mount(BlockDriver *driver)
 {
-    root_dentry->inode = VFS::AllocInode(root_dentry);
+    VFS::AllocInode(root_dentry);
     return -1;
 }
 
@@ -195,7 +195,7 @@ Socket *SockFS::GetSocket(FILE *file)
 DENTRY *SockFS::CreateSocketDentry(int socket_id)
 {
     DENTRY *dentry = VFS::AllocDentry(0, 0);
-    dentry->inode = VFS::AllocInode(dentry);
+    VFS::AllocInode(dentry);
     dentry->inode->mode = S_IFSOCK;
     dentry->inode->ino = socket_id;
     VFS::AddDentry(root_dentry, dentry);

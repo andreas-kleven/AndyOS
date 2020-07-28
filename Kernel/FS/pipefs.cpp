@@ -6,7 +6,7 @@
 
 int PipeFS::Mount(BlockDriver *driver)
 {
-    root_dentry->inode = VFS::AllocInode(root_dentry);
+    VFS::AllocInode(root_dentry);
     return -1;
 }
 
