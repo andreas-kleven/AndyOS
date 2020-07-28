@@ -61,7 +61,8 @@ fi
 rm -rf $SYSTEM 
 mkdir $SYSTEM
 cd $SYSTEM
-cp -R $syssrc/* .
+cp $syssrc/* .
+cp -R $syssrc/Include/* .
 cp $parent_path/../Kernel/Include/syscall_list.h .
 
 aclocal -I ../../..
@@ -83,6 +84,4 @@ make -j6 install
 
 mkdir -p $SYSROOT/usr
 cp -R $PREFIX/$TARGET/* $SYSROOT/usr
-cp -R $syssrc/*.h $SYSROOT/usr/include/
-cp -R $syssrc/arpa $SYSROOT/usr/include/
-cp -R $syssrc/netinet $SYSROOT/usr/include/
+cp -R $syssrc/Include/* $SYSROOT/usr/include/
