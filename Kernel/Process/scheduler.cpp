@@ -262,6 +262,9 @@ namespace Scheduler
 
 	void Switch()
 	{
+		if (!enabled)
+			panic("Task switch", "Scheduler disabled");
+
 		Arch::Switch();
 	}
 } // namespace Scheduler
