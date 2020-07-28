@@ -21,7 +21,7 @@ static void __msg_handler(int id, int src_proc, int type, char* data, int size)
 int set_message(MESSAGE(*handler)(MESSAGE))
 {
     _msg_handler = handler;
-    return syscall1(SYSCALL_SET_MESSAGE, (int)__msg_handler);
+    return syscall1(SYSCALL_SET_MESSAGE, (size_t)__msg_handler);
 }
 
 void post_message(int proc_id, int type, void* data, int size)

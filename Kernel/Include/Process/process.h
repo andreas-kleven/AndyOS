@@ -102,7 +102,7 @@ struct PROCESS
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
 	Mutex signal_mutex;
 
-	MESSAGE_HANDLER *message_handler;
+	MESSAGE_HANDLER *message_handler = 0;
 	CircularBuffer<MESSAGE> messages;
 
 	PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space);

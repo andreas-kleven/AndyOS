@@ -38,13 +38,17 @@ namespace ProcessManager
 
 	PROCESS *Fork(PROCESS *proc)
 	{
+		Scheduler::Disable();
 		debug_print("Fork %d\n", proc->id);
 
 		VMem::SwapAddressSpace(proc->addr_space);
 		ADDRESS_SPACE space;
 
 		if (!VMem::CopyAddressSpace(space))
+		{
+			Scheduler::Enable();
 			return 0;
+		}
 
 		VMem::SwapAddressSpace(space);
 
@@ -65,15 +69,20 @@ namespace ProcessManager
 		if (!CopyThreads(proc, newproc))
 		{
 			//Todo: cleanup
+			Scheduler::Enable();
 			return 0;
 		}
 
 		VMem::SwapAddressSpace(proc->addr_space);
 
 		if (!AddProcess(newproc, proc))
+		{
+			Scheduler::Enable();
 			return 0;
+		}
 
 		debug_print("Fork complete\n");
+		Scheduler::Enable();
 		return newproc;
 	}
 } // namespace ProcessManager

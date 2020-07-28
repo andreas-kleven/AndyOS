@@ -89,6 +89,7 @@ namespace ProcessManager
 			break;
 
 		case PROCESS_USER:
+			Scheduler::Disable();
 			VMem::SwapAddressSpace(proc->addr_space);
 
 			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
@@ -107,6 +108,7 @@ namespace ProcessManager
 			VMem::MapPages(virt, phys, blocks, flags);
 
 			thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
+			Scheduler::Enable();
 			break;
 		}
 

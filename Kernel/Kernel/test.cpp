@@ -119,11 +119,11 @@ namespace Test
 			{
 				if (!proc->messages.IsEmpty())
 				{
+					disable();
 					MESSAGE *msg = proc->messages.Get();
 
 					if (msg)
 					{
-						disable();
 						VMem::SwapAddressSpace(proc->addr_space);
 
 						if (proc->message_handler)
@@ -136,19 +136,19 @@ namespace Test
 
 							uint32 *stack_ptr = (uint32 *)data_ptr;
 							*--stack_ptr = msg->size;
-							*--stack_ptr = (int)data_ptr;
+							*--stack_ptr = (uint32)data_ptr;
 							*--stack_ptr = msg->param;
 							*--stack_ptr = msg->src_proc;
 							*--stack_ptr = msg->id;
-							regs->user_stack -= 28 + msg->size;
+							regs->user_stack = (uint32)(stack_ptr - 1);
 
 							Scheduler::InsertThread(thread);
 
 							proc->messages.Pop();
 						}
-
-						enable();
 					}
+
+					enable();
 				}
 
 				proc = proc->next;
