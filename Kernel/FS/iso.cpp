@@ -116,7 +116,7 @@ void IsoFS::ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr)
 		else if (ptr[0] == 'T' && ptr[1] == 'F')
 		{
 			// TODO
-			int flags = ptr[4];
+			/*int flags = ptr[4];
 			uint64 *timestamps = (uint64 *)&ptr[5];
 			int idx = 0;
 
@@ -132,7 +132,7 @@ void IsoFS::ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr)
 				rr->atime = (time_t)timestamps[idx++];
 
 			if (flags & ISO_TF_ATTRIBUTES)
-				rr->ctime = (time_t)timestamps[idx++];
+				rr->ctime = (time_t)timestamps[idx++];*/
 		}
 
 		ptr += length;
@@ -194,6 +194,13 @@ int IsoFS::GetMode(ISO_DIRECTORY *dir)
 	return mode;
 }
 
+time_t IsoFS::GetTime(ISO_DIRECTORY *dir)
+{
+	ISO_DATE *iso = &dir->recording_date;
+	struct tm t = mktime_tm(iso->second + 1, iso->minute + 1, iso->hour + 1, iso->day, iso->month, iso->years + 1900);
+	return mktime(&t);
+}
+
 INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry)
 {
 	INODE *inode = VFS::AllocInode(dentry);
@@ -201,14 +208,12 @@ INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry
 	inode->size = dir->filesize_LSB;
 	inode->uid = rr->uid;
 	inode->gid = rr->gid;
-	inode->atime = rr->atime;
-	inode->ctime = rr->ctime;
-	inode->mtime = rr->mtime;
+	inode->mode = rr->mode ? rr->mode : GetMode(dir);
 
-	if (rr->mode)
-		inode->mode = rr->mode;
-	else
-		inode->mode = GetMode(dir);
+	time_t rec_time = GetTime(dir);
+	inode->atime = rr->atime ? rr->atime : rec_time;
+	inode->ctime = rr->ctime ? rr->ctime : rec_time;
+	inode->mtime = rr->mtime ? rr->mtime : rec_time;
 
 	if (dir == root)
 		inode->ino = 1;

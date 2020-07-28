@@ -300,9 +300,9 @@ int getdents(int fd, void *dp, int count)
     return set_err(syscall3(SYSCALL_GETDENTS, fd, dp, count));
 }
 
-int _gettimeofday(struct timeval *p, void *z)
+int _gettimeofday(struct timeval *tv, void *tz)
 {
-    return set_err(syscall2(SYSCALL_GETTIMEOFDAY, p, z));
+    return set_err(syscall2(SYSCALL_GETTIMEOFDAY, tv, tz));
 }
 
 int _isatty(int fd)

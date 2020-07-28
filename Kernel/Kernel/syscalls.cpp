@@ -98,6 +98,15 @@ namespace Syscalls
 		return VFS::Fcntl(CurrentFiletable(), fd, cmd, arg);
 	}
 
+	int sys_gettimeofday(struct timeval *tv, void *tz)
+	{
+		struct tm t = RTC::Time();
+		time_t time = mktime(&t);
+		tv->tv_sec = time;
+		tv->tv_usec = 0;
+		return 0;
+	}
+
 	int sys_getdents(int fd, dirent *dirp, unsigned int count)
 	{
 		return VFS::Getdents(CurrentFiletable(), fd, dirp, count);

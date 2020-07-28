@@ -1,18 +1,18 @@
 #include <Drivers/rtc.h>
 #include <hal.h>
 
-#define CURRENT_YEAR 2018
+#define CURRENT_YEAR 2020
 
 namespace RTC
 {
 	int century_reg = 0x00;
 
-	uint8 second;
-	uint8 minute;
-	uint8 hour;
-	uint8 day;
-	uint8 month;
-	uint32 year;
+	int second;
+	int minute;
+	int hour;
+	int day;
+	int month;
+	int year;
 
 	int GetUpdateFlag()
 	{
@@ -76,8 +76,8 @@ namespace RTC
 				century = GetReg(century_reg);
 			}
 		} while ((last_second != second) || (last_minute != minute) || (last_hour != hour) ||
-			(last_day != day) || (last_month != month) || (last_year != year) ||
-			(last_century != century));
+				 (last_day != day) || (last_month != month) || (last_year != year) ||
+				 (last_century != century));
 
 		registerB = GetReg(0x0B);
 
@@ -111,7 +111,8 @@ namespace RTC
 		else
 		{
 			year += (CURRENT_YEAR / 100) * 100;
-			if (year < CURRENT_YEAR) year += 100;
+			if (year < CURRENT_YEAR)
+				year += 100;
 		}
 	}
 
@@ -150,4 +151,10 @@ namespace RTC
 		ReadRTC();
 		return year;
 	}
-}
+
+	struct tm Time()
+	{
+		ReadRTC();
+		return mktime_tm(second, minute, hour, day, month, year);
+	}
+} // namespace RTC

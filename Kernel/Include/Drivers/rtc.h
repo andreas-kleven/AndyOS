@@ -1,4 +1,5 @@
 #pragma once
+#include <time.h>
 
 namespace RTC
 {
@@ -8,4 +9,5 @@ namespace RTC
 	int Day();
 	int Month();
 	int Year();
+	struct tm Time();
 };

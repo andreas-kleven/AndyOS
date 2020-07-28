@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <time.h>
 #include <FS/filesystem.h>
 
 #define ISO_SECTOR_SIZE 2048
@@ -154,6 +155,7 @@ private:
 	void ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr);
 	void GetName(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, char *buf);
 	int GetMode(ISO_DIRECTORY *dir);
+	time_t GetTime(ISO_DIRECTORY *dir);
 	INODE *GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry);
 	int ReadBlock(int block, void *buf, size_t size);
 };
