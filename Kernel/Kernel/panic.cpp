@@ -20,8 +20,11 @@ void panic(const char *err, const char *msg_fmt, ...)
 
 	vsnprintf(buffer, sizeof(buffer), msg_fmt, args);
 
-	debug_clear(0xFF000000);
-	debug_color(0xFFFF0000);
+	if (!prev_panic)
+	{
+		debug_clear(0xFF000000);
+		debug_color(0xFFFF0000);
+	}
 
 	debug_print("%s\n", err);
 	debug_print("%s\n", buffer);
@@ -34,6 +37,9 @@ void panic(const char *err, const char *msg_fmt, ...)
 
 		if (thread && thread->process)
 			debug_print("proc:%d thread:%d\n", thread->process->id, thread->id);
+
+		debug_print("-STACK DUMP-\n");
+		debug_stackdump(thread, 1024);
 	}
 
 	sys_halt();

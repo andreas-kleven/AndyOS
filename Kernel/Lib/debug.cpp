@@ -4,6 +4,7 @@
 #include <video.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <math.h>
 
 static bool serial;
@@ -23,7 +24,7 @@ STATUS debug_init(bool _serial)
 	return STATUS_SUCCESS;
 }
 
-void draw_text(int x, int y, const char* c)
+void draw_text(int x, int y, const char *c)
 {
 	for (size_t index = 0; index < strlen(c); index++)
 	{
@@ -52,7 +53,7 @@ void debug_color(uint32 foreground, uint32 background)
 	bcolor = background;
 }
 
-void debug_print(const char* str, ...)
+void debug_print(const char *str, ...)
 {
 	char buffer[256];
 
@@ -104,7 +105,7 @@ void debug_putc(char c, bool escape)
 			break;
 
 		default:
-			char str[] = { c, '\0' };
+			char str[] = {c, '\0'};
 			draw_text(x * 8, y * 16, str);
 			x++;
 			break;
@@ -112,7 +113,7 @@ void debug_putc(char c, bool escape)
 	}
 	else
 	{
-		char str[] = { c, '\0' };
+		char str[] = {c, '\0'};
 		draw_text(x * 8, y * 16, str);
 		x++;
 	}
@@ -136,41 +137,75 @@ void debug_clear(uint32 c)
 	y = 0;
 }
 
-void debug_dump(const void* addr, int length, bool str)
+bool debug_dump_row(const uint8 *ptr, int width, bool str)
 {
-	uint8* ptr = (uint8*)addr;
+	const int group = 2;
+
+	for (int i = 0; i < width; i++)
+	{
+		pflags_t flags = VMem::GetFlags((size_t)&ptr[i]);
+
+		if (!(flags & PAGE_PRESENT))
+		{
+			debug_print("\nMemory dump read error %d\n", flags);
+			return false;
+		}
+
+		uint8 val = ptr[i];
+
+		if (val > 15)
+			debug_print("%x", val);
+		else
+			debug_print("0%x", val);
+
+		if ((i + 1) % group == 0)
+			debug_putc(' ');
+	}
+
+	if (str)
+	{
+		debug_putc(' ');
+
+		for (int i = 0; i < width; i++)
+		{
+			uint8 val = ptr[i];
+
+			if (isprint(val))
+				debug_putc(val);
+			else
+				debug_putc('.');
+		}
+	}
+
+	return true;
+}
+
+void debug_dump(const void *addr, int length, bool str)
+{
+	const int width = 32;
+	int rows = length / width;
+
+	uint8 *ptr = (uint8 *)addr;
 
 	char buf[16];
 	int count = 0;
 
-	while (count++ < length)
+	for (int i = 0; i <= rows; i++)
 	{
-		int num = *ptr++;
+		int bytes = min(width, length - i * width);
 
-		if (str)
-		{
-			debug_putc(num, 0);
-		}
-		else
-		{
-			if (num > 15)
-			{
-				debug_print("%X ", num);
-			}
-			else
-			{
-				debug_print("0%X ", num);
-			}
-		}
+		if (bytes <= 0)
+			break;
 
-		if (!str)
-		{
-			if (count % 32 == 0)
-				debug_putc('\n');
-			else if (count % 8 == 0)
-				debug_putc(' ');
-		}
+		debug_print("%p  ", ptr);
+
+		if (!debug_dump_row(ptr, bytes, str))
+			return;
+
+		debug_print("\n");
+
+		ptr += width;
 	}
 
-	debug_putc('\n');;
+	debug_putc('\n');
 }
