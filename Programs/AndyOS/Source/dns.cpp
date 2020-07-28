@@ -1,5 +1,6 @@
 #include <string.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <andyos/net/dns.h>
 #include <AndyOS.h>

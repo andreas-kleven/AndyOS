@@ -7,10 +7,14 @@
 #define AF_UNIX AF_LOCAL
 #define AF_INET 2
 #define AF_PACKET 3
+#define AF_INET6 10
+#define AF_NETLINK 16
 
 #define SOCK_STREAM 1
 #define SOCK_DGRAM 2
 #define SOCK_RAW 3
+#define SOCK_RDM 4
+#define SOCK_SEQPACKET 5
 
 #define IPPROTO_IP 0
 #define IPPROTO_ICMP 1

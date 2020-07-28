@@ -1,5 +1,6 @@
 #include <sys/errno.h>
 #include <sys/fcntl.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -7,9 +8,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <dirent.h>
+#include <poll.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <termios.h>
+#include <time.h>
 #include <unistd.h>
 #include "syscall_list.h"
 
@@ -107,6 +111,115 @@ pid_t tcgetpgrp(int fd)
 }
 
 int tcsetpgrp(int fd, pid_t pgrp)
+{
+    return 0;
+}
+
+int tcgetattr(int fd, struct termios *termios_p)
+{
+    return 0;
+}
+
+int tcsetattr(int fd, int optional_actions, const struct termios *termios_p)
+{
+    return 0;
+}
+
+int tcdrain(int fd)
+{
+    return ioctl(fd, TCSBRK, 1);
+}
+
+int tcflow(int fd, int action)
+{
+    return ioctl(fd, TCXONC, action);
+}
+
+int tcflush(int fd, int queue_selector)
+{
+    return ioctl(fd, TCFLSH, queue_selector);
+}
+
+int tcsendbreak(int fd, int duration)
+{
+    if (duration <= 0)
+        return ioctl(fd, TCSBRK, 0);
+
+    errno = (EINVAL);
+    return -1;
+}
+
+pid_t tcgetsid(int fd)
+{
+    return 0;
+}
+
+int tcsetsid(int fd, pid_t pid)
+{
+    return 0;
+}
+
+int uname(struct utsname *name)
+{
+    return 0;
+}
+
+int getpriority(int which, id_t who)
+{
+    return 0;
+}
+
+int setpriority(int which, id_t who, int prio)
+{
+    return 0;
+}
+
+int getrlimit(int resource, struct rlimit *rlim)
+{
+    return 0;
+}
+
+int setrlimit(int resource, const struct rlimit *rlim)
+{
+    return 0;
+}
+
+int getrusage(int who, struct rusage *usage)
+{
+    return 0;
+}
+
+int issetugid()
+{
+    return 0;
+}
+
+long sysconf(int name)
+{
+    return -1;
+}
+
+ssize_t readlink(const char *path, char *buf, size_t bufsiz)
+{
+    return 0;
+}
+
+struct group *getgrgid(gid_t gid)
+{
+    return 0;
+}
+
+int ioctl(int fd, int request, ...)
+{
+    return 0;
+}
+
+int poll(struct pollfd *fds, nfds_t nfds, int timeout)
+{
+    return 0;
+}
+
+int clock_settime (clockid_t clock_id, const struct timespec *tp)
 {
     return 0;
 }

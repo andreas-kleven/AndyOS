@@ -83,4 +83,6 @@ make -j6 install
 
 mkdir -p $SYSROOT/usr
 cp -R $PREFIX/$TARGET/* $SYSROOT/usr
-cp -R $syssrc/arpa $SYSROOT/usr/include/arpa
+cp -R $syssrc/*.h $SYSROOT/usr/include/
+cp -R $syssrc/arpa $SYSROOT/usr/include/
+cp -R $syssrc/netinet $SYSROOT/usr/include/
