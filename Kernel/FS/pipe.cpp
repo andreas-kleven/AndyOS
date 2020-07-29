@@ -26,19 +26,25 @@ int Pipe::Read(FILE *file, void *buf, size_t size)
 
 int Pipe::Write(FILE *file, const void *buf, size_t size)
 {
-    write_event.Wait();
-    buffer_mutex.Aquire();
-    
-    int ret = buffer.Write(buf, size);
+    int written = 0;
 
-    if (!buffer.IsEmpty())
-        read_event.Set();
+    while (written < size)
+    {
+        write_event.Wait();
+        buffer_mutex.Aquire();
 
-    if (buffer.IsFull())
-        write_event.Clear();
+        written += buffer.Write(buf, size);
 
-    buffer_mutex.Release();
-    return ret;
+        if (!buffer.IsEmpty())
+            read_event.Set();
+
+        if (buffer.IsFull())
+            write_event.Clear();
+
+        buffer_mutex.Release();
+    }
+
+    return written;
 }
 
 int Pipe::Close(FILE *file)
