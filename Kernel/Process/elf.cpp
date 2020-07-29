@@ -49,7 +49,7 @@ namespace ELF
 			void *virt = (void *)vaddr;
 
 			VMem::MapPages(virt, phys, blocks, flags);
-			memcpy((void*)pheader->p_vaddr, image + pheader->p_offset, pheader->p_memsz);
+			memcpy((void *)pheader->p_vaddr, image + pheader->p_offset, pheader->p_filesz);
 
 			size_t end = vaddr + blocks * BLOCK_SIZE;
 			if (end > virt_end)
@@ -71,7 +71,7 @@ namespace ELF
 		ProcessManager::AdjustHeap(proc, PAGE_SIZE); // memory reserved for signal calling
 
 		debug_print("Loaded ELF\n");
-		
+
 		return header->e_entry;
 	}
 } // namespace ELF
