@@ -33,8 +33,27 @@ namespace VMem
 		Scheduler::Disable();
 
 		void *virt = FirstFree(count, start, end);
+
+		if (virt == 0)
+		{
+			Scheduler::Enable();
+			return 0;
+		}
+
 		void *phys = PMem::AllocBlocks(count);
-		MapPages(virt, phys, count, flags);
+
+		if (!phys)
+		{
+			Scheduler::Enable();
+			return 0;
+		}
+
+		if (!MapPages(virt, phys, count, flags))
+		{
+			PMem::FreeBlocks(phys, count);
+			Scheduler::Enable();
+			return 0;
+		}
 
 		Scheduler::Enable();
 		return virt;
@@ -111,7 +130,12 @@ namespace VMem
 	void *FirstFree(size_t count, size_t start, size_t end)
 	{
 		Scheduler::Disable();
+
 		void *ret = Arch::FirstFree(count, start, end);
+
+		if (ret == 0)
+			debug_print("Out of virtual memory %p %p %p\n", count, start, end);
+
 		Scheduler::Enable();
 		return ret;
 	}
@@ -119,6 +143,12 @@ namespace VMem
 	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
 	{
 		Scheduler::Disable();
+
+		if (virt == 0 || phys == 0)
+		{
+			debug_print("Map address 0: %d, %p -> %p\n", virt, phys, flags);
+			return false;
+		}
 
 		for (size_t i = 0; i < count; i++)
 		{

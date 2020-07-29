@@ -95,6 +95,7 @@ namespace PMem
 			}
 		}
 
+		debug_print("Out of memory %p %p\n\n", num_blocks, num_free);
 		Scheduler::Enable();
 		return 0;
 	}
