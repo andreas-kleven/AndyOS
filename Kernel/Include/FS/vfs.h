@@ -8,14 +8,19 @@
 #include <Process/scheduler.h>
 #include <Net/address.h>
 
+#define PATH_MAX 1024
+
 class FileSystem;
 class BlockDriver;
 
 namespace VFS
 {
+	char *TraversePath(DENTRY *dentry, char *buf, size_t size);
 	INODE *AllocInode(DENTRY *dentry);
 	DENTRY *AllocDentry(DENTRY *parent, const char *name);
-	DENTRY *GetDentry(Path path);
+	DENTRY *GetRoot();
+	DENTRY *GetDentry(const char *path);
+	DENTRY *GetDentry(PROCESS *process, const char *path);
 	void AddDentry(DENTRY *parent, DENTRY *child);
 	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point);
 
@@ -24,10 +29,10 @@ namespace VFS
 	int Fcntl(Filetable &filetable, int fd, int cmd, void *arg);
 	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count);
 	int StatDentry(DENTRY *dentry, stat *st);
-	int Stat(const char *filename, stat *st);
+	int Stat(PROCESS *process, const char *filename, stat *st);
 	int Fstat(Filetable &filetable, int fd, stat *st);
 
-	int Open(Filetable &filetable, const char *filename);
+	int Open(PROCESS *process, const char *filename);
 	int Close(Filetable &filetable, int fd);
 	size_t Read(Filetable &filetable, int fd, char *buf, size_t size);
 	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size);

@@ -28,13 +28,16 @@ inline int syscall6(int id, int arg0, int arg1, int arg2, int arg3, int arg4, in
 enum SYSCALLS
 {
     SYSCALL_CLOSE,
+    SYSCALL_CHDIR,
     SYSCALL_DUP,
     SYSCALL_DUP2,
     SYSCALL_EXECVE,
     SYSCALL_EXIT,
+    SYSCALL_FCHDIR,
     SYSCALL_FCNTL,
     SYSCALL_FORK,
     SYSCALL_FSTAT,
+    SYSCALL_GETCWD,
     SYSCALL_GETPID,
     SYSCALL_GETDENTS,
     SYSCALL_GETTIMEOFDAY,

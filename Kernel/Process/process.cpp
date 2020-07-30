@@ -15,6 +15,8 @@ PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
 	this->addr_space = addr_space;
 	this->stack_ptr = STACK_BASE;
 	this->filetable = Filetable(3);
+	this->pwd = VFS::GetRoot();
+	this->pwd->refs += 1;
 
 	for (int i = 0; i < SIGNAL_TABLE_SIZE; i++)
 		ProcessManager::SetSignalHandler(this, i, SIG_DFL);

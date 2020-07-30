@@ -2,6 +2,7 @@
 #include <FS/filesystem.h>
 #include <FS/pipe.h>
 #include <string.h>
+#include <libgen.h>
 #include <math.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -18,6 +19,48 @@ namespace VFS
 	DENTRY *root_dentry = 0;
 	PipeFS *pipefs = 0;
 	SockFS *sockfs = 0;
+
+	char *TraversePath(DENTRY *dentry, char *buf, size_t size)
+	{
+		if (size <= 1)
+			return 0;
+
+		char *ptr = &buf[size];
+		*--ptr = 0;
+
+		while (dentry)
+		{
+			if (!dentry->name)
+				return ptr;
+
+			if (*ptr != '/')
+			{
+				if (ptr <= buf)
+					return 0;
+
+				*--ptr = '/';
+			}
+
+			if (dentry != root_dentry)
+			{
+				int len = strlen(dentry->name);
+
+				if (!len)
+					return ptr;
+
+				ptr -= len;
+
+				if (ptr < buf)
+					return 0;
+
+				memcpy(ptr, dentry->name, len);
+			}
+
+			dentry = dentry->parent;
+		}
+
+		return ptr;
+	}
 
 	inline bool IsValidInode(FILE *file)
 	{
@@ -101,50 +144,121 @@ namespace VFS
 		return GetExistingChild(parent, name);
 	}
 
-	DENTRY *GetDentry(Path path)
+	DENTRY *GetRoot()
+	{
+		return root_dentry;
+	}
+
+	DENTRY *GetDentry(const char *path)
 	{
 		DENTRY *current = root_dentry;
 
 		if (!root_dentry)
 			return 0;
 
-		for (int i = 0; i < path.count; i++)
+		if (!path || !strlen(path))
+			return 0;
+
+		if (strlen(path) >= PATH_MAX)
+			return 0;
+
+		char buf[PATH_MAX];
+		strcpy(buf, path);
+
+		char *saveptr;
+		char *part = strtok_r(buf, "/", &saveptr);
+
+		while (part)
 		{
-			const char *part = path.parts[i];
 			current = GetChild(current, part);
 
 			if (!current)
-				break;
+				return 0;
+
+			part = strtok_r(0, "/", &saveptr);
 		}
 
 		return current;
 	}
 
+	DENTRY *GetDentry(PROCESS *process, const char *path)
+	{
+		if (!path || strlen(path) == 0)
+			return (DENTRY *)-ENOENT;
+
+		char pathbuf[PATH_MAX];
+		const char *pwd = "/";
+
+		if (process)
+			pwd = TraversePath(process->pwd, pathbuf, sizeof(pathbuf));
+
+		if (!pwd)
+			return (DENTRY *)-ENAMETOOLONG;
+
+		char *fullpath = new char[strlen(pwd) + strlen(path) + 2];
+
+		if (path[0] == '/')
+			strcpy(fullpath, path);
+		else
+			sprintf(fullpath, "%s%s", pwd, path);
+
+		if (pathcanon(fullpath, pathbuf, sizeof(pathbuf)))
+		{
+			delete fullpath;
+			return (DENTRY *)-ENAMETOOLONG;
+		}
+
+		delete fullpath;
+
+		DENTRY *dentry = GetDentry(pathbuf);
+
+		if (!dentry)
+			return (DENTRY *)-ENOENT;
+
+		return dentry;
+	}
+
 	int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
 	{
+		if (!fs)
+			return -1;
+
+		if (!mount_point || !strlen(mount_point))
+			return -1;
+
 		if (strcmp(fs->name, "pipefs") == 0)
 			pipefs = (PipeFS *)fs;
 
 		if (strcmp(fs->name, "sockfs") == 0)
 			sockfs = (SockFS *)fs;
 
-		Path path = Path(mount_point);
-		DENTRY *dentry = AllocDentry(0, path.Filename());
+		char copy[PATH_MAX];
+		strcpy(copy, mount_point);
+
+		const char *filename = basename(copy);
+		const char *parentname = dirname(copy);
+
+		DENTRY *dentry = AllocDentry(0, filename);
+
 		fs->root_dentry = dentry;
 		fs->Mount(driver);
 
 		if (!dentry->inode)
 			return -1;
 
-		DENTRY *parent = 0;
+		if (strcmp(mount_point, "/"))
+		{
+			DENTRY *parent = GetDentry(parentname);
 
-		if (path.count > 0)
-			parent = GetDentry(path.Parent());
+			if (!parent)
+				return -1;
 
-		if (parent)
 			AddDentry(parent, dentry);
+		}
 		else
+		{
 			root_dentry = dentry;
+		}
 
 		dentry->inode->mode = S_IFDIR;
 		dentry->owner = fs;
@@ -295,16 +409,14 @@ namespace VFS
 		return 0;
 	}
 
-	int Stat(const char *filename, stat *st)
+	int Stat(PROCESS *process, const char *filename, stat *st)
 	{
-		if (strcmp(filename, "") == 0) // TODO
-			return -ENOENT;
+		DENTRY *dentry = GetDentry(process, filename);
 
-		Path path(filename);
-		DENTRY *dentry = GetDentry(path);
+		DENTRY *dentry = GetDentry(Dispatcher::CurrentProcess() /*TODO*/, filename);
 
-		if (!dentry)
-			return -ENOENT;
+		if (PTR_ERR(dentry))
+			return (int)dentry;
 
 		return StatDentry(dentry, st);
 	}
@@ -319,16 +431,15 @@ namespace VFS
 		return StatDentry(file->dentry, st);
 	}
 
-	int Open(Filetable &filetable, const char *filename)
+	int Open(PROCESS *process, const char *filename)
 	{
-		Path path(filename);
-		DENTRY *dentry = GetDentry(path);
+		DENTRY *dentry = GetDentry(process, filename);
 
-		if (!dentry)
-			return -ENOENT;
+		if (PTR_ERR(dentry))
+			return (int)dentry;
 
 		FILE *file = new FILE(dentry);
-		int fd = filetable.Add(file);
+		int fd = process->filetable.Add(file);
 
 		if (fd < 0)
 			return fd;
@@ -347,8 +458,6 @@ namespace VFS
 
 		if ((ret = file->dentry->owner->Close(file)))
 			return ret;
-
-		debug_print("Close file %d\n", fd);
 
 		filetable.Remove(fd);
 		delete file;
@@ -592,19 +701,11 @@ namespace VFS
 
 	uint32 ReadFile(const char *filename, char *&buffer)
 	{
-		Filetable filetable;
-		int fd = Open(filetable, filename);
-		FILE *file = filetable.Get(fd);
-
-		if (!file)
-			return 0;
-
-		DENTRY *dentry = file->dentry;
+		DENTRY *dentry = GetDentry(0, filename);
 		int size = dentry->inode->size;
 		buffer = new char[size];
-		int length = dentry->owner->Read(file, buffer, size);
-
-		return length;
+		FILE file = FILE(dentry);
+		return dentry->owner->Read(&file, buffer, size);
 	}
 
 	STATUS Init()

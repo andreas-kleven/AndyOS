@@ -1,6 +1,7 @@
 #include <Kernel/test.h>
 #include <panic.h>
 #include <stdio.h>
+#include <libgen.h>
 #include <math.h>
 #include <pci.h>
 #include <Drivers/ata.h>
@@ -64,49 +65,24 @@ namespace Test
 		}
 	}
 
-	void File()
-	{
-		Filetable filetable;
-
-		int fd1 = VFS::Open(filetable, "/test");
-		int fd2 = VFS::Open(filetable, "/dev/mouse");
-
-		debug_print("Open: %d %d\n", fd1, fd2);
-		char buf[100];
-
-		if (fd1 >= 0)
-		{
-			memset(buf, 0, sizeof(buf));
-			VFS::Read(filetable, fd1, buf, sizeof(buf));
-			debug_dump(buf, sizeof(buf), true);
-		}
-
-		if (fd2 >= 0)
-		{
-			memset(buf, 0, sizeof(buf));
-			VFS::Read(filetable, fd2, buf, sizeof(buf));
-			debug_dump(buf, sizeof(buf), false);
-		}
-	}
-
 	void GUI()
 	{
 		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
 		Scheduler::InsertThread(dispatcher_thread);
 
 		Scheduler::Disable();
-		PROCESS *proc1 = ProcessManager::Exec("1winman");
-		PROCESS *proc2 = ProcessManager::Exec("1term");
-		//PROCESS *proc3 = ProcessManager::Exec("1info");
+		PROCESS *proc1 = ProcessManager::Exec("/1winman");
+		PROCESS *proc2 = ProcessManager::Exec("/1term");
+		//PROCESS *proc3 = ProcessManager::Exec("/1info");
 		Scheduler::Enable();
 
 		/*Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
 		Scheduler::Disable();
-		PROCESS *proc4 = ProcessManager::Exec("1info");
+		PROCESS *proc4 = ProcessManager::Exec("/1info");
 		Scheduler::Enable();*/
 
-		//ProcessManager::Exec("1test");
-		//ProcessManager::Exec("1mndlbrt");
+		//ProcessManager::Exec("/1test");
+		//ProcessManager::Exec("/1mndlbrt");
 
 #ifdef __i386__
 #include <Arch/regs.h>
@@ -359,7 +335,6 @@ namespace Test
 		//InitNet();
 		GUI();
 		//_Memory();
-		//File();
 		//_Net();
 		//Audio();
 		//COM();

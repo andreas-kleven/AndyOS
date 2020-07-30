@@ -161,7 +161,7 @@ namespace ProcessManager
 
     int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[])
     {
-        if (!VFS::GetDentry(Path(path)))
+        if (!VFS::GetDentry(path))
             return -ENOENT;
 
         int count = 0;

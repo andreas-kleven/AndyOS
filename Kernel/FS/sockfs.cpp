@@ -1,6 +1,7 @@
 #include <FS/sockfs.h>
 #include <FS/vfs.h>
 #include <string.h>
+#include <libgen.h>
 #include <errno.h>
 #include <Net/socketmanager.h>
 #include <debug.h>
@@ -83,18 +84,23 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
 {
     Socket *socket = GetSocket(file);
     DENTRY *parent;
-    Path path;
     int ret = 0;
 
     if (!socket)
         return -1;
 
     sockaddr_un *unix_addr = (sockaddr_un *)addr;
+    const char *filename;
+    const char *parentname;
 
     if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0])
     {
-        path = Path(unix_addr->sun_path);
-        parent = VFS::GetDentry(path.Parent());
+        char *copy = strdup(unix_addr->sun_path);
+        filename = basename(copy);
+        parentname = dirname(copy);
+        delete copy;
+
+        parent = VFS::GetDentry(parentname);
 
         if (!parent)
             return -ENOENT;
@@ -107,7 +113,7 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
     {
         if (parent)
         {
-            DENTRY *dentry = VFS::AllocDentry(parent, path.Filename());
+            DENTRY *dentry = VFS::AllocDentry(parent, filename);
             dentry->inode = file->dentry->inode; // TODO: Symlink?
             VFS::AddDentry(parent, dentry);
         }

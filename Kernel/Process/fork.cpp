@@ -58,6 +58,8 @@ namespace ProcessManager
 		newproc->stack_ptr = proc->stack_ptr;
 		newproc->heap_start = proc->heap_start;
 		newproc->heap_end = proc->heap_end;
+		newproc->pwd = proc->pwd;
+		newproc->pwd->refs += 1;
 
 		newproc->filetable = proc->filetable.Clone();
 		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);

@@ -6,6 +6,7 @@
 #include <video.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #include <debug.h>
 #include <Kernel/timer.h>
 #include <Drivers/mouse.h>
@@ -55,7 +56,7 @@ namespace Syscalls
 
 	int sys_open(const char *filename, int flags)
 	{
-		return VFS::Open(CurrentFiletable(), filename);
+		return VFS::Open(Dispatcher::CurrentProcess(), filename);
 	}
 
 	int sys_close(int fd)
@@ -142,7 +143,7 @@ namespace Syscalls
 
 	int sys_stat(const char *filename, stat *st)
 	{
-		return VFS::Stat(filename, st);
+		return VFS::Stat(Dispatcher::CurrentProcess(), filename, st);
 	}
 
 	int sys_fstat(int fd, stat *st)
@@ -169,6 +170,18 @@ namespace Syscalls
 	int sys_waitpid(pid_t pid, int *status, int options)
 	{
 		return Dispatcher::Waitpid(pid, status, options);
+	}
+
+	int sys_chdir(const char *path)
+	{
+		PROCESS *proc = Dispatcher::CurrentProcess();
+		return ProcessManager::Chdir(proc, path);
+	}
+
+	int sys_fchdir(int fd)
+	{
+		PROCESS *proc = Dispatcher::CurrentProcess();
+		return ProcessManager::Fchdir(proc, fd);
 	}
 
 	int sys_socket(int domain, int type, int protocol)
@@ -440,6 +453,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_DUP, (SYSCALL_HANDLER)sys_dup);
 		InstallSyscall(SYSCALL_DUP2, (SYSCALL_HANDLER)sys_dup2);
 		InstallSyscall(SYSCALL_FCNTL, (SYSCALL_HANDLER)sys_fcntl);
+		InstallSyscall(SYSCALL_GETTIMEOFDAY, (SYSCALL_HANDLER)sys_gettimeofday);
 		InstallSyscall(SYSCALL_GETDENTS, (SYSCALL_HANDLER)sys_getdents);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)sys_fork);
 		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)sys_getpid);
@@ -450,6 +464,8 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)sys_kill);
 		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)sys_signal);
 		InstallSyscall(SYSCALL_WAITPID, (SYSCALL_HANDLER)sys_waitpid);
+		InstallSyscall(SYSCALL_CHDIR, (SYSCALL_HANDLER)sys_chdir);
+		InstallSyscall(SYSCALL_FCHDIR, (SYSCALL_HANDLER)sys_fchdir);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)sys_socket);
 		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)sys_accept);

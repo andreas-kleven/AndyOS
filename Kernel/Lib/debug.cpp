@@ -164,7 +164,7 @@ bool debug_dump_row(const uint8 *ptr, int width, bool str)
 
 	if (str)
 	{
-		debug_putc(' ');
+		debug_print(" |");
 
 		for (int i = 0; i < width; i++)
 		{
@@ -175,6 +175,8 @@ bool debug_dump_row(const uint8 *ptr, int width, bool str)
 			else
 				debug_putc('.');
 		}
+
+		debug_putc('|');
 	}
 
 	return true;

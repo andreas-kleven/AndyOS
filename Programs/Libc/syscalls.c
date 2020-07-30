@@ -30,11 +30,6 @@ int set_err(int ret)
 
 //
 
-int chdir(const char *path)
-{
-    return 0;
-}
-
 int sigprocmask(int how, const sigset_t *set, sigset_t *oset)
 {
     return 0;
@@ -219,7 +214,7 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout)
     return 0;
 }
 
-int clock_settime (clockid_t clock_id, const struct timespec *tp)
+int clock_settime(clockid_t clock_id, const struct timespec *tp)
 {
     return 0;
 }
@@ -234,6 +229,11 @@ int *__errno()
 void _exit(int status)
 {
     syscall1(SYSCALL_EXIT, status);
+}
+
+int chdir(const char *path)
+{
+    return set_err(syscall1(SYSCALL_CHDIR, path));
 }
 
 int _close(int fd)
@@ -254,6 +254,11 @@ int dup2(int oldfd, int newfd)
 int _execve(const char *path, char *const argv[], char *const envp[])
 {
     return set_err(syscall3(SYSCALL_EXECVE, (size_t)path, (size_t)argv, (size_t)envp));
+}
+
+int fchdir(int fd)
+{
+    return set_err(syscall1(SYSCALL_FCHDIR, fd));
 }
 
 int _fcntl(int fd, int cmd, ...)

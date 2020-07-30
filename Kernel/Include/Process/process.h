@@ -97,6 +97,7 @@ struct PROCESS
 	size_t stack_ptr = 0;
 	size_t heap_start = 0;
 	size_t heap_end = 0;
+	DENTRY *pwd = 0;
 
 	Filetable filetable;
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
@@ -122,6 +123,8 @@ namespace ProcessManager
 	void Terminate(PROCESS *proc);
 	void *AdjustHeap(PROCESS *proc, int increment);
 	void Exit(PROCESS *proc, int code);
+	int Chdir(PROCESS *process, const char *path);
+	int Fchdir(PROCESS *process, int fd);
 
 	PROCESS *GetProcess(pid_t id);
 	PROCESS *GetFirst();

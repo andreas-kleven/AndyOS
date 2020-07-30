@@ -1,5 +1,7 @@
 #pragma once
 
+#define PTR_ERR(ptr) ((ssize_t)ptr < 0 && (ssize_t)ptr > -256)
+
 #define EPERM 1             /* Not owner */
 #define ENOENT 2            /* No such file or directory */
 #define ESRCH 3             /* No such process */
