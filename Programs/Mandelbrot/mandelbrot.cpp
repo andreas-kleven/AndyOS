@@ -13,7 +13,8 @@ Color *colors;
 double zoom = 4;
 double ofx = 0;
 double ofy = 0;
-double rot = 0;
+double juliax = 1;
+double juliay = 0;
 
 inline int get_iteration(double x, double y, bool julia, double *z2)
 {
@@ -26,9 +27,8 @@ inline int get_iteration(double x, double y, bool julia, double *z2)
     {
         Zx = x;
         Zy = y;
-
-        x = 0.7885 * cos(rot);
-        y = 0.7885 * sin(rot);
+        x = juliax;
+        y = juliay;
     }
     else
     {
@@ -97,8 +97,14 @@ void mandelbrot_update(double delta)
         ofy -= 1.0f * multiplier;
     if (InputManager::GetKeyDown(KEY_S))
         ofy += 1.0f * multiplier;
-    if (InputManager::GetKeyDown(KEY_R))
-        rot += 0.5f * multiplier;
+    if (InputManager::GetKeyDown(KEY_RIGHT))
+        juliax += 0.2f * multiplier;
+    if (InputManager::GetKeyDown(KEY_LEFT))
+        juliax -= 0.2f * multiplier;
+    if (InputManager::GetKeyDown(KEY_UP))
+        juliay += 0.2f * multiplier;
+    if (InputManager::GetKeyDown(KEY_DOWN))
+        juliay -= 0.2f * multiplier;
 }
 
 void mandelbrot_init()
