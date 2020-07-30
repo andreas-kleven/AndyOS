@@ -14,7 +14,7 @@ PciDevice::PciDevice(int bus, int device, int func)
 
 void PciDevice::ReadConfig()
 {
-	uint16* buffer = (uint16*)&config;
+	uint16 *buffer = (uint16 *)&config;
 
 	for (int i = 0; i < 32; i++)
 		buffer[i] = PCI::Read16(id, i * 2);
@@ -27,11 +27,11 @@ void PciDevice::EnableBusMastering()
 
 namespace PCI
 {
-	void printdev(PciDevice* dev)
+	void printdev(PciDevice *dev)
 	{
-		debug_print("Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x\n",
-			dev->bus, dev->device, dev->func, dev->config.vendor, dev->config.device,
-			dev->config.classCode, dev->config.subclass);
+		debug_print("Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x ProgIf: %x\n",
+					dev->bus, dev->device, dev->func, dev->config.vendor, dev->config.device,
+					dev->config.classCode, dev->config.subclass, dev->config.progIf);
 	}
 
 	uint16 Read16(uint32 id, uint8 port)
@@ -48,7 +48,7 @@ namespace PCI
 		outw(PCI_CONFIG_DATA + (port & 2), val);
 	}
 
-	PciDevice* GetDevice(int classCode, int subClass, int progIf)
+	PciDevice *GetDevice(int classCode, int subClass, int progIf)
 	{
 		for (uint8 bus = 0; bus < 255; bus++)
 		{
@@ -61,12 +61,12 @@ namespace PCI
 
 					if (vendor_id != 0xFFFF)
 					{
-						PciDevice* dev = new PciDevice(bus, device, func);
+						PciDevice *dev = new PciDevice(bus, device, func);
 						printdev(dev);
 
-						if (dev->config.classCode == classCode &&
-							dev->config.subclass == subClass &&
-							dev->config.progIf == progIf)
+						if ((dev->config.classCode == classCode || classCode == -1) &&
+							(dev->config.subclass == subClass || subClass == -1) &&
+							(dev->config.progIf == progIf || progIf == -1))
 						{
 							return dev;
 						}
@@ -86,4 +86,4 @@ namespace PCI
 	{
 		return STATUS_SUCCESS;
 	}
-}
+} // namespace PCI

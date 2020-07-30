@@ -28,35 +28,38 @@ namespace VMem
 		return 0;
 	}
 
-	void *Alloc(size_t count, pflags_t flags, size_t start, size_t end)
+	void *Alloc(size_t count, pflags_t flags, size_t start, size_t end, bool contiguous)
 	{
 		Scheduler::Disable();
 
-		void *virt = FirstFree(count, start, end);
-
-		if (virt == 0)
+		if (contiguous || true)
 		{
+			void *virt = FirstFree(count, start, end);
+
+			if (virt == 0)
+			{
+				Scheduler::Enable();
+				return 0;
+			}
+
+			void *phys = PMem::AllocBlocks(count);
+
+			if (!phys)
+			{
+				Scheduler::Enable();
+				return 0;
+			}
+
+			if (!MapPages(virt, phys, count, flags))
+			{
+				PMem::FreeBlocks(phys, count);
+				Scheduler::Enable();
+				return 0;
+			}
+
 			Scheduler::Enable();
-			return 0;
+			return virt;
 		}
-
-		void *phys = PMem::AllocBlocks(count);
-
-		if (!phys)
-		{
-			Scheduler::Enable();
-			return 0;
-		}
-
-		if (!MapPages(virt, phys, count, flags))
-		{
-			PMem::FreeBlocks(phys, count);
-			Scheduler::Enable();
-			return 0;
-		}
-
-		Scheduler::Enable();
-		return virt;
 
 		//
 		/*char* _virt = (char*)virt;
@@ -170,14 +173,14 @@ namespace VMem
 		return ret;
 	}
 
-	void *KernelAlloc(size_t count)
+	void *KernelAlloc(size_t count, bool contiguous)
 	{
-		return Alloc(count, PAGE_PRESENT | PAGE_WRITE, KERNEL_BASE, KERNEL_END);
+		return Alloc(count, PAGE_PRESENT | PAGE_WRITE, KERNEL_BASE, KERNEL_END, contiguous);
 	}
 
-	void *UserAlloc(size_t count)
+	void *UserAlloc(size_t count, bool contiguous)
 	{
-		return Alloc(count, PAGE_PRESENT | PAGE_WRITE | PAGE_USER, HEAP_END, USER_END);
+		return Alloc(count, PAGE_PRESENT | PAGE_WRITE | PAGE_USER, HEAP_END, USER_END, contiguous);
 	}
 
 	void *KernelMapFirstFree(void *phys, size_t count, pflags_t flags)
