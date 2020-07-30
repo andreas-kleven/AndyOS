@@ -76,9 +76,8 @@ int ATADriver::Read(fpos_t pos, void *buf, size_t length)
 {
 	MutexAquire();
 
-	// TODO: Don't cast to int
-	int first_sector = (unsigned int)pos / block_size;
-	int offset = (unsigned int)pos % block_size;
+	fpos_t first_sector = pos / block_size;
+	fpos_t offset = pos % block_size;
 	int parts = DIV_CEIL(offset + length, MAX_BYTES);
 	int read = 0;
 

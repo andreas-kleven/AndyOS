@@ -32,7 +32,7 @@ namespace VFS
 	int Stat(PROCESS *process, const char *filename, stat *st);
 	int Fstat(Filetable &filetable, int fd, stat *st);
 
-	int Open(PROCESS *process, const char *filename);
+	int Open(PROCESS *process, const char *filename, int flags);
 	int Close(Filetable &filetable, int fd);
 	size_t Read(Filetable &filetable, int fd, char *buf, size_t size);
 	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size);

@@ -25,3 +25,19 @@
 #define	F_WRLCK		2	/* write lock */
 #define	F_UNLCK		3	/* remove lock(s) */
 #define	F_UNLKSYS	4	/* remove remote locks for a given system */
+
+/*
+ * Flag values for open(2) and fcntl(2)
+ * The kernel adds 1 to the open modes to turn it into some
+ * combination of FREAD and FWRITE.
+ */
+#define	O_RDONLY	0		/* +1 == FREAD */
+#define	O_WRONLY	1		/* +1 == FWRITE */
+#define	O_RDWR		2		/* +1 == FREAD|FWRITE */
+#define	O_APPEND	0x0008
+#define	O_CREAT		0x0200
+#define	O_TRUNC		0x0400
+#define	O_EXCL		0x0800
+#define	O_NONBLOCK	0x4000
+#define	O_NOCTTY	0x8000
+#define	O_SYNC		0x2000

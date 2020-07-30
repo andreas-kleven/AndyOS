@@ -11,8 +11,6 @@
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
-typedef signed long long fpos_t;
-
 int sprintf(char* str, const char* format, ...);
 int vsprintf(char* buffer, const char* format, va_list vlist);
 int vsnprintf(char* buffer, size_t size, const char* format, va_list vlist);

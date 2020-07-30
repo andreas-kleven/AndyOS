@@ -5,6 +5,8 @@
 #include <circbuf.h>
 #include <math.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #define MOUSE_IRQ 12
 #define MOUSE_PORT0 0x60
@@ -12,11 +14,12 @@
 
 #define BUFFER_SIZE 128
 
-static bool initialized;
+static bool initialized = false;
 static int mouse_cycle = 0;
-static char *mouse_byte;
-static fpos_t buffer_pos;
 static char buffer[BUFFER_SIZE];
+static char *mouse_bytes = buffer;
+static fpos_t buffer_pos = 0;
+static Event data_event = Event(false, true);
 
 void mouse_isr()
 {
@@ -25,30 +28,30 @@ void mouse_isr()
 		switch (mouse_cycle)
 		{
 		default:
-			mouse_byte = &buffer[(buffer_pos + 4) % BUFFER_SIZE];
+			mouse_bytes[0] = inb(MOUSE_PORT0);
 
-			memset(mouse_byte, 0, 4);
-			buffer_pos += 4;
-
-			mouse_byte[0] = inb(MOUSE_PORT0);
-
-			if (mouse_byte[0] & 8)
+			if (mouse_bytes[0] & 8)
 				mouse_cycle = 1;
 			break;
 
 		case 1:
-			mouse_byte[1] = inb(MOUSE_PORT0);
+			mouse_bytes[1] = inb(MOUSE_PORT0);
 			mouse_cycle = 2;
 			break;
 
 		case 2:
-			mouse_byte[2] = inb(MOUSE_PORT0);
+			mouse_bytes[2] = inb(MOUSE_PORT0);
 			mouse_cycle = 3;
 			break;
 
 		case 3:
-			mouse_byte[3] = inb(MOUSE_PORT0);
+			mouse_bytes[3] = inb(MOUSE_PORT0);
 			mouse_cycle = 0;
+
+			buffer_pos += 4;
+			mouse_bytes = &buffer[buffer_pos % BUFFER_SIZE];
+			memset(mouse_bytes, 0, 4);
+			data_event.Set();
 			break;
 		}
 	}
@@ -153,13 +156,27 @@ int MouseDriver::Open(FILE *file)
 int MouseDriver::Read(FILE *file, void *buf, size_t size)
 {
 	if (file->pos >= buffer_pos)
-		return 0;
+	{
+		if (file->flags & O_NONBLOCK)
+			return -EAGAIN;
+
+		data_event.Wait();
+	}
 
 	if (size > BUFFER_SIZE)
 		size = BUFFER_SIZE;
 
-	int index = file->pos % BUFFER_SIZE;
-	memcpy(buf, &buffer[index], size);
+	int read = 0;
+	fpos_t pos = file->pos;
+	char *ptr = (char *)buf;
 
-	return size;
+	// TODO: memcpy
+	while (read < size && pos < buffer_pos)
+	{
+		ptr[read] = buffer[pos % BUFFER_SIZE];
+		read += 1;
+		pos += 1;
+	}
+
+	return read;
 }

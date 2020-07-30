@@ -1,29 +1,29 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <AndyOS.h>
 #include "input.h"
 
 namespace Input
 {
-    FILE *mouse_file;
-
+    int mouse_fd;
     int _x = 0;
     int _y = 0;
-    int _left = 0;
-    int _right = 0;
-    int _middle = 0;
+    bool _left = 0;
+    bool _right = 0;
+    bool _middle = 0;
     int _scroll_x = 0;
     int _scroll_y = 0;
 
     void read_mouse()
     {
-        if (!mouse_file)
+        if (!mouse_fd)
             return;
 
-        char buf[128];
-        int size = read(mouse_file->_file, buf, 4);
+        char buf[256];
+        int size = read(mouse_fd, buf, sizeof(buf));
 
-        if (size % 4 != 0)
+        if (size == -1 || size % 4 != 0)
             return;
 
         for (int i = 0; i < size; i += 4)
@@ -59,7 +59,7 @@ namespace Input
 
     void Init()
     {
-        mouse_file = fopen("/dev/mouse", "r");
+        mouse_fd = open("/dev/mouse", O_RDONLY | O_NONBLOCK);
     }
 
     void GetMouseButtons(bool &left, bool &right, bool &middle)

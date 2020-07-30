@@ -32,7 +32,7 @@ struct FILE
 {
     fpos_t pos = 0;
     DENTRY *dentry = 0;
-    uint16 flags = 0;
+    int flags = 0;
 
     FILE() {}
 

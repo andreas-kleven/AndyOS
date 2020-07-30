@@ -56,7 +56,7 @@ namespace Syscalls
 
 	int sys_open(const char *filename, int flags)
 	{
-		return VFS::Open(Dispatcher::CurrentProcess(), filename);
+		return VFS::Open(Dispatcher::CurrentProcess(), filename, flags);
 	}
 
 	int sys_close(int fd)

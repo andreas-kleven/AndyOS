@@ -431,7 +431,7 @@ namespace VFS
 		return StatDentry(file->dentry, st);
 	}
 
-	int Open(PROCESS *process, const char *filename)
+	int Open(PROCESS *process, const char *filename, int flags)
 	{
 		DENTRY *dentry = GetDentry(process, filename);
 
@@ -439,6 +439,7 @@ namespace VFS
 			return (int)dentry;
 
 		FILE *file = new FILE(dentry);
+		file->flags = flags;
 		int fd = process->filetable.Add(file);
 
 		if (fd < 0)
