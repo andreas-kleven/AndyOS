@@ -63,7 +63,7 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 {
     Driver *driver = DriverManager::GetDriver();
 
-    while (driver->next)
+    while (driver)
     {
         DRIVER_TYPE driver_type = driver->type;
 
@@ -77,7 +77,7 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
                 {
                     int type = driver_type == DRIVER_TYPE_BLOCK ? S_IFBLK : S_IFCHR;
                     mode_t mode = type;
-                    
+
                     VFS::AllocInode(dentry);
                     dentry->inode->ino = driver->id;
                     dentry->inode->mode = mode;

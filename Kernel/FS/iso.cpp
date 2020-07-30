@@ -85,6 +85,9 @@ void IsoFS::ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr)
 	{
 		uint8 length = ptr[2];
 
+		if (!length)
+			return;
+
 		if (ptr[0] == 'P' && ptr[1] == 'X')
 		{
 			rr->mode = *(mode_t *)&ptr[4];
@@ -154,7 +157,7 @@ void IsoFS::GetName(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, char *buf)
 
 		int length = strlen(buf);
 
-		if (length == 1 || length == 2)
+		if (length <= 2)
 		{
 			if (buf[0] == 0)
 			{
