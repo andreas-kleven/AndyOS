@@ -413,8 +413,6 @@ namespace VFS
 	{
 		DENTRY *dentry = GetDentry(process, filename);
 
-		DENTRY *dentry = GetDentry(Dispatcher::CurrentProcess() /*TODO*/, filename);
-
 		if (PTR_ERR(dentry))
 			return (int)dentry;
 

@@ -94,12 +94,12 @@ E1000::E1000(PciDevice *pci_dev) : NetInterface(pci_dev)
 {
 	instance = this;
 
-	irq = dev->config.interruptLine;
-	dev->EnableBusMastering();
+	irq = pci_dev->config.interruptLine;
+	pci_dev->EnableBusMastering();
 
-	uint32 mmio_addr = dev->config.bar0 & 0xFFFFFFF0;
-	uint32 io_addr = dev->config.bar0 & 0xFFFFFFFC;
-	bar_type = (dev->config.bar0 >> 1) & 2;
+	uint32 mmio_addr = pci_dev->config.bar0 & 0xFFFFFFF0;
+	uint32 io_addr = pci_dev->config.bar0 & 0xFFFFFFFC;
+	bar_type = (pci_dev->config.bar0 >> 1) & 2;
 	mem_base = (size_t)VMem::KernelMapFirstFree((void *)mmio_addr, 6, PAGE_PRESENT | PAGE_WRITE);
 	io_base = (size_t)VMem::KernelMapFirstFree((void *)io_addr, 6, PAGE_PRESENT | PAGE_WRITE);
 

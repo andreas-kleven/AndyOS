@@ -26,5 +26,5 @@ struct AC97_DEVICE
 
 namespace AC97
 {
-	STATUS Init(PciDevice* dev);
+	STATUS Init(PciDevice* pci_dev);
 };

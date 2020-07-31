@@ -299,24 +299,24 @@ STATUS ATADriver::Init()
 	IRQ::Install(0x2E, ATA_Interrupt1);
 	IRQ::Install(0x2F, ATA_Interrupt2);
 
-	PciDevice *dev = PCI::GetDevice(1, 1, -1);
+	PciDevice *pci_dev = PCI::GetDevice(1, 1, -1);
 
-	if (!dev)
+	if (!pci_dev)
 	{
 		debug_print("Could not find IDE controller\n");
 		return STATUS_FAILED;
 	}
 
-	if (dev->config.progIf != 0x80 && dev->config.progIf != 0x8A)
+	if (pci_dev->config.progIf != 0x80 && pci_dev->config.progIf != 0x8A)
 	{
 		debug_print("Unknown IDE device\n");
 		return STATUS_FAILED;
 	}
 
-	DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER, dev));
-	DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE, dev));
-	DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER, dev));
-	DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE, dev));
+	DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_MASTER, pci_dev));
+	DriverManager::AddDriver(new ATADriver(ATA_BUS_PRIMARY, ATA_DRIVE_SLAVE, pci_dev));
+	DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_MASTER, pci_dev));
+	DriverManager::AddDriver(new ATADriver(ATA_BUS_SECONDARY, ATA_DRIVE_SLAVE, pci_dev));
 
 	return STATUS_SUCCESS;
 }

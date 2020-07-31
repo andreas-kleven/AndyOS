@@ -137,9 +137,9 @@ namespace Test
 	{
 		Net::Init();
 
-		PciDevice *dev = PCI::GetDevice(2, 0, 0);
+		PciDevice *pci_dev = PCI::GetDevice(2, 0, 0);
 
-		if (!dev)
+		if (!pci_dev)
 		{
 			debug_print("Network card not found\n");
 			return;
@@ -147,7 +147,7 @@ namespace Test
 
 		debug_print("Found network card\n");
 
-		E1000 *intf = new E1000(dev);
+		E1000 *intf = new E1000(pci_dev);
 
 		THREAD *packet_thread = Task::CreateKernelThread(PacketManager::Start);
 		Scheduler::InsertThread(packet_thread);
@@ -319,7 +319,7 @@ namespace Test
 		if (VFS::Mount(driver2, fs2, "/mnt"))
 			debug_print("Mount 2 failed\n");
 
-		if (VFS::Mount(0, devfs, "/dev"))
+		if (VFS::Mount(0, devfs, "/pci_dev"))
 			debug_print("Mount devfs failed\n");
 
 		if (VFS::Mount(0, pipefs, "/pipe"))

@@ -7,7 +7,7 @@
 class NetInterface /*: public PciDevice*/
 {
 protected:
-	PciDevice *dev;
+	PciDevice *pci_dev;
 
 public:
 	uint32 gateway_addr;
