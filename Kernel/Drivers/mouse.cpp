@@ -155,7 +155,7 @@ int MouseDriver::Open(FILE *file)
 
 int MouseDriver::Read(FILE *file, void *buf, size_t size)
 {
-	if (file->pos >= buffer_pos)
+	while (file->pos >= buffer_pos)
 	{
 		if (file->flags & O_NONBLOCK)
 			return -EAGAIN;
