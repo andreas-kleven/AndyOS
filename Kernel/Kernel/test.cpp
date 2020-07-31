@@ -319,7 +319,7 @@ namespace Test
 		if (VFS::Mount(driver2, fs2, "/mnt"))
 			debug_print("Mount 2 failed\n");
 
-		if (VFS::Mount(0, devfs, "/pci_dev"))
+		if (VFS::Mount(0, devfs, "/dev"))
 			debug_print("Mount devfs failed\n");
 
 		if (VFS::Mount(0, pipefs, "/pipe"))

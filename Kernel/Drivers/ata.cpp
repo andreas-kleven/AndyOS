@@ -63,11 +63,8 @@ ATADriver::ATADriver(int bus, int drive, PciDevice *pci_dev)
 	pci_dev->EnableBusMastering();
 	InitPRDT();
 
-	/*//int read = ReadSectors(2, 1);
-	int read = Read(1024, _data_buf, 256);
-	debug_print("%d\n", read);
-	debug_dump((void *)((size_t)_data_buf), 512, true);
-	sys_halt();*/
+	this->dev = MKDEV(is_atapi ? MAJOR_CDROM : MAJOR_HARDDISK, drive == ATA_DRIVE_SLAVE);
+	this->block_size = is_atapi ? ATAPI_SECTOR_SIZE : ATA_SECTOR_SIZE;
 
 	this->status = DRIVER_STATUS_RUNNING;
 }
@@ -208,8 +205,6 @@ bool ATADriver::Identify(bool atapi)
 			return false;
 		}
 	}
-
-	this->block_size = is_atapi ? ATAPI_SECTOR_SIZE : ATA_SECTOR_SIZE;
 
 	char buf[512];
 	uint16 *ptr = (uint16 *)buf;

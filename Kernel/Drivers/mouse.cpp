@@ -19,7 +19,7 @@ static int mouse_cycle = 0;
 static char buffer[BUFFER_SIZE];
 static char *mouse_bytes = buffer;
 static fpos_t buffer_pos = 0;
-static Event data_event = Event(false, true);
+static Event data_event;
 
 void mouse_isr()
 {
@@ -141,7 +141,10 @@ static void mouse_init()
 
 MouseDriver::MouseDriver()
 {
+	data_event = Event(false, true);
+
 	this->name = "mouse";
+	this->dev = MKDEV(MAJOR_INPUT, MINOR_INPUT_MOUSE);
 	this->status = DRIVER_STATUS_RUNNING;
 
 	mouse_init();

@@ -61,13 +61,13 @@ int DevFS::Seek(FILE *file, long offset, int origin)
 
 int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 {
-    Driver *driver = DriverManager::GetDriver();
+    Driver *driver = DriverManager::FirstDriver();
 
     while (driver)
     {
         DRIVER_TYPE driver_type = driver->type;
 
-        if (driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR)
+        if (driver->dev && driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR)
         {
             if (!find_name || strcmp(driver->name, find_name) == 0)
             {
@@ -79,8 +79,9 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
                     mode_t mode = type;
 
                     VFS::AllocInode(dentry);
-                    dentry->inode->ino = driver->id;
                     dentry->inode->mode = mode;
+                    dentry->inode->dev = driver->dev;
+                    dentry->inode->ino = driver->dev;
                     VFS::AddDentry(parent, dentry);
 
                     if (find_name)
@@ -97,6 +98,6 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 
 Driver *DevFS::GetDriver(FILE *file)
 {
-    int ino = file->dentry->inode->ino;
-    return DriverManager::GetDriver(ino);
+    dev_t dev = file->dentry->inode->dev;
+    return DriverManager::GetDriver(dev);
 }

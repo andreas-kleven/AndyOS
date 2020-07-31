@@ -6,7 +6,6 @@
 namespace DriverManager
 {
 	Driver *first_driver = 0;
-	int next_id = 0;
 
 	void AddDriver(Driver *driver)
 	{
@@ -16,8 +15,6 @@ namespace DriverManager
 		if (driver->status == DRIVER_STATUS_ERROR)
 			return;
 
-		driver->id = next_id++;
-
 		if (first_driver)
 			driver->next = first_driver;
 		else
@@ -26,24 +23,9 @@ namespace DriverManager
 		first_driver = driver;
 	}
 
-	Driver *GetDriver()
+	Driver *FirstDriver()
 	{
 		return first_driver;
-	}
-
-	Driver *GetDriver(int id)
-	{
-		Driver *drv = first_driver;
-
-		while (drv)
-		{
-			if (drv->id == id)
-				return drv;
-
-			drv = drv->next;
-		}
-
-		return 0;
 	}
 
 	Driver *GetDriver(const char *name)
@@ -61,10 +43,23 @@ namespace DriverManager
 		return 0;
 	}
 
+	Driver *GetDriver(dev_t dev)
+	{
+		Driver *drv = first_driver;
+
+		while (drv)
+		{
+			if (drv->dev == dev)
+				return drv;
+
+			drv = drv->next;
+		}
+
+		return 0;
+	}
+
 	STATUS Init()
 	{
-		next_id = 1;
-
 		ATADriver::Init();
 		AddDriver(new MouseDriver());
 

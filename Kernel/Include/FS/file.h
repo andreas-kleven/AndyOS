@@ -16,6 +16,7 @@ struct INODE
     time_t ctime = 0;
     time_t mtime = 0;
     time_t dtime = 0;
+    dev_t dev = 0;
 };
 
 struct DENTRY

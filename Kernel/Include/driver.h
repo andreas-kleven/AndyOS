@@ -2,6 +2,14 @@
 #include <types.h>
 #include <FS/file.h>
 
+#define MKDEV(major, minor) (((major & 0xFFFF) << 16) | (minor & 0xFFFF))
+
+#define MAJOR_CDROM 11
+#define MAJOR_HARDDISK 13
+#define MAJOR_INPUT 13
+#define MINOR_INPUT_MOUSE 1
+#define MINOR_INPUT_KEYBOARD 2
+
 class FileSystem;
 
 enum DRIVER_TYPE
@@ -32,8 +40,8 @@ public:
 class Driver : public FileIO
 {
 public:
-	int id;
 	const char *name;
+	dev_t dev;
 	DRIVER_TYPE type;
 	DRIVER_STATUS status;
 	Driver *next;
@@ -68,8 +76,8 @@ public:
 namespace DriverManager
 {
 	void AddDriver(Driver *driver);
-	Driver *GetDriver();
-	Driver *GetDriver(int id);
+	Driver *FirstDriver();
 	Driver *GetDriver(const char *name);
+	Driver *GetDriver(dev_t dev);
 	STATUS Init();
 }; // namespace DriverManager

@@ -399,7 +399,7 @@ namespace VFS
 		st->st_nlink = 1;
 		st->st_uid = inode->uid;
 		st->st_gid = inode->gid;
-		st->st_rdev = 0;
+		st->st_rdev = inode->dev;
 		st->st_size = inode->size;
 		st->st_blksize = 512;
 		st->st_blocks = 1;
