@@ -1,6 +1,6 @@
 #include <Net/packetmanager.h>
 #include <sync.h>
-#include <Process/scheduler.h>
+#include <hal.h>
 
 namespace PacketManager
 {
@@ -43,12 +43,12 @@ namespace PacketManager
             receive_event.Wait();
             interface->Poll();
 
-            Scheduler::Disable();
+            disable();
 
             if (--ready_count == 0)
                 receive_event.Clear();
 
-            Scheduler::Enable();
+            enable();
         }
     }
 } // namespace PacketManager

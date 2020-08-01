@@ -153,17 +153,17 @@ namespace Dispatcher
         while (true)
         {
             queue_event.Wait();
-            Scheduler::Disable();
+            disable();
 
             if (queue.Count() == 0)
             {
                 queue_event.Clear();
-                Scheduler::Enable();
+                enable();
             }
             else
             {
                 DISPATCHER_CONTEXT context = queue.Dequeue();
-                Scheduler::Enable();
+                enable();
 
                 DISPATCHER_ENTRY *entry = GetAvailableThread(context);
                 Scheduler::InsertThread(entry->handler_thread);

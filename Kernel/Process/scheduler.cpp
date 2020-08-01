@@ -41,6 +41,27 @@ namespace Scheduler
 		disableCount++;
 	}
 
+	int ReadyCount()
+	{
+		Disable();
+		int count = 0;
+		THREAD *thread = first_thread;
+
+		while (thread)
+		{
+			if (thread->state == THREAD_STATE_READY)
+				count++;
+
+			thread = thread->next;
+
+			if (thread == first_thread)
+				break;
+		}
+
+		Enable();
+		return count;
+	}
+
 	int id_counter = 1;
 	int AssignId(THREAD *thread)
 	{
