@@ -156,7 +156,7 @@ int tcsetsid(int fd, pid_t pid)
 
 int uname(struct utsname *name)
 {
-    return 0;
+    return syscall1(SYSCALL_UNAME, name);
 }
 
 int getpriority(int which, id_t who)
@@ -215,6 +215,11 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout)
 }
 
 int clock_settime(clockid_t clock_id, const struct timespec *tp)
+{
+    return 0;
+}
+
+int getgrouplist(const char *user, gid_t group, gid_t *groups, int *ngroups)
 {
     return 0;
 }

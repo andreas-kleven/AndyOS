@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <utsname.h>
 #include <debug.h>
 #include <Kernel/timer.h>
 #include <Drivers/mouse.h>
@@ -182,6 +183,16 @@ namespace Syscalls
 	{
 		PROCESS *proc = Dispatcher::CurrentProcess();
 		return ProcessManager::Fchdir(proc, fd);
+	}
+
+	int sys_uname(utsname *name)
+	{
+		strcpy(name->sysname, "AndyOS");
+		strcpy(name->nodename, "-");
+		strcpy(name->release, "0.0.1");
+		strcpy(name->version, "0.0.1");
+		strcpy(name->machine, "x86");
+		return 0;
 	}
 
 	int sys_socket(int domain, int type, int protocol)
@@ -466,6 +477,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_WAITPID, (SYSCALL_HANDLER)sys_waitpid);
 		InstallSyscall(SYSCALL_CHDIR, (SYSCALL_HANDLER)sys_chdir);
 		InstallSyscall(SYSCALL_FCHDIR, (SYSCALL_HANDLER)sys_fchdir);
+		InstallSyscall(SYSCALL_UNAME, (SYSCALL_HANDLER)sys_uname);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)sys_socket);
 		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)sys_accept);
