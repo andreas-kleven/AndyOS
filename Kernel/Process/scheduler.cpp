@@ -49,7 +49,7 @@ namespace Scheduler
 
 		while (thread)
 		{
-			if (thread->state == THREAD_STATE_READY)
+			if ((thread->state == THREAD_STATE_READY || thread->state == THREAD_STATE_RUNNING) && !thread->sleep_until)
 				count++;
 
 			thread = thread->next;
@@ -168,6 +168,11 @@ namespace Scheduler
 		thread->prev = 0;
 		thread->next = 0;
 
+		if (next == thread)
+			next = 0;
+		if (prev == thread)
+			prev = 0;
+
 		if (thread == first_thread)
 			first_thread = next;
 		if (thread == last_thread)
@@ -194,7 +199,7 @@ namespace Scheduler
 			current_thread->state = THREAD_STATE_READY;
 
 		//Schedule
-		if (current_thread == idle_thread)
+		if (current_thread == idle_thread && first_thread)
 			current_thread = first_thread;
 
 		current_thread = current_thread->next;
@@ -204,19 +209,25 @@ namespace Scheduler
 
 		THREAD *first = current_thread;
 
-		while (1)
+		while (true)
 		{
-			while (current_thread->state == THREAD_STATE_TERMINATED)
+			while (current_thread && current_thread->state == THREAD_STATE_TERMINATED)
 			{
-				THREAD *next = current_thread->next;
 				RemoveThread(current_thread);
+				THREAD *next = current_thread->next;
 				delete current_thread;
 				current_thread = next;
 			}
 
+			if (!current_thread)
+			{
+				current_thread = idle_thread;
+				break;
+			}
+
 			if (!current_thread->inserted)
 			{
-				debug_print("Not inserted %d\n", current_thread->id);
+				debug_print("Not inserted %d %p %p\n", current_thread->id, current_thread);
 				sys_halt();
 			}
 
@@ -251,7 +262,7 @@ namespace Scheduler
 
 			current_thread = current_thread->next;
 
-			if (current_thread == first)
+			if (!current_thread || current_thread == first)
 			{
 				current_thread = idle_thread;
 				break;

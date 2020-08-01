@@ -340,7 +340,7 @@ namespace Test
 		//COM();
 		//MutexTest();
 
-		while (1)
-			pause();
+		Scheduler::ExitThread(0, Scheduler::CurrentThread());
+		Scheduler::Switch();
 	}
 } // namespace Test
