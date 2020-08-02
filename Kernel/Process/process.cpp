@@ -235,6 +235,7 @@ namespace ProcessManager
 		else if (blocks < 0)
 		{
 			// TODO
+			blocks = -blocks;
 			void *virt = (void *)((cur_block - blocks) * BLOCK_SIZE);
 			VMem::FreePages(virt, blocks);
 		}
