@@ -12,7 +12,7 @@
 
 typedef struct
 {
-    int si_status;
-    int si_code;
-    pid_t si_pid;
+    int si_status = 0;
+    int si_code = 0;
+    pid_t si_pid = 0;
 } siginfo_t;

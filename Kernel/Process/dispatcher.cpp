@@ -305,9 +305,7 @@ namespace Dispatcher
 
     void HandleSignal(PROCESS *process)
     {
-        siginfo_t info = process->siginfo;
-
-        if (!info.si_code)
+        if (!SIGINFO_ANY(process->siginfo))
             return;
 
         Scheduler::Disable();

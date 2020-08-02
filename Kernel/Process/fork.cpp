@@ -83,7 +83,7 @@ namespace ProcessManager
 			return 0;
 		}
 
-		debug_print("Fork complete\n");
+		debug_print("Fork complete %d\n", newproc->id);
 		Scheduler::Enable();
 		return newproc;
 	}

@@ -53,15 +53,11 @@ namespace ProcessManager
 		if (parent)
 		{
 			if (parent->first_child)
-			{
-				proc->next_sibling = proc->first_child;
-				proc->first_child = proc;
-			}
+				proc->next_sibling = parent->first_child;
 			else
-			{
-				parent->first_child = proc;
 				proc->next_sibling = 0;
-			}
+
+			parent->first_child = proc;
 		}
 
 		//Start threads
