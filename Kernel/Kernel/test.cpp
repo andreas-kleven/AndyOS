@@ -7,6 +7,9 @@
 #include <Drivers/ata.h>
 #include <Drivers/ac97.h>
 #include <Drivers/e1000.h>
+#include <Drivers/tty.h>
+#include <Drivers/vt100.h>
+#include <Drivers/vtty.h>
 #include <Net/arp.h>
 #include <net.h>
 #include <Net/socketmanager.h>
@@ -83,54 +86,32 @@ namespace Test
 
 		//ProcessManager::Exec("/1test");
 		//ProcessManager::Exec("/1mndlbrt");
+	}
 
-#ifdef __i386__
-#include <Arch/regs.h>
-		while (1)
+	void TTY()
+	{
+		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
+		Scheduler::InsertThread(dispatcher_thread);
+
+		THREAD *vtty_thread = Task::CreateKernelThread(VTTY::Start);
+		Scheduler::InsertThread(vtty_thread);
+
+		Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
+		Scheduler::Disable();
+
+		for (int i = 0; i < 8; i++)
 		{
-			Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
-			PROCESS *proc = ProcessManager::GetFirst();
-
-			while (proc)
-			{
-				if (!proc->messages.IsEmpty())
-				{
-					disable();
-					MESSAGE *msg = proc->messages.Get();
-
-					if (msg)
-					{
-						VMem::SwapAddressSpace(proc->addr_space);
-
-						if (proc->message_handler)
-						{
-							THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())proc->message_handler);
-
-							REGS *regs = (REGS *)thread->stack;
-							char *data_ptr = (char *)regs->user_stack - msg->size - 4;
-							memcpy(data_ptr, msg->data, msg->size);
-
-							uint32 *stack_ptr = (uint32 *)data_ptr;
-							*--stack_ptr = msg->size;
-							*--stack_ptr = (uint32)data_ptr;
-							*--stack_ptr = msg->param;
-							*--stack_ptr = msg->src_proc;
-							*--stack_ptr = msg->id;
-							regs->user_stack = (uint32)(stack_ptr - 1);
-
-							Scheduler::InsertThread(thread);
-
-							proc->messages.Pop();
-						}
-					}
-
-					enable();
-				}
-
-				proc = proc->next;
-			}
+			char name[32];
+			sprintf(name, "/dev/tty%d", i);
+			PROCESS *proc = ProcessManager::Exec("/bin/dash");
+			int fd = VFS::Open(proc, name, 0);
+			VFS::DuplicateFile(proc->filetable, fd, 0);
+			VFS::DuplicateFile(proc->filetable, fd, 1);
+			VFS::DuplicateFile(proc->filetable, fd, 2);
+			debug_print("Fd %d\n", fd);
 		}
-#endif
+
+		Scheduler::Enable();
 	}
 
 	void InitNet()
@@ -329,16 +310,69 @@ namespace Test
 			debug_print("Mount sockfs failed\n");
 	}
 
+	void MessageLoop()
+	{
+#ifdef __i386__
+#include <Arch/regs.h>
+		while (1)
+		{
+			Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
+			PROCESS *proc = ProcessManager::GetFirst();
+
+			while (proc)
+			{
+				if (!proc->messages.IsEmpty())
+				{
+					disable();
+					MESSAGE *msg = proc->messages.Get();
+
+					if (msg)
+					{
+						if (proc->message_handler)
+						{
+							VMem::SwapAddressSpace(proc->addr_space);
+
+							THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())proc->message_handler);
+
+							REGS *regs = (REGS *)thread->stack;
+							char *data_ptr = (char *)regs->user_stack - msg->size - 4;
+							memcpy(data_ptr, msg->data, msg->size);
+
+							uint32 *stack_ptr = (uint32 *)data_ptr;
+							*--stack_ptr = msg->size;
+							*--stack_ptr = (uint32)data_ptr;
+							*--stack_ptr = msg->param;
+							*--stack_ptr = msg->src_proc;
+							*--stack_ptr = msg->id;
+							regs->user_stack = (uint32)(stack_ptr - 1);
+
+							Scheduler::InsertThread(thread);
+
+							proc->messages.Pop();
+						}
+					}
+
+					enable();
+				}
+
+				proc = proc->next;
+			}
+		}
+#endif
+	}
+
 	void Start()
 	{
 		Mount();
 		//InitNet();
-		GUI();
+		//GUI();
+		TTY();
 		//_Memory();
 		//_Net();
 		//Audio();
 		//COM();
 		//MutexTest();
+		MessageLoop();
 
 		Scheduler::ExitThread(0, Scheduler::CurrentThread());
 		Scheduler::Switch();

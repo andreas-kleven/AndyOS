@@ -41,6 +41,9 @@
 #define	LONG_MIN	(-2147483647L-1L)	/* min value of a "long int" */
 #define	LONG_MAX	2147483647L	/* max value of a "long int" */
 #define	ULONG_MAX	4294967295UL 	/* max value of "unsigned long int" */
+#define	LLONG_MIN	(-9223372036854775807LL-1LL)
+#define	LLONG_MAX	9223372036854775807LL
+#define	ULLONG_MAX	18446744073709551615ULL
 
 #if defined(__EXTENSIONS__) || __STDC__ - 0 == 0 || \
 	defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE)
@@ -214,9 +217,6 @@ extern long _sysconf(int);	/* System Private interface to sysconf() */
 							/*
 							* Size constants for long long
 							*/
-#define	LLONG_MIN	(-9223372036854775807LL-1LL)
-#define	LLONG_MAX	9223372036854775807LL
-#define	ULLONG_MAX	18446744073709551615ULL
 
 #endif	/* defined(__EXTENSIONS__) || (__STDC__ - 0 == 0 && ... */
 

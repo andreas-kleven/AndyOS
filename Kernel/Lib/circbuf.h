@@ -1,6 +1,8 @@
 #pragma once
-#include <debug.h>
 #include <sync.h>
+#include <stdio.h>
+#include <errno.h>
+#include <debug.h>
 
 class CircularDataBuffer
 {
@@ -8,8 +10,8 @@ private:
 	int head;
 	int tail;
 	bool empty;
-	int size;
 	char *buffer;
+	int size;
 
 public:
 	CircularDataBuffer()
@@ -62,6 +64,34 @@ public:
 		}
 
 		return length;
+	}
+
+	int Seek(long offset, int whence)
+	{
+		switch (whence)
+		{
+		case SEEK_SET:
+			tail = head + 1 + offset;
+			break;
+
+		case SEEK_CUR:
+			tail += offset;
+			break;
+
+		case SEEK_END:
+			tail = head + offset;
+			break;
+
+		default:
+			return -EINVAL;
+		}
+
+		tail = tail % size;
+
+		if (tail < 0)
+			tail += size;
+
+		empty = tail == head;
 	}
 
 	bool IsEmpty()

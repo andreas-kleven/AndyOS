@@ -3,8 +3,10 @@
 
 Pipe::Pipe(int buf_size)
 {
+    read_event = Event();
+    write_event = Event(true);
+    buffer_mutex = Mutex();
     buffer = CircularDataBuffer(buf_size);
-    write_event.Set();
 }
 
 int Pipe::Read(FILE *file, void *buf, size_t size)

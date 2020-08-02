@@ -4,6 +4,7 @@
 
 #define MKDEV(major, minor) (((major & 0xFFFF) << 16) | (minor & 0xFFFF))
 
+#define MAJOR_TTY 4
 #define MAJOR_CDROM 11
 #define MAJOR_HARDDISK 13
 #define MAJOR_INPUT 13

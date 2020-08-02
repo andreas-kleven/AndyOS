@@ -23,7 +23,7 @@ namespace Kernel
 		size_t kernel_start = (size_t)&__KERNEL_START;
 		size_t kernel_end = (size_t)&__KERNEL_END;
 
-		debug_init(true);
+		debug_init(true, false);
 		debug_color(0xFF00FF00);
 		debug_pos(0, 2);
 

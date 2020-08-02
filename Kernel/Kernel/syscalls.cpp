@@ -296,7 +296,7 @@ namespace Syscalls
 
 	bool sys_get_last_key(KEYCODE &code, bool &pressed)
 	{
-		return Keyboard::GetLastKey(code, pressed);
+		return false;
 	}
 
 	bool sys_alloc_shared(int proc_id, void *&addr1, void *&addr2, uint32 blocks)

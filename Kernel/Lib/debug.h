@@ -2,7 +2,7 @@
 #include <types.h>
 #include <Process/thread.h>
 
-STATUS debug_init(bool serial);
+STATUS debug_init(bool serial, bool screen);
 void debug_pos(int x, int y);
 void debug_color(uint32 foreground, uint32 background = 0);
 void debug_print(const char *str, ...);

@@ -7,18 +7,20 @@
 #include <ctype.h>
 #include <math.h>
 
-static bool serial;
+static bool enable_serial;
+static bool enable_screen;
 static int x;
 static int y;
 
 static uint32 color = 0xFFFFFFFF;
 static uint32 bcolor = 0xFF000000;
 
-STATUS debug_init(bool _serial)
+STATUS debug_init(bool serial, bool screen)
 {
-	serial = _serial;
+	enable_serial = serial;
+	enable_screen = screen;
 
-	if (serial)
+	if (enable_serial)
 		Serial::Init(COM_PORT1, 115200);
 
 	return STATUS_SUCCESS;
@@ -69,7 +71,7 @@ void debug_print(const char *str, ...)
 
 void debug_putc(char c, bool escape)
 {
-	if (serial)
+	if (enable_serial)
 	{
 		Serial::Transmit(COM_PORT1, c);
 
@@ -77,57 +79,60 @@ void debug_putc(char c, bool escape)
 			Serial::Transmit(COM_PORT1, '\r');
 	}
 
-	int width = Video::mode->width;
-	int height = Video::mode->height;
-
-	if (escape)
+	if (enable_screen)
 	{
-		switch (c)
+		int width = Video::mode->width;
+		int height = Video::mode->height;
+
+		if (escape)
 		{
-		case '\n':
-			x = 0;
-			y += 1;
-			break;
+			switch (c)
+			{
+			case '\n':
+				x = 0;
+				y += 1;
+				break;
 
-		case '\r':
-			x = 0;
-			break;
+			case '\r':
+				x = 0;
+				break;
 
-		case '\t':
-			debug_putc(' ');
-			while (x % 4)
+			case '\t':
 				debug_putc(' ');
-			break;
+				while (x % 4)
+					debug_putc(' ');
+				break;
 
-		case '\b':
-			x = clamp(x - 1, 0, width / 8);
-			draw_text(x * 8, y * 16, " ");
-			break;
+			case '\b':
+				x = clamp(x - 1, 0, width / 8);
+				draw_text(x * 8, y * 16, " ");
+				break;
 
-		default:
+			default:
+				char str[] = {c, '\0'};
+				draw_text(x * 8, y * 16, str);
+				x++;
+				break;
+			}
+		}
+		else
+		{
 			char str[] = {c, '\0'};
 			draw_text(x * 8, y * 16, str);
 			x++;
-			break;
 		}
-	}
-	else
-	{
-		char str[] = {c, '\0'};
-		draw_text(x * 8, y * 16, str);
-		x++;
-	}
 
-	if (x > width / 8)
-	{
-		x = 0;
-		y++;
-	}
+		if (x > width / 8)
+		{
+			x = 0;
+			y++;
+		}
 
-	if (y > height / 16)
-	{
-		x = 0;
-		y = 0;
+		if (y > height / 16)
+		{
+			x = 0;
+			y = 0;
+		}
 	}
 }
 
