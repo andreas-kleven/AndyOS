@@ -39,11 +39,6 @@ void exit_thread(int code)
 	syscall1(SYSCALL_EXIT_THREAD, code);
 }
 
-bool get_last_key(KEYCODE& code, bool& pressed)
-{
-	return syscall2(SYSCALL_GET_LAST_KEY, (int)&code, (int)&pressed);
-}
-
 /*uint32_t* alloc(uint32_t blocks)
 {
 	return (uint32_t*)syscall1(SYSCALL_ALLOC, blocks);

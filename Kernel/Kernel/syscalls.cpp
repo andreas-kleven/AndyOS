@@ -294,11 +294,6 @@ namespace Syscalls
 		return Timer::Ticks();
 	}
 
-	bool sys_get_last_key(KEYCODE &code, bool &pressed)
-	{
-		return false;
-	}
-
 	bool sys_alloc_shared(int proc_id, void *&addr1, void *&addr2, uint32 blocks)
 	{
 		ADDRESS_SPACE other_space = ProcessManager::GetProcess(proc_id)->addr_space;
@@ -498,7 +493,6 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_EXIT_THREAD, (SYSCALL_HANDLER)sys_exit_thread);
 		InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sys_sleep);
 		InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)sys_get_ticks);
-		InstallSyscall(SYSCALL_GET_LAST_KEY, (SYSCALL_HANDLER)sys_get_last_key);
 		InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)sys_alloc_shared);
 		InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)sys_read_file);
 		InstallSyscall(SYSCALL_CREATE_PROCESS, (SYSCALL_HANDLER)sys_create_process);

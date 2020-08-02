@@ -591,7 +591,7 @@ void WindowManager::HandleKeyInput()
 	KEYCODE code;
 	bool pressed;
 
-	while (get_last_key(code, pressed))
+	while (Input::GetKeyboardInput(code, pressed))
 	{
 		gui::InputManager::HandleKey(code, pressed);
 

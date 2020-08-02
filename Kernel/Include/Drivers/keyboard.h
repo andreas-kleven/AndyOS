@@ -1,10 +1,13 @@
 #pragma once
 #include <types.h>
+#include <driver.h>
 #include <keycodes.h>
 
-#define KEYBOARD_IRQ 33
-
-namespace Keyboard
+class KeyboardDriver : public CharDriver
 {
-	STATUS Init();
-}; // namespace Keyboard
+public:
+	KeyboardDriver();
+
+	int Open(FILE *file);
+	int Read(FILE *file, void *buf, size_t size);
+};

@@ -1,6 +1,7 @@
 #include <driver.h>
 #include <Drivers/ata.h>
 #include <Drivers/mouse.h>
+#include <Drivers/keyboard.h>
 #include <string.h>
 
 namespace DriverManager
@@ -62,6 +63,7 @@ namespace DriverManager
 	{
 		ATADriver::Init();
 		AddDriver(new MouseDriver());
+		AddDriver(new KeyboardDriver());
 
 		return STATUS_SUCCESS;
 	}

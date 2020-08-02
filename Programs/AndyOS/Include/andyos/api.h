@@ -12,8 +12,6 @@ uint32_t get_ticks();
 
 void exit_thread(int code);
 
-bool get_last_key(KEYCODE& code, bool& pressed);
-
 //uint32_t* alloc(uint32_t blocks);
 //void free(void* ptr, uint32_t blocks);
 void alloc_shared(int proc_id, void*& addr1, void*& addr2, uint32_t blocks);

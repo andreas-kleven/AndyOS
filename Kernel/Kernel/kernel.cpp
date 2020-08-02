@@ -3,8 +3,6 @@
 #include <Arch/init.h>
 #include <Drivers/serial.h>
 #include <Drivers/ata.h>
-#include <Drivers/mouse.h>
-#include <Drivers/keyboard.h>
 #include <memory.h>
 #include <Process/scheduler.h>
 #include <Process/dispatcher.h>
@@ -43,9 +41,6 @@ namespace Kernel
 
 		VFS::Init();
 		debug_print("Init VFS\n");
-
-		Keyboard::Init();
-		debug_print("Init Keyboard\n");
 
 		Scheduler::Init();
 		debug_print("Init Scheduler\n");
