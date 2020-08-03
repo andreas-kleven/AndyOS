@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <list.h>
+#include <sync.h>
 
 class Driver;
 class FileSystem;
@@ -31,6 +32,7 @@ struct DENTRY
 
 struct FILE
 {
+    Mutex lock;
     fpos_t pos = 0;
     DENTRY *dentry = 0;
     int flags = 0;

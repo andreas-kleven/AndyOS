@@ -426,7 +426,10 @@ namespace VFS
 		if (!file)
 			return -EBADF;
 
-		return StatDentry(file->dentry, st);
+		file->lock.Aquire();
+		int ret = StatDentry(file->dentry, st);
+		file->lock.Release();
+		return ret;
 	}
 
 	int Open(PROCESS *process, const char *filename, int flags)
@@ -437,13 +440,18 @@ namespace VFS
 			return (int)dentry;
 
 		FILE *file = new FILE(dentry);
+		file->lock.Aquire();
 		file->flags = flags;
 		int fd = process->filetable.Add(file);
 
 		if (fd < 0)
+		{
+			file->lock.Release();
 			return fd;
+		}
 
 		dentry->owner->Open(file);
+		file->lock.Release();
 		return fd;
 	}
 
@@ -455,11 +463,18 @@ namespace VFS
 		if (!file)
 			return -EBADF;
 
+		file->lock.Aquire();
+
 		if ((ret = file->dentry->owner->Close(file)))
+		{
+			file->lock.Release();
 			return ret;
+		}
 
 		filetable.Remove(fd);
-		delete file;
+		file->lock.Release();
+
+		delete file; // TODO
 		return ret;
 	}
 
@@ -470,22 +485,26 @@ namespace VFS
 		if (!IsValidInode(file))
 			return -ENOENT;
 
+		file->lock.Aquire();
 		Driver *owner = file->dentry->owner;
 
-		if (file->dentry->inode->size > 0) // TODO
+		if (file->dentry->inode->mode & S_IFREG)
 		{
 			size = min(size, (size_t)(file->dentry->inode->size - file->pos));
 
 			if ((int)size <= 0)
+			{
+				file->lock.Release();
 				return 0;
+			}
 		}
 
 		int read = owner->Read(file, dst, size);
 
-		if (read < 0)
-			return read;
+		if (read >= 0)
+			file->pos += read;
 
-		file->pos += read;
+		file->lock.Release();
 		return read;
 	}
 
@@ -496,13 +515,19 @@ namespace VFS
 		if (!IsValidInode(file))
 			return -ENOENT;
 
+		file->lock.Aquire();
+
 		Driver *owner = file->dentry->owner;
 		int written = owner->Write(file, buf, size);
 
 		if (written < 0)
+		{
+			file->lock.Release();
 			return written;
+		}
 
 		file->pos += written;
+		file->lock.Release();
 		return written;
 	}
 
@@ -513,25 +538,30 @@ namespace VFS
 		if (!IsValidInode(file))
 			return -ENOENT;
 
+		file->lock.Aquire();
 		INODE *inode = file->dentry->inode;
 
 		switch (whence)
 		{
 		case SEEK_SET:
 			file->pos = offset;
-			return 0;
+			break;
 
 		case SEEK_CUR:
 			file->pos += offset;
-			return 0;
+			break;
 
 		case SEEK_END:
 			file->pos = inode->size + offset;
-			return 0;
+			break;
 
 		default:
+			file->lock.Release();
 			return -EINVAL;
 		}
+
+		file->lock.Release();
+		return 0;
 	}
 
 	int CreatePipeDentry(DENTRY *&dentry, int flags)
