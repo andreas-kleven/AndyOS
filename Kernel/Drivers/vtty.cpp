@@ -34,12 +34,6 @@ namespace VTTY
 
     char DecodeCharacter()
     {
-        if (ctrl)
-            return 0;
-
-        if (alt)
-            return 0;
-
         int key = current_key;
 
         if (!isprint(key))
@@ -169,7 +163,28 @@ namespace VTTY
         char c = DecodeCharacter();
 
         if (c)
-            terminals[termid]->HandleInput(&c, 1);
+        {
+            Vt100Driver *terminal = terminals[termid];
+
+            /*if (alt)
+            {
+                char esc = 0x1B;
+                terminal->HandleInput(&esc, 1);
+            }*/
+
+            if (ctrl)
+            {
+                if (c >= 'a')
+                    c -= 'a' - 'A';
+
+                if (c == ' ')
+                    c = 0;
+                else if (c >= '@' && c <= '~')
+                    c = c - '@';
+            }
+
+            terminal->HandleInput(&c, 1);
+        }
     }
 
     void HandleInput(uint8 scan)

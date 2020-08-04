@@ -76,7 +76,23 @@ void Vt100Driver::RedrawScreen()
 
 int Vt100Driver::AddText(const char *text, size_t size)
 {
-    return text_buffer.Write(text, size);
+    for (int i = 0; i < size; i++)
+    {
+        char c = text[i];
+
+        if (!c)
+            continue;
+
+        /*if (c <= 0x1D)
+        {
+            c += 'A' - 1;
+            text_buffer.Write("^", 1);
+        }*/
+
+        text_buffer.Write(&c, 1);
+    }
+
+    return size;
 }
 
 void Vt100Driver::DrawText()

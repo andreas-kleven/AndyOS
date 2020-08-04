@@ -48,16 +48,33 @@ int TtyDriver::HandleInput(const char *input, size_t size)
     {
         char c = input[i];
 
-        if (c == '\n')
+        switch (c)
         {
-            debug_dump(line_buffer.buffer, line_buffer.written);
-            read_pipe.Write(0, line_buffer.buffer, line_buffer.written);
-            read_pipe.Write(0, "\n", 1);
-            line_buffer.Reset();
-        }
-        else
-        {
-            line_buffer.Write(&c, 1);
+        case 1:
+            break;
+
+        case 0x03: // SIGINT
+            break;
+
+        case 0x1A: // SIGSTOP
+            break;
+
+        case 0x1C: // SIGQUIT
+            break;
+
+        default:
+            if (c == '\n')
+            {
+                read_pipe.Write(0, line_buffer.buffer, line_buffer.written);
+                read_pipe.Write(0, "\n", 1);
+                line_buffer.Reset();
+            }
+            else
+            {
+                line_buffer.Write(&c, 1);
+            }
+
+            break;
         }
     }
 
