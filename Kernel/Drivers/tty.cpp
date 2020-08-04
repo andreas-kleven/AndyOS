@@ -65,3 +65,8 @@ int TtyDriver::Write(FILE *file, const void *buf, size_t size)
 {
     return driver->Write(file, buf, size);
 }
+
+int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
+{
+    return 0;
+}

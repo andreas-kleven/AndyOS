@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <errno.h>
 #include <FS/file.h>
 
 #define MKDEV(major, minor) (((major & 0xFFFF) << 16) | (minor & 0xFFFF))
@@ -51,6 +52,8 @@ public:
 	{
 		this->status = DRIVER_STATUS_ERROR;
 	}
+
+	virtual int Ioctl(FILE *file, int request, unsigned int arg) { return -ENOTTY; }
 };
 
 class BlockDriver : public Driver

@@ -31,6 +31,7 @@ namespace VFS
 	int StatDentry(DENTRY *dentry, stat *st);
 	int Stat(PROCESS *process, const char *filename, stat *st);
 	int Fstat(Filetable &filetable, int fd, stat *st);
+	int Ioctl(Filetable &filetable, int fd, int request, unsigned int arg);
 
 	int Open(PROCESS *process, const char *filename, int flags);
 	int Close(Filetable &filetable, int fd);

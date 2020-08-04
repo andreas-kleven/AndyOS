@@ -102,22 +102,46 @@ pid_t getpgrp()
 
 pid_t tcgetpgrp(int fd)
 {
-    return 0;
+    int p;
+
+    if (ioctl(fd, TIOCGPGRP, &p) < 0)
+        return (pid_t)-1;
+
+    return (pid_t)p;
 }
 
 int tcsetpgrp(int fd, pid_t pgrp)
 {
-    return 0;
+    int p = (int)pgrp;
+    return ioctl(fd, TIOCSPGRP, &p);
 }
 
 int tcgetattr(int fd, struct termios *termios_p)
 {
-    return 0;
+    return ioctl(fd, TCGETS, termios_p);
 }
 
 int tcsetattr(int fd, int optional_actions, const struct termios *termios_p)
 {
-    return 0;
+    int cmd;
+
+    switch (optional_actions)
+    {
+    case TCSANOW:
+        cmd = TCSETS;
+        break;
+    case TCSADRAIN:
+        cmd = TCSETSW;
+        break;
+    case TCSAFLUSH:
+        cmd = TCSETSF;
+        break;
+    default:
+        errno = EINVAL;
+        return -1;
+    }
+
+    return ioctl(fd, cmd, termios_p);
 }
 
 int tcdrain(int fd)
@@ -152,11 +176,6 @@ pid_t tcgetsid(int fd)
 int tcsetsid(int fd, pid_t pid)
 {
     return 0;
-}
-
-int uname(struct utsname *name)
-{
-    return syscall1(SYSCALL_UNAME, name);
 }
 
 int getpriority(int which, id_t who)
@@ -204,11 +223,6 @@ struct group *getgrgid(gid_t gid)
     return 0;
 }
 
-int ioctl(int fd, int request, ...)
-{
-    return 0;
-}
-
 int poll(struct pollfd *fds, nfds_t nfds, int timeout)
 {
     return 0;
@@ -220,6 +234,16 @@ int clock_settime(clockid_t clock_id, const struct timespec *tp)
 }
 
 int getgrouplist(const char *user, gid_t group, gid_t *groups, int *ngroups)
+{
+    return 0;
+}
+
+int truncate(const char *path, off_t length)
+{
+    return 0;
+}
+
+int ftruncate(int fd, off_t length)
 {
     return 0;
 }
@@ -315,9 +339,21 @@ int _gettimeofday(struct timeval *tv, void *tz)
     return set_err(syscall2(SYSCALL_GETTIMEOFDAY, tv, tz));
 }
 
+int ioctl(int fd, int request, ...)
+{
+    int arg = 0;
+    va_list args;
+    va_start(args, request);
+    arg = va_arg(args, int);
+    va_end(args);
+
+    return set_err(syscall3(SYSCALL_IOCTL, fd, request, arg));
+}
+
 int _isatty(int fd)
 {
-    return 1;
+    struct termios term;
+    return tcgetattr(fd, &term) == 0;
 }
 
 int _kill(int pid, int sig)
@@ -379,6 +415,11 @@ int _stat(const char *file, struct stat *st)
 clock_t _times(struct tms *buf)
 {
     return set_err(syscall1(SYSCALL_TIMES, buf));
+}
+
+int uname(struct utsname *name)
+{
+    return syscall1(SYSCALL_UNAME, name);
 }
 
 int _unlink(char *name)

@@ -432,6 +432,31 @@ namespace VFS
 		return ret;
 	}
 
+	int Ioctl(Filetable &filetable, int fd, int request, unsigned int arg)
+	{
+		FILE *file = filetable.Get(fd);
+
+		if (!file)
+			return -EBADF;
+
+		file->lock.Aquire();
+
+		DENTRY *dentry = file->dentry;
+		INODE *inode = dentry->inode;
+
+		Driver *driver = DriverManager::GetDriver(inode->dev);
+
+		if (!driver)
+		{
+			file->lock.Release();
+			return -ENOTTY;
+		}
+
+		int ret = driver->Ioctl(file, request, arg);
+		file->lock.Release();
+		return ret;
+	}
+
 	int Open(PROCESS *process, const char *filename, int flags)
 	{
 		DENTRY *dentry = GetDentry(process, filename);

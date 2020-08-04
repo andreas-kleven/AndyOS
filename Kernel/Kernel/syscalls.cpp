@@ -195,6 +195,12 @@ namespace Syscalls
 		return 0;
 	}
 
+	int sys_ioctl(int fd, int request, unsigned int arg)
+	{
+		debug_print("ioctl %d %p %p\n", fd, request, arg);
+		return VFS::Ioctl(CurrentFiletable(), fd, request, arg);
+	}
+
 	int sys_socket(int domain, int type, int protocol)
 	{
 		return VFS::CreateSocket(CurrentFiletable(), domain, type, protocol);
@@ -473,6 +479,7 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_CHDIR, (SYSCALL_HANDLER)sys_chdir);
 		InstallSyscall(SYSCALL_FCHDIR, (SYSCALL_HANDLER)sys_fchdir);
 		InstallSyscall(SYSCALL_UNAME, (SYSCALL_HANDLER)sys_uname);
+		InstallSyscall(SYSCALL_IOCTL, (SYSCALL_HANDLER)sys_ioctl);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)sys_socket);
 		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)sys_accept);

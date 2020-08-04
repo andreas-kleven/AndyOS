@@ -14,4 +14,5 @@ public:
     int Close(FILE *file);
     int Read(FILE *file, void *buf, size_t size);
     int Write(FILE *file, const void *buf, size_t size);
+    int Ioctl(FILE *file, int request, unsigned int arg);
 };

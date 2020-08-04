@@ -46,6 +46,9 @@ namespace DriverManager
 
 	Driver *GetDriver(dev_t dev)
 	{
+		if (!dev)
+			return 0;
+
 		Driver *drv = first_driver;
 
 		while (drv)
