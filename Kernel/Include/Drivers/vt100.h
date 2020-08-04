@@ -1,10 +1,10 @@
 #pragma once
+#include <Drivers/tty.h>
 #include <types.h>
 #include <driver.h>
 #include <circbuf.h>
-#include <FS/pipe.h>
 
-class Vt100Driver : public CharDriver
+class Vt100Driver : public TtyBaseDriver
 {
 private:
     int width;
@@ -14,16 +14,14 @@ private:
     uint32 color;
     uint32 bcolor;
     CircularDataBuffer text_buffer;
-    Pipe input_pipe;
     bool active;
 
 public:
     Vt100Driver();
 
-    int Open(FILE *file);
-    int Close(FILE *file);
-    int Read(FILE *file, void *buf, size_t size);
-    int Write(FILE *file, const void *buf, size_t size);
+    int Open();
+    int Close();
+    int Write(const void *buf, size_t size);
     int HandleInput(const char *input, size_t size);
     void Activate();
     void Deactivate();

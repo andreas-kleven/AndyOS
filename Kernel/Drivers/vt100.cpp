@@ -14,26 +14,20 @@ Vt100Driver::Vt100Driver()
     color = 0xFFFFFFFF;
     bcolor = 0;
     text_buffer = CircularDataBuffer(width * height);
-    input_pipe = Pipe();
     active = false;
 }
 
-int Vt100Driver::Open(FILE *file)
+int Vt100Driver::Open()
 {
     return -1;
 }
 
-int Vt100Driver::Close(FILE *file)
+int Vt100Driver::Close()
 {
     return -1;
 }
 
-int Vt100Driver::Read(FILE *file, void *buf, size_t size)
-{
-    return input_pipe.Read(file, buf, size);
-}
-
-int Vt100Driver::Write(FILE *file, const void *buf, size_t size)
+int Vt100Driver::Write(const void *buf, size_t size)
 {
     int written = AddText((const char *)buf, size);
 
@@ -46,12 +40,7 @@ int Vt100Driver::Write(FILE *file, const void *buf, size_t size)
 
 int Vt100Driver::HandleInput(const char *input, size_t size)
 {
-    int ret = input_pipe.Write(0, input, size);
-
-    if (AddText(input, size))
-        DrawText();
-
-    return ret;
+    return tty->HandleInput(input, size);
 }
 
 void Vt100Driver::Activate()
