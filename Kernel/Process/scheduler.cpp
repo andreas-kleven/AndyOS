@@ -14,19 +14,20 @@ namespace Scheduler
 	THREAD *current_thread;
 	THREAD *idle_thread;
 
+	bool is_interrupt = false;
 	bool enabled = false;
-	int disableCount = 0;
+	int disable_count = 0;
 
 	void Enable()
 	{
-		if (disableCount == 1)
+		if (disable_count == 1)
 		{
 			enabled = true;
-			disableCount = 0;
+			disable_count = 0;
 		}
-		else if (disableCount > 1)
+		else if (disable_count > 1)
 		{
-			disableCount--;
+			disable_count--;
 		}
 		else
 		{
@@ -38,7 +39,17 @@ namespace Scheduler
 	void Disable()
 	{
 		enabled = false;
-		disableCount++;
+		disable_count++;
+	}
+
+	void InterruptEnter()
+	{
+		is_interrupt = true;
+	}
+
+	void InterruptExit()
+	{
+		is_interrupt = false;
 	}
 
 	int ReadyCount()
@@ -85,7 +96,7 @@ namespace Scheduler
 		{
 			thread->sleep_until = until;
 
-			if (thread == current_thread)
+			if (!is_interrupt && thread == current_thread)
 			{
 				Enable();
 				Switch();
@@ -104,7 +115,7 @@ namespace Scheduler
 		{
 			thread->state = THREAD_STATE_BLOCKING;
 
-			if (auto_switch && thread == current_thread)
+			if (!is_interrupt && auto_switch && thread == current_thread)
 			{
 				Enable();
 				Switch();

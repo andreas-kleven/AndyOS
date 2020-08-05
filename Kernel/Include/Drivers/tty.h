@@ -18,6 +18,8 @@ private:
     int line_buffer_pos;
 
 public:
+    gid_t gid;
+
     TtyDriver(TtyBaseDriver *driver, int number);
 
     int Open(FILE *file);

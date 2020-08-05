@@ -1,4 +1,5 @@
 #include <Drivers/tty.h>
+#include <Process/process.h>
 #include <debug.h>
 
 TtyDriver::TtyDriver(TtyBaseDriver *driver, int number)
@@ -7,6 +8,7 @@ TtyDriver::TtyDriver(TtyBaseDriver *driver, int number)
     this->dev = MKDEV(MAJOR_TTY, number);
     this->read_pipe = Pipe(TTY_BUFFER_SIZE);
     this->line_buffer = TtyBuffer(TTY_BUFFER_SIZE);
+    this->gid = 0;
 
     char *buf = new char[16];
     sprintf(buf, "tty%d", number);
@@ -39,6 +41,18 @@ int TtyDriver::Write(FILE *file, const void *buf, size_t size)
 
 int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
 {
+    if (request == 0x540F)
+    {
+        pid_t *ptr = (pid_t *)arg;
+        *ptr = gid;
+    }
+    else if (request == 0x5410)
+    {
+        pid_t *ptr = (pid_t *)arg;
+        gid = *ptr;
+        debug_print("Set tcgid %d\n", gid);
+    }
+
     return 0;
 }
 
@@ -50,16 +64,19 @@ int TtyDriver::HandleInput(const char *input, size_t size)
 
         switch (c)
         {
-        case 1:
+        case 0x03:
+            ProcessManager::HandleSignal(0, gid, SIGINT);
+            line_buffer.Reset();
             break;
 
-        case 0x03: // SIGINT
+        case 0x1A:
+            ProcessManager::HandleSignal(0, gid, SIGSTOP);
+            line_buffer.Reset();
             break;
 
-        case 0x1A: // SIGSTOP
-            break;
-
-        case 0x1C: // SIGQUIT
+        case 0x1C:
+            ProcessManager::HandleSignal(0, gid, SIGQUIT);
+            line_buffer.Reset();
             break;
 
         default:

@@ -103,7 +103,10 @@ namespace Test
 		{
 			char name[32];
 			sprintf(name, "/dev/tty%d", i);
+			TtyDriver *tty = (TtyDriver *)DriverManager::GetDriver(VFS::GetDentry(name)->inode->dev);
 			PROCESS *proc = ProcessManager::Exec("/bin/dash");
+			tty->gid = proc->gid;
+
 			int fd = VFS::Open(proc, name, 0);
 			VFS::DuplicateFile(proc->filetable, fd, 0);
 			VFS::DuplicateFile(proc->filetable, fd, 1);

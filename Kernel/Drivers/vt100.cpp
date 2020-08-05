@@ -83,13 +83,17 @@ int Vt100Driver::AddText(const char *text, size_t size)
         if (!c)
             continue;
 
-        /*if (c <= 0x1D)
+        if (c == 0x03 || c == 0x1A || c == 0x1C)
         {
             c += 'A' - 1;
-            text_buffer.Write("^", 1);
-        }*/
-
-        text_buffer.Write(&c, 1);
+            char buf[4];
+            sprintf(buf, "^%c\n", c);
+            text_buffer.Write(buf, 3);
+        }
+        else
+        {
+            text_buffer.Write(&c, 1);
+        }
     }
 
     return size;

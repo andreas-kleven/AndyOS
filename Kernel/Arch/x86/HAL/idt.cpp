@@ -1,5 +1,6 @@
 #include <Arch/idt.h>
 #include <Arch/pic.h>
+#include <Process/scheduler.h>
 #include <string.h>
 
 namespace IDT
@@ -28,6 +29,7 @@ namespace IDT
 	void CommonHandler(int i, REGS* regs)
 	{
 		ISR_DESC& desc = handlers[i];
+		Scheduler::InterruptEnter();
 
 		if (desc.handler)
 		{
@@ -37,6 +39,7 @@ namespace IDT
 				((void(*)())desc.handler)();
 		}
 
+		Scheduler::InterruptExit();
 		PIC::InterruptDone(i);
 	}
 

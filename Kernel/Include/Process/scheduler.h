@@ -7,6 +7,8 @@ namespace Scheduler
 {
 	void Enable();
 	void Disable();
+	void InterruptEnter();
+	void InterruptExit();
 
 	void ExitThread(int code, THREAD *thread);
 	void SleepThread(uint64 until, THREAD *thread);

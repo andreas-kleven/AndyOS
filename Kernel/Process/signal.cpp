@@ -26,6 +26,30 @@ namespace ProcessManager
         return prev;
     }
 
+    int HandleSignal(pid_t sid, gid_t gid, int signo)
+    {
+        debug_print("Signal group %d %d\n", gid, signo);
+        Scheduler::Disable();
+
+        PROCESS *proc = ProcessManager::GetFirst();
+
+        int count = 0;
+
+        while (proc)
+        {
+            if (proc->sid == sid && proc->gid == gid)
+            {
+                if (HandleSignal(proc, signo) == 0)
+                    count++;
+            }
+
+            proc = proc->next;
+        }
+
+        Scheduler::Enable();
+        return count ? 0 : -1;
+    }
+
     int HandleSignal(PROCESS *proc, int signo)
     {
         if (!proc)
@@ -59,6 +83,9 @@ namespace ProcessManager
                     proc->siginfo.si_code = CLD_STOPPED;
                     proc->state = PROCESS_STATE_STOPPED;
                     Dispatcher::HandleSignal(proc);
+
+                    if (proc->parent)
+                        HandleSignal(proc->parent, SIGCHLD);
                 }
             }
             else if (signo == SIGCONT)
@@ -70,7 +97,14 @@ namespace ProcessManager
                     proc->siginfo.si_code = CLD_CONTINUED;
                     proc->state = PROCESS_STATE_RUNABLE;
                     Dispatcher::HandleSignal(proc);
+
+                    if (proc->parent)
+                        HandleSignal(proc->parent, SIGCHLD);
                 }
+            }
+            else if (signo == SIGCHLD)
+            {
+                // Ignore
             }
             else
             {
@@ -79,6 +113,9 @@ namespace ProcessManager
                 proc->siginfo.si_code = CLD_KILLED;
                 proc->state = PROCESS_STATE_ZOMBIE;
                 Dispatcher::HandleSignal(proc);
+
+                if (proc->parent)
+                    HandleSignal(proc->parent, SIGCHLD);
 
                 Terminate(proc);
             }

@@ -150,6 +150,7 @@ namespace VMem
 		if (virt == 0 || phys == 0)
 		{
 			debug_print("Map address 0: %d, %p -> %p\n", virt, phys, flags);
+			panic("", "");
 			return false;
 		}
 

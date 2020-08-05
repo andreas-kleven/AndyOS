@@ -27,6 +27,13 @@
 typedef void (*sig_t)(int signo);
 typedef void MESSAGE_HANDLER(int id, int type, char *buf, int size);
 
+struct sigaction
+{
+	sig_t sa_handler;
+	sigset_t sa_mask;
+	int sa_flags;
+};
+
 enum PROCESS_STATE
 {
 	PROCESS_STATE_RUNABLE,
