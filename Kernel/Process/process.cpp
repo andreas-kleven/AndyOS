@@ -35,6 +35,7 @@ namespace ProcessManager
 			return 0;
 
 		proc->id = pid_counter++;
+		proc->gid = proc->id;
 		return proc->id;
 	}
 
@@ -253,6 +254,9 @@ namespace ProcessManager
 		proc->siginfo.si_status = code;
 		proc->siginfo.si_code = CLD_EXITED;
 		proc->state = PROCESS_STATE_ZOMBIE;
+
+		if (proc->parent)
+			HandleSignal(proc->parent, SIGCHLD);
 
 		Scheduler::Enable();
 

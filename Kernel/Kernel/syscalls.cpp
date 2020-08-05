@@ -120,11 +120,6 @@ namespace Syscalls
 		return newproc ? newproc->id : -1;
 	}
 
-	pid_t sys_getpid()
-	{
-		return Dispatcher::CurrentProcess()->id;
-	}
-
 	int sys_execve(char const *path, char const *argv[], char const *envp[])
 	{
 		PROCESS *proc = Dispatcher::CurrentProcess();
@@ -154,12 +149,25 @@ namespace Syscalls
 
 	int sys_kill(pid_t pid, int signo)
 	{
-		// TODO
-		if (pid < 0)
-			pid = -pid;
+		PROCESS *current = Dispatcher::CurrentProcess();
 
-		PROCESS *proc = ProcessManager::GetProcess(pid);
-		return ProcessManager::HandleSignal(proc, signo);
+		if (pid == -1)
+		{
+			panic("Kill", "pid = -1");
+		}
+		else if (pid < 0)
+		{
+			return ProcessManager::HandleSignal(current->sid, -pid, signo);
+		}
+		else if (pid == 0)
+		{
+			return ProcessManager::HandleSignal(current->sid, current->gid, signo);
+		}
+		else
+		{
+			PROCESS *proc = ProcessManager::GetProcess(pid);
+			return ProcessManager::HandleSignal(proc, signo);
+		}
 	}
 
 	sig_t sys_signal(int signum, sig_t handler)
@@ -200,6 +208,60 @@ namespace Syscalls
 		debug_print("ioctl %d %p %p\n", fd, request, arg);
 		return VFS::Ioctl(CurrentFiletable(), fd, request, arg);
 	}
+
+	//
+
+	int sys_getgroups(int size, gid_t list[])
+	{
+		debug_print("Get groups %d\n", size);
+		return 0;
+	}
+
+	int sys_getpgid(pid_t pid)
+	{
+		PROCESS *current = Dispatcher::CurrentProcess();
+		PROCESS *process = pid ? ProcessManager::GetProcess(pid) : current;
+
+		if (process->sid != current->sid)
+			return -EPERM;
+
+		if (!process)
+			return -ESRCH;
+
+		return process->gid;
+	}
+
+	pid_t sys_getpid()
+	{
+		return Dispatcher::CurrentProcess()->id;
+	}
+
+	pid_t sys_getppid()
+	{
+		PROCESS *parent = Dispatcher::CurrentProcess()->parent;
+		return parent ? parent->id : 0;
+	}
+
+	int sys_setpgid(pid_t pid, pid_t pgid)
+	{
+		PROCESS *current = Dispatcher::CurrentProcess();
+		PROCESS *process = pid ? ProcessManager::GetProcess(pid) : current;
+
+		if (pgid < 0)
+			return -EINVAL;
+
+		if (process->sid != current->sid)
+			return -EPERM;
+
+		if (!process)
+			return -ESRCH;
+
+		process->gid = pgid ? pgid : current->sid;
+		debug_print("Set pgid %d %d\n", process->id, process->gid);
+		return 0;
+	}
+
+	//
 
 	int sys_socket(int domain, int type, int protocol)
 	{
@@ -468,7 +530,6 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_GETTIMEOFDAY, (SYSCALL_HANDLER)sys_gettimeofday);
 		InstallSyscall(SYSCALL_GETDENTS, (SYSCALL_HANDLER)sys_getdents);
 		InstallSyscall(SYSCALL_FORK, (SYSCALL_HANDLER)sys_fork);
-		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)sys_getpid);
 		InstallSyscall(SYSCALL_EXECVE, (SYSCALL_HANDLER)sys_execve);
 		InstallSyscall(SYSCALL_SBRK, (SYSCALL_HANDLER)sys_sbrk);
 		InstallSyscall(SYSCALL_STAT, (SYSCALL_HANDLER)sys_stat);
@@ -480,6 +541,12 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_FCHDIR, (SYSCALL_HANDLER)sys_fchdir);
 		InstallSyscall(SYSCALL_UNAME, (SYSCALL_HANDLER)sys_uname);
 		InstallSyscall(SYSCALL_IOCTL, (SYSCALL_HANDLER)sys_ioctl);
+
+		InstallSyscall(SYSCALL_GETGROUPS, (SYSCALL_HANDLER)sys_getgroups);
+		InstallSyscall(SYSCALL_GETPGID, (SYSCALL_HANDLER)sys_getpgid);
+		InstallSyscall(SYSCALL_GETPID, (SYSCALL_HANDLER)sys_getpid);
+		InstallSyscall(SYSCALL_GETPPID, (SYSCALL_HANDLER)sys_getppid);
+		InstallSyscall(SYSCALL_SETPGID, (SYSCALL_HANDLER)sys_setpgid);
 
 		InstallSyscall(SYSCALL_SOCKET, (SYSCALL_HANDLER)sys_socket);
 		InstallSyscall(SYSCALL_ACCEPT, (SYSCALL_HANDLER)sys_accept);

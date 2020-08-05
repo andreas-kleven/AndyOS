@@ -55,21 +55,6 @@ int lstat(const char *path, struct stat *buf)
     return 0;
 }
 
-int setpgid(pid_t pid, pid_t pgid)
-{
-    return 0;
-}
-
-pid_t getpgid(pid_t pid)
-{
-    return 0;
-}
-
-pid_t getppid()
-{
-    return 0;
-}
-
 uid_t getuid()
 {
     return 0;
@@ -90,12 +75,7 @@ uid_t getegid()
     return 0;
 }
 
-int getgroups(int size, gid_t list[])
-{
-    return 0;
-}
-
-pid_t getpgrp()
+struct group *getgrgid(gid_t gid)
 {
     return 0;
 }
@@ -218,11 +198,6 @@ ssize_t readlink(const char *path, char *buf, size_t bufsiz)
     return 0;
 }
 
-struct group *getgrgid(gid_t gid)
-{
-    return 0;
-}
-
 int poll(struct pollfd *fds, nfds_t nfds, int timeout)
 {
     return 0;
@@ -317,11 +292,6 @@ pid_t vfork()
 int _fstat(int fd, struct stat *st)
 {
     return set_err(syscall2(SYSCALL_FSTAT, fd, st));
-}
-
-pid_t _getpid()
-{
-    return set_err(syscall0(SYSCALL_GETPID));
 }
 
 /*int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
@@ -460,6 +430,38 @@ int waitpid(pid_t pid, int *status, int options)
 ssize_t _write(int fd, const char *buf, size_t size)
 {
     return (ssize_t)set_err(syscall3(SYSCALL_WRITE, fd, buf, size));
+}
+
+//
+
+int getgroups(int size, gid_t list[])
+{
+    return set_err(syscall2(SYSCALL_GETGROUPS, size, list));
+}
+
+pid_t getpgid(pid_t pid)
+{
+    return set_err(syscall1(SYSCALL_GETPGID, pid));
+}
+
+pid_t getpgrp()
+{
+    return getpgid(0);
+}
+
+pid_t _getpid()
+{
+    return set_err(syscall0(SYSCALL_GETPID));
+}
+
+pid_t getppid()
+{
+    return set_err(syscall0(SYSCALL_GETPPID));
+}
+
+int setpgid(pid_t pid, pid_t pgid)
+{
+    return set_err(syscall2(SYSCALL_SETPGID, pid, pgid));
 }
 
 //

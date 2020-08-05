@@ -16,9 +16,13 @@
 #define SIG_IGN ((sig_t)1)
 #define SIG_ERR ((sig_t)-1)
 
+#define SIGHUP 1
+#define SIGINT 2
+#define SIGQUIT 3
 #define SIGKILL 9
 #define SIGSTOP 17
 #define SIGCONT 19
+#define SIGCHLD 20
 
 typedef void (*sig_t)(int signo);
 typedef void MESSAGE_HANDLER(int id, int type, char *buf, int size);
@@ -89,6 +93,8 @@ struct PROCESS
 	PROCESS *next_sibling = 0;
 
 	pid_t id = 0;
+	gid_t gid = 0;
+	pid_t sid = 0;
 	PROCESS_FLAGS flags;
 	ADDRESS_SPACE addr_space;
 	PROCESS_STATE state = PROCESS_STATE_RUNABLE;
@@ -134,5 +140,6 @@ namespace ProcessManager
 	int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[]);
 
 	sig_t SetSignalHandler(PROCESS *proc, int signo, sig_t handler);
+	int HandleSignal(pid_t sid, gid_t gid, int signo);
 	int HandleSignal(PROCESS *proc, int signo);
 }; // namespace ProcessManager
