@@ -1,8 +1,9 @@
 #!/bin/bash
+cd "$(dirname "$0")"
 
 GNOME_TERMINAL_SCREEN=""
 mkfifo /tmp/guest
-gnome-terminal -- qemu-system-i386 -cdrom ../AndyOS.iso -drive file="/home/andreas/VirtualBox VMs/AndyOS/disk.img",media=cdrom -s -S -serial pipe:/tmp/guest -netdev bridge,id=mynet0 -device e1000,netdev=mynet0,mac=52:55:00:d1:55:01,id=nic1
+gnome-terminal -- qemu-system-i386 -m 1G -cdrom ../AndyOS.iso -drive file="$HOME/VirtualBox VMs/AndyOS/disk.img" -s -S -serial pipe:/tmp/guest
 
 sleep 0.1
 

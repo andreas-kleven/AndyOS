@@ -15,6 +15,7 @@ cd build-automake-1.11.6
 $srcdir/automake-1.11.6/configure --prefix="$PREFIX"
 make -j6 && make install
 
+cd $srcdir
 mkdir build-autoconf-2.64
 cd build-autoconf-2.64
 $srcdir/autoconf-2.64/configure --prefix="$PREFIX"
