@@ -67,7 +67,7 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
     {
         DRIVER_TYPE driver_type = driver->type;
 
-        if (driver->dev && driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR)
+        if (driver->dev && (driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR))
         {
             if (!find_name || strcmp(driver->name, find_name) == 0)
             {
