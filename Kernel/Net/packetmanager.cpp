@@ -30,25 +30,8 @@ namespace PacketManager
         return interface;
     }
 
-    void NotifyReceived()
+    void Poll()
     {
-        ready_count += 1;
-        receive_event.Set();
-    }
-
-    void Start()
-    {
-        while (true)
-        {
-            receive_event.Wait();
-            interface->Poll();
-
-            disable();
-
-            if (--ready_count == 0)
-                receive_event.Clear();
-
-            enable();
-        }
+        interface->Poll();
     }
 } // namespace PacketManager

@@ -31,6 +31,7 @@
 #include <sync.h>
 #include <Kernel/task.h>
 #include <Kernel/timer.h>
+#include <Kernel/dpc.h>
 #include <syscall_list.h>
 #include <debug.h>
 
@@ -70,9 +71,6 @@ namespace Test
 
 	void GUI()
 	{
-		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
-		Scheduler::InsertThread(dispatcher_thread);
-
 		Scheduler::Disable();
 		PROCESS *proc1 = ProcessManager::Exec("/1winman");
 		PROCESS *proc2 = ProcessManager::Exec("/1term");
@@ -90,9 +88,6 @@ namespace Test
 
 	void TTY()
 	{
-		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
-		Scheduler::InsertThread(dispatcher_thread);
-
 		THREAD *vtty_thread = Task::CreateKernelThread(VTTY::Start);
 		Scheduler::InsertThread(vtty_thread);
 
@@ -132,9 +127,6 @@ namespace Test
 		debug_print("Found network card\n");
 
 		E1000 *intf = new E1000(pci_dev);
-
-		THREAD *packet_thread = Task::CreateKernelThread(PacketManager::Start);
-		Scheduler::InsertThread(packet_thread);
 		PacketManager::SetInterface(intf);
 	}
 
@@ -297,10 +289,10 @@ namespace Test
 		PipeFS *pipefs = new PipeFS();
 		SockFS *sockfs = new SockFS();
 
-		if (VFS::Mount(driver1, fs1, "/"))
+		if (!driver1 || VFS::Mount(driver1, fs1, "/"))
 			debug_print("Mount 1 failed\n");
 
-		if (VFS::Mount(driver2, fs2, "/mnt"))
+		if (!driver2 || VFS::Mount(driver2, fs2, "/mnt"))
 			debug_print("Mount 2 failed\n");
 
 		if (VFS::Mount(0, devfs, "/dev"))
@@ -366,6 +358,12 @@ namespace Test
 
 	void Start()
 	{
+		THREAD *dpc_thread = Task::CreateKernelThread(Dpc::Start);
+		Scheduler::InsertThread(dpc_thread);
+
+		THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
+		Scheduler::InsertThread(dispatcher_thread);
+
 		Mount();
 		//InitNet();
 		//GUI();
