@@ -5,6 +5,7 @@
 #include <net.h>
 #include <Net/eth.h>
 #include <Net/packetmanager.h>
+#include <Kernel/dpc.h>
 #include <memory.h>
 #include <debug.h>
 
@@ -215,7 +216,7 @@ void E1000::E1000_Interrupt()
 
 	if (status & 0x80)
 	{
-		PacketManager::NotifyReceived();
+		Dpc::Create(PacketManager::Poll);
 	}
 }
 
