@@ -25,6 +25,7 @@ typedef unsigned short nlink_t;
 typedef uint64 time_t;
 typedef uint32 mode_t;
 typedef uint32 useconds_t;
+typedef unsigned long sigset_t;
 
 #define NULL 0
 #define DIV_CEIL(a, b) (((a) == 0) ? 0 : (1 + (((a)-1) / (b))))
