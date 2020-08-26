@@ -2,82 +2,80 @@
 #include <panic.h>
 
 template <class T>
-struct Queue_Node
+struct Stack_Node
 {
 public:
-	T value;
-	Queue_Node<T>* next;
-	Queue_Node<T>* prev;
+    T value;
+    Stack_Node<T> *next;
+    Stack_Node<T> *prev;
 
-	Queue_Node<T>(T value);
-	Queue_Node<T>(T value, Queue_Node<T>* next);
+    Stack_Node<T>(T value);
+    Stack_Node<T>(T value, Stack_Node<T> *next);
 };
 
 template <class T>
-inline Queue_Node<T>::Queue_Node(T value)
+inline Stack_Node<T>::Stack_Node(T value)
 {
-	this->value = value;
-	this->next = this;
+    this->value = value;
+    this->next = this;
 }
 
 template <class T>
-inline Queue_Node<T>::Queue_Node(T value, Queue_Node<T>* next)
+inline Stack_Node<T>::Stack_Node(T value, Stack_Node<T> *next)
 {
-	this->value = value;
-	this->next = next;
+    this->value = value;
+    this->next = next;
 }
 
-
 template <class T>
-class Queue
+class Stack
 {
 public:
-	Queue<T>()
+    Stack<T>()
     {
         count = 0;
         root = 0;
         last = 0;
     }
 
-	~Queue<T>()
+    ~Stack<T>()
     {
         Clear();
     }
 
-	void Enqueue(T value)
+    void Push(T value)
     {
         if (count == 0)
         {
-            root = new Queue_Node<T>(value);
+            root = new Stack_Node<T>(value);
             last = root;
             count = 1;
         }
         else
         {
-            last->next = new Queue_Node<T>(value, root);
+            last->next = new Stack_Node<T>(value, 0);
             last = last->next;
             count++;
         }
     }
 
-	T Dequeue()
+    T Pop()
     {
         if (count == 0)
-            panic("Queue is empty", "Queue::Dequeue");
+            panic("Stack is empty", "Stack::Pop");
 
-        T val = root->value;
+        T val = last->value;
 
         if (count == 1)
         {
-            delete root;
             root = 0;
             last = 0;
             count = 0;
         }
         else
         {
-            Queue_Node<T>* node = root;
-            root = node->next;
+            Stack_Node<T> *node = last;
+            last = NodeAt(count - 2);
 
             delete node;
             count--;
@@ -86,15 +84,15 @@ public:
         return val;
     }
 
-	void Clear()
+    void Clear()
     {
         if (!root)
             return;
 
-        Queue_Node<T>* node = root;
+        Stack_Node<T> *node = root;
         while (count--)
         {
-            Queue_Node<T>* next = node->next;
+            Stack_Node<T> *next = node->next;
             delete node;
             node = next;
         }
@@ -103,31 +101,31 @@ public:
         last = 0;
     }
 
-	int Count()
+    int Count()
     {
         return count;
     }
 
-	T& operator[](int index)
+    T &operator[](int index)
     {
         if (index >= count)
-            panic("Index out of range exception", "Queue::operator[]");
+            panic("Index out of range exception", "Stack::operator[]");
 
-        Queue_Node<T>* node = NodeAt(index);
+        Stack_Node<T> *node = NodeAt(index);
         return node->value;
     }
 
 private:
-	int count;
-	Queue_Node<T>* root;
-	Queue_Node<T>* last;
+    int count;
+    Stack_Node<T> *root;
+    Stack_Node<T> *last;
 
-	Queue_Node<T>* NodeAt(int index)
+    Stack_Node<T> *NodeAt(int index)
     {
         if (index == count - 1)
             return last;
 
-        Queue_Node<T>* node = root;
+        Stack_Node<T> *node = root;
         while (index--)
             node = node->next;
 
