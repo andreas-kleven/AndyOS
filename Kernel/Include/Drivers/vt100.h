@@ -3,6 +3,7 @@
 #include <types.h>
 #include <driver.h>
 #include <circbuf.h>
+#include <sync.h>
 
 class Vt100Driver : public TtyBaseDriver
 {
@@ -15,6 +16,7 @@ private:
     uint32 bcolor;
     CircularDataBuffer text_buffer;
     bool active;
+    Mutex draw_mutex;
 
 public:
     Vt100Driver();

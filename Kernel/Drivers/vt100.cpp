@@ -87,7 +87,7 @@ int Vt100Driver::AddText(const char *text, size_t size)
         {
             c += 'A' - 1;
             char buf[4];
-            sprintf(buf, "^%c\n", c);
+            sprintf(buf, "^%c", c);
             text_buffer.Write(buf, 3);
         }
         else
@@ -104,6 +104,8 @@ void Vt100Driver::DrawText()
     if (!active)
         return;
 
+    draw_mutex.Aquire();
+
     while (!text_buffer.IsEmpty())
     {
         char c;
@@ -112,6 +114,8 @@ void Vt100Driver::DrawText()
         if (c)
             Putc(c);
     }
+
+    draw_mutex.Release();
 }
 
 void Vt100Driver::DrawChar(int x, int y, char c)
