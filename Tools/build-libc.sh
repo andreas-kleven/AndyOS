@@ -24,9 +24,9 @@ make -j6 && make install
 
 # Newlib
 
-cd $srcdir/newlib-3.0.0/
+cd $srcdir/newlib-3.3.0/
 if ! grep -q $SYSTEM "config.sub"; then
-    awk "/is not here because it comes later, after sysvr4./ { print; print \"    -$SYSTEM* | \\\\\"; next }1" config.sub > config.sub.tmp
+    awk "/is not here because it comes later, after sysvr4./ { print; print \"    $SYSTEM* | \\\\\"; next }1" config.sub > config.sub.tmp
     mv config.sub.tmp config.sub
 fi
 
@@ -76,9 +76,9 @@ autoconf
 # Build
 
 cd $srcdir
-mkdir build-newlib-3.0.0
-cd build-newlib-3.0.0
-$srcdir/newlib-3.0.0/configure --target=$TARGET --prefix="$PREFIX"
+mkdir build-newlib-3.3.0
+cd build-newlib-3.3.0
+$srcdir/newlib-3.3.0/configure --target=$TARGET --prefix="$PREFIX"
 make -j6 all
 make -j6 install
 
