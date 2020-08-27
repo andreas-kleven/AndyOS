@@ -7,7 +7,10 @@ namespace Unix
     Socket *Accept(Socket *server)
     {
         server->accept_event.Set();
-        server->connect_event.Wait();
+
+        if (!server->connect_event.WaitIntr())
+            return (Socket *)-EINTR;
+
         return server->tmp_client;
     }
 
@@ -17,11 +20,13 @@ namespace Unix
             return -ECONNREFUSED;
 
         server->connect_mutex.Aquire();
-        server->accept_event.Wait();
+
+        if (!server->accept_event.WaitIntr())
+            return -EINTR;
 
         Socket *socket = SocketManager::CreateSocket();
         socket->Init(server->domain, server->type, server->protocol);
-        
+
         socket->unix_socket = client;
         client->unix_socket = socket;
         server->tmp_client = socket;

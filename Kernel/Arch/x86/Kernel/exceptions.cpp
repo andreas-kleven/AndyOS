@@ -107,8 +107,8 @@ namespace Exceptions
 		if (!(err & PAGE_FAULT_USER))
 			regs->user_stack = 0;
 
-		panic("Page fault", "ADDR:%X  ERR:%X  EFLAGS:%X  CS:%X  EIP:%X  ESP:%X  EBP:%X  %s%s%s%s%s\nUser ESP:%X",
-			faultAddr, err, regs->eflags, regs->cs, regs->eip, regs->esp, regs->ebp, msg1, msg2, msg3, msg4, msg5, regs->user_stack);
+		panic("Page fault", "ADDR:%X  ERR:%X  EFLAGS:%X  CS:%X  EIP:%X  ESP:%X  EBP:%X\nEAX:%X  EBX:%X  ECX:%X  EDX:%X  ESI:%X  EDI:%X  %s%s%s%s%s\nUser ESP:%X",
+			faultAddr, err, regs->eflags, regs->cs, regs->eip, regs->esp, regs->ebp, regs->eax, regs->ebx, regs->ecx, regs->edx, regs->esi, regs->edi, msg1, msg2, msg3, msg4, msg5, regs->user_stack);
 	}
 
 	void ISR15(REGS* regs)

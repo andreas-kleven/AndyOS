@@ -4,6 +4,7 @@
 #include <Process/thread.h>
 #include <memory.h>
 #include <string.h>
+#include <sync.h>
 
 uint8 __attribute__((aligned(16))) fpu_state[512];
 
@@ -21,6 +22,8 @@ namespace Task::Arch
 		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];
+		thread->signal_event = Event(true);
+		thread->syscall_event = Event(true);
 		
 		asm volatile("fxsave (%0)" : "=m" (fpu_state));
 		memcpy(thread->fpu_state, fpu_state, 512);

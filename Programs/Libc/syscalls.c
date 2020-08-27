@@ -30,21 +30,6 @@ int set_err(int ret)
 
 //
 
-int sigprocmask(int how, const sigset_t *set, sigset_t *oset)
-{
-    return 0;
-}
-
-int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
-{
-    return 0;
-}
-
-int sigsuspend(const sigset_t *mask)
-{
-    return 0;
-}
-
 mode_t umask(mode_t mask)
 {
     return 0;
@@ -223,6 +208,11 @@ int ftruncate(int fd, off_t length)
     return 0;
 }
 
+int getpagesize()
+{
+    return 4096;
+}
+
 ////
 
 int *__errno()
@@ -366,15 +356,37 @@ caddr_t _sbrk(intptr_t increment)
 
 sig_t signal(int signum, sig_t handler)
 {
-    int ret = syscall2(SYSCALL_SIGNAL, signum, handler);
+    volatile struct sigaction act;
+    volatile struct sigaction old;
 
-    if (ret < 0)
-    {
-        errno = -ret;
+    act.sa_handler = handler;
+    act.sa_mask = 0;
+    act.sa_flags = 0;
+
+    if (sigaction(signum, &act, &old) == -1)
         return SIG_ERR;
-    }
 
-    return (sig_t)ret;
+    return (sig_t)old.sa_handler;
+}
+
+int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
+{
+    return set_err(syscall3(SYSCALL_SIGACTION, signum, act, oldact));
+}
+
+int sigprocmask(int how, const sigset_t *set, sigset_t *oset)
+{
+    return set_err(syscall3(SYSCALL_SIGPROCMASK, how, set, oset));
+}
+
+int sigreturn()
+{
+    return set_err(syscall0(SYSCALL_SIGRETURN));
+}
+
+int sigsuspend(const sigset_t *mask)
+{
+    return set_err(syscall1(SYSCALL_SIGSUSPEND, mask));
 }
 
 int _stat(const char *file, struct stat *st)

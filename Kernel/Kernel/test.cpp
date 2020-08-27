@@ -28,11 +28,12 @@
 #include <FS/ext2.h>
 #include <Process/process.h>
 #include <Process/dispatcher.h>
-#include <sync.h>
 #include <Kernel/task.h>
 #include <Kernel/timer.h>
 #include <Kernel/dpc.h>
 #include <syscall_list.h>
+#include <sync.h>
+#include <queue.h>
 #include <debug.h>
 
 namespace Test

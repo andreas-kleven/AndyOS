@@ -247,7 +247,7 @@ namespace ProcessManager
 
 	void Exit(PROCESS *proc, int code)
 	{
-		Scheduler::Disable();
+		//proc->signal_mutex.Aquire();
 		debug_print("Exit code:%d pid:%d\n", code, proc->id);
 
 		proc->siginfo.si_pid = proc->id;
@@ -258,7 +258,7 @@ namespace ProcessManager
 		if (proc->parent)
 			HandleSignal(proc->parent, SIGCHLD);
 
-		Scheduler::Enable();
+		//proc->signal_mutex.Release();
 
 		Dispatcher::HandleSignal(proc);
 		Terminate(proc);

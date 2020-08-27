@@ -45,7 +45,7 @@ namespace Syscalls
 		char *data;
 	};
 
-	void *syscalls[MAX_SYSCALLS];
+	SYSCALL_HANDLER syscalls[MAX_SYSCALLS];
 	int msg_id = 0;
 
 	TMP_MSG *first_msg = 0;
@@ -170,10 +170,51 @@ namespace Syscalls
 		}
 	}
 
-	sig_t sys_signal(int signum, sig_t handler)
+	int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
 	{
+		debug_print("sigaction %d %p %p\n", signum, act, oldact);
+
+		if (act)
+			debug_print("act %p %p %p\n", act->sa_handler, act->sa_mask, act->sa_flags);
+
+		sig_t handler = act ? act->sa_handler : 0;
+
 		PROCESS *proc = Dispatcher::CurrentProcess();
-		return ProcessManager::SetSignalHandler(proc, signum, handler);
+		sig_t old = ProcessManager::SetSignalHandler(proc, signum, handler);
+
+		if (oldact)
+		{
+			oldact->sa_handler = old < 0 ? 0 : old;
+			oldact->sa_mask = 0;
+			oldact->sa_flags = 0;
+		}
+
+		return (int)old < 0 ? -1 : 0;
+	}
+
+	int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oset)
+	{
+		debug_print("sigprocmask %p %p %p\n", how, set, oset);
+
+		if (set)
+			debug_print("set %p\n", *set);
+
+		return 0;
+	}
+
+	int sys_sigreturn()
+	{
+		return ProcessManager::FinishSignal(Dispatcher::CurrentThread());
+	}
+
+	int sys_sigsuspend(const sigset_t *mask)
+	{
+		debug_print("sigsuspend %d\n", mask);
+
+		if (mask)
+			debug_print("mask %p\n", *mask);
+
+		return -EINTR;
 	}
 
 	int sys_waitpid(pid_t pid, int *status, int options)
@@ -353,7 +394,14 @@ namespace Syscalls
 
 	int sys_sleep(useconds_t usec)
 	{
-		Scheduler::SleepThread(Timer::Ticks() + usec, Dispatcher::CurrentThread());
+		uint64 sleep_until = Timer::Ticks() + usec;
+
+		Scheduler::SleepThread(sleep_until, Scheduler::CurrentThread());
+		uint64 now = Timer::Ticks();
+
+		if (now < sleep_until)
+			return -1;
+
 		return 0;
 	}
 
@@ -497,26 +545,46 @@ namespace Syscalls
 		if (id >= MAX_SYSCALLS)
 			return;
 
-		syscalls[id] = (void *)handler;
+		syscalls[id] = handler;
 	}
 
 	SYSCALL_HANDLER GetSyscall(int id)
 	{
-		return (SYSCALL_HANDLER)syscalls[id];
+		return syscalls[id];
 	}
 
-	void DoSyscall(DISPATCHER_CONTEXT &context)
+	void DoSyscall(DISPATCHER_CONTEXT &context, bool noreturn)
 	{
 		void *location = (void *)Syscalls::GetSyscall(context.syscall);
 
 		if (!location)
 			panic("Invalid syscall", "Id: %i", context.syscall);
 
-		Arch::DoSyscall(context, location);
+		THREAD *thread = context.thread;
+		DISPATCHER_ENTRY *entry = Dispatcher::CurrentEntry();
+
+		int ret = Arch::DoSyscall(context, location);
+
+		Scheduler::Disable();
+		thread->syscall_event.Set();
+
+		while (entry->handler_thread->signaled)
+		{
+			Scheduler::Enable();
+			entry->handler_thread->signal_event.Wait();
+			Scheduler::Disable();
+		}
+
+		if (!noreturn)
+			Arch::ReturnSyscall(context, ret);
+
+		Scheduler::Enable();
 	}
 
 	bool Init()
 	{
+		memset(syscalls, 0, sizeof(syscalls));
+
 		InstallSyscall(SYSCALL_EXIT, (SYSCALL_HANDLER)sys_exit);
 		InstallSyscall(SYSCALL_OPEN, (SYSCALL_HANDLER)sys_open);
 		InstallSyscall(SYSCALL_CLOSE, (SYSCALL_HANDLER)sys_close);
@@ -535,7 +603,10 @@ namespace Syscalls
 		InstallSyscall(SYSCALL_STAT, (SYSCALL_HANDLER)sys_stat);
 		InstallSyscall(SYSCALL_FSTAT, (SYSCALL_HANDLER)sys_fstat);
 		InstallSyscall(SYSCALL_KILL, (SYSCALL_HANDLER)sys_kill);
-		InstallSyscall(SYSCALL_SIGNAL, (SYSCALL_HANDLER)sys_signal);
+		InstallSyscall(SYSCALL_SIGACTION, (SYSCALL_HANDLER)sys_sigaction);
+		InstallSyscall(SYSCALL_SIGPROCMASK, (SYSCALL_HANDLER)sys_sigprocmask);
+		InstallSyscall(SYSCALL_SIGRETURN, (SYSCALL_HANDLER)sys_sigreturn);
+		InstallSyscall(SYSCALL_SIGSUSPEND, (SYSCALL_HANDLER)sys_sigsuspend);
 		InstallSyscall(SYSCALL_WAITPID, (SYSCALL_HANDLER)sys_waitpid);
 		InstallSyscall(SYSCALL_CHDIR, (SYSCALL_HANDLER)sys_chdir);
 		InstallSyscall(SYSCALL_FCHDIR, (SYSCALL_HANDLER)sys_fchdir);

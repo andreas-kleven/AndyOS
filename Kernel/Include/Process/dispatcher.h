@@ -4,7 +4,7 @@
 #include <Process/thread.h>
 #include <wait.h>
 
-#define DISPATCHER_THREADS 32
+#define DISPATCHER_THREADS 256
 
 struct DISPATCHER_CONTEXT
 {
@@ -49,4 +49,5 @@ namespace Dispatcher
     PROCESS *CurrentProcess();
     void HandleSignal(PROCESS *process);
     int Waitpid(pid_t pid, int *status, int options);
+    DISPATCHER_ENTRY *GetEntryFor(THREAD *thread);
 } // namespace Dispatcher

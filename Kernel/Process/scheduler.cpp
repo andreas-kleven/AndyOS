@@ -92,6 +92,12 @@ namespace Scheduler
 	{
 		Disable();
 
+		if (thread->interrupted)
+		{
+			Enable();
+			return;
+		}
+
 		if (thread->state != THREAD_STATE_TERMINATED)
 		{
 			thread->sleep_until = until;
@@ -170,8 +176,6 @@ namespace Scheduler
 
 		Disable();
 
-		ProcessManager::RemoveThread(thread);
-
 		THREAD *prev = thread->prev;
 		THREAD *next = thread->next;
 		thread->next->prev = prev;
@@ -225,6 +229,7 @@ namespace Scheduler
 			while (current_thread && current_thread->state == THREAD_STATE_TERMINATED)
 			{
 				RemoveThread(current_thread);
+				ProcessManager::RemoveThread(current_thread);
 				THREAD *next = current_thread->next;
 				delete current_thread;
 				current_thread = next;
@@ -253,19 +258,7 @@ namespace Scheduler
 			if (current_thread->event && current_thread->event_until)
 			{
 				if (Timer::Ticks() >= current_thread->event_until)
-				{
-					current_thread->event_until = 0;
-
-					if (current_thread->state == THREAD_STATE_BLOCKING)
-						current_thread->state = THREAD_STATE_READY;
-					else
-					{
-						debug_print("Event error\n");
-						// TODO
-						//if (current_thread->state == THREAD_STATE_TERMINATED)
-						//	current_thread->event->Reset();
-					}
-				}
+					current_thread->event->Wake(current_thread, true, false);
 			}
 
 			if (current_thread->sleep_until == 0 && (current_thread->state == THREAD_STATE_READY || current_thread->state == THREAD_STATE_INITIALIZED) && (!current_thread->process || current_thread->process->state == PROCESS_STATE_RUNABLE))

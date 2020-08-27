@@ -2,15 +2,15 @@
 #include <Arch/scheduler.h>
 #include <Arch/idt.h>
 #include <Kernel/task.h>
+#include <Process/scheduler.h>
 #include <syscall_list.h>
+#include <hal.h>
 #include <debug.h>
 
 namespace Syscalls::Arch
 {
-	void DoSyscall(DISPATCHER_CONTEXT &context, void *location)
+	int DoSyscall(DISPATCHER_CONTEXT &context, void *location)
 	{
-		THREAD *thread = context.thread;
-
 		uint32 ret;
 
 		asm volatile(
@@ -21,24 +21,25 @@ namespace Syscalls::Arch
 			"push %5\n"
 			"push %6\n"
 			"call *%7\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
-			"pop %%ebx\n"
+			"add $24, %%esp\n"
 			: "=a"(ret)
 			: "g"(context.p6), "r"(context.p5), "r"(context.p4), "r"(context.p3), "r"(context.p2), "r"(context.p1), "r"(location));
 
+		return ret;
+	}
+
+	void ReturnSyscall(DISPATCHER_CONTEXT &context, int value)
+	{
+		THREAD *thread = context.thread;
 		REGS *regs = (REGS *)thread->stack;
-		regs->eax = ret;
+		regs->eax = value;
 	}
 
 	void INTERRUPT Syscall_ISR()
 	{
 		asm volatile(
 			"cli\n"
-			
+
 			//Save registers
 			"pusha\n"
 			"push %%ds\n"

@@ -1,6 +1,8 @@
 #pragma once
 #include <types.h>
 #include <memory.h>
+#include <sync.h>
+#include <stack.h>
 
 enum THREAD_STATE
 {
@@ -31,4 +33,11 @@ struct THREAD
 	ADDRESS_SPACE addr_space;
 	Event *event;
 	uint64 event_until;
+	bool event_interruptible;
+	bool signaled;
+	bool interrupted;
+	int sigret_count;
+	Stack<THREAD *> signal_threads;
+	Event signal_event;
+	Event syscall_event;
 };

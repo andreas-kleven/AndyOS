@@ -68,7 +68,6 @@ namespace ELF
 
 		proc->heap_start = virt_end;
 		proc->heap_end = virt_end;
-		ProcessManager::AdjustHeap(proc, PAGE_SIZE); // memory reserved for signal calling
 
 		debug_print("Loaded ELF\n");
 

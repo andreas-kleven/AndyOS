@@ -92,6 +92,7 @@ public:
 			tail += size;
 
 		empty = tail == head;
+		return 0;
 	}
 
 	bool IsEmpty()

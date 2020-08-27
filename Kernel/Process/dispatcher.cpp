@@ -3,6 +3,7 @@
 #include <Process/scheduler.h>
 #include <hal.h>
 #include <syscalls.h>
+#include <syscall_list.h>
 #include <queue.h>
 #include <list.h>
 #include <sync.h>
@@ -70,11 +71,19 @@ namespace Dispatcher
         THREAD *handler_thread = entry->handler_thread;
         THREAD *thread = context.thread;
 
+        bool noreturn = context.syscall == SYSCALL_EXIT || context.syscall == SYSCALL_SIGRETURN;
+
         VMem::SwapAddressSpace(thread->process->addr_space);
-        Syscalls::DoSyscall(context);
+        Syscalls::DoSyscall(context, noreturn);
+
+        if (handler_thread->signaled)
+            panic("Dispatcher::HandlerFunc", "Entry was signaled");
 
         Scheduler::Disable();
-        Scheduler::WakeThread(thread);
+
+        if (!noreturn)
+            Scheduler::WakeThread(thread);
+
         ResetThread(entry);
         Scheduler::RemoveThread(handler_thread);
         Scheduler::Enable();
@@ -124,22 +133,33 @@ namespace Dispatcher
         {
             entry->used = true;
             entry->context = context;
+            entry->handler_thread->interrupted = context.thread->interrupted;
             active_count += 1;
 
             if (active_count == DISPATCHER_THREADS)
+            {
+                debug_print("All dispatcher threads used\n");
                 thread_event.Clear();
+            }
 
             Scheduler::Enable();
             return entry;
         }
 
-        debug_print("No dispatcher threads available\n");
         sys_halt();
         return 0;
     }
 
     void Dispatch(const DISPATCHER_CONTEXT &context)
     {
+
+        THREAD *thread = Scheduler::CurrentThread();
+
+        thread->syscall_event.Clear();
+
+        if (context.syscall == SYSCALL_SIGRETURN)
+            thread->sigret_count += 1;
+
         queue.Enqueue(context);
         queue_event.Set();
     }
@@ -398,12 +418,30 @@ namespace Dispatcher
         wait->waiting = true;
         wait->event.Clear();
         Scheduler::Enable();
-        wait->event.Wait();
+
+        if (!wait->event.WaitIntr())
+        {
+            wait->siginfo = GetChildrenSiginfo(entry, true);
+            debug_print("Wait interrupted %d %d\n", wait->siginfo.si_code, wait->siginfo.si_status);
+        }
 
         if (status)
             *status = SiginfoStatus(wait->siginfo);
 
         debug_print("Waitpid done\n");
         return wait->siginfo.si_pid;
+    }
+
+    DISPATCHER_ENTRY *GetEntryFor(THREAD *thread)
+    {
+        for (int i = 0; i < DISPATCHER_THREADS; i++)
+        {
+            DISPATCHER_ENTRY *entry = &entries[i];
+
+            if (entry->used && !entry->handler_thread->signaled && entry->context.thread == thread)
+                return entry;
+        }
+
+        return 0;
     }
 } // namespace Dispatcher

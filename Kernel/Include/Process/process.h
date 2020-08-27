@@ -149,4 +149,5 @@ namespace ProcessManager
 	sig_t SetSignalHandler(PROCESS *proc, int signo, sig_t handler);
 	int HandleSignal(pid_t sid, gid_t gid, int signo);
 	int HandleSignal(PROCESS *proc, int signo);
+	int FinishSignal(THREAD *thread);
 }; // namespace ProcessManager

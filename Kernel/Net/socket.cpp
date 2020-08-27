@@ -62,6 +62,9 @@ int Socket::Accept(sockaddr *addr, socklen_t addrlen, int flags)
     {
         Socket *socket = Unix::Accept(this);
 
+        if (PTR_ERR(socket))
+            return (int)socket;
+
         if (socket)
             return socket->id;
     }
@@ -69,6 +72,9 @@ int Socket::Accept(sockaddr *addr, socklen_t addrlen, int flags)
     {
         sockaddr_in *inet_addr = (sockaddr_in *)addr;
         Socket *socket = TCP::SessionAccept(this, inet_addr, flags);
+
+        if (PTR_ERR(socket))
+            return (int)socket;
 
         if (socket)
             return socket->id;
@@ -143,7 +149,9 @@ int Socket::Listen(int backlog)
 
 int Socket::Recv(void *buf, size_t len, int flags)
 {
-    read_event.Wait();
+    if (!read_event.WaitIntr())
+        return -EINTR;
+
     buffer_mutex.Aquire();
 
     if (closed)

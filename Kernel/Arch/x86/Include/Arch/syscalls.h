@@ -3,6 +3,7 @@
 
 namespace Syscalls::Arch
 {
-    void DoSyscall(DISPATCHER_CONTEXT &context, void *location);
+    int DoSyscall(DISPATCHER_CONTEXT &context, void *location);
+    void ReturnSyscall(DISPATCHER_CONTEXT &context, int value);
     void Init();
 } // namespace Syscalls::Arch

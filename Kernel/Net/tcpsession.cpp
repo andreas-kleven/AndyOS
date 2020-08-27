@@ -99,7 +99,9 @@ Socket *TcpSession::Accept(const sockaddr_in *addr, int flags)
 {
 	while (state == TCP_LISTEN)
 	{
-		session_event.Wait();
+		if (!session_event.WaitIntr())
+			return (Socket *)-EINTR;
+
 		sessions_mutex.Aquire();
 
 		if (new_sockets.Count() > 0)

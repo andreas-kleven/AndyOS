@@ -163,7 +163,8 @@ int MouseDriver::Read(FILE *file, void *buf, size_t size)
 		if (file->flags & O_NONBLOCK)
 			return -EAGAIN;
 
-		data_event.Wait();
+		if (!data_event.WaitIntr())
+			return -EINTR;
 	}
 
 	if (size > BUFFER_SIZE)

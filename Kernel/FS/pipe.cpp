@@ -11,7 +11,9 @@ Pipe::Pipe(int buf_size)
 
 int Pipe::Read(FILE *file, void *buf, size_t size)
 {
-    read_event.Wait();
+    if (!read_event.WaitIntr())
+        return -EINTR;
+
     buffer_mutex.Aquire();
 
     int ret = buffer.Read(size, buf);
@@ -32,7 +34,9 @@ int Pipe::Write(FILE *file, const void *buf, size_t size)
 
     while (written < size)
     {
-        write_event.Wait();
+        if (!write_event.WaitIntr())
+            return written ? written : -EINTR;
+
         buffer_mutex.Aquire();
 
         written += buffer.Write(buf, size);
