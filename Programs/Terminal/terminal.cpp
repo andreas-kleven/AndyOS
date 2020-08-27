@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <AndyOS.h>
 #include <andyos/msg.h>
 #include <andyos/math.h>
@@ -40,13 +42,15 @@ public:
 	int program_fd = 0;
 
 	MainWindow()
-		: Window("Terminal", 424, 288, Color::Black)
+		: Window("Terminal", 640, 288, Color::Black)
 	{
 		color = Color::White;
 		bcolor = Color::Black;
 
 		gc.Clear(bcolor);
 		ResetCommand();
+
+		Open("/bin/dash", "", "", "");
 	}
 
 	void OnClose()
@@ -56,13 +60,6 @@ public:
 
 	void KeyPress(KEY_PACKET packet)
 	{
-		if (program_fd)
-		{
-			Putc(packet.character);
-			write(program_fd, &packet.character, 1);
-			return;
-		}
-
 		if (packet.code == KEY_BACK)
 		{
 			if (command.length() > 0)
@@ -74,7 +71,20 @@ public:
 		else if (packet.code == KEY_RETURN)
 		{
 			Putc('\n');
-			HandleCommand(command);
+
+			history.push_back(command);
+			history_index = history.size();
+
+			if (program_fd)
+			{
+				write(program_fd, command.c_str(), command.length());
+				write(program_fd, "\n", 1);
+			}
+			else
+			{
+				HandleCommand(command);
+			}
+
 			ResetCommand();
 		}
 		else if (packet.code == KEY_UP)
@@ -109,7 +119,7 @@ public:
 		}
 		else
 		{
-			if (packet.character)
+			if (isprint(packet.character))
 			{
 				command += packet.character;
 				Putc(packet.character);
@@ -120,16 +130,17 @@ public:
 	void ResetCommand()
 	{
 		command = "";
-		x = 0;
-		PrintString(terminal_path);
-		Print(">");
+
+		if (!program_fd)
+		{
+			x = 0;
+			PrintString(terminal_path);
+			Print(">");
+		}
 	}
 
 	void HandleCommand(std::string cmd)
 	{
-		history.push_back(cmd);
-		history_index = history.size();
-
 		std::istringstream iss(cmd);
 		std::vector<std::string> tokens{std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>{}};
 
@@ -430,7 +441,6 @@ public:
 			while (true)
 			{
 				int len = read(fd1[0], buf, BUF_SIZE);
-				debug_print("Read: %d\n", len);
 
 				if (len <= 0)
 					break;
@@ -457,7 +467,7 @@ public:
 			if (fd_stdout == STDOUT_FILENO && fd_stdin == STDIN_FILENO)
 			{
 				char *const argv[] = {(char *)file, (char *)(strcmp(arg1, "") ? arg1 : NULL), (char *)(strcmp(arg2, "") ? arg2 : NULL), (char *)(strcmp(arg3, "") ? arg3 : NULL), NULL};
-				char *const envp[] = {"PATH=", NULL};
+				char *const envp[] = {/*"PATH=",*/ NULL};
 				execve(file, argv, envp);
 
 				//execl(file, file, arg1, arg2, arg3, NULL);
