@@ -3,6 +3,8 @@
 #include "GUI/messages.h"
 #include "window.h"
 
+#define WINDOW_MANAGER_PID 9 // TODO
+
 namespace gui
 {
     class Client
@@ -21,7 +23,7 @@ namespace gui
             if (!connected && !ignore_disconnected)
                 return false;
 
-            MESSAGE response = send_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+            MESSAGE response = send_message(WINDOW_MANAGER_PID, GUI_MESSAGE_TYPE, &req, sizeof(IN));
 
             if (response.size != sizeof(OUT))
                 return false;
