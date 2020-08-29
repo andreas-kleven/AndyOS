@@ -11,10 +11,11 @@ private:
     Event read_event;
     Event write_event;
     Mutex buffer_mutex;
-    CircularDataBuffer buffer;
+    CircularDataBuffer *buffer;
 
 public:
     Pipe(int buf_size = PIPE_BUF_SIZE);
+    ~Pipe();
 
     int Close(FILE *file);
     int Read(FILE *file, void *buf, size_t size);

@@ -14,12 +14,13 @@ private:
     int posy;
     uint32 color;
     uint32 bcolor;
-    CircularDataBuffer text_buffer;
+    CircularDataBuffer *text_buffer;
     bool active;
     Mutex draw_mutex;
 
 public:
     Vt100Driver();
+    ~Vt100Driver();
 
     int Open();
     int Close();

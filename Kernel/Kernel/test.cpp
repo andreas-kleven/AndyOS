@@ -140,22 +140,11 @@ namespace Test
 		servaddr.sin_addr.s_addr = INADDR_ANY;
 		servaddr.sin_port = htons(10001);
 
-		sockaddr_in clientaddr;
-		clientaddr.sin_family = AF_INET;
-		clientaddr.sin_addr.s_addr = htonl(0xC0A8007B); // 192.168.0.123
-		clientaddr.sin_port = htons(10001);
-
 		//TcpSession *session = TCP::CreateSession();
 		Socket *server = SocketManager::CreateSocket();
 		server->Init(AF_INET, SOCK_STREAM, 0);
 
 		srand(Timer::Ticks() + RTC::Minute() * 1000 + RTC::Second());
-
-		//while (true)
-		{
-			//session->Connect(clientaddr, rand());
-			//Scheduler::SleepThread(Timer::Ticks() + 1000000, Scheduler::CurrentThread());
-		}
 
 		server->Bind((sockaddr *)&servaddr, sizeof(sockaddr_in));
 		server->Listen(10);
@@ -317,10 +306,10 @@ namespace Test
 
 			while (proc)
 			{
-				if (!proc->messages.IsEmpty())
+				if (!proc->messages->IsEmpty())
 				{
 					disable();
-					MESSAGE *msg = proc->messages.Get();
+					MESSAGE *msg = proc->messages->Get();
 
 					if (msg)
 					{
@@ -344,7 +333,7 @@ namespace Test
 
 							Scheduler::InsertThread(thread);
 
-							proc->messages.Pop();
+							proc->messages->Pop();
 						}
 					}
 

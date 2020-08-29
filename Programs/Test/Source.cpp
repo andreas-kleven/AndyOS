@@ -55,7 +55,7 @@ void btnClick()
 int main()
 {
 	char title[256];
-	sprintf(title, "Test window: %lu", get_ticks());
+	sprintf(title, "Test window: %u", get_ticks());
 	wnd = new MainWindow(title);
 
 	while (true) sleep(1000);

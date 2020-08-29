@@ -7,7 +7,7 @@
 namespace SocketManager
 {
     Mutex mutex;
-    List<Socket> sockets;
+    List<Socket *> sockets;
     int next_port = 32768;
     int next_id = 1;
 
@@ -15,8 +15,10 @@ namespace SocketManager
     {
         mutex.Aquire();
         int id = next_id++;
-        sockets.Add(Socket(id));
-        Socket *socket = &sockets.Last();
+
+        Socket *socket = new Socket(id);
+        sockets.Add(socket);
+
         mutex.Release();
         return socket;
     }
@@ -29,6 +31,7 @@ namespace SocketManager
         socket->Shutdown(how);
 
         //sockets.Remove(...);
+        return -1;
     }
 
     int AllocPort()
@@ -42,7 +45,7 @@ namespace SocketManager
 
         for (int i = 0; i < sockets.Count(); i++)
         {
-            Socket *socket = &sockets[i];
+            Socket *socket = sockets[i];
 
             if (socket->id == id)
             {
@@ -61,7 +64,7 @@ namespace SocketManager
 
         for (int i = 0; i < sockets.Count(); i++)
         {
-            Socket *socket = &sockets[i];
+            Socket *socket = sockets[i];
 
             if (socket->domain != domain || socket->type != type || socket->protocol != protocol)
                 continue;

@@ -14,5 +14,5 @@ public:
     int Remove(int fd);
     FILE *Get(int fd);
     int Set(int fd, FILE *file);
-    Filetable Clone();
+    Filetable *Clone();
 };

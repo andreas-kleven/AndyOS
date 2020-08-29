@@ -9,19 +9,24 @@
 #include <string.h>
 #include <debug.h>
 
-PROCESS::PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space)
+PROCESS::PROCESS(ADDRESS_SPACE addr_space)
 {
-	this->flags = flags;
 	this->addr_space = addr_space;
 	this->stack_ptr = STACK_BASE;
-	this->filetable = Filetable(3);
+	this->filetable = new Filetable(3);
 	this->pwd = VFS::GetRoot();
 	this->pwd->refs += 1;
 
 	for (int i = 0; i < SIGNAL_TABLE_SIZE; i++)
 		ProcessManager::SetSignalHandler(this, i, SIG_DFL);
 
-	this->messages = CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
+	this->messages = new CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
+}
+
+PROCESS::~PROCESS()
+{
+	delete this->messages;
+	delete this->filetable;
 }
 
 namespace ProcessManager
@@ -80,36 +85,26 @@ namespace ProcessManager
 	{
 		THREAD *thread = 0;
 
-		//Create thread
-		switch (proc->flags)
+		Scheduler::Disable();
+		VMem::SwapAddressSpace(proc->addr_space);
+
+		pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
+		int blocks = 16;
+
+		void *virt = (void *)proc->stack_ptr;
+		proc->stack_ptr = (size_t)virt + blocks * BLOCK_SIZE;
+
+		if (proc->stack_ptr > STACK_END)
 		{
-		case PROCESS_KERNEL:
-			thread = Task::CreateKernelThread(entry);
-			break;
-
-		case PROCESS_USER:
-			Scheduler::Disable();
-			VMem::SwapAddressSpace(proc->addr_space);
-
-			pflags_t flags = PAGE_PRESENT | PAGE_WRITE | PAGE_USER;
-			int blocks = 16;
-
-			void *virt = (void *)proc->stack_ptr;
-			proc->stack_ptr = (size_t)virt + blocks * BLOCK_SIZE;
-
-			if (proc->stack_ptr > STACK_END)
-			{
-				debug_print("Out of stack memory\n");
-				sys_halt();
-			}
-
-			void *phys = PMem::AllocBlocks(blocks);
-			VMem::MapPages(virt, phys, blocks, flags);
-
-			thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
-			Scheduler::Enable();
-			break;
+			debug_print("Out of stack memory\n");
+			sys_halt();
 		}
+
+		void *phys = PMem::AllocBlocks(blocks);
+		VMem::MapPages(virt, phys, blocks, flags);
+
+		thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
+		Scheduler::Enable();
 
 		if (AddThread(proc, thread))
 			return thread;
@@ -188,8 +183,8 @@ namespace ProcessManager
 	{
 		for (int fd = 0; fd < FILE_TABLE_SIZE; fd++)
 		{
-			FILE *file = proc->filetable.Get(fd);
-			proc->filetable.Remove(fd);
+			FILE *file = proc->filetable->Get(fd);
+			proc->filetable->Remove(fd);
 
 			if (file)
 			{

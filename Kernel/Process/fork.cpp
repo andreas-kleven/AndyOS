@@ -52,7 +52,7 @@ namespace ProcessManager
 
 		VMem::SwapAddressSpace(space);
 
-		PROCESS *newproc = new PROCESS(proc->flags, space);
+		PROCESS *newproc = new PROCESS(space);
 		AssignPid(newproc);
 
 		newproc->stack_ptr = proc->stack_ptr;
@@ -63,7 +63,7 @@ namespace ProcessManager
 		newproc->sid = proc->sid;
 		newproc->gid = proc->gid;
 
-		newproc->filetable = proc->filetable.Clone();
+		newproc->filetable = proc->filetable->Clone();
 		memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
 		//newproc->message_handler = proc->message_handler;
 		newproc->message_handler = 0;

@@ -50,7 +50,7 @@ namespace Syscalls
 
 	TMP_MSG *first_msg = 0;
 
-	Filetable &CurrentFiletable()
+	Filetable *CurrentFiletable()
 	{
 		return Dispatcher::CurrentProcess()->filetable;
 	}
@@ -154,6 +154,7 @@ namespace Syscalls
 		if (pid == -1)
 		{
 			panic("Kill", "pid = -1");
+			return -1;
 		}
 		else if (pid < 0)
 		{
@@ -463,11 +464,11 @@ namespace Syscalls
 		msg.data = new char[size];
 		memcpy(msg.data, buf, size);
 
-		dst_proc->messages.Add(msg);
+		dst_proc->messages->Add(msg);
 
 		if (!async)
 		{
-			TMP_MSG *msg = new TMP_MSG;
+			TMP_MSG *msg = new TMP_MSG();
 			msg->id = id;
 			msg->thread = Scheduler::CurrentThread();
 			msg->next = first_msg;
@@ -566,7 +567,9 @@ namespace Syscalls
 		int ret = Arch::DoSyscall(context, location);
 
 		Scheduler::Disable();
+		disable();
 		thread->syscall_event.Set();
+		enable();
 
 		while (entry->handler_thread->signaled)
 		{

@@ -19,13 +19,15 @@ namespace Task::Arch
 
 		memset(thread, 0, sizeof(THREAD));
 
-		thread->stack = (size_t)(thread - 1) - sizeof(REGS);
+		thread->stack = (size_t)thread - sizeof(THREAD) - sizeof(REGS) - 1;
 		thread->state = THREAD_STATE_INITIALIZED;
 		thread->fpu_state = new uint8[512];
 		thread->signal_event = Event(true);
 		thread->syscall_event = Event(true);
-		
-		asm volatile("fxsave (%0)" : "=m" (fpu_state));
+
+		asm volatile("fxsave (%0)"
+					 : "=m"(fpu_state));
+
 		memcpy(thread->fpu_state, fpu_state, 512);
 
 		REGS *regs = (REGS *)thread->stack;
@@ -52,7 +54,7 @@ namespace Task::Arch
 
 	THREAD *CreateKernelThread(void (*entry)())
 	{
-		THREAD *thread = (THREAD *)((size_t)(new char[stack_size]) + stack_size - sizeof(THREAD));
+		THREAD *thread = (THREAD *)(new char[stack_size] + stack_size - sizeof(THREAD) - 1);
 		return ResetKernelThread(thread, entry);
 	}
 

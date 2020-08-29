@@ -13,8 +13,13 @@ Vt100Driver::Vt100Driver()
     posy = 0;
     color = 0xFFFFFFFF;
     bcolor = 0;
-    text_buffer = CircularDataBuffer(width * height);
+    text_buffer = new CircularDataBuffer(width * height);
     active = false;
+}
+
+Vt100Driver::~Vt100Driver()
+{
+    delete text_buffer;
 }
 
 int Vt100Driver::Open()
@@ -62,21 +67,22 @@ void Vt100Driver::Deactivate()
 
 void Vt100Driver::ClearScreen()
 {
-    memset(Video::mode->framebuffer, 0, Video::mode->memsize);
+    if (Video::mode->framebuffer)
+        memset(Video::mode->framebuffer, 0, Video::mode->memsize);
 }
 
 void Vt100Driver::RedrawScreen()
 {
     posx = 0;
     posy = 0;
-    text_buffer.Seek(0, SEEK_SET);
+    text_buffer->Seek(0, SEEK_SET);
     ClearScreen();
     DrawText();
 }
 
 int Vt100Driver::AddText(const char *text, size_t size)
 {
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         char c = text[i];
 
@@ -88,11 +94,11 @@ int Vt100Driver::AddText(const char *text, size_t size)
             c += 'A' - 1;
             char buf[4];
             sprintf(buf, "^%c", c);
-            text_buffer.Write(buf, 3);
+            text_buffer->Write(buf, 3);
         }
         else
         {
-            text_buffer.Write(&c, 1);
+            text_buffer->Write(&c, 1);
         }
     }
 
@@ -106,10 +112,10 @@ void Vt100Driver::DrawText()
 
     draw_mutex.Aquire();
 
-    while (!text_buffer.IsEmpty())
+    while (!text_buffer->IsEmpty())
     {
         char c;
-        text_buffer.Read(1, &c);
+        text_buffer->Read(1, &c);
 
         if (c)
             Putc(c);
@@ -134,6 +140,9 @@ void Vt100Driver::DrawChar(int x, int y, char c)
 
 void Vt100Driver::Putc(char c)
 {
+    if (!Video::mode->framebuffer)
+        return;
+
     switch (c)
     {
     case '\n':

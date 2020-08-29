@@ -7,7 +7,7 @@
 class PipeFS : public FileSystem
 {
 private:
-    List<Pipe> pipes;
+    List<Pipe *> pipes;
 
 public:
     PipeFS()

@@ -14,12 +14,12 @@ TtyBuffer::TtyBuffer(int buf_size)
 
 TtyBuffer::~TtyBuffer()
 {
-    delete this->buffer;
+    delete[] this->buffer;
 }
 
 bool TtyBuffer::Write(const char *buf, size_t size)
 {
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         char c = buf[i];
 

@@ -231,7 +231,7 @@ namespace Scheduler
 				RemoveThread(current_thread);
 				ProcessManager::RemoveThread(current_thread);
 				THREAD *next = current_thread->next;
-				delete current_thread;
+				//delete current_thread;
 				current_thread = next;
 			}
 

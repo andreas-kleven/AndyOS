@@ -9,7 +9,7 @@
 
 namespace TCP
 {
-	List<TcpSession> sessions;
+	List<TcpSession *> sessions;
 	Mutex sessions_mutex;
 
 	TcpSession *GetSession(uint16 src_port, uint16 dst_port, uint32 dst_addr)
@@ -18,7 +18,7 @@ namespace TCP
 
 		for (int i = 0; i < sessions.Count(); i++)
 		{
-			TcpSession *session = &sessions[i];
+			TcpSession *session = sessions[i];
 			Socket *socket = session->socket;
 			sockaddr_in *addr = (sockaddr_in *)socket->addr;
 
@@ -34,7 +34,7 @@ namespace TCP
 
 		for (int i = 0; i < sessions.Count(); i++)
 		{
-			TcpSession *session = &sessions[i];
+			TcpSession *session = sessions[i];
 			sockaddr_in *addr = (sockaddr_in *)session->socket->addr;
 
 			bool valid_port = addr->sin_port == htons(src_port);
@@ -57,9 +57,9 @@ namespace TCP
 			return -1;
 
 		sessions_mutex.Aquire();
-		sessions.Add(TcpSession());
-		socket->tcp_session = &sessions.Last();
+		socket->tcp_session = new TcpSession();
 		socket->tcp_session->socket = socket;
+		sessions.Add(socket->tcp_session);
 		sessions_mutex.Release();
 
 		return 0;

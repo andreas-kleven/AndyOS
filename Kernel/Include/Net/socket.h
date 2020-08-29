@@ -18,7 +18,7 @@ public:
     int options;
     uint16 src_port;
     sockaddr *addr;
-    CircularDataBuffer buffer;
+    CircularDataBuffer *buffer;
     Mutex buffer_mutex;
     Event read_event;
     Event accept_event;

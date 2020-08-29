@@ -175,7 +175,7 @@ int MouseDriver::Read(FILE *file, void *buf, size_t size)
 	char *ptr = (char *)buf;
 
 	// TODO: memcpy
-	while (read < size && pos < buffer_pos)
+	while (read < (int)size && pos < buffer_pos)
 	{
 		ptr[read] = buffer[pos % BUFFER_SIZE];
 		read += 1;

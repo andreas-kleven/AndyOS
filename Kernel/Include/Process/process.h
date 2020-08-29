@@ -41,12 +41,6 @@ enum PROCESS_STATE
 	PROCESS_STATE_STOPPED
 };
 
-enum PROCESS_FLAGS
-{
-	PROCESS_USER,
-	PROCESS_KERNEL
-};
-
 enum MESSAGE_TYPE
 {
 	MESSAGE_TYPE_MESSAGE,
@@ -102,7 +96,6 @@ struct PROCESS
 	pid_t id = 0;
 	gid_t gid = 0;
 	pid_t sid = 0;
-	PROCESS_FLAGS flags;
 	ADDRESS_SPACE addr_space;
 	PROCESS_STATE state = PROCESS_STATE_RUNABLE;
 	siginfo_t siginfo;
@@ -112,14 +105,15 @@ struct PROCESS
 	size_t heap_end = 0;
 	DENTRY *pwd = 0;
 
-	Filetable filetable;
+	Filetable *filetable;
 	sig_t signal_table[SIGNAL_TABLE_SIZE];
 	Mutex signal_mutex;
 
 	MESSAGE_HANDLER *message_handler = 0;
-	CircularBuffer<MESSAGE> messages;
+	CircularBuffer<MESSAGE> *messages;
 
-	PROCESS(PROCESS_FLAGS flags, ADDRESS_SPACE addr_space);
+	PROCESS(ADDRESS_SPACE addr_space);
+	~PROCESS();
 };
 
 namespace ProcessManager

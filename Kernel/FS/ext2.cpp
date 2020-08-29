@@ -78,7 +78,7 @@ int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
         }
     }
 
-    delete buf;
+    delete[] buf;
     return 0;
 }
 
@@ -88,7 +88,7 @@ int Ext2FS::Read(FILE *file, void *buf, size_t size)
     uint32 ino = dentry->inode->ino;
     EXT_INODE *raw_inode = ReadRawInode(ino);
     int ret = ReadBlock(raw_inode->ptr_direct0, buf, size);
-    delete raw_inode;
+    delete[] raw_inode;
     return ret;
 }
 
@@ -110,7 +110,7 @@ INODE *Ext2FS::ReadInode(int ino, DENTRY *dentry)
     inode->mtime = raw_inode->mtime;
     inode->dtime = raw_inode->dtime;
 
-    delete raw_inode;
+    delete[] raw_inode;
     return inode;
 }
 

@@ -98,7 +98,7 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
         char *copy = strdup(unix_addr->sun_path);
         filename = basename(copy);
         parentname = dirname(copy);
-        delete copy;
+        delete[] copy;
 
         parent = VFS::GetDentry(parentname);
 

@@ -5,46 +5,45 @@ template <class T>
 struct Queue_Node
 {
 public:
-	T value;
-	Queue_Node<T>* next;
-	Queue_Node<T>* prev;
+    T value;
+    Queue_Node<T> *next;
+    Queue_Node<T> *prev;
 
-	Queue_Node<T>(T value);
-	Queue_Node<T>(T value, Queue_Node<T>* next);
+    Queue_Node<T>(T value);
+    Queue_Node<T>(T value, Queue_Node<T> *next);
 };
 
 template <class T>
 inline Queue_Node<T>::Queue_Node(T value)
 {
-	this->value = value;
-	this->next = this;
+    this->value = value;
+    this->next = this;
 }
 
 template <class T>
-inline Queue_Node<T>::Queue_Node(T value, Queue_Node<T>* next)
+inline Queue_Node<T>::Queue_Node(T value, Queue_Node<T> *next)
 {
-	this->value = value;
-	this->next = next;
+    this->value = value;
+    this->next = next;
 }
-
 
 template <class T>
 class Queue
 {
 public:
-	Queue<T>()
+    Queue<T>()
     {
         count = 0;
         root = 0;
         last = 0;
     }
 
-	~Queue<T>()
+    ~Queue<T>()
     {
         Clear();
     }
 
-	void Enqueue(T value)
+    void Enqueue(T value)
     {
         if (count == 0)
         {
@@ -60,7 +59,7 @@ public:
         }
     }
 
-	T Dequeue()
+    T Dequeue()
     {
         if (count == 0)
             panic("Queue is empty", "Queue::Dequeue");
@@ -76,7 +75,7 @@ public:
         }
         else
         {
-            Queue_Node<T>* node = root;
+            Queue_Node<T> *node = root;
             root = node->next;
 
             delete node;
@@ -86,15 +85,15 @@ public:
         return val;
     }
 
-	void Clear()
+    void Clear()
     {
         if (!root)
             return;
 
-        Queue_Node<T>* node = root;
+        Queue_Node<T> *node = root;
         while (count--)
         {
-            Queue_Node<T>* next = node->next;
+            Queue_Node<T> *next = node->next;
             delete node;
             node = next;
         }
@@ -103,31 +102,31 @@ public:
         last = 0;
     }
 
-	int Count()
+    int Count()
     {
         return count;
     }
 
-	T& operator[](int index)
+    T &operator[](int index)
     {
         if (index >= count)
             panic("Index out of range exception", "Queue::operator[]");
 
-        Queue_Node<T>* node = NodeAt(index);
+        Queue_Node<T> *node = NodeAt(index);
         return node->value;
     }
 
 private:
-	int count;
-	Queue_Node<T>* root;
-	Queue_Node<T>* last;
+    int count;
+    Queue_Node<T> *root;
+    Queue_Node<T> *last;
 
-	Queue_Node<T>* NodeAt(int index)
+    Queue_Node<T> *NodeAt(int index)
     {
         if (index == count - 1)
             return last;
 
-        Queue_Node<T>* node = root;
+        Queue_Node<T> *node = root;
         while (index--)
             node = node->next;
 

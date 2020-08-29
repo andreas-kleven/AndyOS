@@ -28,8 +28,15 @@ struct ADDRESS_SPACE
 	}
 };
 
+struct PAGE_INFO
+{
+	uint32 refs;
+	uint32 cow;
+} __attribute__((packed));
+
 namespace VMem
 {
+	PAGE_INFO *GetInfo(size_t virt);
 	size_t GetAddress(size_t virt);
 	pflags_t GetFlags(size_t virt);
 

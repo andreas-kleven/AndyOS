@@ -85,7 +85,7 @@ namespace VFS
 		if (dentry->inode)
 			return dentry->inode;
 
-		dentry->inode = new INODE;
+		dentry->inode = new INODE();
 		return dentry->inode;
 	}
 
@@ -99,7 +99,7 @@ namespace VFS
 				return dentry;
 		}
 
-		DENTRY *dentry = new DENTRY;
+		DENTRY *dentry = new DENTRY();
 
 		if (name)
 			dentry->name = strdup(name);
@@ -195,7 +195,7 @@ namespace VFS
 		if (!pwd)
 			return (DENTRY *)-ENAMETOOLONG;
 
-		char *fullpath = new char[strlen(pwd) + strlen(path) + 2];
+		char fullpath[strlen(pwd) + strlen(path) + 2];
 
 		if (path[0] == '/')
 			strcpy(fullpath, path);
@@ -204,11 +204,8 @@ namespace VFS
 
 		if (pathcanon(fullpath, pathbuf, sizeof(pathbuf)))
 		{
-			delete fullpath;
 			return (DENTRY *)-ENAMETOOLONG;
 		}
-
-		delete fullpath;
 
 		DENTRY *dentry = GetDentry(pathbuf);
 
@@ -266,40 +263,40 @@ namespace VFS
 		return 0;
 	}
 
-	int DuplicateFile(Filetable &filetable, int oldfd)
+	int DuplicateFile(Filetable *filetable, int oldfd)
 	{
-		FILE *file = filetable.Get(oldfd);
+		FILE *file = filetable->Get(oldfd);
 
 		if (!file)
 			return -EBADF;
 
-		return filetable.Add(file);
+		return filetable->Add(file);
 	}
 
-	int DuplicateFile(Filetable &filetable, int oldfd, int newfd)
+	int DuplicateFile(Filetable *filetable, int oldfd, int newfd)
 	{
-		FILE *file = filetable.Get(oldfd);
+		FILE *file = filetable->Get(oldfd);
 
 		if (!file)
 			return -EBADF;
 
 		//Close previous file
-		if (filetable.Get(newfd))
+		if (filetable->Get(newfd))
 			Close(filetable, newfd);
 
-		return filetable.Set(newfd, file);
+		return filetable->Set(newfd, file);
 	}
 
-	int Fcntl(Filetable &filetable, int fd, int cmd, void *arg)
+	int Fcntl(Filetable *filetable, int fd, int cmd, void *arg)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
 
 		if (cmd == F_DUPFD)
 		{
-			return filetable.Add(file, (int)arg);
+			return filetable->Add(file, (int)arg);
 		}
 		else if (cmd == F_SETFD)
 		{
@@ -313,9 +310,9 @@ namespace VFS
 		return -1;
 	}
 
-	int Getdents(Filetable &filetable, int fd, dirent *dirp, unsigned int count)
+	int Getdents(Filetable *filetable, int fd, dirent *dirp, unsigned int count)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -419,9 +416,9 @@ namespace VFS
 		return StatDentry(dentry, st);
 	}
 
-	int Fstat(Filetable &filetable, int fd, stat *st)
+	int Fstat(Filetable *filetable, int fd, stat *st)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -432,9 +429,9 @@ namespace VFS
 		return ret;
 	}
 
-	int Ioctl(Filetable &filetable, int fd, int request, unsigned int arg)
+	int Ioctl(Filetable *filetable, int fd, int request, unsigned int arg)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -467,7 +464,7 @@ namespace VFS
 		FILE *file = new FILE(dentry);
 		file->lock.Aquire();
 		file->flags = flags;
-		int fd = process->filetable.Add(file);
+		int fd = process->filetable->Add(file);
 
 		if (fd < 0)
 		{
@@ -480,10 +477,10 @@ namespace VFS
 		return fd;
 	}
 
-	int Close(Filetable &filetable, int fd)
+	int Close(Filetable *filetable, int fd)
 	{
 		int ret = 0;
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -496,16 +493,16 @@ namespace VFS
 			return ret;
 		}
 
-		filetable.Remove(fd);
+		filetable->Remove(fd);
 		file->lock.Release();
 
-		delete file; // TODO
+		//delete file; // TODO
 		return ret;
 	}
 
-	size_t Read(Filetable &filetable, int fd, char *dst, size_t size)
+	size_t Read(Filetable *filetable, int fd, char *dst, size_t size)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!IsValidInode(file))
 			return -ENOENT;
@@ -533,9 +530,9 @@ namespace VFS
 		return read;
 	}
 
-	size_t Write(Filetable &filetable, int fd, const char *buf, size_t size)
+	size_t Write(Filetable *filetable, int fd, const char *buf, size_t size)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!IsValidInode(file))
 			return -ENOENT;
@@ -556,9 +553,9 @@ namespace VFS
 		return written;
 	}
 
-	off_t Seek(Filetable &filetable, int fd, off_t offset, int whence)
+	off_t Seek(Filetable *filetable, int fd, off_t offset, int whence)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!IsValidInode(file))
 			return -ENOENT;
@@ -600,7 +597,7 @@ namespace VFS
 		return 0;
 	}
 
-	int CreatePipes(Filetable &filetable, int pipefd[2], int flags)
+	int CreatePipes(Filetable *filetable, int pipefd[2], int flags)
 	{
 		int ret = 0;
 		DENTRY *dentry;
@@ -611,16 +608,16 @@ namespace VFS
 		FILE *read = new FILE(dentry);
 		FILE *write = new FILE(dentry);
 
-		pipefd[0] = filetable.Add(read);
-		pipefd[1] = filetable.Add(write);
+		pipefd[0] = filetable->Add(read);
+		pipefd[1] = filetable->Add(write);
 
 		if (pipefd[0] < 0 || pipefd[1] < 0)
 		{
 			if (pipefd[0] < 0)
-				filetable.Remove(pipefd[0]);
+				filetable->Remove(pipefd[0]);
 
 			if (pipefd[1] < 0)
-				filetable.Remove(pipefd[1]);
+				filetable->Remove(pipefd[1]);
 
 			delete read;
 			delete write;
@@ -630,7 +627,7 @@ namespace VFS
 		return 0;
 	}
 
-	int CreateSocket(Filetable &filetable, int domain, int type, int protocol)
+	int CreateSocket(Filetable *filetable, int domain, int type, int protocol)
 	{
 		int ret = 0;
 
@@ -640,7 +637,7 @@ namespace VFS
 			return ret;
 
 		FILE *file = new FILE(dentry);
-		int fd = filetable.Add(file);
+		int fd = filetable->Add(file);
 
 		if (fd < 0)
 			delete file;
@@ -648,9 +645,9 @@ namespace VFS
 		return fd;
 	}
 
-	int SocketAccept(Filetable &filetable, int fd, sockaddr *addr, socklen_t addrlen, int flags)
+	int SocketAccept(Filetable *filetable, int fd, sockaddr *addr, socklen_t addrlen, int flags)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -662,7 +659,7 @@ namespace VFS
 			return ret;
 
 		FILE *client_file = new FILE(dentry);
-		int client_fd = filetable.Add(client_file);
+		int client_fd = filetable->Add(client_file);
 
 		if (client_fd < 0)
 		{
@@ -673,9 +670,9 @@ namespace VFS
 		return client_fd;
 	}
 
-	int SocketBind(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen)
+	int SocketBind(Filetable *filetable, int fd, const sockaddr *addr, socklen_t addrlen)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -683,9 +680,9 @@ namespace VFS
 		return sockfs->Bind(file, addr, addrlen);
 	}
 
-	int SocketConnect(Filetable &filetable, int fd, const sockaddr *addr, socklen_t addrlen)
+	int SocketConnect(Filetable *filetable, int fd, const sockaddr *addr, socklen_t addrlen)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -693,9 +690,9 @@ namespace VFS
 		return sockfs->Connect(file, addr, addrlen);
 	}
 
-	int SocketListen(Filetable &filetable, int fd, int backlog)
+	int SocketListen(Filetable *filetable, int fd, int backlog)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -703,9 +700,9 @@ namespace VFS
 		return sockfs->Listen(file, backlog);
 	}
 
-	int SocketRecv(Filetable &filetable, int fd, void *buf, size_t len, int flags)
+	int SocketRecv(Filetable *filetable, int fd, void *buf, size_t len, int flags)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -713,9 +710,9 @@ namespace VFS
 		return sockfs->Recv(file, buf, len, flags);
 	}
 
-	int SocketRecvfrom(Filetable &filetable, int fd, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
+	int SocketRecvfrom(Filetable *filetable, int fd, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -723,9 +720,9 @@ namespace VFS
 		return sockfs->Recvfrom(file, buf, len, flags, src_addr, addrlen);
 	}
 
-	int SocketSend(Filetable &filetable, int fd, const void *buf, size_t len, int flags)
+	int SocketSend(Filetable *filetable, int fd, const void *buf, size_t len, int flags)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -733,9 +730,9 @@ namespace VFS
 		return sockfs->Send(file, buf, len, flags);
 	}
 
-	int SocketSendto(Filetable &filetable, int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen)
+	int SocketSendto(Filetable *filetable, int fd, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;
@@ -743,9 +740,9 @@ namespace VFS
 		return sockfs->Sendto(file, buf, len, flags, dest_addr, addrlen);
 	}
 
-	int SocketShutdown(Filetable &filetable, int fd, int how)
+	int SocketShutdown(Filetable *filetable, int fd, int how)
 	{
-		FILE *file = filetable.Get(fd);
+		FILE *file = filetable->Get(fd);
 
 		if (!file)
 			return -EBADF;

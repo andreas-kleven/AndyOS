@@ -13,14 +13,15 @@ class TtyDriver : public CharDriver
 {
 private:
     TtyBaseDriver *driver;
-    Pipe read_pipe;
-    TtyBuffer line_buffer;
+    Pipe *read_pipe;
+    TtyBuffer *line_buffer;
     int line_buffer_pos;
 
 public:
     gid_t gid;
 
     TtyDriver(TtyBaseDriver *driver, int number);
+    ~TtyDriver();
 
     int Open(FILE *file);
     int Close(FILE *file);

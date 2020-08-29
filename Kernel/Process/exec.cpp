@@ -88,7 +88,11 @@ namespace ProcessManager
         void *argenv_ptr = VMem::UserAlloc(BYTES_TO_BLOCKS(psi->argenv_size));
 
         if (!argenv_ptr)
+        {
+            delete[] psi->argenv_ptr;
+            psi->argenv_ptr = 0;
             return -1;
+        }
 
         memcpy(argenv_ptr, psi->argenv_ptr, psi->argenv_size);
 
@@ -103,7 +107,8 @@ namespace ProcessManager
         for (int i = 0; i < psi->env_count; i++)
             new_envp[i] += offset;
 
-        delete psi->argenv_ptr;
+        delete[] psi->argenv_ptr;
+        psi->argenv_ptr = 0;
 
         psi->argv = new_argv;
         psi->envp = new_envp;
@@ -129,7 +134,7 @@ namespace ProcessManager
 
         VMem::SwapAddressSpace(addr_space);
 
-        PROCESS *proc = new PROCESS(PROCESS_USER, addr_space);
+        PROCESS *proc = new PROCESS(addr_space);
         size_t entry = ELF::Load(path, proc);
 
         if (entry)

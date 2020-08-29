@@ -19,7 +19,7 @@ namespace VTTY
     int termid = 0;
 
     THREAD *listen_thread;
-    CircularDataBuffer input_buffer;
+    CircularDataBuffer *input_buffer;
     KEYCODE extended_scancodes[256];
 
     bool ctrl = false;
@@ -308,7 +308,7 @@ namespace VTTY
     void Start()
     {
         listen_thread = Scheduler::CurrentThread();
-        input_buffer = CircularDataBuffer(256);
+        input_buffer = new CircularDataBuffer(256);
 
         uint64 press_time = 0;
         uint64 sleep_time = 0;
@@ -320,7 +320,7 @@ namespace VTTY
         {
             uint64 time = Timer::Ticks();
 
-            if (input_buffer.IsEmpty())
+            if (input_buffer->IsEmpty())
             {
                 if (sleep_time)
                     Scheduler::SleepThread(sleep_time, listen_thread);
@@ -332,8 +332,8 @@ namespace VTTY
 
             disable();
 
-            if (!input_buffer.IsEmpty())
-                input_buffer.Read(1, &scan);
+            if (!input_buffer->IsEmpty())
+                input_buffer->Read(1, &scan);
 
             enable();
 
@@ -371,7 +371,7 @@ namespace VTTY
     {
         if (listen_thread)
         {
-            input_buffer.Write(&scan, 1);
+            input_buffer->Write(&scan, 1);
             Scheduler::SleepThread(0, listen_thread);
         }
     }

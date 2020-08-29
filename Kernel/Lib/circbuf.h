@@ -165,7 +165,7 @@ public:
 
 	~CircularBuffer<T>()
 	{
-		delete items;
+		delete[] items;
 	}
 
 	bool Add(const T &item)

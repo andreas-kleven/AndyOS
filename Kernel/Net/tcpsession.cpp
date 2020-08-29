@@ -200,7 +200,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 				return false;
 			}
 
-			sockaddr_in *addr = new sockaddr_in;
+			sockaddr_in *addr = new sockaddr_in();
 			addr->sin_family = AF_INET;
 			addr->sin_port = htons(tcp->header->src_port);
 			addr->sin_family = AF_INET;

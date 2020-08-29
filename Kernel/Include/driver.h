@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <FS/file.h>
 
-#define MKDEV(major, minor) (((major & 0xFFFF) << 16) | (minor & 0xFFFF))
+#define MKDEV(major, minor) ((((major) & 0xFFFF) << 16) | ((minor) & 0xFFFF))
 
 #define MAJOR_TTY 4
 #define MAJOR_CDROM 11

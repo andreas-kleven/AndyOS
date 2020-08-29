@@ -72,16 +72,16 @@ int Filetable::Set(int fd, FILE *file)
     return fd;
 }
 
-Filetable Filetable::Clone()
+Filetable *Filetable::Clone()
 {
-    Filetable clone;
+    Filetable *clone = new Filetable(0);
 
     for (int i = 0; i < files.Count(); i++)
     {
         if (files[i])
-            clone.Set(i, new FILE(*files[i]));
+            clone->Set(i, new FILE(*files[i]));
         else
-            clone.Set(i, 0);
+            clone->Set(i, 0);
     }
 
     return clone;

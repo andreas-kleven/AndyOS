@@ -37,7 +37,7 @@ namespace DHCP
 
 	DHCP_Header *CreateHeader(NetInterface *intf, uint8 **options)
 	{
-		DHCP_Header *header = new DHCP_Header;
+		DHCP_Header *header = new DHCP_Header();
 		header->op = BOOTREQUEST;
 		header->htype = 1;
 		header->hlen = 6;

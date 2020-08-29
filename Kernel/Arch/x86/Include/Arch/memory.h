@@ -1,9 +1,10 @@
 #pragma once
 #include <types.h>
 #include <memory.h>
+#include <debug.h>
 
-#define PAGE_TABLE_LENGTH	1024
-#define PAGE_DIR_LENGTH		1024
+#define PAGE_TABLE_LENGTH 1024
+#define PAGE_DIR_LENGTH 1024
 
 enum PAGE_TABLE_FLAG
 {
@@ -49,14 +50,14 @@ struct PAGE_TABLE
 		return values[index] & ~PTE_FRAME;
 	}
 
-	void SetAddr(uint32 index, void* addr)
+	void SetAddr(uint32 index, void *addr)
 	{
 		values[index] = (values[index] & ~PTE_FRAME) | (uint32)addr;
 	}
 
-	void* GetAddr(uint32 index)
+	void *GetAddr(uint32 index)
 	{
-		return (void*)(values[index] & PTE_FRAME);
+		return (void *)(values[index] & PTE_FRAME);
 	}
 } __attribute__((packed));
 
@@ -74,14 +75,14 @@ struct PAGE_DIR
 		return values[index] & ~PDE_FRAME;
 	}
 
-	void SetTable(uint32 index, PAGE_TABLE* table)
+	void SetTable(uint32 index, PAGE_TABLE *table)
 	{
 		values[index] = (values[index] & ~PDE_FRAME) | (uint32)table;
 	}
 
-	PAGE_TABLE* GetTable(uint32 index)
+	PAGE_TABLE *GetTable(uint32 index)
 	{
-		return (PAGE_TABLE*)(values[index] & PDE_FRAME);
+		return (PAGE_TABLE *)(values[index] & PDE_FRAME);
 	}
 } __attribute__((packed));
 
@@ -89,15 +90,14 @@ namespace VMem::Arch
 {
 	size_t GetAddress(size_t virt);
 	pflags_t GetFlags(size_t virt);
-	
-	ADDRESS_SPACE GetAddressSpace();
-	bool SwapAddressSpace(ADDRESS_SPACE& space);
-	bool CreateAddressSpace(ADDRESS_SPACE& space);
-	bool CopyAddressSpace(ADDRESS_SPACE& space);
 
-	void* FirstFree(size_t count, size_t start, size_t end);
-	bool MapPages(void* virt, void* phys, size_t count, pflags_t flags);
-	bool FreePages(void* virt, size_t count);
+	ADDRESS_SPACE GetAddressSpace();
+	bool SwapAddressSpace(ADDRESS_SPACE &space);
+	bool CreateAddressSpace(ADDRESS_SPACE &space);
+	bool CopyAddressSpace(ADDRESS_SPACE &space);
+
+	void *FirstFree(size_t count, size_t start, size_t end);
+	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags);
 
 	bool Init();
-}
+} // namespace VMem::Arch

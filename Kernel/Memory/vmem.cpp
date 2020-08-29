@@ -7,6 +7,14 @@
 
 namespace VMem
 {
+	PAGE_INFO *page_list;
+
+	PAGE_INFO *GetInfo(size_t virt)
+	{
+		size_t block = GetAddress(virt) / PAGE_SIZE;
+		return &page_list[block];
+	}
+
 	void *MapFirstFree(void *phys, size_t count, pflags_t flags, size_t start, size_t end)
 	{
 		Scheduler::Disable();
@@ -60,27 +68,6 @@ namespace VMem
 			Scheduler::Enable();
 			return virt;
 		}
-
-		//
-		/*char* _virt = (char*)virt;
-
-		if (!virt)
-			return 0;
-
-		for (int i = 0; i < count; i++)
-		{
-			void* phys = PMem::AllocBlocks(1);
-
-			if (!phys)
-				return 0;
-
-			if (!MapPages(_virt, phys, 1, flags))
-				return 0;
-
-			_virt += PAGE_SIZE;
-		}
-
-		return virt;*/
 	}
 
 	///
@@ -147,29 +134,69 @@ namespace VMem
 	{
 		Scheduler::Disable();
 
-		if (virt == 0 || phys == 0)
+		if (flags != PAGE_NONE && (virt == 0 || phys == 0))
 		{
 			debug_print("Map address 0: %d, %p -> %p\n", virt, phys, flags);
 			panic("", "");
 			return false;
 		}
 
+		size_t virt_addr = (size_t)virt;
+		size_t phys_addr = (size_t)phys;
+
 		for (size_t i = 0; i < count; i++)
 		{
-			size_t addr = (size_t)virt + i * PAGE_SIZE;
-			if (GetFlags(addr) & PAGE_PRESENT)
-				debug_print("Page already mapped %p, %x, %p -> %p\n", GetAddressSpace().ptr, GetFlags(addr), addr, GetAddress(addr));
+			if (page_list)
+			{
+				PAGE_INFO *info = GetInfo(virt_addr);
+
+				if (GetAddress(virt_addr))
+					info->refs -= 1;
+			}
+
+			if (flags != PAGE_NONE)
+				if ((flags != PAGE_NONE && GetFlags(virt_addr) != PAGE_NONE) || (flags == PAGE_NONE && GetFlags(virt_addr) == PAGE_NONE))
+					debug_print("Page already mapped %p, (%p, %p -> %p), (%p, %p -> %p)\n", GetAddressSpace().ptr, flags, virt_addr, phys_addr, GetFlags(virt_addr), virt_addr, GetAddress(virt_addr));
+
+			if (!Arch::MapPages((void *)virt_addr, (void *)phys_addr, 1, flags))
+			{
+				debug_print("Map address error: %d, %p -> %p\n", virt, phys, flags);
+				panic("", "");
+			}
+
+			if (page_list)
+			{
+				PAGE_INFO *info = GetInfo(virt_addr);
+
+				if (phys_addr)
+					info->refs += 1;
+			}
+
+			virt_addr += PAGE_SIZE;
+
+			if (phys_addr)
+				phys_addr += PAGE_SIZE;
 		}
 
-		bool ret = Arch::MapPages(virt, phys, count, flags);
 		Scheduler::Enable();
-		return ret;
+		return true;
 	}
 
 	bool FreePages(void *virt, size_t count)
 	{
 		Scheduler::Disable();
-		bool ret = Arch::FreePages(virt, count);
+
+		for (size_t addr = (size_t)virt; addr < (size_t)virt + count * PAGE_SIZE; addr += PAGE_SIZE)
+		{
+			if (GetInfo(addr)->refs == 1)
+			{
+				size_t phys = GetAddress(addr);
+				PMem::FreeBlocks((void *)phys, 1);
+			}
+		}
+
+		bool ret = MapPages(virt, 0, count, PAGE_NONE);
+
 		Scheduler::Enable();
 		return ret;
 	}
@@ -215,10 +242,33 @@ namespace VMem
 		return true;
 	}
 
+	void InitPageList()
+	{
+		page_list = new PAGE_INFO[MAX_BLOCKS];
+		memset(page_list, 0, sizeof(PAGE_INFO) * MAX_BLOCKS);
+		size_t virt = 0;
+
+		while (true)
+		{
+			if (GetFlags(virt) & PAGE_PRESENT)
+			{
+				PAGE_INFO *info = GetInfo(virt);
+				info->refs += 1;
+			}
+
+			if (virt == MEMORY_END)
+				break;
+
+			virt += PAGE_SIZE;
+		}
+	}
+
 	bool Init()
 	{
 		if (!Arch::Init())
 			return false;
+
+		InitPageList();
 
 		return true;
 	}

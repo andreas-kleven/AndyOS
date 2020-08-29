@@ -34,7 +34,7 @@ namespace ProcessManager
     int Fchdir(PROCESS *process, int fd)
     {
         Scheduler::Disable();
-        FILE *file = process->filetable.Get(fd);
+        FILE *file = process->filetable->Get(fd);
 
         if (!file)
         {

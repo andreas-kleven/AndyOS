@@ -70,8 +70,7 @@ int PipeFS::Create(DENTRY *&dentry, int flags)
     dentry = VFS::AllocDentry(0, namebuf);
     INODE *inode = VFS::AllocInode(dentry);
 
-    Pipe pipe;
-    pipes.Add(pipe);
+    pipes.Add(new Pipe());
 
     inode->mode = S_IFIFO;
     inode->ino = ino;
@@ -86,5 +85,5 @@ Pipe *PipeFS::GetPipe(FILE *file)
     if (ino < 0 || ino >= pipes.Count())
         return 0;
 
-    return &pipes[ino];
+    return pipes[ino];
 }

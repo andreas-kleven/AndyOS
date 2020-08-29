@@ -123,7 +123,7 @@ KDTree::~KDTree()
 
 void KDTree::Build(Model3D* model)
 {
-	printf("Building k-d tree. %i triangles\n", model->triangles.size());
+	printf("Building k-d tree. %zu triangles\n", model->triangles.size());
 
 	Triangle** tris = new Triangle*[model->triangles.size()];
 

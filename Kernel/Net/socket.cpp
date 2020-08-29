@@ -19,7 +19,7 @@ Socket::Socket(int id)
 
 int Socket::Init(int domain, int type, int protocol)
 {
-    this->buffer = CircularDataBuffer(SOCKET_BUFFER_SIZE);
+    this->buffer = new CircularDataBuffer(SOCKET_BUFFER_SIZE);
     this->domain = domain;
     this->type = type;
     this->addr = 0;
@@ -50,7 +50,8 @@ int Socket::Init(int domain, int type, int protocol)
 
 Socket::~Socket()
 {
-    delete this->addr;
+    delete[] this->addr;
+    delete this->buffer;
 }
 
 int Socket::Accept(sockaddr *addr, socklen_t addrlen, int flags)
@@ -160,9 +161,9 @@ int Socket::Recv(void *buf, size_t len, int flags)
         return -1;
     }
 
-    int ret = buffer.Read(len, buf);
+    int ret = buffer->Read(len, buf);
 
-    if (buffer.IsEmpty())
+    if (buffer->IsEmpty())
         read_event.Clear();
 
     buffer_mutex.Release();
@@ -233,9 +234,9 @@ void Socket::HandleData(const void *data, int length)
         return;
 
     buffer_mutex.Aquire();
-    buffer.Write(data, length);
+    buffer->Write(data, length);
 
-    if (!buffer.IsEmpty())
+    if (!buffer->IsEmpty())
         read_event.Set();
 
     buffer_mutex.Release();
