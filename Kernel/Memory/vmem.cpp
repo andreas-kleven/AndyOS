@@ -109,12 +109,86 @@ namespace VMem
 		return ret;
 	}
 
+	bool DestroyAddressSpace(ADDRESS_SPACE &space)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::DestroyAddressSpace(space);
+		Scheduler::Enable();
+		return ret;
+	}
+
 	bool CopyAddressSpace(ADDRESS_SPACE &space)
 	{
 		Scheduler::Disable();
 		bool ret = Arch::CopyAddressSpace(space);
 		Scheduler::Enable();
 		return ret;
+	}
+
+	bool CopyOnWrite(void *virt1, void *virt2, size_t count, ADDRESS_SPACE &to)
+	{
+		Scheduler::Disable();
+		bool ret = Arch::CopyOnWrite(virt1, virt2, count, to);
+		Scheduler::Enable();
+		return ret;
+	}
+
+	bool PerformCopy(void *virt)
+	{
+		Scheduler::Disable();
+
+		virt = (void *)(((size_t)virt / PAGE_SIZE) * PAGE_SIZE);
+
+		PAGE_INFO *info = GetInfo((size_t)virt);
+		size_t phys = GetAddress((size_t)virt);
+		pflags_t flags = GetFlags((size_t)virt);
+		pflags_t newflags = flags | PAGE_WRITE;
+
+		debug_print("Copy %p cow=%d\n", virt, info->cow);
+
+		if (info->cow == 0)
+			return false;
+
+		if (info->cow == 1)
+		{
+			info->cow = 0;
+
+			if (!MapPages(virt, (void *)phys, 1, newflags))
+			{
+				Scheduler::Enable();
+				return false;
+			}
+		}
+		else
+		{
+			void *copy = KernelAlloc(1);
+			size_t newphys = GetAddress((size_t)copy);
+
+			if (!copy)
+			{
+				Scheduler::Disable();
+				return false;
+			}
+
+			memcpy(copy, virt, PAGE_SIZE);
+
+			if (!MapPages(virt, (void *)newphys, 1, newflags))
+			{
+				FreePages(copy, 1);
+				Scheduler::Disable();
+				return false;
+			}
+
+			if (!info->writable && info->cow == 2)
+				info->cow = 0;
+			else
+				info->cow -= 1;
+
+			FreePages(copy, 1);
+		}
+
+		Scheduler::Enable();
+		return true;
 	}
 
 	void *FirstFree(size_t count, size_t start, size_t end)
@@ -146,14 +220,6 @@ namespace VMem
 
 		for (size_t i = 0; i < count; i++)
 		{
-			if (page_list)
-			{
-				PAGE_INFO *info = GetInfo(virt_addr);
-
-				if (GetAddress(virt_addr))
-					info->refs -= 1;
-			}
-
 			if (flags != PAGE_NONE)
 				if ((flags != PAGE_NONE && GetFlags(virt_addr) != PAGE_NONE) || (flags == PAGE_NONE && GetFlags(virt_addr) == PAGE_NONE))
 					debug_print("Page already mapped %p, (%p, %p -> %p), (%p, %p -> %p)\n", GetAddressSpace().ptr, flags, virt_addr, phys_addr, GetFlags(virt_addr), virt_addr, GetAddress(virt_addr));
@@ -162,14 +228,6 @@ namespace VMem
 			{
 				debug_print("Map address error: %d, %p -> %p\n", virt, phys, flags);
 				panic("", "");
-			}
-
-			if (page_list)
-			{
-				PAGE_INFO *info = GetInfo(virt_addr);
-
-				if (phys_addr)
-					info->refs += 1;
 			}
 
 			virt_addr += PAGE_SIZE;
@@ -188,11 +246,17 @@ namespace VMem
 
 		for (size_t addr = (size_t)virt; addr < (size_t)virt + count * PAGE_SIZE; addr += PAGE_SIZE)
 		{
-			if (GetInfo(addr)->refs == 1)
+			PAGE_INFO *info = GetInfo(addr);
+
+			if (info->refs == 1)
 			{
 				size_t phys = GetAddress(addr);
 				PMem::FreeBlocks((void *)phys, 1);
 			}
+
+			// TODO: Move
+			if (info->cow > 0)
+				info->cow -= 1;
 		}
 
 		bool ret = MapPages(virt, 0, count, PAGE_NONE);

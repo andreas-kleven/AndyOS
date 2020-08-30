@@ -78,17 +78,17 @@ namespace VMem::Arch
 			"mov %eax, %cr0");
 	}
 
-	void *_FirstFree(size_t count, size_t start, size_t end, const ADDRESS_SPACE_MAPPING &mapping)
+	void *_FirstFree(size_t count, size_t start, size_t end, ADDRESS_SPACE_MAPPING *mapping)
 	{
 		for (size_t i = start; i < end; i += PAGE_SIZE)
 		{
-			if ((mapping.GetPTFlags(i) == 0) && (mapping.GetAddress(i) == 0))
+			if ((mapping->GetPTFlags(i) == 0) && (mapping->GetAddress(i) == 0))
 			{
 				bool found = true;
 
 				for (size_t j = 1; j < count; j++)
 				{
-					if ((mapping.GetPTFlags(i + j * PAGE_SIZE) != 0) || (mapping.GetAddress(i + j * PAGE_SIZE) != 0))
+					if ((mapping->GetPTFlags(i + j * PAGE_SIZE) != 0) || (mapping->GetAddress(i + j * PAGE_SIZE) != 0))
 					{
 						found = false;
 						break;
@@ -105,12 +105,12 @@ namespace VMem::Arch
 		return 0;
 	}
 
-	bool _MapPages(void *_virt, void *_phys, size_t count, pflags_t flags, const ADDRESS_SPACE_MAPPING &mapping)
+	bool _MapPages(void *_virt, void *_phys, size_t count, pflags_t flags, ADDRESS_SPACE_MAPPING *mapping)
 	{
 		size_t virt = (size_t)_virt;
 		size_t phys = (size_t)_phys;
 
-		PAGE_DIR *dir = mapping.dir;
+		PAGE_DIR *dir = mapping->dir;
 		uint32 pt_flags = PF_F(flags);
 
 		for (size_t i = 0; i < count; i++)
@@ -118,10 +118,28 @@ namespace VMem::Arch
 			int dir_index = PAGE_DIR_INDEX(virt);
 			int table_index = PAGE_TABLE_INDEX(virt);
 
-			PAGE_TABLE *table = mapping.GetTable(virt);
+			PAGE_TABLE *table = mapping->GetTable(virt);
+
+			if (VMem::page_list)
+			{
+				PAGE_INFO *info = GetInfo(virt);
+
+				if (table->GetAddr(table_index))
+					info->refs -= 1;
+			}
+
 			table->SetFlags(table_index, pt_flags);
 			table->SetAddr(table_index, (void *)phys);
 
+			if (VMem::page_list)
+			{
+				PAGE_INFO *info = GetInfo(virt);
+
+				if (phys)
+					info->refs += 1;
+			}
+
+			//if (mapping == CurrentMapping())
 			asm volatile("invlpg (%0)" ::"r"(virt));
 
 			//asm volatile(
@@ -173,12 +191,14 @@ namespace VMem::Arch
 
 	void *FirstFree(size_t count, size_t start, size_t end)
 	{
-		return _FirstFree(count, start, end, CurrentMapping());
+		ADDRESS_SPACE_MAPPING mapping = CurrentMapping();
+		return _FirstFree(count, start, end, &mapping);
 	}
 
 	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
 	{
-		return _MapPages(virt, phys, count, flags, CurrentMapping());
+		ADDRESS_SPACE_MAPPING mapping = CurrentMapping();
+		return _MapPages(virt, phys, count, flags, &mapping);
 	}
 
 	bool CreateMapping(ADDRESS_SPACE &space, ADDRESS_SPACE_MAPPING *mapping)
@@ -189,7 +209,7 @@ namespace VMem::Arch
 		pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
 
 		mapping->dir = (PAGE_DIR *)KernelMapFirstFree(space.ptr, 1, flags);
-		mapping->tables = (PAGE_TABLE *)FirstFree(1024, KERNEL_BASE, KERNEL_END);
+		mapping->tables = (PAGE_TABLE *)FirstFree(PAGE_DIR_LENGTH, KERNEL_BASE, KERNEL_END);
 
 		for (int i = 0; i < PAGE_DIR_LENGTH; i++)
 		{
@@ -205,10 +225,15 @@ namespace VMem::Arch
 		return true;
 	}
 
+	bool FreeMapping(ADDRESS_SPACE_MAPPING *mapping)
+	{
+		MapPages(mapping->dir, 0, 1, PAGE_NONE);
+		MapPages(mapping->tables, 0, PAGE_DIR_LENGTH, PAGE_NONE);
+		return true;
+	}
+
 	bool CopyMemoryTo(ADDRESS_SPACE &to)
 	{
-		pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
-
 		ADDRESS_SPACE_MAPPING mapping;
 
 		if (CreateMapping(to, &mapping))
@@ -224,7 +249,7 @@ namespace VMem::Arch
 
 			//Allocate physical memory and map temporary for copying data
 			char *phys = (char *)PMem::AllocBlocks(cb);
-			char *tmpvirt = (char *)KernelMapFirstFree(phys, cb, flags);
+			char *tmpvirt = (char *)KernelMapFirstFree(phys, cb, PAGE_PRESENT | PAGE_WRITE);
 			char *copy = tmpvirt;
 
 			for (size_t virt = USER_BASE; virt < USER_END; virt += PAGE_SIZE)
@@ -233,20 +258,66 @@ namespace VMem::Arch
 
 				if (pf != 0)
 				{
-					_MapPages((void *)virt, phys, 1, pf, mapping);
+					_MapPages((void *)virt, phys, 1, pf, &mapping);
 					memcpy(copy, (void *)virt, PAGE_SIZE);
-
-					PAGE_INFO *info = GetInfo((size_t)copy);
-					info->refs += 1;
 
 					phys += PAGE_SIZE;
 					copy += PAGE_SIZE;
 				}
 			}
 
-			//Free temp pages
 			FreePages(tmpvirt, cb);
+			FreeMapping(&mapping);
+			return true;
+		}
 
+		return false;
+	}
+
+	bool CopyOnWrite(void *virt1, void *virt2, size_t count, ADDRESS_SPACE &to)
+	{
+		ADDRESS_SPACE_MAPPING current_mapping = CurrentMapping();
+		ADDRESS_SPACE_MAPPING mapping;
+
+		if (CreateMapping(to, &mapping))
+		{
+			size_t virt_addr1 = (size_t)virt1;
+			size_t virt_addr2 = (size_t)virt2;
+
+			for (size_t i = 0; i < count; i++)
+			{
+				PAGE_INFO *info = GetInfo(virt_addr1);
+
+				if (info->refs > 0)
+				{
+					pflags_t flags = GetFlags(virt_addr1);
+					size_t phys = GetAddress(virt_addr1);
+					pflags_t newflags = flags & ~PAGE_WRITE;
+
+					if (info->cow == 0)
+					{
+						info->cow = 2;
+						info->writable = flags & PAGE_WRITE;
+						_MapPages((void *)virt_addr1, (void *)phys, 1, newflags, &current_mapping);
+						_MapPages((void *)virt_addr2, (void *)phys, 1, newflags, &mapping);
+					}
+					else if (info->cow == 1)
+					{
+						info->cow = 2;
+						_MapPages((void *)virt_addr2, (void *)phys, 1, newflags, &mapping);
+					}
+					else
+					{
+						info->cow += 1;
+						_MapPages((void *)virt_addr2, (void *)phys, 1, newflags, &mapping);
+					}
+				}
+
+				virt_addr1 += PAGE_SIZE;
+				virt_addr2 += PAGE_SIZE;
+			}
+
+			FreeMapping(&mapping);
 			return true;
 		}
 
@@ -275,7 +346,6 @@ namespace VMem::Arch
 		//Dir
 		PAGE_DIR *dir_virt = (PAGE_DIR *)KernelAlloc(1);
 		PAGE_DIR *dir_phys = (PAGE_DIR *)GetAddress((size_t)dir_virt);
-		memset(dir_virt, 0, sizeof(PAGE_DIR));
 
 		//Tables
 		PAGE_TABLE *tables_virt = (PAGE_TABLE *)(KernelAlloc(768));
@@ -316,8 +386,17 @@ namespace VMem::Arch
 		last_table->SetFlags(PAGE_TABLE_LENGTH - 1, pt_flags);
 		last_table->SetAddr(PAGE_TABLE_LENGTH - 1, dir_phys);
 
+		MapPages(dir_virt, 0, 1, PAGE_NONE);
+		MapPages(tables_virt + 256, 0, 768, PAGE_NONE);
+
 		space.ptr = dir_phys;
 		return true;
+	}
+
+	bool DestroyAddressSpace(ADDRESS_SPACE &space)
+	{
+		//TODO
+		return false;
 	}
 
 	bool CopyAddressSpace(ADDRESS_SPACE &space)
@@ -325,7 +404,11 @@ namespace VMem::Arch
 		if (!CreateAddressSpace(space))
 			return false;
 
-		if (!CopyMemoryTo(space))
+		//if (!CopyMemoryTo(space))
+		//	return false;
+
+		size_t blocks = (USER_END - USER_BASE) / PAGE_SIZE;
+		if (!CopyOnWrite((void *)USER_BASE, (void *)USER_BASE, blocks, space))
 			return false;
 
 		return true;

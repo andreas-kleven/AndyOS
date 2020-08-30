@@ -4,6 +4,7 @@
 #include <Arch/pit.h>
 #include <Arch/tss.h>
 #include <Arch/pic.h>
+#include <Arch/pagefault.h>
 #include <Kernel/task.h>
 #include <Process/thread.h>
 #include <Process/scheduler.h>
@@ -24,9 +25,9 @@ namespace Scheduler::Arch
         asm volatile("int %0" ::"N"(SCHEDULE_IRQ));
     }
 
-    void ScheduleTask(bool syscall)
+    void ScheduleTask(int irq)
     {
-        if (!syscall)
+        if (irq == SCHEDULE_IRQ)
             PIT::ticks++;
 
         THREAD *current_thread = Scheduler::CurrentThread();
@@ -37,10 +38,10 @@ namespace Scheduler::Arch
         //Save fpu state
         asm volatile("fxsave (%0)" ::"r"(current_thread->fpu_state));
 
-        if (syscall)
-        {
-            REGS *regs = (REGS *)current_thread->stack;
+        REGS *regs = (REGS *)current_thread->stack;
 
+        if (irq == SYSCALL_IRQ)
+        {
             DISPATCHER_CONTEXT context;
             context.thread = current_thread;
             context.syscall = regs->eax;
@@ -54,6 +55,10 @@ namespace Scheduler::Arch
             Dispatcher::Dispatch(context);
             Scheduler::BlockThread(current_thread, false);
         }
+        else if (irq == 14)
+        {
+            PageFault::Arch::HandlePageFault(regs);
+        }
 
         //Schedule
         current_thread = Scheduler::Schedule();
@@ -65,11 +70,7 @@ namespace Scheduler::Arch
         tmp_stack = current_thread->stack;
 
         TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
-
-        if (syscall)
-            PIC::InterruptDone(SYSCALL_IRQ);
-        else
-            PIC::InterruptDone(SCHEDULE_IRQ);
+        PIC::InterruptDone(irq);
     }
 
     void INTERRUPT Schedule_ISR()
@@ -87,11 +88,11 @@ namespace Scheduler::Arch
             "mov %%esp, %0\n"
 
             //Schedule
-            "push $0x0\n"
-            "call %P1\n"
+            "push %1\n"
+            "call %P2\n"
 
             //Load registers
-            "mov %2, %%esp\n"
+            "mov %3, %%esp\n"
 
             "pop %%gs\n"
             "pop %%fs\n"
@@ -101,7 +102,7 @@ namespace Scheduler::Arch
 
             "iret"
             : "=m"(tmp_stack)
-            : "i"(&ScheduleTask), "m"(tmp_stack));
+            : "N"(SCHEDULE_IRQ), "i"(&ScheduleTask), "m"(tmp_stack));
     }
 
     void Start(THREAD *thread)

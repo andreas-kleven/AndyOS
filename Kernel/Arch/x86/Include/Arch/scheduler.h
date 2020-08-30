@@ -8,7 +8,7 @@ namespace Scheduler::Arch
 {
     extern size_t tmp_stack;
 
-    void ScheduleTask(bool syscall);
+    void ScheduleTask(int irq);
     void Start(THREAD *thread);
     void Switch();
     void Idle();

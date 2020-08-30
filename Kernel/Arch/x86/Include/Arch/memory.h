@@ -18,7 +18,7 @@ enum PAGE_TABLE_FLAG
 	PTE_PAT = 0x80,
 	PTE_CPU_GLOBAL = 0x100,
 	PTE_LV4_GLOBAL = 0x200,
-	PTE_FRAME = 0x7FFFF000
+	PTE_FRAME = 0xFFFFF000
 };
 
 enum PAGE_DIR_FLAG
@@ -33,7 +33,7 @@ enum PAGE_DIR_FLAG
 	PDE_4MB = 0x80,
 	PDE_CPU_GLOBAL = 0x100,
 	PDE_LV4_GLOBAL = 0x200,
-	PDE_FRAME = 0x7FFFF000
+	PDE_FRAME = 0xFFFFF000
 };
 
 struct PAGE_TABLE
@@ -94,10 +94,12 @@ namespace VMem::Arch
 	ADDRESS_SPACE GetAddressSpace();
 	bool SwapAddressSpace(ADDRESS_SPACE &space);
 	bool CreateAddressSpace(ADDRESS_SPACE &space);
+	bool DestroyAddressSpace(ADDRESS_SPACE &space);
 	bool CopyAddressSpace(ADDRESS_SPACE &space);
 
 	void *FirstFree(size_t count, size_t start, size_t end);
 	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags);
+	bool CopyOnWrite(void *virt1, void *virt2, size_t count, ADDRESS_SPACE &to);
 
 	bool Init();
 } // namespace VMem::Arch

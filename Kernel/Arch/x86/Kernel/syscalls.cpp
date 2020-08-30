@@ -23,7 +23,7 @@ namespace Syscalls::Arch
 			"call *%7\n"
 			"add $24, %%esp\n"
 			: "=a"(ret)
-			: "g"(context.p6), "r"(context.p5), "r"(context.p4), "r"(context.p3), "r"(context.p2), "r"(context.p1), "r"(location));
+			: "m"(context.p6), "m"(context.p5), "m"(context.p4), "m"(context.p3), "m"(context.p2), "m"(context.p1), "m"(location));
 
 		return ret;
 	}
@@ -50,11 +50,11 @@ namespace Syscalls::Arch
 			"mov %%esp, %0\n"
 
 			//Schedule
-			"push $0x1\n"
-			"call %P1\n"
+			"push %1\n"
+			"call %P2\n"
 
 			//Load registers
-			"mov %2, %%esp\n"
+			"mov %3, %%esp\n"
 
 			"pop %%gs\n"
 			"pop %%fs\n"
@@ -64,7 +64,7 @@ namespace Syscalls::Arch
 
 			"iret"
 			: "=m"(Scheduler::Arch::tmp_stack)
-			: "i"(&Scheduler::Arch::ScheduleTask), "m"(Scheduler::Arch::tmp_stack));
+			: "N"(SYSCALL_IRQ), "i"(&Scheduler::Arch::ScheduleTask), "m"(Scheduler::Arch::tmp_stack));
 	}
 
 	void Init()

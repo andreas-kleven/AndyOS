@@ -32,10 +32,13 @@ struct PAGE_INFO
 {
 	uint32 refs;
 	uint32 cow;
+	bool writable;
 } __attribute__((packed));
 
 namespace VMem
 {
+	extern PAGE_INFO *page_list;
+
 	PAGE_INFO *GetInfo(size_t virt);
 	size_t GetAddress(size_t virt);
 	pflags_t GetFlags(size_t virt);
@@ -43,7 +46,10 @@ namespace VMem
 	ADDRESS_SPACE GetAddressSpace();
 	bool SwapAddressSpace(ADDRESS_SPACE &space);
 	bool CreateAddressSpace(ADDRESS_SPACE &space);
+	bool DestroyAddressSpace(ADDRESS_SPACE &space);
 	bool CopyAddressSpace(ADDRESS_SPACE &space);
+	bool CopyOnWrite(void *virt1, void *virt2, size_t count, ADDRESS_SPACE &to);
+	bool PerformCopy(void *virt);
 
 	void *FirstFree(size_t count, size_t start, size_t end);
 	bool MapPages(void *virt, void *phys, size_t count, pflags_t flags);

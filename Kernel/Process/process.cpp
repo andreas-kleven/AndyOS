@@ -198,12 +198,13 @@ namespace ProcessManager
 
 	void Terminate(PROCESS *proc)
 	{
-		ADDRESS_SPACE old_space = VMem::GetAddressSpace();
-		VMem::SwapAddressSpace(proc->addr_space);
-		FreeAllMemory(proc);
 		CloseFiles(proc);
 		StopThreads(proc);
-		VMem::SwapAddressSpace(old_space);
+
+		FreeAllMemory(proc);
+
+		ADDRESS_SPACE space = VMem::GetAddressSpace();
+		VMem::DestroyAddressSpace(space);
 	}
 
 	void *AdjustHeap(PROCESS *proc, int increment)
