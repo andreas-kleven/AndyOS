@@ -231,6 +231,11 @@ void HandleInput(uint8 scan)
     }
 }
 
+Vt100Driver *CurrentTerminal()
+{
+    return terminals[termid];
+}
+
 int SwitchTerminal(int id, bool force)
 {
     if (id < 0 || id >= NUM_TERMINALS)

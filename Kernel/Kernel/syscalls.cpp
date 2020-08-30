@@ -2,6 +2,7 @@
 #include <Drivers/keyboard.h>
 #include <Drivers/mouse.h>
 #include <Drivers/rtc.h>
+#include <Drivers/vtty.h>
 #include <FS/vfs.h>
 #include <Kernel/timer.h>
 #include <Net/socket.h>
@@ -369,7 +370,8 @@ void sys_gettime(int &hour, int &minute, int &second)
 
 void sys_draw(uint32 *framebuffer)
 {
-    Video::Draw(framebuffer);
+    if (VTTY::CurrentTerminal()->tty->sid == Dispatcher::CurrentProcess()->sid)
+        Video::Draw(framebuffer);
 }
 
 void sys_exit(int code)

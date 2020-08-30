@@ -9,6 +9,7 @@ TtyDriver::TtyDriver(TtyBaseDriver *driver, int number)
     this->read_pipe = new Pipe(TTY_BUFFER_SIZE);
     this->line_buffer = new TtyBuffer(TTY_BUFFER_SIZE);
     this->gid = 0;
+    this->sid = 0;
 
     char *buf = new char[16];
     sprintf(buf, "tty%d", number);
@@ -67,17 +68,17 @@ int TtyDriver::HandleInput(const char *input, size_t size)
 
         switch (c) {
         case 0x03:
-            ProcessManager::HandleSignal(0, gid, SIGINT);
+            ProcessManager::HandleSignal(sid, gid, SIGINT);
             line_buffer->Reset();
             break;
 
         case 0x1A:
-            ProcessManager::HandleSignal(0, gid, SIGSTOP);
+            ProcessManager::HandleSignal(sid, gid, SIGSTOP);
             line_buffer->Reset();
             break;
 
         case 0x1C:
-            ProcessManager::HandleSignal(0, gid, SIGQUIT);
+            ProcessManager::HandleSignal(sid, gid, SIGQUIT);
             line_buffer->Reset();
             break;
 

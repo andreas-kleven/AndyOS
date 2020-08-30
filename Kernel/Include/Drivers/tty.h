@@ -19,6 +19,7 @@ class TtyDriver : public CharDriver
 
   public:
     gid_t gid;
+    pid_t sid;
 
     TtyDriver(TtyBaseDriver *driver, int number);
     ~TtyDriver();
