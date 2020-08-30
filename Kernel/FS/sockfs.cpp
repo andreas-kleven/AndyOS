@@ -83,15 +83,15 @@ int SockFS::Accept(FILE *file, sockaddr *addr, socklen_t addrlen, int flags, DEN
 int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
 {
     Socket *socket = GetSocket(file);
-    DENTRY *parent;
+    DENTRY *parent = 0;
     int ret = 0;
 
     if (!socket)
         return -1;
 
     sockaddr_un *unix_addr = (sockaddr_un *)addr;
-    const char *filename;
-    const char *parentname;
+    const char *filename = 0;
+    const char *parentname = 0;
 
     if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0])
     {

@@ -23,6 +23,7 @@ TtyDriver::~TtyDriver()
 {
     delete this->read_pipe;
     delete this->line_buffer;
+    delete[] this->name;
 }
 
 int TtyDriver::Open(FILE *file)

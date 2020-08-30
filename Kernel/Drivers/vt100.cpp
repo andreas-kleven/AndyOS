@@ -114,7 +114,7 @@ void Vt100Driver::DrawText()
 
     while (!text_buffer->IsEmpty())
     {
-        char c;
+        char c = 0;
         text_buffer->Read(1, &c);
 
         if (c)
