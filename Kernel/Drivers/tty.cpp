@@ -48,13 +48,10 @@ int TtyDriver::Write(FILE *file, const void *buf, size_t size)
 
 int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
 {
-    if (request == 0x540F)
-    {
+    if (request == 0x540F) {
         pid_t *ptr = (pid_t *)arg;
         *ptr = gid;
-    }
-    else if (request == 0x5410)
-    {
+    } else if (request == 0x5410) {
         pid_t *ptr = (pid_t *)arg;
         gid = *ptr;
         debug_print("Set tcgid %d\n", gid);
@@ -65,12 +62,10 @@ int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
 
 int TtyDriver::HandleInput(const char *input, size_t size)
 {
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         char c = input[i];
 
-        switch (c)
-        {
+        switch (c) {
         case 0x03:
             ProcessManager::HandleSignal(0, gid, SIGINT);
             line_buffer->Reset();
@@ -87,14 +82,11 @@ int TtyDriver::HandleInput(const char *input, size_t size)
             break;
 
         default:
-            if (c == '\n')
-            {
+            if (c == '\n') {
                 read_pipe->Write(0, line_buffer->buffer, line_buffer->written);
                 read_pipe->Write(0, "\n", 1);
                 line_buffer->Reset();
-            }
-            else
-            {
+            } else {
                 line_buffer->Write(&c, 1);
             }
 

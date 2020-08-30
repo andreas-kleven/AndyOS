@@ -1,0 +1,9 @@
+﻿---
+AlignConsecutiveMacros: 'true'
+AlignEscapedNewlines: Left
+AllowShortFunctionsOnASingleLine: InlineOnly
+BreakBeforeBraces: Mozilla
+ColumnLimit: '100'
+IndentWidth: '4'
+Language: Cpp
+...

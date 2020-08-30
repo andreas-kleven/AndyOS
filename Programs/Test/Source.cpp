@@ -1,11 +1,11 @@
+#include "GUI.h"
+#include "math.h"
 #include <AndyOS.h>
 #include <andyos/msg.h>
-#include "GUI.h"
-#include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "math.h"
+#include <unistd.h>
 
 using namespace gui;
 
@@ -13,51 +13,48 @@ void btnClick();
 
 class MainWindow : public Window
 {
-public:
-	Label* label;
-	Button* button;
-	TextBox* textBox;
+  public:
+    Label *label;
+    Button *button;
+    TextBox *textBox;
 
-	MainWindow(char* title)
-		: Window(title)
-	{
-		label = new Label("Label");
-		button = new Button("A button");
-		textBox = new TextBox();
+    MainWindow(char *title) : Window(title)
+    {
+        label = new Label("Label");
+        button = new Button("A button");
+        textBox = new TextBox();
 
-		button->bounds = Rect(100, 200, 80, 20);
-		button->OnClick = btnClick;
+        button->bounds = Rect(100, 200, 80, 20);
+        button->OnClick = btnClick;
 
-		textBox->bounds.x = 10;
-		textBox->bounds.y = 30;
+        textBox->bounds.x = 10;
+        textBox->bounds.y = 30;
 
-		AddChild(label);
-		AddChild(button);
-		AddChild(textBox);
-	}
+        AddChild(label);
+        AddChild(button);
+        AddChild(textBox);
+    }
 
-	void OnClose()
-	{
-		exit(0);
-	}
+    void OnClose() { exit(0); }
 };
 
-MainWindow* wnd;
+MainWindow *wnd;
 
 int clicks = 0;
 void btnClick()
 {
-	char buf[100];
-	sprintf(buf, "Clicked %i", ++clicks);
-	wnd->label->text = buf;
+    char buf[100];
+    sprintf(buf, "Clicked %i", ++clicks);
+    wnd->label->text = buf;
 }
 
 int main()
 {
-	char title[256];
-	sprintf(title, "Test window: %u", get_ticks());
-	wnd = new MainWindow(title);
+    char title[256];
+    sprintf(title, "Test window: %u", get_ticks());
+    wnd = new MainWindow(title);
 
-	while (true) sleep(1000);
-	return 0;
+    while (true)
+        sleep(1000);
+    return 0;
 }

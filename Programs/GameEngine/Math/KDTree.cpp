@@ -1,134 +1,130 @@
-#include <stdio.h>
-#include <andyos/float.h>
 #include "KDTree.h"
 #include "GEngine.h"
+#include <andyos/float.h>
+#include <stdio.h>
 
-void SortTriangles(Triangle* arr[], int axis, int left, int right) {
-	int i = left, j = right;
-	Triangle* tmp;
-	float pivot = arr[(left + right) / 2]->Center()[axis];
+void SortTriangles(Triangle *arr[], int axis, int left, int right)
+{
+    int i = left, j = right;
+    Triangle *tmp;
+    float pivot = arr[(left + right) / 2]->Center()[axis];
 
-	//Partition
-	while (i <= j)
-	{
-		while (arr[i]->Center()[axis] < pivot)
-			i++;
+    // Partition
+    while (i <= j) {
+        while (arr[i]->Center()[axis] < pivot)
+            i++;
 
-		while (arr[j]->Center()[axis] > pivot)
-			j--;
+        while (arr[j]->Center()[axis] > pivot)
+            j--;
 
-		if (i <= j) {
-			tmp = arr[i];
-			arr[i] = arr[j];
-			arr[j] = tmp;
-			i++;
-			j--;
-		}
-	}
+        if (i <= j) {
+            tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+            i++;
+            j--;
+        }
+    }
 
-	//Recursion
-	if (left < j)
-		SortTriangles(arr, axis, left, j);
+    // Recursion
+    if (left < j)
+        SortTriangles(arr, axis, left, j);
 
-	if (i < right)
-		SortTriangles(arr, axis, i, right);
+    if (i < right)
+        SortTriangles(arr, axis, i, right);
 }
 
 KDNode::KDNode(int depth)
 {
-	this->depth = depth;
-	this->left = 0;
-	this->right = 0;
-	this->bounds = Box();
-	this->triangles = 0;
-	this->triangle_count = 0;
+    this->depth = depth;
+    this->left = 0;
+    this->right = 0;
+    this->bounds = Box();
+    this->triangles = 0;
+    this->triangle_count = 0;
 }
 
 KDNode::~KDNode()
 {
-	if (this->triangles)
-	{
-		delete[] this->triangles;
-	}
+    if (this->triangles) {
+        delete[] this->triangles;
+    }
 }
 
-//https://blog.frogslayer.com/kd-trees-for-faster-ray-tracing-with-triangles/
-KDNode* KDNode::Build(Triangle* tris[], int count, int depth)
+// https://blog.frogslayer.com/kd-trees-for-faster-ray-tracing-with-triangles/
+KDNode *KDNode::Build(Triangle *tris[], int count, int depth)
 {
-	if (depth > 8)
-		return 0;
+    if (depth > 8)
+        return 0;
 
-	if (count == 0)
-		return 0;
+    if (count == 0)
+        return 0;
 
-	int right = count - 1;
+    int right = count - 1;
 
-	Box bounds = tris[0]->BoundingBox();
-	for (int i = 1; i < count; i++)
-		bounds.Expand(tris[i]->BoundingBox());
+    Box bounds = tris[0]->BoundingBox();
+    for (int i = 1; i < count; i++)
+        bounds.Expand(tris[i]->BoundingBox());
 
-	KDNode* node = new KDNode(depth);
-	node->bounds = bounds;
+    KDNode *node = new KDNode(depth);
+    node->bounds = bounds;
 
-	int axis = bounds.LongestAxis();
+    int axis = bounds.LongestAxis();
 
-	if (count > 1)
-		SortTriangles(tris, axis, 0, right);
+    if (count > 1)
+        SortTriangles(tris, axis, 0, right);
 
-	float best = FLT_MAX;
-	float bestAlpha = 0;
-	int bestIndex = 0;
+    float best = FLT_MAX;
+    float bestAlpha = 0;
+    int bestIndex = 0;
 
-	float first = tris[0]->Center()[axis];
-	float last = tris[right]->Center()[axis];
-	float distance = last - first;
+    float first = tris[0]->Center()[axis];
+    float last = tris[right]->Center()[axis];
+    float distance = last - first;
 
-	for (int i = 1; i < count - 1; i++)
-	{
-		float alpha = (tris[i]->Center()[axis] - first) / distance;
+    for (int i = 1; i < count - 1; i++) {
+        float alpha = (tris[i]->Center()[axis] - first) / distance;
 
-		float costL = alpha * i;
-		float costR = (1 - alpha) * (right - i);
-		float cost = costL + costR;
+        float costL = alpha * i;
+        float costR = (1 - alpha) * (right - i);
+        float cost = costL + costR;
 
-		if (cost < best)
-		{
-			best = cost;
-			bestAlpha = alpha;
-			bestIndex = i;
-		}
-	}
+        if (cost < best) {
+            best = cost;
+            bestAlpha = alpha;
+            bestIndex = i;
+        }
+    }
 
-	node->left = Build(tris, bestIndex + 1, depth + 1);
-	node->right = Build(tris + bestIndex + 1, right - bestIndex, depth + 1);
+    node->left = Build(tris, bestIndex + 1, depth + 1);
+    node->right = Build(tris + bestIndex + 1, right - bestIndex, depth + 1);
 
-	if (node->left || node->right)
-		return node;
+    if (node->left || node->right)
+        return node;
 
-	node->triangles = tris;
-	node->triangle_count = count;
+    node->triangles = tris;
+    node->triangle_count = count;
 
-	return node;
+    return node;
 }
 
 KDTree::KDTree()
-{
-}
+{}
 
 KDTree::~KDTree()
 {
-	if (root)
-		delete root;
+    if (root)
+        delete root;
 }
 
-void KDTree::Build(Model3D* model)
+void KDTree::Build(Model3D *model)
 {
-	printf("Building k-d tree. %zu triangles\n", model->triangles.size());
+    printf("Building k-d tree. %zu triangles\n", model->triangles.size());
 
-	Triangle** tris = new Triangle*[model->triangles.size()];
+    Triangle **tris = new Triangle *[model->triangles.size()];
 
-	for (int i = 0; i < model->triangles.size(); i++)
-		tris[i] = &model->triangle_buffer[i];
+    for (int i = 0; i < model->triangles.size(); i++)
+        tris[i] = &model->triangle_buffer[i];
 
-	root = KDNode::Build(tris, model->triangles.size(), 0);
+    root = KDNode::Build(tris, model->triangles.size(), 0);
 }

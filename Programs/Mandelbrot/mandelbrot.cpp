@@ -1,8 +1,8 @@
-#include <math.h>
+#include "GUI.h"
+#include <AndyOS.h>
 #include <andyos/drawing.h>
 #include <andyos/math.h>
-#include <AndyOS.h>
-#include "GUI.h"
+#include <math.h>
 
 using namespace gui;
 
@@ -23,19 +23,16 @@ inline int get_iteration(double x, double y, bool julia, double *z2)
     double Zx2 = 0;
     double Zy2 = 0;
 
-    if (julia)
-    {
+    if (julia) {
         Zx = x;
         Zy = y;
         x = juliax;
         y = juliay;
-    }
-    else
-    {
-        //Optimizations
+    } else {
+        // Optimizations
         double q = pow(x - 0.25, 2) + y * y;
-        if ((q * (q + (x - 0.25)) < y * y / 4)       //Inside cardioid
-            || ((x + 1) * (x + 1) + y * y) * 16 < 1) //Inside period-2 bulb
+        if ((q * (q + (x - 0.25)) < y * y / 4)       // Inside cardioid
+            || ((x + 1) * (x + 1) + y * y) * 16 < 1) // Inside period-2 bulb
         {
             *z2 = 0;
             return iter_max;
@@ -46,8 +43,7 @@ inline int get_iteration(double x, double y, bool julia, double *z2)
     Zy2 = Zy * Zy;
 
     int iter = 0;
-    while (iter < iter_max && ((Zx2 + Zy2) < (1 << 16)))
-    {
+    while (iter < iter_max && ((Zx2 + Zy2) < (1 << 16))) {
         Zy = 2 * Zx * Zy + y;
         Zx = Zx2 - Zy2 + x;
         Zx2 = Zx * Zx;
@@ -134,13 +130,11 @@ void mandelbrot_init()
     Color c0;
     Color c1;
 
-    for (int i = 0; i <= 16; i++)
-    {
+    for (int i = 0; i <= 16; i++) {
         c0 = colors[i * res];
         c1 = colors[((i + 1) * res) % color_count];
 
-        for (int j = 1; j < res; j++)
-        {
+        for (int j = 1; j < res; j++) {
             double alpha = (double)j / res;
             colors[i * res + j] = c1 * alpha + c0 * (1 - alpha);
         }

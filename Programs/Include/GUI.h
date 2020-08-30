@@ -1,6 +1,6 @@
 #pragma once
-#include "GUI/window.h"
 #include "GUI/elements.h"
 #include "GUI/input.h"
+#include "GUI/window.h"
 
 #define GUI_TASKBAR_HEIGHT 40

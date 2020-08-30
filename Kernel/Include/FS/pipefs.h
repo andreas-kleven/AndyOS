@@ -1,19 +1,16 @@
 #pragma once
 #include <FS/filesystem.h>
 #include <FS/pipe.h>
-#include <list.h>
 #include <driver.h>
+#include <list.h>
 
 class PipeFS : public FileSystem
 {
-private:
+  private:
     List<Pipe *> pipes;
 
-public:
-    PipeFS()
-    {
-        name = "pipefs";
-    }
+  public:
+    PipeFS() { name = "pipefs"; }
 
     int Mount(BlockDriver *driver);
     int Open(FILE *file);
@@ -25,6 +22,6 @@ public:
 
     int Create(DENTRY *&dentry, int flags);
 
-private:
+  private:
     Pipe *GetPipe(FILE *file);
 };

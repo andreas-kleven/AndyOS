@@ -1,45 +1,43 @@
 #pragma once
-#include <andyos/msg.h>
 #include "GUI/messages.h"
 #include "window.h"
+#include <andyos/msg.h>
 
 #define WINDOW_MANAGER_PID 9 // TODO
 
-namespace gui
+namespace gui {
+class Client
 {
-    class Client
+  public:
+    static bool connected;
+
+    static void Init();
+    static MESSAGE MessageHandler(MESSAGE msg);
+
+    static void AddWindow(Window *wnd);
+
+    template <class IN, class OUT>
+    static bool SendRequest(IN req, OUT &res, bool ignore_disconnected = false)
     {
-    public:
-        static bool connected;
+        if (!connected && !ignore_disconnected)
+            return false;
 
-        static void Init();
-        static MESSAGE MessageHandler(MESSAGE msg);
+        MESSAGE response = send_message(WINDOW_MANAGER_PID, GUI_MESSAGE_TYPE, &req, sizeof(IN));
 
-        static void AddWindow(Window* wnd);
+        if (response.size != sizeof(OUT))
+            return false;
 
-        template <class IN, class OUT>
-        static bool SendRequest(IN req, OUT& res, bool ignore_disconnected = false)
-        {
-            if (!connected && !ignore_disconnected)
-                return false;
+        res = *(OUT *)response.data;
+        return true;
+    }
 
-            MESSAGE response = send_message(WINDOW_MANAGER_PID, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+    template <class IN> static bool SendRequest(IN req, bool ignore_disconnected = false)
+    {
+        if (!connected && !ignore_disconnected)
+            return false;
 
-            if (response.size != sizeof(OUT))
-                return false;
-
-            res = *(OUT*)response.data;
-            return true;
-        }
-
-        template <class IN>
-        static bool SendRequest(IN req, bool ignore_disconnected = false)
-        {
-            if (!connected && !ignore_disconnected)
-                return false;
-
-            post_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
-            return true;
-        }
-    };
-}
+        post_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
+        return true;
+    }
+};
+} // namespace gui

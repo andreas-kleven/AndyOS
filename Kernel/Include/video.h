@@ -2,19 +2,18 @@
 
 class VideoMode
 {
-public:
+  public:
     int width;
     int height;
     int depth;
     int memsize;
 
-    void* framebuffer_phys = 0;
-    void* framebuffer = 0;
+    void *framebuffer_phys = 0;
+    void *framebuffer = 0;
 
-    VideoMode()
-    { }
+    VideoMode() {}
 
-    VideoMode(int width, int height, int depth, void* framebuffer)
+    VideoMode(int width, int height, int depth, void *framebuffer)
     {
         this->width = width;
         this->height = height;
@@ -24,15 +23,14 @@ public:
         this->memsize = width * height * depth / 8;
     }
 
-    virtual void Draw(void* pixels) { }
-    virtual void SetPixel(int x, int y, unsigned int col) { }
+    virtual void Draw(void *pixels) {}
+    virtual void SetPixel(int x, int y, unsigned int col) {}
 };
 
-namespace Video
-{
-    extern VideoMode* mode;
+namespace Video {
+extern VideoMode *mode;
 
-    void SetMode(VideoMode* mode);
-    void Draw(void* pixels);
-	void SetPixel(int x, int y, unsigned int col);
-}
+void SetMode(VideoMode *mode);
+void Draw(void *pixels);
+void SetPixel(int x, int y, unsigned int col);
+} // namespace Video

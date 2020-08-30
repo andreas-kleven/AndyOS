@@ -1,9 +1,9 @@
-#include <Drivers/vt100.h>
 #include <Drawing/font.h>
-#include <video.h>
+#include <Drivers/vt100.h>
+#include <debug.h>
 #include <math.h>
 #include <string.h>
-#include <debug.h>
+#include <video.h>
 
 Vt100Driver::Vt100Driver()
 {
@@ -82,22 +82,18 @@ void Vt100Driver::RedrawScreen()
 
 int Vt100Driver::AddText(const char *text, size_t size)
 {
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         char c = text[i];
 
         if (!c)
             continue;
 
-        if (c == 0x03 || c == 0x1A || c == 0x1C)
-        {
+        if (c == 0x03 || c == 0x1A || c == 0x1C) {
             c += 'A' - 1;
             char buf[4];
             sprintf(buf, "^%c", c);
             text_buffer->Write(buf, 3);
-        }
-        else
-        {
+        } else {
             text_buffer->Write(&c, 1);
         }
     }
@@ -112,8 +108,7 @@ void Vt100Driver::DrawText()
 
     draw_mutex.Aquire();
 
-    while (!text_buffer->IsEmpty())
-    {
+    while (!text_buffer->IsEmpty()) {
         char c = 0;
         text_buffer->Read(1, &c);
 
@@ -126,10 +121,8 @@ void Vt100Driver::DrawText()
 
 void Vt100Driver::DrawChar(int x, int y, char c)
 {
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 8; j++) {
             if ((DEFAULT_FONT[i + 16 * c] >> j) & 1)
                 Video::SetPixel(x + (8 - j), y + i, color);
             else
@@ -143,8 +136,7 @@ void Vt100Driver::Putc(char c)
     if (!Video::mode->framebuffer)
         return;
 
-    switch (c)
-    {
+    switch (c) {
     case '\n':
         posx = 0;
         posy += 1;
@@ -172,14 +164,12 @@ void Vt100Driver::Putc(char c)
         break;
     }
 
-    if (posx > width - 1)
-    {
+    if (posx > width - 1) {
         posx = 0;
         posy++;
     }
 
-    if (posy > height - 1)
-    {
+    if (posy > height - 1) {
         posy = height - 1;
 
         const VideoMode *mode = Video::mode;

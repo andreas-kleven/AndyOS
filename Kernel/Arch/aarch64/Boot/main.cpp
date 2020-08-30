@@ -1,8 +1,8 @@
-#include <Arch/uart.h>
 #include <Arch/mailbox.h>
 #include <Arch/mvideo.h>
-#include <kernel.h>
+#include <Arch/uart.h>
 #include <debug.h>
+#include <kernel.h>
 
 extern "C" void aarch64_main()
 {

@@ -37,8 +37,7 @@ int Pipe::Write(FILE *file, const void *buf, size_t size)
 {
     int written = 0;
 
-    while (written < (int)size)
-    {
+    while (written < (int)size) {
         if (!write_event.WaitIntr())
             return written ? written : -EINTR;
 

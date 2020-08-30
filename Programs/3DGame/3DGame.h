@@ -3,6 +3,6 @@
 
 class MyGame : public Game
 {
-public:
-	MyGame();
+  public:
+    MyGame();
 };

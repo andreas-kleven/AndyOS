@@ -1,9 +1,8 @@
 #include <Arch/irq.h>
 
-namespace IRQ::Arch
+namespace IRQ::Arch {
+bool Install(int num, void (*handler)())
 {
-    bool Install(int num, void(*handler)())
-    {
-        return false;
-    }
+    return false;
 }
+} // namespace IRQ::Arch

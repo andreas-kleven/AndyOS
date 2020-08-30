@@ -1,24 +1,22 @@
 #pragma once
-#include <andyos/drawing.h>
-#include <andyos/drawing.h>
 #include "../guibase.h"
+#include <andyos/drawing.h>
 
-namespace gui
+namespace gui {
+class Element : public GUIBase
 {
-    class Element : public GUIBase
-    {
-    public:
-        Color foreground;
-        Color background;
+  public:
+    Color foreground;
+    Color background;
 
-        bool isActive;
+    bool isActive;
 
-        Element(Rect bounds);
-        Element(int x, int y, int width, int height);
+    Element(Rect bounds);
+    Element(int x, int y, int width, int height);
 
-        Rect GetGlobalBounds();
-        GC CreateGC() const;
+    Rect GetGlobalBounds();
+    GC CreateGC() const;
 
-        virtual void Paint() { }
-    };
-}
+    virtual void Paint() {}
+};
+} // namespace gui

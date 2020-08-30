@@ -1,16 +1,15 @@
 #include "guibase.h"
 
-namespace gui
+namespace gui {
+GUIBase::GUIBase()
 {
-    GUIBase::GUIBase()
-    {
-        this->parent = 0;
-        this->isHovering = false;
-    }
-
-    void GUIBase::AddChild(GUIBase* child)
-    {
-        child->parent = this;
-        elements.push_back(child);
-    }
+    this->parent = 0;
+    this->isHovering = false;
 }
+
+void GUIBase::AddChild(GUIBase *child)
+{
+    child->parent = this;
+    elements.push_back(child);
+}
+} // namespace gui

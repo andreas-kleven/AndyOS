@@ -1,9 +1,9 @@
 #pragma once
-#include <types.h>
-#include <driver.h>
-#include <circbuf.h>
-#include <ttybuf.h>
 #include <FS/pipe.h>
+#include <circbuf.h>
+#include <driver.h>
+#include <ttybuf.h>
+#include <types.h>
 
 #define TTY_BUFFER_SIZE 4096
 
@@ -11,13 +11,13 @@ class TtyBaseDriver;
 
 class TtyDriver : public CharDriver
 {
-private:
+  private:
     TtyBaseDriver *driver;
     Pipe *read_pipe;
     TtyBuffer *line_buffer;
     int line_buffer_pos;
 
-public:
+  public:
     gid_t gid;
 
     TtyDriver(TtyBaseDriver *driver, int number);
@@ -34,7 +34,7 @@ public:
 
 class TtyBaseDriver
 {
-public:
+  public:
     TtyDriver *tty = 0;
 
     virtual int Open() { return -ENOSYS; }

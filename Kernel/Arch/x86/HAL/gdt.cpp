@@ -1,15 +1,15 @@
-#include <Arch//gdt.h>
+#include <Arch/gdt.h>
 #include <string.h>
 
 // Each define here is for a specific flag in the descriptor.
 // Refer to the intel documentation for a description of what each one does.
-#define SEG_DESCTYPE(x)  ((x) << 0x04) // Descriptor type (0 for system, 1 for code/data)
-#define SEG_PRES(x)      ((x) << 0x07) // Present
-#define SEG_SAVL(x)      ((x) << 0x0C) // Available for system use
-#define SEG_LONG(x)      ((x) << 0x0D) // Long mode
-#define SEG_SIZE(x)      ((x) << 0x0E) // Size (0 for 16-bit, 1 for 32)
-#define SEG_GRAN(x)      ((x) << 0x0F) // Granularity (0 for 1B - 1MB, 1 for 4KB - 4GB)
-#define SEG_PRIV(x)     (((x) &  0x03) << 0x05)   // Set privilege level (0 - 3)
+#define SEG_DESCTYPE(x) ((x) << 0x04)        // Descriptor type (0 for system, 1 for code/data)
+#define SEG_PRES(x)     ((x) << 0x07)        // Present
+#define SEG_SAVL(x)     ((x) << 0x0C)        // Available for system use
+#define SEG_LONG(x)     ((x) << 0x0D)        // Long mode
+#define SEG_SIZE(x)     ((x) << 0x0E)        // Size (0 for 16-bit, 1 for 32)
+#define SEG_GRAN(x)     ((x) << 0x0F)        // Granularity (0 for 1B - 1MB, 1 for 4KB - 4GB)
+#define SEG_PRIV(x)     (((x)&0x03) << 0x05) // Set privilege level (0 - 3)
 
 #define SEG_DATA_RD        0x00 // Read-Only
 #define SEG_DATA_RDA       0x01 // Read-Only, accessed
@@ -28,68 +28,72 @@
 #define SEG_CODE_EXRDC     0x0E // Execute/Read, conforming
 #define SEG_CODE_EXRDCA    0x0F // Execute/Read, conforming, accessed
 
-#define GDT_CODE_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
-                     SEG_PRIV(0)     | SEG_CODE_EXRD
+#define GDT_CODE_PL0                                                                        \
+    SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | SEG_LONG(0) | SEG_SIZE(1) | SEG_GRAN(1) | \
+        SEG_PRIV(0) | SEG_CODE_EXRD
 
-#define GDT_DATA_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
-                     SEG_PRIV(0)     | SEG_DATA_RDWR
+#define GDT_DATA_PL0                                                                        \
+    SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | SEG_LONG(0) | SEG_SIZE(1) | SEG_GRAN(1) | \
+        SEG_PRIV(0) | SEG_DATA_RDWR
 
-#define GDT_CODE_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
-                     SEG_PRIV(3)     | SEG_CODE_EXRD
+#define GDT_CODE_PL3                                                                        \
+    SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | SEG_LONG(0) | SEG_SIZE(1) | SEG_GRAN(1) | \
+        SEG_PRIV(3) | SEG_CODE_EXRD
 
-#define GDT_DATA_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
-                     SEG_PRIV(3)     | SEG_DATA_RDWR
+#define GDT_DATA_PL3                                                                        \
+    SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | SEG_LONG(0) | SEG_SIZE(1) | SEG_GRAN(1) | \
+        SEG_PRIV(3) | SEG_DATA_RDWR
 
-#define MAX_DESCRIPTORS	6
+#define MAX_DESCRIPTORS 6
 
 extern "C" void gdt_flush();
 
-namespace GDT
+namespace GDT {
+uint64 gdt[MAX_DESCRIPTORS];
+GDT_PTR gp;
+
+STATUS SetDescriptor(uint32 i, uint32 base, uint32 limit, uint32 flag)
 {
-	uint64 gdt[MAX_DESCRIPTORS];
-	GDT_PTR gp;
+    if (i >= MAX_DESCRIPTORS)
+        return STATUS_FAILED;
 
-	STATUS SetDescriptor(uint32 i, uint32 base, uint32 limit, uint32 flag)
-	{
-		if (i >= MAX_DESCRIPTORS)
-			return STATUS_FAILED;
+    uint64 descriptor;
 
-		uint64 descriptor;
+    // Create the high 32 bit segment
+    descriptor = limit & 0x000F0000;         // set limit bits 19:16
+    descriptor |= (flag << 8) & 0x00F0FF00;  // set type, p, dpl, s, g, d/b, l and avl fields
+    descriptor |= (base >> 16) & 0x000000FF; // set base bits 23:16
+    descriptor |= base & 0xFF000000;         // set base bits 31:24
 
-		// Create the high 32 bit segment
-		descriptor = limit & 0x000F0000;         // set limit bits 19:16
-		descriptor |= (flag << 8) & 0x00F0FF00;         // set type, p, dpl, s, g, d/b, l and avl fields
-		descriptor |= (base >> 16) & 0x000000FF;         // set base bits 23:16
-		descriptor |= base & 0xFF000000;         // set base bits 31:24
+    descriptor <<= 32; // Shift by 32 to allow for low part of segment
 
-		descriptor <<= 32;							// Shift by 32 to allow for low part of segment
+    // Create the low 32 bit segment
+    descriptor |= base << 16;         // set base bits 15:0
+    descriptor |= limit & 0x0000FFFF; // set limit bits 15:0
 
-		// Create the low 32 bit segment
-		descriptor |= base << 16;                       // set base bits 15:0
-		descriptor |= limit & 0x0000FFFF;               // set limit bits 15:0
-
-		gdt[i] = descriptor;
-		return STATUS_SUCCESS;
-	}
-
-	STATUS Init()
-	{
-		gp.limit = sizeof(gdt) - 1;
-		gp.base = (uint32)&gdt[0];
-
-		if (!SetDescriptor(0, 0, 0, 0)) return STATUS_FAILED;
-		if (!SetDescriptor(1, 0, 0xFFFFFFFF, GDT_CODE_PL0)) return STATUS_FAILED;
-		if (!SetDescriptor(2, 0, 0xFFFFFFFF, GDT_DATA_PL0)) return STATUS_FAILED;
-		if (!SetDescriptor(3, 0, 0xFFFFFFFF, GDT_CODE_PL3)) return STATUS_FAILED;
-		if (!SetDescriptor(4, 0, 0xFFFFFFFF, GDT_DATA_PL3)) return STATUS_FAILED;
-
-		asm volatile("lgdt (%0)" :: "r" (&gp));
-		gdt_flush();
-
-		return STATUS_SUCCESS;
-	}
+    gdt[i] = descriptor;
+    return STATUS_SUCCESS;
 }
+
+STATUS Init()
+{
+    gp.limit = sizeof(gdt) - 1;
+    gp.base = (uint32)&gdt[0];
+
+    if (!SetDescriptor(0, 0, 0, 0))
+        return STATUS_FAILED;
+    if (!SetDescriptor(1, 0, 0xFFFFFFFF, GDT_CODE_PL0))
+        return STATUS_FAILED;
+    if (!SetDescriptor(2, 0, 0xFFFFFFFF, GDT_DATA_PL0))
+        return STATUS_FAILED;
+    if (!SetDescriptor(3, 0, 0xFFFFFFFF, GDT_CODE_PL3))
+        return STATUS_FAILED;
+    if (!SetDescriptor(4, 0, 0xFFFFFFFF, GDT_DATA_PL3))
+        return STATUS_FAILED;
+
+    asm volatile("lgdt (%0)" ::"r"(&gp));
+    gdt_flush();
+
+    return STATUS_SUCCESS;
+}
+} // namespace GDT

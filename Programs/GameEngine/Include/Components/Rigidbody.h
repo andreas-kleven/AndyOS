@@ -1,36 +1,36 @@
 #pragma once
-#include "GL.h"
-#include "Component.h"
 #include "Collider.h"
+#include "Component.h"
+#include "GL.h"
 
 class Rigidbody : public Component
 {
-public:
-	Collider* collider;
+  public:
+    Collider *collider;
 
-	Vector3 velocity;
-	Vector3 angularVelocity;
+    Vector3 velocity;
+    Vector3 angularVelocity;
 
-	Matrix3 rotInertia;
+    Matrix3 rotInertia;
 
-	float mass;
-	float drag;
+    float mass;
+    float drag;
 
-	bool bEnabled;
-	bool bEnabledGravity;
-	bool bEnabledDrag;
+    bool bEnabled;
+    bool bEnabledGravity;
+    bool bEnabledDrag;
 
-	Rigidbody();
+    Rigidbody();
 
-	virtual void Start();
-	virtual void Update(float delta);
+    virtual void Start();
+    virtual void Update(float delta);
 
-	void AddImpulse(Vector3 imp);
-	void AddImpulseAt(Vector3 imp, Vector3 pos);
+    void AddImpulse(Vector3 imp);
+    void AddImpulseAt(Vector3 imp, Vector3 pos);
 
-	float Speed();
-	float SpeedSquared();
+    float Speed();
+    float SpeedSquared();
 
-private:
-	Vector3 impulse;
+  private:
+    Vector3 impulse;
 };

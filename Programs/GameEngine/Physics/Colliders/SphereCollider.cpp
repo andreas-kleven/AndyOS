@@ -2,6 +2,6 @@
 
 SphereCollider::SphereCollider()
 {
-	this->bIsSphere = 1;
-	this->radius = 1;
+    this->bIsSphere = 1;
+    this->radius = 1;
 }

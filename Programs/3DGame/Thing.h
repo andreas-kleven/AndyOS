@@ -3,8 +3,8 @@
 
 class Thing : public GameObject
 {
-public:
-	Thing();
+  public:
+    Thing();
 
-	virtual void Update(float delta);
+    virtual void Update(float delta);
 };

@@ -1,7 +1,7 @@
 #include <FS/devfs.h>
 #include <FS/vfs.h>
-#include <string.h>
 #include <driver.h>
+#include <string.h>
 
 int DevFS::Mount(BlockDriver *driver)
 {
@@ -63,18 +63,14 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 {
     Driver *driver = DriverManager::FirstDriver();
 
-    while (driver)
-    {
+    while (driver) {
         DRIVER_TYPE driver_type = driver->type;
 
-        if (driver->dev && (driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR))
-        {
-            if (!find_name || strcmp(driver->name, find_name) == 0)
-            {
+        if (driver->dev && (driver_type == DRIVER_TYPE_BLOCK || driver_type == DRIVER_TYPE_CHAR)) {
+            if (!find_name || strcmp(driver->name, find_name) == 0) {
                 DENTRY *dentry = VFS::AllocDentry(parent, driver->name);
 
-                if (!dentry->inode)
-                {
+                if (!dentry->inode) {
                     int type = driver_type == DRIVER_TYPE_BLOCK ? S_IFBLK : S_IFCHR;
                     mode_t mode = type;
 

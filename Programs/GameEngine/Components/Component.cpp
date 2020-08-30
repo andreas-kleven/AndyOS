@@ -2,15 +2,15 @@
 
 Component::Component()
 {
-	this->parent = 0;
+    this->parent = 0;
 }
 
-void Component::SetName(const std::string& name)
+void Component::SetName(const std::string &name)
 {
-	this->name = name;
+    this->name = name;
 }
 
 std::string Component::GetName()
 {
-	return name;
+    return name;
 }

@@ -1,11 +1,11 @@
-#include <math.h>
+#include "GUI.h"
+#include <AndyOS.h>
+#include <GL/Quaternion.h>
 #include <GL/Vector2.h>
 #include <GL/Vector3.h>
-#include <GL/Quaternion.h>
 #include <andyos/drawing.h>
 #include <andyos/math.h>
-#include <AndyOS.h>
-#include "GUI.h"
+#include <math.h>
 
 using namespace gui;
 
@@ -24,15 +24,14 @@ Vector3 light_dir;
 
 Vector2 distance_estimator(const Vector3 &pos)
 {
-    //return Vector2(1, pos.Magnitude() - 1);
+    // return Vector2(1, pos.Magnitude() - 1);
 
     Vector3 z = pos;
     double dr = 1.0;
     double r = 0.0;
 
     int i;
-    for (i = 0; i < iterations; i++)
-    {
+    for (i = 0; i < iterations; i++) {
         r = z.Magnitude();
         if (r > 2)
             break;
@@ -62,8 +61,7 @@ Vector2 trace(const Vector3 &start, const Vector3 &dir, Vector3 &end)
     double total = 0.0;
     int steps;
 
-    for (steps = 0; steps < max_steps; steps++)
-    {
+    for (steps = 0; steps < max_steps; steps++) {
         end = start + dir * total;
         Vector2 result = distance_estimator(end);
         double distance = result.y;
@@ -80,9 +78,12 @@ Vector2 trace(const Vector3 &start, const Vector3 &dir, Vector3 &end)
 
 Vector3 estimate_normal(const Vector3 &p)
 {
-    double x = distance_estimator(Vector3(p.x + epsilon, p.y, p.z)).y - distance_estimator(Vector3(p.x - epsilon, p.y, p.z)).y;
-    double y = distance_estimator(Vector3(p.x, p.y + epsilon, p.z)).y - distance_estimator(Vector3(p.x, p.y - epsilon, p.z)).y;
-    double z = distance_estimator(Vector3(p.x, p.y, p.z + epsilon)).y - distance_estimator(Vector3(p.x, p.y, p.z - epsilon)).y;
+    double x = distance_estimator(Vector3(p.x + epsilon, p.y, p.z)).y -
+               distance_estimator(Vector3(p.x - epsilon, p.y, p.z)).y;
+    double y = distance_estimator(Vector3(p.x, p.y + epsilon, p.z)).y -
+               distance_estimator(Vector3(p.x, p.y - epsilon, p.z)).y;
+    double z = distance_estimator(Vector3(p.x, p.y, p.z + epsilon)).y -
+               distance_estimator(Vector3(p.x, p.y, p.z - epsilon)).y;
     return Vector3(x, y, z).Normalized();
 }
 
@@ -131,8 +132,7 @@ void raymarch_update(double delta)
     double rot_multiplier = delta * 0.5;
     double mov_multiplier = delta * pow(distance, 2) * 0.1;
 
-    if (InputManager::GetKeyDown(KEY_LSHIFT))
-    {
+    if (InputManager::GetKeyDown(KEY_LSHIFT)) {
         rot_multiplier *= 4;
         mov_multiplier *= 4;
     }
@@ -153,7 +153,7 @@ void raymarch_update(double delta)
     if (InputManager::GetKeyDown(KEY_S))
         cam_pos -= cam_rot * Vector3::forward * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_Q))
-        cam_pos -= cam_rot * Vector3::up* mov_multiplier;
+        cam_pos -= cam_rot * Vector3::up * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_E))
         cam_pos += cam_rot * Vector3::up * mov_multiplier;
     if (InputManager::GetKeyDown(KEY_A))
@@ -164,6 +164,6 @@ void raymarch_update(double delta)
 
 void raymarch_init()
 {
-    //cam_pos = Vector3(0, 0, -3);
+    // cam_pos = Vector3(0, 0, -3);
     light_dir = -Vector3(0, 0, 1).Normalized();
 }

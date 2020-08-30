@@ -3,6 +3,6 @@
 
 class A3D : public Model3D
 {
-public:
-	A3D(char* buffer);
+  public:
+    A3D(char *buffer);
 };

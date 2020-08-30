@@ -1,7 +1,7 @@
 #pragma once
+#include <Process/thread.h>
 #include <siginfo.h>
 #include <sync.h>
-#include <Process/thread.h>
 #include <wait.h>
 
 #define DISPATCHER_THREADS 256
@@ -40,14 +40,13 @@ struct DISPATCHER_ENTRY
     }
 };
 
-namespace Dispatcher
-{
-    void Start();
-    void Dispatch(const DISPATCHER_CONTEXT &context);
-    DISPATCHER_ENTRY *CurrentEntry();
-    THREAD *CurrentThread();
-    PROCESS *CurrentProcess();
-    void HandleSignal(PROCESS *process);
-    int Waitpid(pid_t pid, int *status, int options);
-    DISPATCHER_ENTRY *GetEntryFor(THREAD *thread);
+namespace Dispatcher {
+void Start();
+void Dispatch(const DISPATCHER_CONTEXT &context);
+DISPATCHER_ENTRY *CurrentEntry();
+THREAD *CurrentThread();
+PROCESS *CurrentProcess();
+void HandleSignal(PROCESS *process);
+int Waitpid(pid_t pid, int *status, int options);
+DISPATCHER_ENTRY *GetEntryFor(THREAD *thread);
 } // namespace Dispatcher

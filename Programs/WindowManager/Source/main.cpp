@@ -1,8 +1,8 @@
-#include <AndyOS.h>
 #include "manager.h"
+#include <AndyOS.h>
 
 int main()
 {
-	WindowManager::Start();
-	return 0;
+    WindowManager::Start();
+    return 0;
 }

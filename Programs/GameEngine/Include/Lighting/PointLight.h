@@ -3,14 +3,14 @@
 
 class PointLight : public LightSource
 {
-public:
-	PointLight();
+  public:
+    PointLight();
 
-	virtual float GetIntensityAtPoint(Vector3 point);
-	virtual Vector3 GetDirectionVector(Vector3 point);
-	virtual Color GetColor();
+    virtual float GetIntensityAtPoint(Vector3 point);
+    virtual Vector3 GetDirectionVector(Vector3 point);
+    virtual Color GetColor();
 
-	float intensity;
-	float maxDist;
-	Color color;
+    float intensity;
+    float maxDist;
+    Color color;
 };

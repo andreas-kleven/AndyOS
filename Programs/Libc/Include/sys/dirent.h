@@ -2,13 +2,13 @@
 #include <sys/types.h>
 
 #define DT_UNKNOWN 0
-#define DT_FIFO 1
-#define DT_CHR 2
-#define DT_DIR 4
-#define DT_BLK 6
-#define DT_REG 8
-#define DT_LNK 10
-#define DT_SOCK 12
+#define DT_FIFO    1
+#define DT_CHR     2
+#define DT_DIR     4
+#define DT_BLK     6
+#define DT_REG     8
+#define DT_LNK     10
+#define DT_SOCK    12
 
 #define MAXNAMLEN 255 /* sizeof(struct dirent.d_name)-1 */
 
@@ -31,7 +31,7 @@ typedef struct
     int dd_size;  /* amount of data in buffer */
 } DIR;
 
-//int getdents(unsigned int fd, struct dirent *dirp, unsigned int count);
+// int getdents(unsigned int fd, struct dirent *dirp, unsigned int count);
 int getdents(int fd, void *dp, int count);
 
 #define __dirfd(dir) ((dir)->dd_fd)
@@ -40,8 +40,7 @@ int getdents(int fd, void *dp, int count);
 
 DIR *opendir(const char *);
 struct dirent *readdir(DIR *);
-int readdir_r(DIR *__restrict, struct dirent *__restrict,
-              struct dirent **__restrict);
+int readdir_r(DIR *__restrict, struct dirent *__restrict, struct dirent **__restrict);
 void rewinddir(DIR *);
 int closedir(DIR *);
 
@@ -53,9 +52,7 @@ DIR *_opendir(const char *);
 long telldir(DIR *);
 void seekdir(DIR *, off_t loc);
 
-int scandir(const char *__dir,
-            struct dirent ***__namelist,
-            int (*select)(const struct dirent *),
+int scandir(const char *__dir, struct dirent ***__namelist, int (*select)(const struct dirent *),
             int (*compar)(const struct dirent **, const struct dirent **));
 
 int alphasort(const struct dirent **__a, const struct dirent **__b);

@@ -2,5 +2,5 @@
 
 NetInterface::NetInterface(PciDevice *pci_dev)
 {
-	pci_dev = pci_dev;
+    pci_dev = pci_dev;
 }

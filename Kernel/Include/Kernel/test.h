@@ -1,6 +1,5 @@
 #pragma once
 
-namespace Test
-{
-	void Start();
+namespace Test {
+void Start();
 };

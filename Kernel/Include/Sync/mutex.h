@@ -1,15 +1,15 @@
 #pragma once
-#include <queue.h>
 #include <Process/thread.h>
+#include <queue.h>
 
 class Mutex
 {
-private:
+  private:
     Queue<THREAD *> waiting;
     THREAD *thread;
     int aquire_count;
 
-public:
+  public:
     Mutex();
 
     void Aquire();

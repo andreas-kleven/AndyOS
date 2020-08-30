@@ -27,23 +27,23 @@ typedef uint32 mode_t;
 typedef uint32 useconds_t;
 typedef unsigned long sigset_t;
 
-#define NULL 0
+#define NULL           0
 #define DIV_CEIL(a, b) (((a) == 0) ? 0 : (1 + (((a)-1) / (b))))
 
-#define STATUS_FAILED 0
+#define STATUS_FAILED  0
 #define STATUS_SUCCESS 1
 
-#define LOW_16(x) (uint16)(x & 0xFFFF)
+#define LOW_16(x)  (uint16)(x & 0xFFFF)
 #define HIGH_16(x) (uint16)((x << 16) & 0xFFFF)
 
 #define DT_UNKNOWN 0
-#define DT_FIFO 1
-#define DT_CHR 2
-#define DT_DIR 4
-#define DT_BLK 6
-#define DT_REG 8
-#define DT_LNK 10
-#define DT_SOCK 12
+#define DT_FIFO    1
+#define DT_CHR     2
+#define DT_DIR     4
+#define DT_BLK     6
+#define DT_REG     8
+#define DT_LNK     10
+#define DT_SOCK    12
 
 struct dirent
 {

@@ -1,10 +1,9 @@
-#include <Arch/timer.h>
 #include <Arch/pit.h>
+#include <Arch/timer.h>
 
-namespace Timer::Arch
+namespace Timer::Arch {
+uint64 Ticks()
 {
-    uint64 Ticks()
-    {
-        return (uint64)PIT::ticks * 1000;
-    }
+    return (uint64)PIT::ticks * 1000;
 }
+} // namespace Timer::Arch

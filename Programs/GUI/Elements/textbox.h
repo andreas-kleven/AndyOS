@@ -1,19 +1,18 @@
 #pragma once
-#include <string>
 #include "element.h"
+#include <string>
 
-namespace gui
+namespace gui {
+class TextBox : public Element
 {
-	class TextBox : public Element
-	{
-	public:
-		std::string text;
+  public:
+    std::string text;
 
-		TextBox();
+    TextBox();
 
-		virtual void Paint();
+    virtual void Paint();
 
-        virtual void Focus();
-        virtual void KeyPress(KEY_PACKET packet);
-	};
-}
+    virtual void Focus();
+    virtual void KeyPress(KEY_PACKET packet);
+};
+} // namespace gui

@@ -1,16 +1,16 @@
 #pragma once
-#include <types.h>
 #include <Net/address.h>
 #include <circbuf.h>
+#include <types.h>
 
 #define SOCKET_BUFFER_SIZE 16384
-#define SOCKET_ADDR_SIZE 256
+#define SOCKET_ADDR_SIZE   256
 
 class TcpSession;
 
 class Socket
 {
-public:
+  public:
     int id;
     int domain;
     int type;
@@ -44,7 +44,8 @@ public:
     int Recvmsg(msghdr *msg, int flags);
     int Send(const void *buf, size_t len, int flags);
     int Sendmsg(const msghdr *msg, int flags);
-    int Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen);
+    int Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_addr,
+               socklen_t addrlen);
     int Shutdown(int how);
 
     void HandleData(const void *data, int length);

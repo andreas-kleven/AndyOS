@@ -4,11 +4,11 @@
 
 class Filetable
 {
-private:
+  private:
     int reserved;
     List<FILE *> files;
 
-public:
+  public:
     Filetable(int reserved = 3);
     int Add(FILE *file, int lowest_fd = 0);
     int Remove(int fd);

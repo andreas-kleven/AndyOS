@@ -1,6 +1,6 @@
 #include <Process/filetable.h>
-#include <math.h>
 #include <debug.h>
+#include <math.h>
 
 Filetable::Filetable(int reserved)
 {
@@ -12,10 +12,8 @@ Filetable::Filetable(int reserved)
 
 int Filetable::Add(FILE *file, int lowest_fd)
 {
-    if (file)
-    {
-        for (int i = max(reserved, lowest_fd); i < files.Count(); i++)
-        {
+    if (file) {
+        for (int i = max(reserved, lowest_fd); i < files.Count(); i++) {
             if (files[i] == 0)
                 return Set(i, file);
         }
@@ -60,8 +58,7 @@ int Filetable::Set(int fd, FILE *file)
     while (fd >= files.Count()) // TODO
         Add(0);
 
-    if (files[fd] != file)
-    {
+    if (files[fd] != file) {
         if (files[fd])
             files[fd]->dentry->refs -= 1;
         if (file)
@@ -76,8 +73,7 @@ Filetable *Filetable::Clone()
 {
     Filetable *clone = new Filetable(0);
 
-    for (int i = 0; i < files.Count(); i++)
-    {
+    for (int i = 0; i < files.Count(); i++) {
         if (files[i])
             clone->Set(i, new FILE(*files[i]));
         else

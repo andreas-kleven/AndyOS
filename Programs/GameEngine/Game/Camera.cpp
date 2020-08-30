@@ -2,11 +2,11 @@
 
 Camera::Camera()
 {
-	speed = 1;
+    speed = 1;
 }
 
-void Camera::RotateEuler(const Vector3& rot)
+void Camera::RotateEuler(const Vector3 &rot)
 {
-	euler_angles += rot;
-	transform.rotation = Quaternion::FromEuler(euler_angles);
+    euler_angles += rot;
+    transform.rotation = Quaternion::FromEuler(euler_angles);
 }

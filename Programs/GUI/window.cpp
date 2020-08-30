@@ -1,195 +1,166 @@
+#include "window.h"
 #include "GUI/messages.h"
 #include "client.h"
-#include "window.h"
 
-namespace gui
+namespace gui {
+using namespace messages;
+
+static Element *active_element = 0;
+
+static int mouse_x = 0;
+static int mouse_y = 0;
+
+Window::Window(const char *title, int width, int height, Color background)
 {
-    using namespace messages;
+    this->background = background;
 
-    static Element* active_element = 0;
+    Client::Init();
 
-    static int mouse_x = 0;
-    static int mouse_y = 0;
+    CREATE_WINDOW_RESPONSE response;
+    if (Client::SendRequest(CREATE_WINDOW_REQUEST(title, width, height), response)) {
+        this->id = response.id;
+        this->width = response.width;
+        this->height = response.height;
+        this->bounds = Rect(0, 0, width, height);
+        this->gc = GC(response.width, response.height, response.framebuffer);
+        this->gc.Clear(background);
 
-    Window::Window(const char* title, int width, int height, Color background)
-    {
-        this->background = background;
-
-        Client::Init();
-
-        CREATE_WINDOW_RESPONSE response;
-        if (Client::SendRequest(CREATE_WINDOW_REQUEST(title, width, height), response))
-        {
-            this->id = response.id;
-            this->width = response.width;
-            this->height = response.height;
-            this->bounds = Rect(0, 0, width, height);
-            this->gc = GC(response.width, response.height, response.framebuffer);
-	        this->gc.Clear(background);
-
-            Client::AddWindow(this);
-        }
-    }
-
-    Window::~Window()
-    {
-
-    }
-
-    void Window::Paint()
-    {
-        for (int i = 0; i < elements.size(); i++)
-        {
-            PaintElement(elements[i]);
-        }
-
-        Client::SendRequest(PAINT_REQUEST(id, Rect(0, 0, width, height)));
-    }
-
-    void Window::PaintElement(GUIBase* elem)
-    {
-        for (int i = 0; i < elem->elements.size(); i++)
-        {
-            PaintElement(elem->elements[i]);
-        }
-
-        elem->Paint();
-    }
-
-    void Window::SetCapture(bool capture)
-    {
-        Client::SendRequest(SET_CAPTURE_REQUEST(this->id, capture));
-    }
-
-    void Window::HandleMessage(MESSAGE& message)
-    {
-        REQUEST_TYPE type = *(REQUEST_TYPE*)message.data;
-
-        if (type == REQUEST_TYPE_KEY_INPUT)
-        {
-            KEY_INPUT_MESSAGE* input = (KEY_INPUT_MESSAGE*)message.data;
-            InputManager::HandleKey(input->code, input->pressed);
-
-            if (input->code == KEY_LBUTTON || input->code == KEY_RBUTTON || input->code == KEY_MBUTTON)
-            {
-                Element* elem = GetElementAt(mouse_x, mouse_y, this);
-
-                if (input->pressed)
-                {                   
-                    if (active_element)
-                        active_element->isActive = false;
-
-                    if (elem)
-                        elem->isActive = true;
-
-                    active_element = elem;
-
-                    if (elem)
-                    {
-                        elem->Focus();
-                        elem->MouseDown();
-                    }
-                }
-                else
-                {
-                    if (elem)
-                        elem->MouseUp();
-                }
-            }
-            else
-            {
-                KEY_PACKET packet = InputManager::GetPacket();
-                GUIBase* receiver = active_element;
-
-                if (!active_element)
-                    receiver = this;
-
-                if (input->pressed)
-                {
-                    if (receiver)
-                    {
-                        receiver->KeyDown(packet);
-                        receiver->KeyPress(packet);
-                    }
-                }
-                else
-                {
-                    if (receiver)
-                    {
-                        receiver->KeyUp(packet);
-                    }
-                }
-            }
-        }
-        else if (type == REQUEST_TYPE_MOUSE_INPUT)
-        {
-            MOUSE_INPUT_MESSAGE* input = (MOUSE_INPUT_MESSAGE*)message.data;
-
-            mouse_x = input->x;
-            mouse_y = input->y;
-
-            InputManager::HandleMouse(input->dx, input->dy);
-            HoverElement(this, input->x, input->y);
-        }
-        else if (type == REQUEST_TYPE_ACTION)
-        {
-            WINDOW_ACTION_MESSAGE* msg = (WINDOW_ACTION_MESSAGE*)message.data;
-            
-            if (msg->action == WINDOW_ACTION_CLOSE)
-            {
-                OnClose();
-                isClosed = true;
-            }
-        }
-        else if (type == REQUEST_TYPE_RESIZE)
-        {
-            RESIZE_MESSAGE* msg = (RESIZE_MESSAGE*)message.data;
-            this->width = msg->width;
-            this->height = msg->height;
-            this->gc.Resize(msg->width, msg->height);
-	        this->gc.Clear(background);
-
-            OnResize();
-        }
-
-		Paint();
-    }
-
-    void Window::HoverElement(GUIBase* elem, int x, int y)
-    {
-        for (int i = 0; i < elem->elements.size(); i++)
-        {
-            Element* child = (Element*)elem->elements[i];
-            bool isInside = child->bounds.Contains(x, y);
-
-            if (isInside != child->isHovering)
-            {
-                HoverElement(child, x, y);
-            }
-        }
-
-        if (elem != this)
-        {
-            elem->isHovering = ((Element*)elem)->bounds.Contains(x, y);;
-        }
-    }
-
-    Element* Window::GetElementAt(int x, int y, GUIBase* parent)
-    {
-        if (!parent->bounds.Contains(x, y))
-            return 0;
-
-        for (int i = 0; i < parent->elements.size(); i++)
-        {
-            Element* child = (Element*)parent->elements[i];
-            bool isInside = child->bounds.Contains(x, y);
-
-            if (isInside)
-            {
-                return child;
-            }
-        }
-
-        return 0;
+        Client::AddWindow(this);
     }
 }
+
+Window::~Window()
+{}
+
+void Window::Paint()
+{
+    for (int i = 0; i < elements.size(); i++) {
+        PaintElement(elements[i]);
+    }
+
+    Client::SendRequest(PAINT_REQUEST(id, Rect(0, 0, width, height)));
+}
+
+void Window::PaintElement(GUIBase *elem)
+{
+    for (int i = 0; i < elem->elements.size(); i++) {
+        PaintElement(elem->elements[i]);
+    }
+
+    elem->Paint();
+}
+
+void Window::SetCapture(bool capture)
+{
+    Client::SendRequest(SET_CAPTURE_REQUEST(this->id, capture));
+}
+
+void Window::HandleMessage(MESSAGE &message)
+{
+    REQUEST_TYPE type = *(REQUEST_TYPE *)message.data;
+
+    if (type == REQUEST_TYPE_KEY_INPUT) {
+        KEY_INPUT_MESSAGE *input = (KEY_INPUT_MESSAGE *)message.data;
+        InputManager::HandleKey(input->code, input->pressed);
+
+        if (input->code == KEY_LBUTTON || input->code == KEY_RBUTTON ||
+            input->code == KEY_MBUTTON) {
+            Element *elem = GetElementAt(mouse_x, mouse_y, this);
+
+            if (input->pressed) {
+                if (active_element)
+                    active_element->isActive = false;
+
+                if (elem)
+                    elem->isActive = true;
+
+                active_element = elem;
+
+                if (elem) {
+                    elem->Focus();
+                    elem->MouseDown();
+                }
+            } else {
+                if (elem)
+                    elem->MouseUp();
+            }
+        } else {
+            KEY_PACKET packet = InputManager::GetPacket();
+            GUIBase *receiver = active_element;
+
+            if (!active_element)
+                receiver = this;
+
+            if (input->pressed) {
+                if (receiver) {
+                    receiver->KeyDown(packet);
+                    receiver->KeyPress(packet);
+                }
+            } else {
+                if (receiver) {
+                    receiver->KeyUp(packet);
+                }
+            }
+        }
+    } else if (type == REQUEST_TYPE_MOUSE_INPUT) {
+        MOUSE_INPUT_MESSAGE *input = (MOUSE_INPUT_MESSAGE *)message.data;
+
+        mouse_x = input->x;
+        mouse_y = input->y;
+
+        InputManager::HandleMouse(input->dx, input->dy);
+        HoverElement(this, input->x, input->y);
+    } else if (type == REQUEST_TYPE_ACTION) {
+        WINDOW_ACTION_MESSAGE *msg = (WINDOW_ACTION_MESSAGE *)message.data;
+
+        if (msg->action == WINDOW_ACTION_CLOSE) {
+            OnClose();
+            isClosed = true;
+        }
+    } else if (type == REQUEST_TYPE_RESIZE) {
+        RESIZE_MESSAGE *msg = (RESIZE_MESSAGE *)message.data;
+        this->width = msg->width;
+        this->height = msg->height;
+        this->gc.Resize(msg->width, msg->height);
+        this->gc.Clear(background);
+
+        OnResize();
+    }
+
+    Paint();
+}
+
+void Window::HoverElement(GUIBase *elem, int x, int y)
+{
+    for (int i = 0; i < elem->elements.size(); i++) {
+        Element *child = (Element *)elem->elements[i];
+        bool isInside = child->bounds.Contains(x, y);
+
+        if (isInside != child->isHovering) {
+            HoverElement(child, x, y);
+        }
+    }
+
+    if (elem != this) {
+        elem->isHovering = ((Element *)elem)->bounds.Contains(x, y);
+        ;
+    }
+}
+
+Element *Window::GetElementAt(int x, int y, GUIBase *parent)
+{
+    if (!parent->bounds.Contains(x, y))
+        return 0;
+
+    for (int i = 0; i < parent->elements.size(); i++) {
+        Element *child = (Element *)parent->elements[i];
+        bool isInside = child->bounds.Contains(x, y);
+
+        if (isInside) {
+            return child;
+        }
+    }
+
+    return 0;
+}
+} // namespace gui

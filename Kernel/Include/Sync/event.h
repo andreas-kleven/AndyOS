@@ -5,12 +5,12 @@ struct THREAD;
 
 class Event
 {
-private:
+  private:
     Queue<THREAD *> waiting;
     bool set;
     bool auto_reset;
 
-public:
+  public:
     Event(bool set = false, bool auto_reset = false);
 
     bool Wait(int timeout = 0, bool interruptible = false);

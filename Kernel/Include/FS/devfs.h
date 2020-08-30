@@ -4,11 +4,8 @@
 
 class DevFS : public FileSystem
 {
-public:
-    DevFS()
-    {
-        name = "devfs";
-    }
+  public:
+    DevFS() { name = "devfs"; }
 
     int Mount(BlockDriver *driver);
     int Open(FILE *file);
@@ -18,6 +15,6 @@ public:
     int Seek(FILE *file, long offset, int origin);
     int GetChildren(DENTRY *parent, const char *find_name);
 
-private:
-    Driver* GetDriver(FILE *file);
+  private:
+    Driver *GetDriver(FILE *file);
 };

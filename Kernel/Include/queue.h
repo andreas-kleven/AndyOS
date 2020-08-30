@@ -1,10 +1,9 @@
 #pragma once
 #include <panic.h>
 
-template <class T>
-struct Queue_Node
+template <class T> struct Queue_Node
 {
-public:
+  public:
     T value;
     Queue_Node<T> *next;
     Queue_Node<T> *prev;
@@ -13,24 +12,21 @@ public:
     Queue_Node<T>(T value, Queue_Node<T> *next);
 };
 
-template <class T>
-inline Queue_Node<T>::Queue_Node(T value)
+template <class T> inline Queue_Node<T>::Queue_Node(T value)
 {
     this->value = value;
     this->next = this;
 }
 
-template <class T>
-inline Queue_Node<T>::Queue_Node(T value, Queue_Node<T> *next)
+template <class T> inline Queue_Node<T>::Queue_Node(T value, Queue_Node<T> *next)
 {
     this->value = value;
     this->next = next;
 }
 
-template <class T>
-class Queue
+template <class T> class Queue
 {
-public:
+  public:
     Queue<T>()
     {
         count = 0;
@@ -38,21 +34,15 @@ public:
         last = 0;
     }
 
-    ~Queue<T>()
-    {
-        Clear();
-    }
+    ~Queue<T>() { Clear(); }
 
     void Enqueue(T value)
     {
-        if (count == 0)
-        {
+        if (count == 0) {
             root = new Queue_Node<T>(value);
             last = root;
             count = 1;
-        }
-        else
-        {
+        } else {
             last->next = new Queue_Node<T>(value, root);
             last = last->next;
             count++;
@@ -66,15 +56,12 @@ public:
 
         T val = root->value;
 
-        if (count == 1)
-        {
+        if (count == 1) {
             delete root;
             root = 0;
             last = 0;
             count = 0;
-        }
-        else
-        {
+        } else {
             Queue_Node<T> *node = root;
             root = node->next;
 
@@ -91,8 +78,7 @@ public:
             return;
 
         Queue_Node<T> *node = root;
-        while (count--)
-        {
+        while (count--) {
             Queue_Node<T> *next = node->next;
             delete node;
             node = next;
@@ -102,10 +88,7 @@ public:
         last = 0;
     }
 
-    int Count()
-    {
-        return count;
-    }
+    int Count() { return count; }
 
     T &operator[](int index)
     {
@@ -116,7 +99,7 @@ public:
         return node->value;
     }
 
-private:
+  private:
     int count;
     Queue_Node<T> *root;
     Queue_Node<T> *last;

@@ -3,12 +3,12 @@
 
 class Camera : public GameObject
 {
-	Vector3 euler_angles;
+    Vector3 euler_angles;
 
-public:
-	float speed;
+  public:
+    float speed;
 
-	Camera();
+    Camera();
 
-	void RotateEuler(const Vector3& rot);
+    void RotateEuler(const Vector3 &rot);
 };

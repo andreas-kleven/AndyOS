@@ -1,190 +1,176 @@
-#include <memory.h>
-#include <hal.h>
-#include <string.h>
-#include <debug.h>
 #include <Process/scheduler.h>
+#include <debug.h>
+#include <hal.h>
+#include <memory.h>
+#include <string.h>
 
-namespace PMem
+namespace PMem {
+size_t mem_size;
+uint32 *mem_map;
+
+size_t num_blocks;
+size_t num_free;
+
+inline uint8 GetBit(size_t bit)
 {
-	size_t mem_size;
-	uint32 *mem_map;
+    return (mem_map[bit / 32] >> (bit % 32)) & 1;
+}
 
-	size_t num_blocks;
-	size_t num_free;
+inline void SetBit(size_t bit)
+{
+    if (GetBit(bit)) {
+        debug_print("PMem SetBit error\n");
+        sys_halt();
+    }
 
-	inline uint8 GetBit(size_t bit)
-	{
-		return (mem_map[bit / 32] >> (bit % 32)) & 1;
-	}
+    mem_map[bit / 32] |= (1 << (bit % 32));
+    num_free--;
+}
 
-	inline void SetBit(size_t bit)
-	{
-		if (GetBit(bit))
-		{
-			debug_print("PMem SetBit error\n");
-			sys_halt();
-		}
+inline void UnsetBit(size_t bit)
+{
+    if (!GetBit(bit)) {
+        debug_print("PMem UnsetBit error\n");
+        sys_halt();
+    }
 
-		mem_map[bit / 32] |= (1 << (bit % 32));
-		num_free--;
-	}
+    mem_map[bit / 32] &= ~(1 << (bit % 32));
+    num_free++;
+}
 
-	inline void UnsetBit(size_t bit)
-	{
-		if (!GetBit(bit))
-		{
-			debug_print("PMem UnsetBit error\n");
-			sys_halt();
-		}
+size_t FirstFree()
+{
+    Scheduler::Disable();
 
-		mem_map[bit / 32] &= ~(1 << (bit % 32));
-		num_free++;
-	}
+    for (size_t i = 1; i < num_blocks; i++) {
+        if (!GetBit(i)) {
+            Scheduler::Enable();
+            return i;
+        }
+    }
 
-	size_t FirstFree()
-	{
-		Scheduler::Disable();
+    Scheduler::Enable();
+    debug_print("Out of memory\n");
+    return 0;
+}
 
-		for (size_t i = 1; i < num_blocks; i++)
-		{
-			if (!GetBit(i))
-			{
-				Scheduler::Enable();
-				return i;
-			}
-		}
+size_t FirstFreeNum(size_t size)
+{
+    if (size == 0)
+        return 0;
 
-		Scheduler::Enable();
-		debug_print("Out of memory\n");
-		return 0;
-	}
+    if (size == 1)
+        return FirstFree();
 
-	size_t FirstFreeNum(size_t size)
-	{
-		if (size == 0)
-			return 0;
+    Scheduler::Disable();
 
-		if (size == 1)
-			return FirstFree();
+    size_t i, j;
 
-		Scheduler::Disable();
+    for (i = 1; i <= num_blocks - size; i++) {
+        if (!GetBit(i)) {
+            bool found = true;
 
-		size_t i, j;
+            for (j = 1; j < size; j++) {
+                if (GetBit(i + j))
+                    found = false;
+            }
 
-		for (i = 1; i <= num_blocks - size; i++)
-		{
-			if (!GetBit(i))
-			{
-				bool found = true;
+            if (found) {
+                Scheduler::Enable();
+                return i;
+            } else {
+                i += j;
+            }
+        }
+    }
 
-				for (j = 1; j < size; j++)
-				{
-					if (GetBit(i + j))
-						found = false;
-				}
+    debug_print("Out of memory %p %p\n\n", num_blocks, num_free);
+    Scheduler::Enable();
+    return 0;
+}
 
-				if (found)
-				{
-					Scheduler::Enable();
-					return i;
-				}
-				else
-				{
-					i += j;
-				}
-			}
-		}
+size_t NumBlocks()
+{
+    return num_blocks;
+}
 
-		debug_print("Out of memory %p %p\n\n", num_blocks, num_free);
-		Scheduler::Enable();
-		return 0;
-	}
+size_t NumFree()
+{
+    return num_free;
+}
 
-	size_t NumBlocks()
-	{
-		return num_blocks;
-	}
+size_t NumUsed()
+{
+    return num_blocks - num_free;
+}
 
-	size_t NumFree()
-	{
-		return num_free;
-	}
+void InitRegion(void *addr, size_t size)
+{
+    int align = (size_t)addr / BLOCK_SIZE;
+    int num = size / BLOCK_SIZE;
 
-	size_t NumUsed()
-	{
-		return num_blocks - num_free;
-	}
+    if (align == 0) {
+        align = 1;
+        num -= 1;
+    }
 
-	void InitRegion(void *addr, size_t size)
-	{
-		int align = (size_t)addr / BLOCK_SIZE;
-		int num = size / BLOCK_SIZE;
+    for (int i = 0; i < num; i++)
+        UnsetBit(align++);
+}
 
-		if (align == 0)
-		{
-			align = 1;
-			num -= 1;
-		}
+void DeInitRegion(void *addr, size_t size)
+{
+    int align = (size_t)addr / BLOCK_SIZE;
+    int blocks = size / BLOCK_SIZE;
 
-		for (int i = 0; i < num; i++)
-			UnsetBit(align++);
-	}
+    for (int i = 0; i < blocks; i++)
+        SetBit(align++);
+}
 
-	void DeInitRegion(void *addr, size_t size)
-	{
-		int align = (size_t)addr / BLOCK_SIZE;
-		int blocks = size / BLOCK_SIZE;
+void *AllocBlocks(size_t size)
+{
+    Scheduler::Disable();
+    size_t frame = FirstFreeNum(size);
 
-		for (int i = 0; i < blocks; i++)
-			SetBit(align++);
-	}
+    if (frame == 0) {
+        Scheduler::Enable();
+        return 0;
+    }
 
-	void *AllocBlocks(size_t size)
-	{
-		Scheduler::Disable();
-		size_t frame = FirstFreeNum(size);
+    for (size_t i = 0; i < size; i++)
+        SetBit(frame + i);
 
-		if (frame == 0)
-		{
-			Scheduler::Enable();
-			return 0;
-		}
+    Scheduler::Enable();
+    return (void *)(frame * BLOCK_SIZE);
+}
 
-		for (size_t i = 0; i < size; i++)
-			SetBit(frame + i);
+void FreeBlocks(void *addr, size_t size)
+{
+    int frame = (size_t)addr / BLOCK_SIZE;
 
-		Scheduler::Enable();
-		return (void *)(frame * BLOCK_SIZE);
-	}
+    if (frame == 0 || size == 0)
+        return;
 
-	void FreeBlocks(void *addr, size_t size)
-	{
-		int frame = (size_t)addr / BLOCK_SIZE;
+    Scheduler::Disable();
 
-		if (frame == 0 || size == 0)
-			return;
+    for (size_t i = 0; i < size; i++) {
+        if (GetBit(frame + i))
+            UnsetBit(frame + i);
+    }
 
-		Scheduler::Disable();
+    Scheduler::Enable();
+}
 
-		for (size_t i = 0; i < size; i++)
-		{
-			if (GetBit(frame + i))
-				UnsetBit(frame + i);
-		}
+STATUS Init(size_t mem_end, void *map)
+{
+    mem_size = mem_end;
+    mem_map = (uint32 *)map;
 
-		Scheduler::Enable();
-	}
+    num_blocks = BYTES_TO_BLOCKS(mem_size);
+    num_free = num_blocks;
 
-	STATUS Init(size_t mem_end, void *map)
-	{
-		mem_size = mem_end;
-		mem_map = (uint32 *)map;
-
-		num_blocks = BYTES_TO_BLOCKS(mem_size);
-		num_free = num_blocks;
-
-		memset(mem_map, 0, MEMORY_MAP_SIZE);
-		DeInitRegion(0, mem_size);
-		return STATUS_SUCCESS;
-	}
+    memset(mem_map, 0, MEMORY_MAP_SIZE);
+    DeInitRegion(0, mem_size);
+    return STATUS_SUCCESS;
+}
 } // namespace PMem

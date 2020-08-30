@@ -1,16 +1,13 @@
 #pragma once
 #include <FS/filesystem.h>
-#include <list.h>
-#include <driver.h>
 #include <Net/socket.h>
+#include <driver.h>
+#include <list.h>
 
 class SockFS : public FileSystem
 {
-public:
-    SockFS()
-    {
-        name = "sockfs";
-    }
+  public:
+    SockFS() { name = "sockfs"; }
 
     int Mount(BlockDriver *driver);
     int Open(FILE *file);
@@ -26,12 +23,14 @@ public:
     int Connect(FILE *file, const sockaddr *addr, socklen_t addrlen);
     int Listen(FILE *file, int backlog);
     int Recv(FILE *file, void *buf, size_t len, int flags);
-    int Recvfrom(FILE *file, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen);
+    int Recvfrom(FILE *file, void *buf, size_t len, int flags, sockaddr *src_addr,
+                 socklen_t addrlen);
     int Send(FILE *file, const void *buf, size_t len, int flags);
-    int Sendto(FILE *file, const void *buf, size_t len, int flags, const sockaddr *dest_addr, socklen_t addrlen);
+    int Sendto(FILE *file, const void *buf, size_t len, int flags, const sockaddr *dest_addr,
+               socklen_t addrlen);
     int Shutdown(FILE *file, int how);
 
-private:
+  private:
     Socket *GetSocket(FILE *file);
     DENTRY *CreateSocketDentry(int socket_id);
 };

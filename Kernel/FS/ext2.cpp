@@ -1,6 +1,6 @@
 #include <FS/ext2.h>
-#include <string.h>
 #include <debug.h>
+#include <string.h>
 
 int Ext2FS::Mount(BlockDriver *driver)
 {
@@ -9,14 +9,12 @@ int Ext2FS::Mount(BlockDriver *driver)
 
     driver->Read(EXT_SUPERBLOCK_OFFSET, superblock, sizeof(EXT2_SUPERBLOCK));
 
-    if (superblock->signature != EXT2_SIGNATURE)
-    {
+    if (superblock->signature != EXT2_SIGNATURE) {
         debug_print("Invalid ext2 signature %p\n", superblock->signature);
         return -1;
     }
 
-    if (superblock->version_major < 1)
-    {
+    if (superblock->version_major < 1) {
         superblock->first_free = 11;
         superblock->inode_size = 128;
     }
@@ -25,14 +23,14 @@ int Ext2FS::Mount(BlockDriver *driver)
     block_groups = DIV_CEIL(superblock->blocks, superblock->group_blocks);
     int block_groups2 = DIV_CEIL(superblock->inodes, superblock->group_inodes);
 
-    if (superblock->state != EXT_STATE_CLEAN)
-    {
+    if (superblock->state != EXT_STATE_CLEAN) {
         debug_print("Ext2 state error %d\n", superblock->state);
         return -1;
     }
 
     group_table = new EXT_BLOCK_GROUP[block_groups];
-    driver->Read(EXT_GROUP_DESCRIPTOR_TABLE_OFFSET, group_table, block_groups * sizeof(EXT_BLOCK_GROUP));
+    driver->Read(EXT_GROUP_DESCRIPTOR_TABLE_OFFSET, group_table,
+                 block_groups * sizeof(EXT_BLOCK_GROUP));
 
     root_dentry->inode = ReadInode(EXT_ROOT_INODE, root_dentry);
     return 0;
@@ -51,8 +49,7 @@ int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
 
     char name_buf[256];
 
-    while (true)
-    {
+    while (true) {
         EXT_DIRENT *dirent = (EXT_DIRENT *)ptr;
 
         if (dirent->ino == 0)
@@ -60,15 +57,13 @@ int Ext2FS::GetChildren(DENTRY *parent, const char *find_name)
 
         ptr += dirent->size;
 
-        if (!find_name || memcmp(find_name, dirent->name, dirent->name_len) == 0)
-        {
+        if (!find_name || memcmp(find_name, dirent->name, dirent->name_len) == 0) {
             memcpy(name_buf, dirent->name, dirent->name_len);
             name_buf[dirent->name_len] = 0;
 
             DENTRY *dentry = VFS::AllocDentry(parent, name_buf);
 
-            if (!dentry->inode)
-            {
+            if (!dentry->inode) {
                 ReadInode(dirent->ino, dentry);
                 VFS::AddDentry(parent, dentry);
             }

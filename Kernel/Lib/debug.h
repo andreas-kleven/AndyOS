@@ -1,6 +1,6 @@
 #pragma once
-#include <types.h>
 #include <Process/thread.h>
+#include <types.h>
 
 STATUS debug_init(bool serial, bool screen);
 void debug_pos(int x, int y);

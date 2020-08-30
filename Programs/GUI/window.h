@@ -1,41 +1,40 @@
 #pragma once
+#include "Elements/element.h"
+#include "guibase.h"
 #include <AndyOS.h>
 #include <andyos/drawing.h>
 #include <andyos/msg.h>
-#include "Elements/element.h"
 #include <sys/types.h>
-#include "guibase.h"
 
-namespace gui
+namespace gui {
+class Window : public GUIBase
 {
-    class Window : public GUIBase
-    {
-    public:
-        Color background;
+  public:
+    Color background;
 
-        int id;
-        int width;
-        int height;
+    int id;
+    int width;
+    int height;
 
-        Window(const char* title, int width = 400, int height = 300, Color background = Color::White);
-        ~Window();
+    Window(const char *title, int width = 400, int height = 300, Color background = Color::White);
+    ~Window();
 
-        void Paint();
+    void Paint();
 
-        void SetCapture(bool capture);
+    void SetCapture(bool capture);
 
-        void HandleMessage(MESSAGE& msg);
+    void HandleMessage(MESSAGE &msg);
 
-    protected:
-        virtual void OnClose() { }
-        virtual void OnResize() { }
+  protected:
+    virtual void OnClose() {}
+    virtual void OnResize() {}
 
-    private:
-        bool isClosed = false;
+  private:
+    bool isClosed = false;
 
-        void PaintElement(GUIBase* elem);
-        void HoverElement(GUIBase* elem, int x, int y);
+    void PaintElement(GUIBase *elem);
+    void HoverElement(GUIBase *elem, int x, int y);
 
-        Element* GetElementAt(int x, int y, GUIBase* parent);
-    };
-}
+    Element *GetElementAt(int x, int y, GUIBase *parent);
+};
+} // namespace gui

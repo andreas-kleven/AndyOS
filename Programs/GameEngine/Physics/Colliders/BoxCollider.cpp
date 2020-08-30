@@ -1,8 +1,8 @@
 #include "Components/BoxCollider.h"
-#include "GameObject.h"
 #include "GL.h"
+#include "GameObject.h"
 
 BoxCollider::BoxCollider()
 {
-	bIsBox = 1;
+    bIsBox = 1;
 }

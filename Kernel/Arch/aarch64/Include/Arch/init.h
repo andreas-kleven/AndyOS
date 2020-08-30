@@ -1,6 +1,5 @@
 #pragma once
 
-namespace Kernel::Arch
-{
-    void Init();
+namespace Kernel::Arch {
+void Init();
 }

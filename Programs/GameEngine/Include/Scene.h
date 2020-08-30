@@ -1,12 +1,12 @@
 #pragma once
-#include <AndyOS.h>
 #include "Camera.h"
 #include "Lighting.h"
+#include <AndyOS.h>
 
 class Scene
 {
-public:
-	std::string name;
+  public:
+    std::string name;
 
-	Scene();
+    Scene();
 };

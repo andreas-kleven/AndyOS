@@ -3,11 +3,11 @@
 
 class TtyBuffer
 {
-private:
+  private:
     int buf_size;
     int position;
 
-public:
+  public:
     char *buffer;
     int written;
 

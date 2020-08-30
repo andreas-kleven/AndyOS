@@ -1,15 +1,15 @@
 #pragma once
 
-#define AI_PASSIVE 0x00000001     /* get address to use bind() */
-#define AI_CANONNAME 0x00000002   /* fill ai_canonname */
+#define AI_PASSIVE     0x00000001 /* get address to use bind() */
+#define AI_CANONNAME   0x00000002 /* fill ai_canonname */
 #define AI_NUMERICHOST 0x00000004 /* prevent name resolution */
 #define AI_NUMERICSERV 0x00000008 /* don't use name resolution. */
 
-#define NI_NOFQDN 0x00000001
+#define NI_NOFQDN      0x00000001
 #define NI_NUMERICHOST 0x00000002
-#define NI_NAMEREQD 0x00000004
+#define NI_NAMEREQD    0x00000004
 #define NI_NUMERICSERV 0x00000008
-#define NI_DGRAM 0x00000010
+#define NI_DGRAM       0x00000010
 #define NI_WITHSCOPEID 0x00000020
 
 struct hostent

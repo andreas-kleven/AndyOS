@@ -3,8 +3,8 @@
 
 class SphereCollider : public Collider
 {
-public:
-	float radius;
+  public:
+    float radius;
 
-	SphereCollider();
+    SphereCollider();
 };

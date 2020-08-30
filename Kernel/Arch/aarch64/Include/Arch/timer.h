@@ -1,10 +1,9 @@
 #pragma once
 #include <types.h>
 
-namespace Timer::Arch
+namespace Timer::Arch {
+uint64 Ticks()
 {
-    uint64 Ticks()
-    {
-        return 0;
-    }
+    return 0;
 }
+} // namespace Timer::Arch

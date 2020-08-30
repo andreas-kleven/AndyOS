@@ -1,10 +1,10 @@
 #include <FS/sockfs.h>
 #include <FS/vfs.h>
-#include <string.h>
-#include <libgen.h>
-#include <errno.h>
 #include <Net/socketmanager.h>
 #include <debug.h>
+#include <errno.h>
+#include <libgen.h>
+#include <string.h>
 
 int SockFS::Mount(BlockDriver *driver)
 {
@@ -24,7 +24,7 @@ int SockFS::Close(FILE *file)
     if (!socket)
         return -1;
 
-    //return socket->Shutdown();
+    // return socket->Shutdown();
     return -1;
 }
 
@@ -54,9 +54,8 @@ int SockFS::Create(int domain, int type, int protocol, DENTRY *&dentry)
 
     int ret = 0;
 
-    if ((ret = socket->Init(domain, type, protocol)))
-    {
-        //TODO: SocketManager::RemoveSocket(socket);
+    if ((ret = socket->Init(domain, type, protocol))) {
+        // TODO: SocketManager::RemoveSocket(socket);
         return ret;
     }
 
@@ -93,8 +92,7 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
     const char *filename = 0;
     const char *parentname = 0;
 
-    if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0])
-    {
+    if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0]) {
         char *copy = strdup(unix_addr->sun_path);
         filename = basename(copy);
         parentname = dirname(copy);
@@ -109,10 +107,8 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
     if ((ret = socket->Bind(addr, addrlen)))
         return ret;
 
-    if (addr->sa_family == AF_UNIX)
-    {
-        if (parent)
-        {
+    if (addr->sa_family == AF_UNIX) {
+        if (parent) {
             DENTRY *dentry = VFS::AllocDentry(parent, filename);
             dentry->inode = file->dentry->inode; // TODO: Symlink?
             VFS::AddDentry(parent, dentry);
@@ -152,7 +148,8 @@ int SockFS::Recv(FILE *file, void *buf, size_t len, int flags)
     return socket->Recv(buf, len, flags);
 }
 
-int SockFS::Recvfrom(FILE *file, void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
+int SockFS::Recvfrom(FILE *file, void *buf, size_t len, int flags, sockaddr *src_addr,
+                     socklen_t addrlen)
 {
     Socket *socket = GetSocket(file);
 
@@ -172,7 +169,8 @@ int SockFS::Send(FILE *file, const void *buf, size_t len, int flags)
     return socket->Send(buf, len, flags);
 }
 
-int SockFS::Sendto(FILE *file, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+int SockFS::Sendto(FILE *file, const void *buf, size_t len, int flags,
+                   const struct sockaddr *dest_addr, socklen_t addrlen)
 {
     Socket *socket = GetSocket(file);
 

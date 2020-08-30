@@ -2,9 +2,8 @@
 
 Collider::Collider()
 {
-	bIsSphere = 0;
-	bIsBox = 0;
+    bIsSphere = 0;
+    bIsBox = 0;
 
-	size = Vector3(1, 1, 1);
+    size = Vector3(1, 1, 1);
 }
-

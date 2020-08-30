@@ -1,9 +1,9 @@
 #pragma once
 
-#define M_PI	3.14159265359
-#define M_PI_2	M_PI / 2
-#define M_PI_4	M_PI / 4
-#define M_E		2.71828182845904523536
+#define M_PI   3.14159265359
+#define M_PI_2 M_PI / 2
+#define M_PI_4 M_PI / 4
+#define M_E    2.71828182845904523536
 
 #define RAND_MAX 32768
 
@@ -33,55 +33,47 @@ unsigned int rand();
 float frand();
 void srand(unsigned int seed);
 
-
-template <class T>
-inline T clamp(T val, T min, T max)
+template <class T> inline T clamp(T val, T min, T max)
 {
-	if (val < min)
-		return min;
+    if (val < min)
+        return min;
 
-	if (val > max)
-		return max;
+    if (val > max)
+        return max;
 
-	return val;
+    return val;
 }
 
-template <class T>
-inline T abs(T val)
+template <class T> inline T abs(T val)
 {
-	return (val > 0) ? val : -val;
+    return (val > 0) ? val : -val;
 }
 
-template <class T>
-inline T min(T a, T b)
+template <class T> inline T min(T a, T b)
 {
-	if (a < b)
-		return a;
-	return b;
+    if (a < b)
+        return a;
+    return b;
 }
 
-template <class T>
-inline T max(T a, T b)
+template <class T> inline T max(T a, T b)
 {
-	if (a > b)
-		return a;
-	return b;
+    if (a > b)
+        return a;
+    return b;
 }
 
-template <class T>
-inline T min(T a, T b, T c)
+template <class T> inline T min(T a, T b, T c)
 {
-	return a < b ? (a < c ? a : c) : (b < c ? b : c);
+    return a < b ? (a < c ? a : c) : (b < c ? b : c);
 }
 
-template <class T>
-inline T max(T a, T b, T c)
+template <class T> inline T max(T a, T b, T c)
 {
-	return a > b ? (a > c ? a : c) : (b > c ? b : c);
+    return a > b ? (a > c ? a : c) : (b > c ? b : c);
 }
 
-template <class T>
-inline T copysign(T a, T b)
+template <class T> inline T copysign(T a, T b)
 {
-	return (a < 0) == (b < 0) ? a : -a;
+    return (a < 0) == (b < 0) ? a : -a;
 }

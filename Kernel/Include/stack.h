@@ -1,10 +1,9 @@
 #pragma once
 #include <panic.h>
 
-template <class T>
-struct Stack_Node
+template <class T> struct Stack_Node
 {
-public:
+  public:
     T value;
     Stack_Node<T> *next;
     Stack_Node<T> *prev;
@@ -13,24 +12,21 @@ public:
     Stack_Node<T>(T value, Stack_Node<T> *next);
 };
 
-template <class T>
-inline Stack_Node<T>::Stack_Node(T value)
+template <class T> inline Stack_Node<T>::Stack_Node(T value)
 {
     this->value = value;
     this->next = this;
 }
 
-template <class T>
-inline Stack_Node<T>::Stack_Node(T value, Stack_Node<T> *next)
+template <class T> inline Stack_Node<T>::Stack_Node(T value, Stack_Node<T> *next)
 {
     this->value = value;
     this->next = next;
 }
 
-template <class T>
-class Stack
+template <class T> class Stack
 {
-public:
+  public:
     Stack<T>()
     {
         count = 0;
@@ -38,21 +34,15 @@ public:
         last = 0;
     }
 
-    ~Stack<T>()
-    {
-        Clear();
-    }
+    ~Stack<T>() { Clear(); }
 
     void Push(T value)
     {
-        if (count == 0)
-        {
+        if (count == 0) {
             root = new Stack_Node<T>(value);
             last = root;
             count = 1;
-        }
-        else
-        {
+        } else {
             last->next = new Stack_Node<T>(value, 0);
             last = last->next;
             count++;
@@ -66,14 +56,11 @@ public:
 
         T val = last->value;
 
-        if (count == 1)
-        {
+        if (count == 1) {
             root = 0;
             last = 0;
             count = 0;
-        }
-        else
-        {
+        } else {
             Stack_Node<T> *node = last;
             last = NodeAt(count - 2);
 
@@ -90,8 +77,7 @@ public:
             return;
 
         Stack_Node<T> *node = root;
-        while (count--)
-        {
+        while (count--) {
             Stack_Node<T> *next = node->next;
             delete node;
             node = next;
@@ -101,10 +87,7 @@ public:
         last = 0;
     }
 
-    int Count()
-    {
-        return count;
-    }
+    int Count() { return count; }
 
     T &operator[](int index)
     {
@@ -115,7 +98,7 @@ public:
         return node->value;
     }
 
-private:
+  private:
     int count;
     Stack_Node<T> *root;
     Stack_Node<T> *last;

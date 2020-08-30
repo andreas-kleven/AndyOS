@@ -1,8 +1,8 @@
 #include <FS/pipefs.h>
 #include <FS/vfs.h>
-#include <string.h>
-#include <driver.h>
 #include <debug.h>
+#include <driver.h>
+#include <string.h>
 
 int PipeFS::Mount(BlockDriver *driver)
 {
@@ -22,8 +22,7 @@ int PipeFS::Close(FILE *file)
     if (!pipe)
         return -1;
 
-    if (file->dentry->refs == 1)
-    {
+    if (file->dentry->refs == 1) {
         debug_print("Closing pipe...\n");
         return pipe->Close(file);
     }

@@ -3,8 +3,7 @@
 
 class MySphere : public GameObject
 {
-public:
-	MySphere();
-	~MySphere();
+  public:
+    MySphere();
+    ~MySphere();
 };
-

@@ -2,6 +2,5 @@
 
 Scene::Scene()
 {
-	this->name = "Scene";
+    this->name = "Scene";
 }
-

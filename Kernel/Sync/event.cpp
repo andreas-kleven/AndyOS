@@ -1,6 +1,6 @@
-#include <sync.h>
 #include <Kernel/timer.h>
 #include <Process/scheduler.h>
+#include <sync.h>
 
 Event::Event(bool set, bool auto_reset)
 {
@@ -14,14 +14,12 @@ bool Event::Wait(int timeout, bool interruptible)
 
     THREAD *thread = Scheduler::CurrentThread();
 
-    if (interruptible && thread->interrupted)
-    {
+    if (interruptible && thread->interrupted) {
         Scheduler::Enable();
         return false;
     }
 
-    if (!set)
-    {
+    if (!set) {
         waiting.Enqueue(thread);
 
         thread->event = this;
@@ -36,20 +34,16 @@ bool Event::Wait(int timeout, bool interruptible)
         Scheduler::Enable();
         Scheduler::Switch();
 
-        if (thread->event_until)
-        {
+        if (thread->event_until) {
             thread->event_until = 0;
             return false; // timed out
         }
 
-        if (thread->event_interruptible)
-        {
+        if (thread->event_interruptible) {
             thread->event_interruptible = false;
             return false;
         }
-    }
-    else
-    {
+    } else {
         if (auto_reset)
             set = false;
 
@@ -71,12 +65,10 @@ void Event::Set()
     if (!auto_reset || waiting.Count() == 0)
         set = true;
 
-    while (waiting.Count() > 0)
-    {
+    while (waiting.Count() > 0) {
         THREAD *thread = waiting.Dequeue();
 
-        if (thread->event)
-        {
+        if (thread->event) {
             thread->event = 0;
             thread->event_until = 0;
             thread->event_interruptible = false;

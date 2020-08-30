@@ -1,16 +1,13 @@
 #include <Arch/task.h>
 
-namespace Task::Arch
+namespace Task::Arch {
+THREAD *CreateKernelThread(void (*entry)())
 {
-    THREAD* CreateKernelThread(void(*entry)())
-    {
-        return 0;
-    }
+    return 0;
+}
 
-	THREAD* CreateUserThread(void(*entry)(), void* stack)
-    {
+THREAD *CreateUserThread(void (*entry)(), void *stack)
+{
 
-    void Start(void(*entry)())
-    {
-    }
+    void Start(void (*entry)()) {}
 }

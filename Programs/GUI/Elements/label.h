@@ -1,16 +1,15 @@
 #pragma once
-#include <string>
 #include "element.h"
+#include <string>
 
-namespace gui
+namespace gui {
+class Label : public Element
 {
-	class Label : public Element
-	{
-	public:
-		std::string text;
+  public:
+    std::string text;
 
-		Label(const std::string& text);
+    Label(const std::string &text);
 
-		virtual void Paint();
-	};
-}
+    virtual void Paint();
+};
+} // namespace gui

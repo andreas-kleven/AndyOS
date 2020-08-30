@@ -1,17 +1,17 @@
-#include <stdio.h>
-#include <andyos/float.h>
-#include <andyos/math.h>
+#include "Raytracer.h"
 #include "GEngine.h"
 #include "GL.h"
-#include "Raytracer.h"
+#include <andyos/float.h>
+#include <andyos/math.h>
+#include <stdio.h>
 
 const int numPhotons = 10000;
-static Photon* photonMap;
-static Photon* causticsMap;
+static Photon *photonMap;
+static Photon *causticsMap;
 static int currentNumPhotons;
 static int currentNumCausticsPhotons;
 
-static Game* game;
+static Game *game;
 static GC gc;
 
 static Transform prevCamTransform;
@@ -21,537 +21,480 @@ static int resolution;
 
 Raytracer::Raytracer(GC _gc)
 {
-	game = GEngine::game;
-	gc = _gc;
+    game = GEngine::game;
+    gc = _gc;
 
-	photonMap = new Photon[numPhotons];
-	causticsMap = new Photon[numPhotons];
+    photonMap = new Photon[numPhotons];
+    causticsMap = new Photon[numPhotons];
 }
 
-void swap(float& a, float& b)
+void swap(float &a, float &b)
 {
-	float tmp = a;
-	a = b;
-	b = tmp;
+    float tmp = a;
+    a = b;
+    b = tmp;
 }
 
-Vector3 GetPos(Vertex* vert)
+Vector3 GetPos(Vertex *vert)
 {
-	return vert->tmpPos.ToVector3();
+    return vert->tmpPos.ToVector3();
 }
 
 Vector3 Reflect(Vector3 I, Vector3 N)
 {
-	return I - N * I.Dot(N) * 2;
+    return I - N * I.Dot(N) * 2;
 }
 
-Vector3 Refract(Vector3& I, Vector3& N, float &ior)
+Vector3 Refract(Vector3 &I, Vector3 &N, float &ior)
 {
-	float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
-	float etai = 1, etat = ior;
-	Vector3 n = N;
+    float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+    float etai = 1, etat = ior;
+    Vector3 n = N;
 
-	if (cosi < 0)
-	{
-		cosi = -cosi;
-	}
-	else
-	{
-		swap(etai, etat);
-		n = -N;
-	}
+    if (cosi < 0) {
+        cosi = -cosi;
+    } else {
+        swap(etai, etat);
+        n = -N;
+    }
 
-	float eta = etai / etat;
-	float k = 1 - eta * eta * (1 - cosi * cosi);
+    float eta = etai / etat;
+    float k = 1 - eta * eta * (1 - cosi * cosi);
 
-	if (k < 0)
-		return Vector3();
-	else
-		return I * eta + n * (eta * cosi - sqrt(k));
+    if (k < 0)
+        return Vector3();
+    else
+        return I * eta + n * (eta * cosi - sqrt(k));
 }
 
-float Fresnel(Vector3 &I, Vector3 &N, const float& ior)
+float Fresnel(Vector3 &I, Vector3 &N, const float &ior)
 {
-	float etai = 1;
-	float etat = ior;
+    float etai = 1;
+    float etat = ior;
 
-	float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
+    float cosi = clamp(-1.0f, 1.0f, I.Dot(N));
 
-	if (cosi > 0)
-		swap(etai, etat);
+    if (cosi > 0)
+        swap(etai, etat);
 
-	//Compute sini using Snell's law
-	float sint = etai / etat * sqrt(max(0.0f, 1 - cosi * cosi));
+    // Compute sini using Snell's law
+    float sint = etai / etat * sqrt(max(0.0f, 1 - cosi * cosi));
 
-	if (sint >= 1)
-	{
-		//Total internal reflection
-		return 1;
-	}
-	else
-	{
-		float cost = sqrt(max(0.f, 1 - sint * sint));
-		cosi = fabs(cosi);
-		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
-		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-		return (Rs * Rs + Rp * Rp) / 2;
-	}
+    if (sint >= 1) {
+        // Total internal reflection
+        return 1;
+    } else {
+        float cost = sqrt(max(0.f, 1 - sint * sint));
+        cosi = fabs(cosi);
+        float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+        float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+        return (Rs * Rs + Rp * Rp) / 2;
+    }
 }
 
-//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-bool RayTriangleIntersection(
-	Vector3 &rayOrigin, Vector3 &rayDir,
-	Vector3 &v0, Vector3 &v1, Vector3 &v2,
-	float &t,
-	float &u, float &v,
-	bool backfaces)
+// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+bool RayTriangleIntersection(Vector3 &rayOrigin, Vector3 &rayDir, Vector3 &v0, Vector3 &v1,
+                             Vector3 &v2, float &t, float &u, float &v, bool backfaces)
 {
-	const float EPSILON = 0.0001;
+    const float EPSILON = 0.0001;
 
-	Vector3 edge1, edge2, h, s, q;
-	float a, f;
+    Vector3 edge1, edge2, h, s, q;
+    float a, f;
 
-	edge1 = v1 - v0;
-	edge2 = v2 - v0;
+    edge1 = v1 - v0;
+    edge2 = v2 - v0;
 
-	//Backface culling
-	Vector3 N = edge1.Cross(edge2);
-	if (!backfaces && rayDir.Dot(N.Normalized()) > 0)
-		return false;
+    // Backface culling
+    Vector3 N = edge1.Cross(edge2);
+    if (!backfaces && rayDir.Dot(N.Normalized()) > 0)
+        return false;
 
-	h = rayDir.Cross(edge2);
-	a = edge1.Dot(h);
+    h = rayDir.Cross(edge2);
+    a = edge1.Dot(h);
 
-	if (a > -EPSILON && a < EPSILON)
-		return false;
+    if (a > -EPSILON && a < EPSILON)
+        return false;
 
-	f = 1 / a;
-	s = rayOrigin - v0;
-	u = f * (s.Dot(h));
-	if (u < 0.0 || u > 1.0)
-		return false;
+    f = 1 / a;
+    s = rayOrigin - v0;
+    u = f * (s.Dot(h));
+    if (u < 0.0 || u > 1.0)
+        return false;
 
-	q = s.Cross(edge1);
-	v = f * rayDir.Dot(q);
-	if (v < 0.0 || u + v > 1.0)
-		return false;
-	// At this stage we can compute t to find out where the intersection point is on the line.
-	t = f * edge2.Dot(q);
+    q = s.Cross(edge1);
+    v = f * rayDir.Dot(q);
+    if (v < 0.0 || u + v > 1.0)
+        return false;
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    t = f * edge2.Dot(q);
 
-	if (t > EPSILON) // ray intersection
-	{
-		return true;
-	}
-	else // This means that there is a line intersection but not a ray intersection.
-		return false;
+    if (t > EPSILON) // ray intersection
+    {
+        return true;
+    } else // This means that there is a line intersection but not a ray intersection.
+        return false;
 }
 
-bool TraceNode(
-	KDNode* node,
-	MeshComponent* mesh,
-	Vector3& rayOrigin, Vector3& rayDir,
-	float& distance,
-	Vector3& hit,
-	Triangle*& triangle,
-	float& u, float& v,
-	bool backfaces)
+bool TraceNode(KDNode *node, MeshComponent *mesh, Vector3 &rayOrigin, Vector3 &rayDir,
+               float &distance, Vector3 &hit, Triangle *&triangle, float &u, float &v,
+               bool backfaces)
 {
-	if (!node)
-		return false;
+    if (!node)
+        return false;
 
-	Transform trans = mesh->parent->GetWorldTransform();
+    Transform trans = mesh->parent->GetWorldTransform();
 
-	Matrix4 invT = Matrix4::CreateTranslation(-trans.position.ToVector4());
-	Matrix4 invR = (-trans.rotation).ToMatrix();
-	Matrix4 invS = Matrix4::CreateScale(Vector4(1 / trans.scale.x, 1 / trans.scale.y, 1 / trans.scale.z, 0));
+    Matrix4 invT = Matrix4::CreateTranslation(-trans.position.ToVector4());
+    Matrix4 invR = (-trans.rotation).ToMatrix();
+    Matrix4 invS =
+        Matrix4::CreateScale(Vector4(1 / trans.scale.x, 1 / trans.scale.y, 1 / trans.scale.z, 0));
 
-	//Matrix4 inverse = (T * R * S).Inverse();
-	Matrix4 invM = invS * invR * invT;
-	Vector4 _rayOrigin = invM * rayOrigin.ToVector4();
-	Vector4 _rayDir = (invM * rayDir.ToVector4(0)).Normalized();
+    // Matrix4 inverse = (T * R * S).Inverse();
+    Matrix4 invM = invS * invR * invT;
+    Vector4 _rayOrigin = invM * rayOrigin.ToVector4();
+    Vector4 _rayDir = (invM * rayDir.ToVector4(0)).Normalized();
 
-	float t;
-	if (!node->bounds.RayIntersection(_rayOrigin.ToVector3(), _rayDir.ToVector3(), t))
-		return false;
+    float t;
+    if (!node->bounds.RayIntersection(_rayOrigin.ToVector3(), _rayDir.ToVector3(), t))
+        return false;
 
-	if (node->left || node->right)
-	{
-		return TraceNode(node->left, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces)
-			|| TraceNode(node->right, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces);
-	}
-	else
-	{
-		bool hasHit = false;
+    if (node->left || node->right) {
+        return TraceNode(node->left, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v,
+                         backfaces) ||
+               TraceNode(node->right, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v,
+                         backfaces);
+    } else {
+        bool hasHit = false;
 
-		for (int i = 0; i < node->triangle_count; i++)
-		{
-			Triangle* tri = node->triangles[i];
-			Vector3 p0 = GetPos(tri->v0);
-			Vector3 p1 = GetPos(tri->v1);
-			Vector3 p2 = GetPos(tri->v2);
+        for (int i = 0; i < node->triangle_count; i++) {
+            Triangle *tri = node->triangles[i];
+            Vector3 p0 = GetPos(tri->v0);
+            Vector3 p1 = GetPos(tri->v1);
+            Vector3 p2 = GetPos(tri->v2);
 
-			float dist, _u, _v;
+            float dist, _u, _v;
 
-			if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, _u, _v, backfaces))
-			{
-				if (dist < distance)
-				{
-					distance = dist;
-					hit = rayOrigin + rayDir * dist;
-					triangle = tri;
-					u = _u;
-					v = _v;
+            if (RayTriangleIntersection(rayOrigin, rayDir, p0, p1, p2, dist, _u, _v, backfaces)) {
+                if (dist < distance) {
+                    distance = dist;
+                    hit = rayOrigin + rayDir * dist;
+                    triangle = tri;
+                    u = _u;
+                    v = _v;
 
-					hasHit = true;
-				}
-			}
-		}
+                    hasHit = true;
+                }
+            }
+        }
 
-		return hasHit;
-	}
+        return hasHit;
+    }
 }
 
-bool Trace(
-	Vector3& rayOrigin, Vector3& rayDir,
-	Vector3& hit,
-	MeshComponent*& hitMesh,
-	Triangle*& triangle,
-	float& u, float& v,
-	bool backfaces,
-	int maxRays)
+bool Trace(Vector3 &rayOrigin, Vector3 &rayDir, Vector3 &hit, MeshComponent *&hitMesh,
+           Triangle *&triangle, float &u, float &v, bool backfaces, int maxRays)
 {
-	hitMesh = 0;
+    hitMesh = 0;
 
-	float distance = FLT_MAX;
+    float distance = FLT_MAX;
 
-	for (int i = 0; i < game->objects.size(); i++)
-	{
-		GameObject* obj = game->objects[i];
+    for (int i = 0; i < game->objects.size(); i++) {
+        GameObject *obj = game->objects[i];
 
-		for (int j = 0; j < obj->meshComponents.size(); j++)
-		{
-			MeshComponent* mesh = obj->meshComponents[j];
-			Model3D* model = mesh->model;
+        for (int j = 0; j < obj->meshComponents.size(); j++) {
+            MeshComponent *mesh = obj->meshComponents[j];
+            Model3D *model = mesh->model;
 
-			if (!model)
-				continue;
+            if (!model)
+                continue;
 
-			if (TraceNode(mesh->bvh->root, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v, backfaces))
-			{
-				hitMesh = mesh;
-			}
-		}
-	}
+            if (TraceNode(mesh->bvh->root, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v,
+                          backfaces)) {
+                hitMesh = mesh;
+            }
+        }
+    }
 
-	return distance < FLT_MAX;
+    return distance < FLT_MAX;
 }
 
-bool TracePhoton(
-	Vector3& rayOrigin, Vector3& rayDir,
-	Photon& photon,
-	bool& caustics,
-	bool backfaces = false,
-	int maxRays = 5)
+bool TracePhoton(Vector3 &rayOrigin, Vector3 &rayDir, Photon &photon, bool &caustics,
+                 bool backfaces = false, int maxRays = 5)
 {
-	Vector3 hit;
-	MeshComponent* mesh;
-	Triangle* triangle;
-	float u, v;
+    Vector3 hit;
+    MeshComponent *mesh;
+    Triangle *triangle;
+    float u, v;
 
-	if (maxRays < 1)
-		return false;
+    if (maxRays < 1)
+        return false;
 
-	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, backfaces, maxRays))
-		return false;
+    if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, backfaces, maxRays))
+        return false;
 
-	Shader& shader = mesh->shader;
-	Vector3 N = triangle->WorldNormal(u, v);
+    Shader &shader = mesh->shader;
+    Vector3 N = triangle->WorldNormal(u, v);
 
-	float rnd = frand();
+    float rnd = frand();
 
-	if (shader.ior > 0)
-	{
-		caustics = true;
+    if (shader.ior > 0) {
+        caustics = true;
 
-		if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1 && shader.ior < FLT_MAX)
-		{
-			Vector3 R = Refract(rayDir, N, shader.ior);
-			return TracePhoton(hit, R, photon, caustics, true, maxRays - 1);
-		}
-		else
-		{
-			Vector3 R = Reflect(rayDir, N);
-			return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
-		}
-	}
+        if (rnd > 0.5 && Fresnel(rayDir, N, shader.ior) < 1 && shader.ior < FLT_MAX) {
+            Vector3 R = Refract(rayDir, N, shader.ior);
+            return TracePhoton(hit, R, photon, caustics, true, maxRays - 1);
+        } else {
+            Vector3 R = Reflect(rayDir, N);
+            return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
+        }
+    }
 
-	photon.surfaceNormal = N;
-	photon.color = triangle->ColorAt(u, v);
+    photon.surfaceNormal = N;
+    photon.color = triangle->ColorAt(u, v);
 
-	float Pa = 0.8;
-	float Pr = 0.2;
-	float Pt = 0.3;
+    float Pa = 0.8;
+    float Pr = 0.2;
+    float Pt = 0.3;
 
-	if (rnd < Pa || maxRays <= 1)
-	{
-		//Absorb
-		photon.position = hit;
-		photon.direction = rayDir;
-		return true;
-	}
-	else
-	{
-		float ru = frand();
-		float rv = frand();
-		float ru2 = ru * ru;
+    if (rnd < Pa || maxRays <= 1) {
+        // Absorb
+        photon.position = hit;
+        photon.direction = rayDir;
+        return true;
+    } else {
+        float ru = frand();
+        float rv = frand();
+        float ru2 = ru * ru;
 
-		float theta = M_PI * ru;
-		float phi = acos(2 * rv - 1);
+        float theta = M_PI * ru;
+        float phi = acos(2 * rv - 1);
 
-		Vector3 R;
-		R.x = sqrt(1 - ru2) * cos(theta);
-		R.y = sqrt(1 - ru2) * sin(theta);
-		R.z = ru;
+        Vector3 R;
+        R.x = sqrt(1 - ru2) * cos(theta);
+        R.y = sqrt(1 - ru2) * sin(theta);
+        R.z = ru;
 
-		return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
-	}
+        return TracePhoton(hit, R, photon, caustics, backfaces, maxRays - 1);
+    }
 }
 
-Color TraceColor(Vector3& rayOrigin, Vector3& rayDir, int maxRays = 5)
+Color TraceColor(Vector3 &rayOrigin, Vector3 &rayDir, int maxRays = 5)
 {
-	if (maxRays < 1)
-		return Color(0.5, 0.5, 0.5);
+    if (maxRays < 1)
+        return Color(0.5, 0.5, 0.5);
 
-	Vector3 hit;
-	MeshComponent* mesh;
-	Triangle* triangle;
-	float u, v;
+    Vector3 hit;
+    MeshComponent *mesh;
+    Triangle *triangle;
+    float u, v;
 
-	if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
-		return Color(0.5, 0.5, 0.5);
+    if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
+        return Color(0.5, 0.5, 0.5);
 
-	Vector3 N = triangle->WorldNormal(u, v);
-	Shader& shader = mesh->shader;
+    Vector3 N = triangle->WorldNormal(u, v);
+    Shader &shader = mesh->shader;
 
-	if (shader.ior > 0)
-	{
-		bool outside = rayDir.Dot(N) < 0;
-		Vector3 bias = N * 0.01f;
+    if (shader.ior > 0) {
+        bool outside = rayDir.Dot(N) < 0;
+        Vector3 bias = N * 0.01f;
 
-		if (outside)
-			bias = -bias;
+        if (outside)
+            bias = -bias;
 
-		Color refraction;
-		Color reflection;
+        Color refraction;
+        Color reflection;
 
-		float kr = Fresnel(rayDir, N, shader.ior);
+        float kr = Fresnel(rayDir, N, shader.ior);
 
-		if (kr < 1)
-		{
-			Vector3 refractionOrigin = hit + bias;
-			Vector3 refractionRay = Refract(rayDir, N, shader.ior);
-			refraction = TraceColor(refractionOrigin, refractionRay, maxRays - 1);
-		}
+        if (kr < 1) {
+            Vector3 refractionOrigin = hit + bias;
+            Vector3 refractionRay = Refract(rayDir, N, shader.ior);
+            refraction = TraceColor(refractionOrigin, refractionRay, maxRays - 1);
+        }
 
-		Vector3 reflectionOrigin = hit - bias;
-		Vector3 reflectionRay = Reflect(rayDir, N);
-		reflection = TraceColor(reflectionOrigin, reflectionRay, maxRays - 1);
+        Vector3 reflectionOrigin = hit - bias;
+        Vector3 reflectionRay = Reflect(rayDir, N);
+        reflection = TraceColor(reflectionOrigin, reflectionRay, maxRays - 1);
 
-		return reflection * kr + refraction * (1 - kr);
-	}
+        return reflection * kr + refraction * (1 - kr);
+    }
 
-	Color color;
+    Color color;
 
-	for (int i = 0; i < currentNumPhotons; i++)
-	{
-		Photon& p = photonMap[i];
-		float sqDist = (p.position - hit).MagnitudeSquared();
+    for (int i = 0; i < currentNumPhotons; i++) {
+        Photon &p = photonMap[i];
+        float sqDist = (p.position - hit).MagnitudeSquared();
 
-		if (sqDist < 4)
-		{
-			float weight = max(0.0f, N.Dot(-p.direction));
-			weight *= (2 - sqrt(sqDist)) / 400;
+        if (sqDist < 4) {
+            float weight = max(0.0f, N.Dot(-p.direction));
+            weight *= (2 - sqrt(sqDist)) / 400;
 
-			color.r += p.color.r * weight;
-			color.g += p.color.g * weight;
-			color.b += p.color.b * weight;
-		}
-	}
+            color.r += p.color.r * weight;
+            color.g += p.color.g * weight;
+            color.b += p.color.b * weight;
+        }
+    }
 
-	/*for (int i = 0; i < currentNumCausticsPhotons; i++)
-	{
-		Photon& p = causticsMap[i];
-		float sqDist = (p.position - hit).MagnitudeSquared();
+    /*for (int i = 0; i < currentNumCausticsPhotons; i++)
+    {
+            Photon& p = causticsMap[i];
+            float sqDist = (p.position - hit).MagnitudeSquared();
 
-		if (sqDist < 4)
-		{
-			float weight = max(0.0f, N.Dot(-p.direction));
-			weight *= (2 - sqrt(sqDist)) / 400;
+            if (sqDist < 4)
+            {
+                    float weight = max(0.0f, N.Dot(-p.direction));
+                    weight *= (2 - sqrt(sqDist)) / 400;
 
-			color.r += p.color.r * weight;
-			color.g += p.color.g * weight;
-			color.b += p.color.b * weight;
-		}
-	}*/
+                    color.r += p.color.r * weight;
+                    color.g += p.color.g * weight;
+                    color.b += p.color.b * weight;
+            }
+    }*/
 
-	return color * resolution + Color(0.05, 0.05, 0.05);
+    return color * resolution + Color(0.05, 0.05, 0.05);
 }
 
 void EmitPhotons()
 {
-	LightSource* lightSource = game->lights[0];
-	Vector3 rayOrigin = lightSource->GetWorldPosition();
+    LightSource *lightSource = game->lights[0];
+    Vector3 rayOrigin = lightSource->GetWorldPosition();
 
-	srand(0);
+    srand(0);
 
-	int i = 0;
-	int j = 0;
+    int i = 0;
+    int j = 0;
 
-	while (i < currentNumPhotons || j < currentNumCausticsPhotons)
-	{
-		float sin_theta = sqrt(frand());
-		float cos_theta = sqrt(1 - sin_theta * sin_theta);
+    while (i < currentNumPhotons || j < currentNumCausticsPhotons) {
+        float sin_theta = sqrt(frand());
+        float cos_theta = sqrt(1 - sin_theta * sin_theta);
 
-		float psi = frand() * 2 * M_PI;
+        float psi = frand() * 2 * M_PI;
 
-		Vector3 rayDir;
-		rayDir.x = sin_theta * cos(psi);
-		rayDir.y = sin_theta * sin(psi);
-		rayDir.z = cos_theta;
+        Vector3 rayDir;
+        rayDir.x = sin_theta * cos(psi);
+        rayDir.y = sin_theta * sin(psi);
+        rayDir.z = cos_theta;
 
-		Photon photon;
-		photon.color = lightSource->GetColor();
-		bool caustics = 0;
+        Photon photon;
+        photon.color = lightSource->GetColor();
+        bool caustics = 0;
 
-		if (TracePhoton(rayOrigin, rayDir, photon, caustics))
-		{
-			//if (caustics)
-			//{
-			//	if (j < currentNumPhotons)
-			//	{
-			//		causticsMap[j++] = photon;
-			//	}
-			//}
-			//else
-			{
-				if (i < currentNumPhotons)
-				{
-					photonMap[i++] = photon;
-				}
-				else if (j == 0)
-				{
-					currentNumCausticsPhotons = 0;
-				}
-			}
-		}
-	}
+        if (TracePhoton(rayOrigin, rayDir, photon, caustics)) {
+            // if (caustics)
+            //{
+            //	if (j < currentNumPhotons)
+            //	{
+            //		causticsMap[j++] = photon;
+            //	}
+            //}
+            // else
+            {
+                if (i < currentNumPhotons) {
+                    photonMap[i++] = photon;
+                } else if (j == 0) {
+                    currentNumCausticsPhotons = 0;
+                }
+            }
+        }
+    }
 }
 
 void CalculateVertices()
 {
-	for (int i = 0; i < game->objects.size(); i++)
-	{
-		GameObject* obj = game->objects[i];
-		Transform trans = obj->GetWorldTransform();
+    for (int i = 0; i < game->objects.size(); i++) {
+        GameObject *obj = game->objects[i];
+        Transform trans = obj->GetWorldTransform();
 
-		Matrix4 T = Matrix4::CreateTranslation(trans.position.ToVector4());
-		Matrix4 R = trans.rotation.ToMatrix();
-		Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
-		Matrix4 M = T * R * S;
+        Matrix4 T = Matrix4::CreateTranslation(trans.position.ToVector4());
+        Matrix4 R = trans.rotation.ToMatrix();
+        Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
+        Matrix4 M = T * R * S;
 
-		for (int j = 0; j < obj->meshComponents.size(); j++)
-		{
-			MeshComponent* mesh = obj->meshComponents[j];
+        for (int j = 0; j < obj->meshComponents.size(); j++) {
+            MeshComponent *mesh = obj->meshComponents[j];
 
-			if (mesh->model)
-			{
-				for (int k = 0; k < mesh->model->vertices.size(); k++)
-				{
-					Vertex* vert = &mesh->model->vertex_buffer[k];
+            if (mesh->model) {
+                for (int k = 0; k < mesh->model->vertices.size(); k++) {
+                    Vertex *vert = &mesh->model->vertex_buffer[k];
 
-					vert->worldNormal = R * vert->normal;
-					vert->MulMatrix(M);
-				}
-			}
-		}
-	}
+                    vert->worldNormal = R * vert->normal;
+                    vert->MulMatrix(M);
+                }
+            }
+        }
+    }
 }
 
 void Raytracer::Render()
 {
-	Camera* cam = game->GetActiveCamera();
+    Camera *cam = game->GetActiveCamera();
 
-	int curMouseX = Input::GetAxis(AXIS_X);
-	int curMouseY = Input::GetAxis(AXIS_Y);
+    int curMouseX = Input::GetAxis(AXIS_X);
+    int curMouseY = Input::GetAxis(AXIS_Y);
 
-	//Resolution
-	const int maxResolution = 16;
-	Transform camTransform = cam->GetWorldTransform();
+    // Resolution
+    const int maxResolution = 16;
+    Transform camTransform = cam->GetWorldTransform();
 
-	if (camTransform.position == prevCamTransform.position
-		&& camTransform.rotation == prevCamTransform.rotation
-		&& curMouseX == mouseX && curMouseY == mouseY)
-	{
-		if (resolution > 1)
-			resolution /= 2;
-	}
-	else
-	{
-		resolution = maxResolution;
-	}
+    if (camTransform.position == prevCamTransform.position &&
+        camTransform.rotation == prevCamTransform.rotation && curMouseX == mouseX &&
+        curMouseY == mouseY) {
+        if (resolution > 1)
+            resolution /= 2;
+    } else {
+        resolution = maxResolution;
+    }
 
-	currentNumPhotons = numPhotons / resolution;
-	currentNumCausticsPhotons = 0;
+    currentNumPhotons = numPhotons / resolution;
+    currentNumCausticsPhotons = 0;
 
-	prevCamTransform = camTransform;
-	mouseX = curMouseX;
-	mouseY = curMouseY;
+    prevCamTransform = camTransform;
+    mouseX = curMouseX;
+    mouseY = curMouseY;
 
-	//Perspective
-	const float fov = 53;
-	const float imageAspectRatio = gc.width / (float)gc.height;
-	const float scale = tan(fov * M_PI / 180.0f / 2.0f);
+    // Perspective
+    const float fov = 53;
+    const float imageAspectRatio = gc.width / (float)gc.height;
+    const float scale = tan(fov * M_PI / 180.0f / 2.0f);
 
-	//Calculate global vertex positions
-	CalculateVertices();
+    // Calculate global vertex positions
+    CalculateVertices();
 
-	int emitTime = get_ticks();
-	EmitPhotons();
+    int emitTime = get_ticks();
+    EmitPhotons();
 
-	int renderTime = get_ticks();
+    int renderTime = get_ticks();
 
-	for (int y = 0; y < gc.height; y += resolution)
-	{
-		for (int x = 0; x < gc.width; x += resolution)
-		{
-			//Stop on input
-			if (gui::InputManager::GetPacket().pressed != KEY_INVALID || Input::GetAxis(AXIS_X) != Input::GetAxis(AXIS_Y) || curMouseY != mouseY)
-			{
-				resolution = maxResolution;
-				return;
-			}
+    for (int y = 0; y < gc.height; y += resolution) {
+        for (int x = 0; x < gc.width; x += resolution) {
+            // Stop on input
+            if (gui::InputManager::GetPacket().pressed != KEY_INVALID ||
+                Input::GetAxis(AXIS_X) != Input::GetAxis(AXIS_Y) || curMouseY != mouseY) {
+                resolution = maxResolution;
+                return;
+            }
 
-			float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
-			float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
+            float Px = (2 * ((x + 0.5) / gc.width) - 1) * scale * imageAspectRatio;
+            float Py = (1 - 2 * ((y + 0.5) / gc.height)) * scale;
 
-			Vector3 rayOrigin = cam->GetWorldPosition();
-			Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
+            Vector3 rayOrigin = cam->GetWorldPosition();
+            Vector3 rayDir = cam->GetWorldRotation() * Vector3(Px, Py, 1).Normalized();
 
-			Color color = TraceColor(rayOrigin, rayDir);
-			gc.FillRect(x, y, resolution, resolution, color);
-		}
-	}
+            Color color = TraceColor(rayOrigin, rayDir);
+            gc.FillRect(x, y, resolution, resolution, color);
+        }
+    }
 
-	int finishTime = get_ticks();
+    int finishTime = get_ticks();
 
-	//Debug::y = gc.height / 16 - 4;
-	printf("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime, renderTime - emitTime, finishTime - renderTime, resolution);
-	return;
+    // Debug::y = gc.height / 16 - 4;
+    printf("Total: %i\nEmit: %i\nRender: %i\nResolution: %i\n", finishTime - emitTime,
+           renderTime - emitTime, finishTime - renderTime, resolution);
+    return;
 
-	for (int i = 0; i < currentNumPhotons; i++)
-	{
-		Photon& photon = photonMap[i];
-		Vector3 p = GEngine::WorldToScreen(photon.position);
-		gc.SetPixel(p.x, p.y, photon.color);
-	}
+    for (int i = 0; i < currentNumPhotons; i++) {
+        Photon &photon = photonMap[i];
+        Vector3 p = GEngine::WorldToScreen(photon.position);
+        gc.SetPixel(p.x, p.y, photon.color);
+    }
 }

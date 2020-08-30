@@ -1,13 +1,13 @@
 #pragma once
 #include <Drivers/tty.h>
-#include <types.h>
-#include <driver.h>
 #include <circbuf.h>
+#include <driver.h>
 #include <sync.h>
+#include <types.h>
 
 class Vt100Driver : public TtyBaseDriver
 {
-private:
+  private:
     int width;
     int height;
     int posx;
@@ -18,7 +18,7 @@ private:
     bool active;
     Mutex draw_mutex;
 
-public:
+  public:
     Vt100Driver();
     ~Vt100Driver();
 
@@ -29,7 +29,7 @@ public:
     void Activate();
     void Deactivate();
 
-private:
+  private:
     void ClearScreen();
     void RedrawScreen();
     int AddText(const char *text, size_t size);

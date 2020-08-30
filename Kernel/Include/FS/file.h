@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
 #include <list.h>
+#include <stdio.h>
 #include <sync.h>
 
 class Driver;
@@ -39,8 +39,5 @@ struct FILE
 
     FILE() {}
 
-    FILE(DENTRY *dentry)
-    {
-        this->dentry = dentry;
-    }
+    FILE(DENTRY *dentry) { this->dentry = dentry; }
 };

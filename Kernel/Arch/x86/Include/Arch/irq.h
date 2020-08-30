@@ -1,6 +1,5 @@
 #pragma once
 
-namespace IRQ::Arch
-{
-    bool Install(int num, void(*handler)());
+namespace IRQ::Arch {
+bool Install(int num, void (*handler)());
 }

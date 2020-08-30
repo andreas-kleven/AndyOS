@@ -1,9 +1,8 @@
-#include <ttybuf.h>
 #include <string.h>
+#include <ttybuf.h>
 
 TtyBuffer::TtyBuffer()
-{
-}
+{}
 
 TtyBuffer::TtyBuffer(int buf_size)
 {
@@ -19,22 +18,17 @@ TtyBuffer::~TtyBuffer()
 
 bool TtyBuffer::Write(const char *buf, size_t size)
 {
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         char c = buf[i];
 
-        if (c == '\b')
-        {
-            if (position > 0)
-            {
+        if (c == '\b') {
+            if (position > 0) {
                 int len = written - position;
                 memcpy(&buffer[position - 1], &buffer[position], len);
                 position -= 1;
                 written -= 1;
             }
-        }
-        else
-        {
+        } else {
             if (position >= buf_size - 1)
                 return false;
 

@@ -5,17 +5,17 @@ class GameObject;
 
 class Component
 {
-public:
-	GameObject* parent;
+  public:
+    GameObject *parent;
 
-	Component();
+    Component();
 
-	virtual void Start() { }
-	virtual void Update(float delta) { }
+    virtual void Start() {}
+    virtual void Update(float delta) {}
 
-	void SetName(const std::string& name);
-	std::string GetName();
+    void SetName(const std::string &name);
+    std::string GetName();
 
-private:
-	std::string name;
+  private:
+    std::string name;
 };

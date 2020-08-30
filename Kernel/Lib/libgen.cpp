@@ -7,8 +7,7 @@ const char *basename(char *path)
     if (path == NULL || *path == '\0')
         return ".";
     p = path + strlen(path) - 1;
-    while (*p == '/')
-    {
+    while (*p == '/') {
         if (p == path)
             return path;
         *p-- = '\0';
@@ -24,8 +23,7 @@ const char *dirname(char *path)
     if (path == NULL || *path == '\0')
         return ".";
     p = path + strlen(path) - 1;
-    while (*p == '/')
-    {
+    while (*p == '/') {
         if (p == path)
             return path;
         *p-- = '\0';
@@ -50,17 +48,12 @@ int pathcanon(const char *srcpath, char *dstpath, size_t sz)
     (void)strcpy(wtmp, srcpath);
 
     tok = strtok_r(wtmp, "/", &sav);
-    while (tok != NULL)
-    {
-        if (strcmp(tok, "..") == 0)
-        {
-            if (ti > 0)
-            {
+    while (tok != NULL) {
+        if (strcmp(tok, "..") == 0) {
+            if (ti > 0) {
                 ti--;
             }
-        }
-        else if (strcmp(tok, ".") != 0)
-        {
+        } else if (strcmp(tok, ".") != 0) {
             tokv[ti++] = tok;
         }
         tok = strtok_r(NULL, "/", &sav);
@@ -74,12 +67,10 @@ int pathcanon(const char *srcpath, char *dstpath, size_t sz)
      * go. Running out of space leaves dstpath unusable: written
      * to and *not* cleanly NUL-terminated.
      */
-    for (i = 0; i < ti; i++)
-    {
+    for (i = 0; i < ti; i++) {
         size_t l = strlen(tokv[i]);
 
-        if (i > 0 || !relpath)
-        {
+        if (i > 0 || !relpath) {
             if (++chk >= sz)
                 return -1;
             *s++ = '/';
@@ -93,8 +84,7 @@ int pathcanon(const char *srcpath, char *dstpath, size_t sz)
         s += l;
     }
 
-    if (s == dstpath)
-    {
+    if (s == dstpath) {
         if (++chk >= sz)
             return -1;
         *s++ = relpath ? '.' : '/';

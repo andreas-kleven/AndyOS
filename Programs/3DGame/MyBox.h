@@ -3,6 +3,6 @@
 
 class MyBox : public GameObject
 {
-public:
-	MyBox();
+  public:
+    MyBox();
 };

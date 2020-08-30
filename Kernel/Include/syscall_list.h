@@ -1,14 +1,16 @@
 #pragma once
 
-#define SYSCALL_IRQ 0x80
+#define SYSCALL_IRQ  0x80
 #define MAX_SYSCALLS 1024
 
-#define syscall0(id)                                syscall6(id, 0, 0, 0, 0, 0, 0)
-#define syscall1(id, arg0)                          syscall6(id, (int)arg0, 0, 0, 0, 0, 0)
-#define syscall2(id, arg0, arg1)                    syscall6(id, (int)arg0, (int)arg1, 0, 0, 0, 0)
-#define syscall3(id, arg0, arg1, arg2)              syscall6(id, (int)arg0, (int)arg1, (int)arg2, 0, 0, 0)
-#define syscall4(id, arg0, arg1, arg2, arg3)        syscall6(id, (int)arg0, (int)arg1, (int)arg2, (int)arg3, 0, 0)
-#define syscall5(id, arg0, arg1, arg2, arg3, arg4)  syscall6(id, (int)arg0, (int)arg1, (int)arg2, (int)arg3, (int)arg4, 0)
+#define syscall0(id)                   syscall6(id, 0, 0, 0, 0, 0, 0)
+#define syscall1(id, arg0)             syscall6(id, (int)arg0, 0, 0, 0, 0, 0)
+#define syscall2(id, arg0, arg1)       syscall6(id, (int)arg0, (int)arg1, 0, 0, 0, 0)
+#define syscall3(id, arg0, arg1, arg2) syscall6(id, (int)arg0, (int)arg1, (int)arg2, 0, 0, 0)
+#define syscall4(id, arg0, arg1, arg2, arg3) \
+    syscall6(id, (int)arg0, (int)arg1, (int)arg2, (int)arg3, 0, 0)
+#define syscall5(id, arg0, arg1, arg2, arg3, arg4) \
+    syscall6(id, (int)arg0, (int)arg1, (int)arg2, (int)arg3, (int)arg4, 0)
 
 inline int syscall6(int id, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
@@ -20,7 +22,8 @@ inline int syscall6(int id, int arg0, int arg1, int arg2, int arg3, int arg4, in
                  "pop %%ebp\n"
                  "mov %%eax, %0"
                  : "=m"(ret)
-                 : "N"(SYSCALL_IRQ), "g"(arg5), "a"(id), "b"(arg0), "c"(arg1), "d"(arg2), "S"(arg3), "D"(arg4));
+                 : "N"(SYSCALL_IRQ), "g"(arg5), "a"(id), "b"(arg0), "c"(arg1), "d"(arg2), "S"(arg3),
+                   "D"(arg4));
 
     return ret;
 }

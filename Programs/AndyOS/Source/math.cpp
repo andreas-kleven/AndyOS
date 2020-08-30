@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <andyos/math.h>
+#include <stdlib.h>
 
 float frand()
 {
