@@ -5,12 +5,11 @@
 #include <memory.h>
 #include <string.h>
 #include <sync.h>
-
-uint8 __attribute__((aligned(16))) fpu_state[512];
+#include <debug.h>
 
 namespace Task::Arch
 {
-	const int stack_size = 0x1000;
+	const int stack_size = PAGE_SIZE * 4;
 
 	THREAD *ResetKernelThread(THREAD *thread, void (*entry)())
 	{
@@ -21,14 +20,10 @@ namespace Task::Arch
 
 		thread->stack = (size_t)thread - sizeof(THREAD) - sizeof(REGS) - 1;
 		thread->state = THREAD_STATE_INITIALIZED;
-		thread->fpu_state = new uint8[512];
 		thread->signal_event = Event(true);
 		thread->syscall_event = Event(true);
 
-		asm volatile("fxsave (%0)"
-					 : "=m"(fpu_state));
-
-		memcpy(thread->fpu_state, fpu_state, 512);
+		asm volatile("fxsave (%0)" ::"r"(thread->fpu_state));
 
 		REGS *regs = (REGS *)thread->stack;
 		regs->ebp = 0;
@@ -54,7 +49,7 @@ namespace Task::Arch
 
 	THREAD *CreateKernelThread(void (*entry)())
 	{
-		THREAD *thread = (THREAD *)(new char[stack_size] + stack_size - sizeof(THREAD) - 1);
+		THREAD *thread = (THREAD *)(new char[stack_size] + stack_size - sizeof(THREAD));
 		return ResetKernelThread(thread, entry);
 	}
 
@@ -77,7 +72,6 @@ namespace Task::Arch
 
 	THREAD *CopyThread(THREAD *old)
 	{
-		//Copy stack
 		char *old_stack = (char *)old - stack_size + sizeof(THREAD);
 		char *new_stack = new char[stack_size];
 		memcpy(new_stack, old_stack, stack_size);
@@ -88,10 +82,6 @@ namespace Task::Arch
 
 		if (thread->kernel_esp)
 			thread->kernel_esp = old->kernel_esp + offset;
-
-		//Copy fpu state
-		thread->fpu_state = new uint8[512];
-		memcpy(thread->fpu_state, old->fpu_state, 512);
 
 		return thread;
 	}

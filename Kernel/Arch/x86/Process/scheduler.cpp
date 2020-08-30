@@ -18,7 +18,6 @@
 namespace Scheduler::Arch
 {
     size_t tmp_stack;
-    uint8 __attribute__((aligned(16))) fpu_state[512];
 
     void Switch()
     {
@@ -36,8 +35,7 @@ namespace Scheduler::Arch
         current_thread->stack = tmp_stack;
 
         //Save fpu state
-        asm volatile("fxsave (%0)" ::"m"(fpu_state));
-        memcpy(current_thread->fpu_state, fpu_state, 512);
+        asm volatile("fxsave (%0)" ::"r"(current_thread->fpu_state));
 
         if (syscall)
         {
@@ -61,9 +59,7 @@ namespace Scheduler::Arch
         current_thread = Scheduler::Schedule();
 
         //Restore fpu state
-        memcpy(fpu_state, current_thread->fpu_state, 512);
-        asm volatile("fxrstor (%0)"
-                     : "=m"(fpu_state));
+        asm volatile("fxrstor (%0)" ::"r"(current_thread->fpu_state));
 
         //Restore stack
         tmp_stack = current_thread->stack;

@@ -28,7 +28,6 @@ struct THREAD
 	THREAD *next;
 	THREAD *proc_next;
 	PROCESS *process;
-	void *fpu_state;
 	uint64 sleep_until;
 	ADDRESS_SPACE addr_space;
 	Event *event;
@@ -40,4 +39,5 @@ struct THREAD
 	Stack<THREAD *> signal_threads;
 	Event signal_event;
 	Event syscall_event;
-};
+	uint8 fpu_state[512];
+} __attribute__((aligned(16)));
