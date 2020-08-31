@@ -98,6 +98,8 @@ void TTY()
         TtyDriver *tty = (TtyDriver *)DriverManager::GetDriver(VFS::GetDentry(name)->inode->dev);
         PROCESS *proc = ProcessManager::Exec("/bin/dash");
         tty->gid = proc->gid;
+        tty->sid = proc->id;
+        proc->sid = proc->id;
 
         int fd = VFS::Open(proc, name, 0);
         VFS::DuplicateFile(proc->filetable, fd, 0);
