@@ -5,18 +5,28 @@
 #include <sync.h>
 #include <types.h>
 
+#define ESCAPE_BUFFER_SIZE 32
+
+struct VT100_STATE
+{
+    int x = 0;
+    int y = 0;
+    uint32 fg;
+    uint32 bg;
+};
+
 class Vt100Driver : public TtyBaseDriver
 {
   private:
     int width;
     int height;
-    int posx;
-    int posy;
-    uint32 color;
-    uint32 bcolor;
     CircularDataBuffer *text_buffer;
     bool active;
     Mutex draw_mutex;
+    VT100_STATE state;
+    bool escaped;
+    char escape_buffer[ESCAPE_BUFFER_SIZE];
+    int escape_index;
 
   public:
     Vt100Driver();
@@ -33,7 +43,12 @@ class Vt100Driver : public TtyBaseDriver
     void ClearScreen();
     void RedrawScreen();
     int AddText(const char *text, size_t size);
+    void ParseSequence(char cmd);
+    void HandleSequence(char cmd, int num_args, int *args);
     void DrawText();
     void DrawChar(int x, int y, char c);
     void Putc(char c);
+    uint32 GetColor(int number);
+    uint32 GetColor(int r, int g, int b);
+    void ResetColors();
 };
