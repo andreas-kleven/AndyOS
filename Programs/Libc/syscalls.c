@@ -37,7 +37,7 @@ mode_t umask(mode_t mask)
 
 int lstat(const char *path, struct stat *buf)
 {
-    return 0;
+    return stat(path, buf); // TODO
 }
 
 uid_t getuid()

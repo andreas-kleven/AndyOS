@@ -343,13 +343,12 @@ int Getdents(Filetable *filetable, int fd, dirent *dirp, unsigned int count)
 
             const char *name = dentry->name;
             int name_len = strlen(name) + 1;
-            int dirp_len = name_len + sizeof(dirp->d_ino) + sizeof(dirp->d_off) +
-                           sizeof(dirp->d_reclen) + sizeof(dirp->d_type);
+            int dirp_len = sizeof(dirent) - sizeof(dirp->d_name) + name_len;
 
             if (total + dirp_len >= count)
                 break;
 
-            dirp->d_ino = dentry->inode->ino;
+            dirp->d_ino = dentry->inode->ino ? dentry->inode->ino : -1; // TODO
             dirp->d_type = type;
             dirp->d_reclen = dirp_len;
             strcpy(dirp->d_name, name);
@@ -368,9 +367,10 @@ int StatDentry(DENTRY *dentry, stat *st)
         return -ENOENT;
 
     INODE *inode = dentry->inode;
+    memset(st, 0, sizeof(stat));
 
     st->st_dev = 1;
-    st->st_ino = inode->ino;
+    st->st_ino = inode->ino ? inode->ino : -1; // TODO
     st->st_mode = inode->mode;
     st->st_nlink = 1;
     st->st_uid = inode->uid;
