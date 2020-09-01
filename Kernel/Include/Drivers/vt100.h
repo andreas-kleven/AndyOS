@@ -13,6 +13,11 @@ struct VT100_STATE
     int y = 0;
     uint32 fg;
     uint32 bg;
+    uint32 blink_color = 0;
+    bool blink = false;
+    bool escaped = false;
+    int escape_index = 0;
+    char escape_buffer[ESCAPE_BUFFER_SIZE];
 };
 
 class Vt100Driver : public TtyBaseDriver
@@ -24,9 +29,6 @@ class Vt100Driver : public TtyBaseDriver
     bool active;
     Mutex draw_mutex;
     VT100_STATE state;
-    bool escaped;
-    char escape_buffer[ESCAPE_BUFFER_SIZE];
-    int escape_index;
 
   public:
     Vt100Driver();
@@ -38,6 +40,7 @@ class Vt100Driver : public TtyBaseDriver
     int HandleInput(const char *input, size_t size);
     void Activate();
     void Deactivate();
+    void Blink(bool blink);
 
   private:
     void ClearScreen();
@@ -46,8 +49,11 @@ class Vt100Driver : public TtyBaseDriver
     void ParseSequence(char cmd);
     void HandleSequence(char cmd, int num_args, int *args);
     void DrawText();
-    void DrawChar(int x, int y, char c);
+    void DrawChar(int x, int y, int c);
+    void InvertColors(int x, int y);
+    int GetScreenColors(int x, int y, uint32 &fg, uint32 &bg);
     void Putc(char c);
+    void Move(int x, int y);
     uint32 GetColor(int number);
     uint32 GetColor(int r, int g, int b);
     void ResetColors();

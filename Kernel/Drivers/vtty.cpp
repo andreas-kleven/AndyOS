@@ -10,8 +10,12 @@
 #include <hal.h>
 #include <keycodes.h>
 #include <limits.h>
+#include <math.h>
 
-#define NUM_TERMINALS 8
+#define NUM_TERMINALS   8
+#define FIRST_REPEAT    500
+#define REPEAT_INTERVAL 50
+#define BLINK_INTERVAL  600
 
 namespace VTTY {
 Vt100Driver *terminals[NUM_TERMINALS];
@@ -279,7 +283,8 @@ void Start()
     input_buffer = new CircularDataBuffer(256);
 
     uint64 press_time = 0;
-    uint64 sleep_time = 0;
+    uint64 blink_time = 0;
+    bool blink = false;
 
     SetupTerminals();
     SetupScancodes();
@@ -288,10 +293,16 @@ void Start()
         uint64 time = Timer::Ticks();
 
         if (input_buffer->IsEmpty()) {
-            if (sleep_time)
-                Scheduler::SleepThread(sleep_time, listen_thread);
-            else
-                Scheduler::SleepThread(ULLONG_MAX, listen_thread);
+            if (time > blink_time) {
+                blink = !blink;
+                terminals[termid]->Blink(blink);
+                blink_time = time + BLINK_INTERVAL * 1000;
+            }
+
+            uint64 next_time = min(press_time ? press_time : ULONG_MAX, blink_time);
+
+            if (next_time)
+                Scheduler::SleepThread(next_time, listen_thread);
         }
 
         uint8 scan = 0;
@@ -309,21 +320,25 @@ void Start()
             HandleInput(scan);
 
         if (current_key) {
+            time = Timer::Ticks();
+
             if (current_key != last_key) {
-                press_time = Timer::Ticks();
-                sleep_time = press_time + 500000;
+                press_time = time + FIRST_REPEAT * 1000;
                 EmitKey();
             }
 
-            if (sleep_time <= time) {
+            if (press_time && time > press_time) {
                 EmitKey();
 
-                while (sleep_time < time)
-                    sleep_time += 100000;
+                while (press_time < time)
+                    press_time += REPEAT_INTERVAL * 1000;
             }
+
+            blink = true;
+            terminals[termid]->Blink(blink);
+            blink_time = time + BLINK_INTERVAL * 1000;
         } else {
             press_time = 0;
-            sleep_time = 0;
         }
     }
 }

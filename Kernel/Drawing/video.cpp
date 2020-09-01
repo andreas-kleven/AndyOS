@@ -37,4 +37,18 @@ void SetPixel(int x, int y, unsigned int col)
 
     mode->SetPixel(x, y, col);
 }
+
+unsigned int GetPixel(int x, int y)
+{
+    if (mode->framebuffer == 0)
+        return 0;
+
+    if (x >= mode->width || x < 0)
+        return 0;
+
+    if (y >= mode->height || y < 0)
+        return 0;
+
+    return mode->GetPixel(x, y);
+}
 } // namespace Video

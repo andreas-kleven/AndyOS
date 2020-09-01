@@ -25,6 +25,7 @@ class VideoMode
 
     virtual void Draw(void *pixels) {}
     virtual void SetPixel(int x, int y, unsigned int col) {}
+    virtual unsigned int GetPixel(int x, int y) { return 0; }
 };
 
 namespace Video {
@@ -33,4 +34,5 @@ extern VideoMode *mode;
 void SetMode(VideoMode *mode);
 void Draw(void *pixels);
 void SetPixel(int x, int y, unsigned int col);
+unsigned int GetPixel(int x, int y);
 } // namespace Video

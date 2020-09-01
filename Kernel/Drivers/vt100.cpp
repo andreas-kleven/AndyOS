@@ -68,7 +68,6 @@ Vt100Driver::Vt100Driver()
     height = Video::mode->height / 16;
     text_buffer = new CircularDataBuffer(width * height);
     active = false;
-    escaped = false;
 
     ResetColors();
 }
@@ -121,21 +120,40 @@ void Vt100Driver::Deactivate()
     active = false;
 }
 
+void Vt100Driver::Blink(bool blink)
+{
+    draw_mutex.Aquire();
+
+    if (blink != state.blink) {
+        state.blink = blink;
+        InvertColors(state.x, state.y);
+    }
+
+    draw_mutex.Release();
+}
+
 void Vt100Driver::ClearScreen()
 {
+    draw_mutex.Aquire();
+
     if (Video::mode->framebuffer) {
         memset32(Video::mode->framebuffer, BACKGROUND_COLOR,
                  Video::mode->width * Video::mode->height);
     }
+
+    state.blink = false;
+
+    draw_mutex.Release();
 }
 
 void Vt100Driver::RedrawScreen()
 {
-    state.x = 0;
-    state.y = 0;
+    draw_mutex.Aquire();
+    Move(0, 0);
     text_buffer->Seek(0, SEEK_SET);
     ClearScreen();
     DrawText();
+    draw_mutex.Release();
 }
 
 int Vt100Driver::AddText(const char *text, size_t size)
@@ -146,7 +164,7 @@ int Vt100Driver::AddText(const char *text, size_t size)
 void Vt100Driver::ParseSequence(char cmd)
 {
     char *ptr;
-    char *arg = strtok_r(escape_buffer, ";", &ptr);
+    char *arg = strtok_r(state.escape_buffer, ";", &ptr);
 
     int count = 0;
     int args[16];
@@ -233,19 +251,19 @@ void Vt100Driver::DrawText()
         if (!c)
             continue;
 
-        if (escaped) {
+        if (state.escaped) {
             if (isdigit(c) || c == ';') {
-                escape_buffer[escape_index++] = c;
-                escape_buffer[escape_index] = 0;
+                state.escape_buffer[state.escape_index++] = c;
+                state.escape_buffer[state.escape_index] = 0;
             } else if (isalpha(c)) {
                 ParseSequence(c);
-                escaped = false;
-            } else if (escape_index > 0 || c != '[') {
-                escaped = false;
+                state.escaped = false;
+            } else if (state.escape_index > 0 || c != '[') {
+                state.escaped = false;
             }
 
-            if (escape_index >= ESCAPE_BUFFER_SIZE - 1) {
-                escaped = false;
+            if (state.escape_index >= ESCAPE_BUFFER_SIZE - 1) {
+                state.escaped = false;
             }
         } else {
             if (c == 0x03 || c == 0x1A || c == 0x1C) {
@@ -255,9 +273,9 @@ void Vt100Driver::DrawText()
             }
             if (c == 0x1B) // ESC
             {
-                escaped = true;
-                escape_buffer[0] = 0;
-                escape_index = 0;
+                state.escaped = true;
+                state.escape_buffer[0] = 0;
+                state.escape_index = 0;
             } else {
                 Putc(c);
             }
@@ -267,16 +285,58 @@ void Vt100Driver::DrawText()
     draw_mutex.Release();
 }
 
-void Vt100Driver::DrawChar(int x, int y, char c)
+void Vt100Driver::DrawChar(int x, int y, int c)
 {
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 8; j++) {
-            if ((DEFAULT_FONT[i + 16 * c] >> j) & 1)
-                Video::SetPixel(x + (8 - j), y + i, state.fg);
-            else
-                Video::SetPixel(x + (8 - j), y + i, state.bg);
+            uint32 color = state.bg;
+
+            if ((c == -1) || (DEFAULT_FONT[i + 16 * c] >> j) & 1)
+                color = state.fg;
+
+            Video::SetPixel(x * 8 + (8 - j), y * 16 + i, color);
         }
     }
+}
+
+void Vt100Driver::InvertColors(int x, int y)
+{
+    uint32 fg;
+    uint32 bg;
+
+    if (GetScreenColors(x, y, fg, bg) == 1) {
+        if (state.blink)
+            state.blink_color = bg;
+
+        fg = (bg == state.blink_color) ? FOREGROUND_COLOR : state.blink_color;
+    }
+
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 8; j++) {
+            uint32 color = Video::GetPixel(x * 8 + (8 - j), y * 16 + i);
+            uint32 newcolor = color == fg ? bg : fg;
+            Video::SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
+        }
+    }
+}
+
+int Vt100Driver::GetScreenColors(int x, int y, uint32 &fg, uint32 &bg)
+{
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 8; j++) {
+            uint32 color = Video::GetPixel(x * 8 + (8 - j), y * 16 + i);
+
+            if (i == 0 && j == 0) {
+                bg = color;
+            } else if (color != bg) {
+                fg = color;
+                return 2;
+            }
+        }
+    }
+
+    fg = bg;
+    return 1;
 }
 
 void Vt100Driver::Putc(char c)
@@ -284,14 +344,18 @@ void Vt100Driver::Putc(char c)
     if (!Video::mode->framebuffer)
         return;
 
+    if (state.blink)
+        Blink(false);
+
+    DrawChar(state.x, state.y, ' ');
+
     switch (c) {
     case '\n':
-        state.x = 0;
-        state.y += 1;
+        Move(0, state.y + 1);
         break;
 
     case '\r':
-        state.x = 0;
+        Move(0, state.y);
         break;
 
     case '\t':
@@ -302,24 +366,24 @@ void Vt100Driver::Putc(char c)
         break;
 
     case '\b':
-        state.x = clamp(state.x - 1, 0, width);
-        DrawChar(state.x * 8, state.y * 16, ' ');
+        if (state.x > 0)
+            Move(state.x - 1, state.y);
+
+        DrawChar(state.x, state.y, ' ');
         break;
 
     default:
-        DrawChar(state.x * 8, state.y * 16, c);
-        state.x++;
+        DrawChar(state.x, state.y, c);
+        Move(state.x + 1, state.y);
         break;
     }
 
     if (state.x > width - 1) {
-        state.x = 0;
-        state.y++;
+        Move(0, state.y + 1);
     }
 
     if (state.y > height - 1) {
-        state.y = height - 1;
-
+        Move(state.x, height - 1);
         const VideoMode *mode = Video::mode;
         int stride = mode->width * mode->depth / 8;
         int offset = stride * 16;
@@ -330,18 +394,31 @@ void Vt100Driver::Putc(char c)
     }
 }
 
+void Vt100Driver::Move(int x, int y)
+{
+    draw_mutex.Aquire();
+
+    if (state.blink)
+        Blink(false);
+
+    state.x = x;
+    state.y = y;
+
+    draw_mutex.Release();
+}
+
 uint32 Vt100Driver::GetColor(int number)
 {
-    return color_map[number % 256] | 0xFF000000;
+    return color_map[number % 256];
 }
 
 uint32 Vt100Driver::GetColor(int r, int g, int b)
 {
-    return (r << 16) | (g << 8) | (b) | 0xFF000000;
+    return (r << 16) | (g << 8) | (b);
 }
 
 void Vt100Driver::ResetColors()
 {
-    state.fg = FOREGROUND_COLOR | 0xFF000000;
-    state.bg = BACKGROUND_COLOR | 0xFF000000;
+    state.fg = FOREGROUND_COLOR;
+    state.bg = BACKGROUND_COLOR;
 }

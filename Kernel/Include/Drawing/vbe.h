@@ -55,4 +55,5 @@ class VBEVideoMode : public VideoMode
 
     void Draw(void *pixels);
     void SetPixel(int x, int y, unsigned int col);
+    unsigned int GetPixel(int x, int y);
 };
