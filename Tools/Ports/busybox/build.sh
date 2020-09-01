@@ -1,9 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-builddir=$PWD/build
 destdir=$PWD/../../../Root
-mkdir $builddir
 
 git clone -b 1_32_stable --single-branch git://busybox.net/busybox.git src
 cd src
