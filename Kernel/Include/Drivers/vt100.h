@@ -44,10 +44,11 @@ class Vt100Driver : public TtyBaseDriver
 
   private:
     void ClearScreen();
+    void ClearLine(int line);
     void RedrawScreen();
     int AddText(const char *text, size_t size);
-    void ParseSequence(char cmd);
-    void HandleSequence(char cmd, int num_args, int *args);
+    bool ParseSequence(char cmd);
+    bool HandleSequence(char cmd, int num_args, int *args);
     void DrawText();
     void DrawChar(int x, int y, int c);
     void InvertColors(int x, int y);

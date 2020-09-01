@@ -136,9 +136,27 @@ void Vt100Driver::ClearScreen()
 {
     draw_mutex.Aquire();
 
-    if (Video::mode->framebuffer) {
-        memset32(Video::mode->framebuffer, BACKGROUND_COLOR,
-                 Video::mode->width * Video::mode->height);
+    const VideoMode *mode = Video::mode;
+
+    if (mode->framebuffer) {
+        memset32(mode->framebuffer, BACKGROUND_COLOR, mode->width * mode->height);
+    }
+
+    state.blink = false;
+
+    draw_mutex.Release();
+}
+
+void Vt100Driver::ClearLine(int line)
+{
+    draw_mutex.Aquire();
+
+    const VideoMode *mode = Video::mode;
+    int stride = mode->width * mode->depth / 8;
+    int offset = stride * 16 * line;
+
+    if (mode->framebuffer) {
+        memset32(mode->framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
     }
 
     state.blink = false;
@@ -161,7 +179,7 @@ int Vt100Driver::AddText(const char *text, size_t size)
     return text_buffer->Write(text, size);
 }
 
-void Vt100Driver::ParseSequence(char cmd)
+bool Vt100Driver::ParseSequence(char cmd)
 {
     char *ptr;
     char *arg = strtok_r(state.escape_buffer, ";", &ptr);
@@ -174,23 +192,73 @@ void Vt100Driver::ParseSequence(char cmd)
         count += 1;
 
         if (count >= (int)(sizeof(args) / sizeof(args[0])))
-            return;
+            return false;
 
         arg = strtok_r(0, ";", &ptr);
     }
 
-    HandleSequence(cmd, count, args);
+    return HandleSequence(cmd, count, args);
 }
 
-void Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
+bool Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 {
+    if (num_args == 0) {
+        switch (cmd) {
+        case 'H':
+            Move(0, 0);
+            return true;
+        case 'J':
+            ClearScreen();
+            return true;
+        case 'K':
+            ClearLine(state.y);
+            return true;
+        }
+    } else if (num_args == 2) {
+        int arg0 = args[0] - 1;
+        int arg1 = args[1] - 1;
+
+        switch (cmd) {
+        case 'f':
+        case 'H':
+            Move(arg1, arg0);
+            return true;
+        }
+    } else if (num_args == 1) {
+        int arg = args[0];
+
+        switch (cmd) {
+        case 'A':
+            Move(state.x, state.y - 1);
+            return true;
+        case 'B':
+            Move(state.x, state.y + 1);
+            return true;
+        case 'C':
+            Move(state.x + 1, state.y);
+            return true;
+        case 'D':
+            Move(state.x - 1, state.y);
+            return true;
+        case 'E':
+            Move(0, state.y + arg);
+            return true;
+        case 'F':
+            Move(0, state.y - arg);
+            return true;
+        case 'G':
+            Move(arg - 1, state.y);
+            return true;
+        }
+    }
+
     switch (cmd) {
     case 'm':
         switch (num_args) {
-        case 0:
+        case 0: {
             ResetColors();
-            break;
-
+            return true;
+        }
         case 1:
         case 2: {
             int arg = args[num_args - 1];
@@ -198,11 +266,14 @@ void Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 
             if (arg == 0) {
                 ResetColors();
+                return true;
             } else {
                 if (arg >= 30 && arg <= 37) {
                     state.fg = GetColor(arg - 30 + offset);
+                    return true;
                 } else if (arg >= 40 && arg <= 47) {
                     state.bg = GetColor(arg - 40 + offset);
+                    return true;
                 }
             }
         }
@@ -212,8 +283,10 @@ void Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 
                 if (args[0] == 38) {
                     state.fg = color;
+                    return true;
                 } else if (args[0] == 48) {
                     state.bg = color;
+                    return true;
                 }
             }
             break;
@@ -223,18 +296,19 @@ void Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 
                 if (args[0] == 38) {
                     state.fg = color;
+                    return true;
                 } else if (args[0] == 48) {
                     state.bg = color;
+                    return true;
                 }
             }
             break;
-
-        default:
-            return;
         }
 
         break;
     }
+
+    return false;
 }
 
 void Vt100Driver::DrawText()
@@ -243,6 +317,11 @@ void Vt100Driver::DrawText()
         return;
 
     draw_mutex.Aquire();
+
+    bool restore_blink = state.blink;
+
+    if (state.blink)
+        Blink(false);
 
     while (!text_buffer->IsEmpty()) {
         char c = 0;
@@ -256,8 +335,18 @@ void Vt100Driver::DrawText()
                 state.escape_buffer[state.escape_index++] = c;
                 state.escape_buffer[state.escape_index] = 0;
             } else if (isalpha(c)) {
-                ParseSequence(c);
                 state.escaped = false;
+
+                if (!ParseSequence(c)) {
+                    Putc('[');
+
+                    for (int i = 0; i < state.escape_index; i++)
+                        Putc(state.escape_buffer[i]);
+
+                    Putc(c);
+
+                    debug_print("[%s%c\n", state.escape_buffer, c);
+                }
             } else if (state.escape_index > 0 || c != '[') {
                 state.escaped = false;
             }
@@ -281,6 +370,9 @@ void Vt100Driver::DrawText()
             }
         }
     }
+
+    if (restore_blink)
+        Blink(true);
 
     draw_mutex.Release();
 }
@@ -344,11 +436,6 @@ void Vt100Driver::Putc(char c)
     if (!Video::mode->framebuffer)
         return;
 
-    if (state.blink)
-        Blink(false);
-
-    DrawChar(state.x, state.y, ' ');
-
     switch (c) {
     case '\n':
         Move(0, state.y + 1);
@@ -381,8 +468,21 @@ void Vt100Driver::Putc(char c)
     if (state.x > width - 1) {
         Move(0, state.y + 1);
     }
+}
 
-    if (state.y > height - 1) {
+void Vt100Driver::Move(int x, int y)
+{
+    draw_mutex.Aquire();
+
+    bool restore_blink = state.blink;
+
+    if (state.blink)
+        Blink(false);
+
+    state.x = clamp(x, 0, width - 1);
+    state.y = max(y, 0);
+
+    while (state.y > height - 1) {
         Move(state.x, height - 1);
         const VideoMode *mode = Video::mode;
         int stride = mode->width * mode->depth / 8;
@@ -392,17 +492,9 @@ void Vt100Driver::Putc(char c)
         memcpy(mode->framebuffer, start, count);
         memset32((char *)mode->framebuffer + count, BACKGROUND_COLOR, offset / 4);
     }
-}
 
-void Vt100Driver::Move(int x, int y)
-{
-    draw_mutex.Aquire();
-
-    if (state.blink)
-        Blink(false);
-
-    state.x = x;
-    state.y = y;
+    if (restore_blink)
+        Blink(true);
 
     draw_mutex.Release();
 }
