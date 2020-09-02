@@ -14,6 +14,7 @@ struct VT100_STATE
     uint32 fg;
     uint32 bg;
     uint32 blink_color = 0;
+    bool invert = false;
     bool blink = false;
     bool escaped = false;
     int escape_index = 0;

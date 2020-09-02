@@ -249,6 +249,17 @@ bool Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
         case 'G':
             Move(arg - 1, state.y);
             return true;
+
+        case 'm':
+            switch (arg) {
+            case 7:
+                state.invert = true;
+                uint32 tmp = state.fg;
+                state.fg = state.bg;
+                state.bg = tmp;
+                return true;
+            }
+            break;
         }
     }
 
@@ -335,6 +346,7 @@ void Vt100Driver::DrawText()
                 state.escape_buffer[state.escape_index++] = c;
                 state.escape_buffer[state.escape_index] = 0;
             } else if (isalpha(c)) {
+                draw_mutex.Aquire();
                 state.escaped = false;
 
                 if (!ParseSequence(c)) {
@@ -347,6 +359,9 @@ void Vt100Driver::DrawText()
 
                     debug_print("[%s%c\n", state.escape_buffer, c);
                 }
+
+                draw_mutex.Release();
+
             } else if (state.escape_index > 0 || c != '[') {
                 state.escaped = false;
             }
@@ -513,4 +528,5 @@ void Vt100Driver::ResetColors()
 {
     state.fg = FOREGROUND_COLOR;
     state.bg = BACKGROUND_COLOR;
+    state.invert = false;
 }
