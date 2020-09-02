@@ -1,3 +1,9 @@
+#include "syscall_list.h"
+#include <dirent.h>
+#include <poll.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <sys/errno.h>
 #include <sys/fcntl.h>
 #include <sys/ioctl.h>
@@ -7,20 +13,13 @@
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <dirent.h>
-#include <poll.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
-#include "syscall_list.h"
 
 int set_err(int ret)
 {
-    if (ret < 0)
-    {
+    if (ret < 0) {
         errno = -ret;
         return -1;
     }
@@ -29,6 +28,22 @@ int set_err(int ret)
 }
 
 //
+
+int sched_yield()
+{
+    return 0;
+}
+
+int access(const char *pathname, int mode)
+{
+    struct stat st;
+
+    if (stat(pathname, &st) == 0)
+        return 0;
+
+    errno = EACCES;
+    return -1;
+}
 
 mode_t umask(mode_t mask)
 {
@@ -90,8 +105,7 @@ int tcsetattr(int fd, int optional_actions, const struct termios *termios_p)
 {
     int cmd;
 
-    switch (optional_actions)
-    {
+    switch (optional_actions) {
     case TCSANOW:
         cmd = TCSETS;
         break;
@@ -258,8 +272,7 @@ int fchdir(int fd)
 int _fcntl(int fd, int cmd, ...)
 {
     int arg = 0;
-    if ((cmd == F_DUPFD) || (cmd == F_SETFD) || (cmd == F_SETFL))
-    {
+    if ((cmd == F_DUPFD) || (cmd == F_SETFD) || (cmd == F_SETFL)) {
         va_list args;
         va_start(args, cmd);
         arg = va_arg(args, int);
@@ -332,8 +345,8 @@ off_t _lseek(int fd, off_t offset, int whence)
 }
 
 // TODO
-//int open(const char *pathname, int flags);
-//int open(const char *pathname, int flags, mode_t mode);
+// int open(const char *pathname, int flags);
+// int open(const char *pathname, int flags, mode_t mode);
 int _open(const char *name, int flags, ...)
 {
     return set_err(syscall2(SYSCALL_OPEN, name, flags));
@@ -528,7 +541,8 @@ int sendmsg(int fd, const struct msghdr *msg, int flags)
     return set_err(syscall3(SYSCALL_SENDMSG, fd, msg, flags));
 }
 
-int sendto(int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+int sendto(int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr,
+           socklen_t addrlen)
 {
     return set_err(syscall6(SYSCALL_SENDTO, fd, buf, len, flags, dest_addr, addrlen));
 }
