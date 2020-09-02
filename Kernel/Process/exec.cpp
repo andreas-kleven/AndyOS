@@ -120,6 +120,13 @@ int SetupMain(THREAD *thread, PROCESS_START_INFO *psi)
 
 PROCESS *Exec(const char *path)
 {
+    const char *argv[] = {0};
+    const char *envp[] = {0};
+    Exec(path, argv, envp);
+}
+
+PROCESS *Exec(const char *path, char const *argv[], char const *envp[])
+{
     ADDRESS_SPACE old_space = VMem::GetAddressSpace();
     ADDRESS_SPACE addr_space;
 
@@ -135,9 +142,6 @@ PROCESS *Exec(const char *path)
         THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry);
 
         if (thread) {
-            const char *argv[] = {0};
-            const char *envp[] = {0};
-
             PROCESS_START_INFO psi;
 
             if (CopyStrings(argv, envp, &psi))

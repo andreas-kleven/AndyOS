@@ -137,6 +137,7 @@ PROCESS *GetFirst();
 
 PROCESS *Fork(PROCESS *proc);
 PROCESS *Exec(const char *path);
+PROCESS *Exec(const char *path, char const *argv[], char const *envp[]);
 int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[]);
 
 sig_t SetSignalHandler(PROCESS *proc, int signo, sig_t handler);

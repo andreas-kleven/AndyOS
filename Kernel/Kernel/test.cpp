@@ -96,7 +96,11 @@ void TTY()
         char name[32];
         sprintf(name, "/dev/tty%d", i);
         TtyDriver *tty = (TtyDriver *)DriverManager::GetDriver(VFS::GetDentry(name)->inode->dev);
-        PROCESS *proc = ProcessManager::Exec("/bin/dash");
+
+        const char *argv[] = {0};
+        const char *envp[] = {"COLUMNS=80", "LINES=48", 0};
+        PROCESS *proc = ProcessManager::Exec("/bin/dash", argv, envp);
+
         tty->gid = proc->gid;
         tty->sid = proc->id;
         proc->sid = proc->id;
