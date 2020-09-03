@@ -21,7 +21,8 @@ void Keyboard_ISR()
     if (inb(0x64) & 1) {
         uint8 scan = inb(0x60);
         VTTY::QueueInput(scan);
-        buffer[buffer_pos++] = scan;
+        buffer[buffer_pos] = scan;
+        buffer_pos = (buffer_pos + 1) % BUFFER_SIZE;
         data_event.Set();
     }
 }
