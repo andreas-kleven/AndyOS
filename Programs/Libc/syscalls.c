@@ -199,7 +199,8 @@ ssize_t readlink(const char *path, char *buf, size_t bufsiz)
 
 int poll(struct pollfd *fds, nfds_t nfds, int timeout)
 {
-    return 0;
+    fds->revents = fds->events;
+    return 1;
 }
 
 int clock_settime(clockid_t clock_id, const struct timespec *tp)
