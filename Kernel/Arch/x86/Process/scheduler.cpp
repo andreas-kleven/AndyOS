@@ -18,16 +18,20 @@
 
 namespace Scheduler::Arch {
 size_t tmp_stack;
+bool switched = false;
 
 void Switch()
 {
+    switched = true;
     asm volatile("int %0" ::"N"(SCHEDULE_IRQ));
 }
 
 void ScheduleTask(int irq)
 {
-    if (irq == SCHEDULE_IRQ)
+    if (irq == SCHEDULE_IRQ && !switched)
         PIT::ticks++;
+    
+    switched = false;
 
     THREAD *current_thread = Scheduler::CurrentThread();
 
