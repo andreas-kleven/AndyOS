@@ -11,11 +11,14 @@
 #include <keycodes.h>
 #include <limits.h>
 #include <math.h>
+#include <string.h>
 
 #define NUM_TERMINALS   8
 #define FIRST_REPEAT    500
 #define REPEAT_INTERVAL 50
-#define BLINK_INTERVAL  600
+#define BLINK_INTERVAL  500
+
+#define ESC "\x1b"
 
 namespace VTTY {
 Vt100Driver *terminals[NUM_TERMINALS];
@@ -35,23 +38,46 @@ bool extended = false;
 KEYCODE code = KEY_INVALID;
 KEYCODE current_key;
 
-char DecodeCharacter()
+char decode_buffer[10];
+
+const char *DecodeKey()
 {
     int key = current_key;
 
     if (!isprint(key)) {
         switch (key) {
+        case KEY_ESCAPE:
+            return ESC;
         case KEY_SPACE:
-            return ' ';
-
+            return " ";
         case KEY_TAB:
-            return '\t';
-
+            return "\t";
         case KEY_BACK:
-            return '\b';
-
+            return "\b";
         case KEY_RETURN:
-            return '\n';
+            return "\n";
+
+        case KEY_UP:
+            return ESC "[A";
+        case KEY_DOWN:
+            return ESC "[B";
+        case KEY_RIGHT:
+            return ESC "[C";
+        case KEY_LEFT:
+            return ESC "[D";
+
+        case KEY_HOME:
+            return ESC "[H";
+        case KEY_END:
+            return ESC "[F";
+        case KEY_INSERT:
+            return ESC "[2~";
+        case KEY_DELETE:
+            return ESC "[3~";
+        case KEY_PAGEUP:
+            return ESC "[5~";
+        case KEY_PAGEDOWN:
+            return ESC "[6~";
 
         default:
             return 0;
@@ -65,83 +91,97 @@ char DecodeCharacter()
         if (shift) {
             switch (key) {
             case KEY_D0:
-                return '=';
+                return ")";
             case KEY_D1:
-                return '!';
+                return "!";
             case KEY_D2:
-                return '"';
+                return "@";
             case KEY_D3:
-                return '#';
+                return "#";
             case KEY_D4:
-                return '¤';
+                return "$";
             case KEY_D5:
-                return '%';
+                return "%";
             case KEY_D6:
-                return '&';
+                return "^";
             case KEY_D7:
-                return '/';
+                return "&";
             case KEY_D8:
-                return '(';
+                return "*";
             case KEY_D9:
-                return ')';
+                return "(";
             }
         }
     } else {
         if (shift) {
             switch (key) {
             case KEY_BAR:
-                return '§';
+                return "~";
             case KEY_PLUS:
-                return '?';
+                return "_";
             case KEY_BACKSLASH:
-                return '`';
+                return "+";
+            case KEY__1:
+                return "{";
             case KEY_CARET:
-                return '^';
+                return "}";
+            case KEY__2:
+                return ":";
+            case KEY__3:
+                return "\"";
             case KEY_QUOTE:
-                return '*';
+                return "|";
             case KEY_LESS:
-                return '>';
+                return ">";
             case KEY_COMMA:
-                return ';';
+                return "<";
             case KEY_DOT:
-                return ':';
+                return ">";
             case KEY_MINUS:
-                return '_';
+                return "?";
             }
         } else {
             switch (key) {
             case KEY_BAR:
-                return '|';
+                return "`";
             case KEY_PLUS:
-                return '+';
+                return "-";
             case KEY_BACKSLASH:
-                return '\\';
+                return "=";
+            case KEY__1:
+                return "[";
             case KEY_CARET:
-                return '^';
+                return "]";
+            case KEY__2:
+                return ";";
+            case KEY__3:
+                return "'";
             case KEY_QUOTE:
-                return '\'';
+                return "\\";
             case KEY_LESS:
-                return '<';
+                return "<";
             case KEY_COMMA:
-                return ',';
+                return ",";
             case KEY_DOT:
-                return '.';
+                return ".";
             case KEY_MINUS:
-                return '-';
+                return "/";
 
             case KEY_SPACE:
-                return ' ';
+                return " ";
             case KEY_TAB:
-                return '\t';
+                return "\t";
             case KEY_RETURN:
-                return '\n';
+                return "\n";
             case KEY_BACK:
-                return '\b';
+                return "\b";
             }
         }
     }
 
-    return key;
+    decode_buffer[0] = key;
+    decode_buffer[1] = 0;
+    return decode_buffer;
 }
 
 void EmitKey()
@@ -149,10 +189,18 @@ void EmitKey()
     if (current_key == KEY_INVALID)
         return;
 
-    char c = DecodeCharacter();
+    const char *str = DecodeKey();
 
-    if (c) {
-        Vt100Driver *terminal = terminals[termid];
+    if (!str)
+        return;
+
+    int len = strlen(str);
+    Vt100Driver *terminal = terminals[termid];
+
+    if (len > 1) {
+        terminal->HandleInput(str, len);
+    } else {
+        char c = str[0];
 
         /*if (alt)
         {
@@ -258,12 +306,16 @@ int SwitchTerminal(int id, bool force)
 
 void SetupScancodes()
 {
+    extended_scancodes[0x47] = KEY_HOME;
     extended_scancodes[0x48] = KEY_UP;
     extended_scancodes[0x49] = KEY_PAGEUP;
     extended_scancodes[0x4B] = KEY_LEFT;
     extended_scancodes[0x4D] = KEY_RIGHT;
+    extended_scancodes[0x4F] = KEY_END;
     extended_scancodes[0x50] = KEY_DOWN;
     extended_scancodes[0x51] = KEY_PAGEDOWN;
+    extended_scancodes[0x52] = KEY_INSERT;
+    extended_scancodes[0x53] = KEY_DELETE;
 }
 
 void SetupTerminals()

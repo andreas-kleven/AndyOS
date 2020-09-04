@@ -2,6 +2,7 @@
 #include <FS/pipe.h>
 #include <circbuf.h>
 #include <driver.h>
+#include <termios.h>
 #include <ttybuf.h>
 #include <types.h>
 
@@ -20,6 +21,7 @@ class TtyDriver : public CharDriver
   public:
     gid_t gid;
     pid_t sid;
+    struct termios termios;
 
     TtyDriver(TtyBaseDriver *driver, int number);
     ~TtyDriver();

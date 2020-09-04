@@ -1,6 +1,8 @@
 #include <Drivers/tty.h>
 #include <Process/process.h>
 #include <debug.h>
+#include <ioctls.h>
+#include <string.h>
 
 TtyDriver::TtyDriver(TtyBaseDriver *driver, int number)
 {
@@ -10,6 +12,8 @@ TtyDriver::TtyDriver(TtyBaseDriver *driver, int number)
     this->line_buffer = new TtyBuffer(TTY_BUFFER_SIZE);
     this->gid = 0;
     this->sid = 0;
+
+    this->termios.c_lflag = ECHO | ICANON | ISIG;
 
     char *buf = new char[16];
     sprintf(buf, "tty%d", number);
@@ -49,13 +53,32 @@ int TtyDriver::Write(FILE *file, const void *buf, size_t size)
 
 int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
 {
-    if (request == 0x540F) {
+    switch (request) {
+    case TCGETS: {
+        struct termios *ptr = (struct termios *)arg;
+        *ptr = this->termios;
+        break;
+    }
+
+    case TCSETS: {
+        struct termios *ptr = (struct termios *)arg;
+        this->termios = *ptr;
+        debug_print("Set termios %p\n", termios.c_lflag);
+        break;
+    }
+
+    case TIOCGPGRP: {
         pid_t *ptr = (pid_t *)arg;
         *ptr = gid;
-    } else if (request == 0x5410) {
+        break;
+    }
+
+    case TIOCSPGRP: {
         pid_t *ptr = (pid_t *)arg;
         gid = *ptr;
         debug_print("Set tcgid %d\n", gid);
+        break;
+    }
     }
 
     return 0;
@@ -63,26 +86,33 @@ int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
 
 int TtyDriver::HandleInput(const char *input, size_t size)
 {
-    for (size_t i = 0; i < size; i++) {
-        char c = input[i];
+    if (size == 1) {
+        char c = input[0];
 
-        switch (c) {
-        case 0x03:
-            ProcessManager::HandleSignal(sid, gid, SIGINT);
-            line_buffer->Reset();
-            break;
+        if (termios.c_lflag & ISIG) {
+            switch (c) {
+            case 0x03:
+                ProcessManager::HandleSignal(sid, gid, SIGINT);
+                line_buffer->Reset();
+                break;
 
-        case 0x1A:
-            ProcessManager::HandleSignal(sid, gid, SIGSTOP);
-            line_buffer->Reset();
-            break;
+            case 0x1A:
+                ProcessManager::HandleSignal(sid, gid, SIGSTOP);
+                line_buffer->Reset();
+                break;
 
-        case 0x1C:
-            ProcessManager::HandleSignal(sid, gid, SIGQUIT);
-            line_buffer->Reset();
-            break;
+            case 0x1C:
+                ProcessManager::HandleSignal(sid, gid, SIGQUIT);
+                line_buffer->Reset();
+                break;
+            }
+        }
+    }
 
-        default:
+    if (termios.c_lflag & ICANON) {
+        for (size_t i = 0; i < size; i++) {
+            char c = input[0];
+
             if (c == '\n') {
                 read_pipe->Write(0, line_buffer->buffer, line_buffer->written);
                 read_pipe->Write(0, "\n", 1);
@@ -90,12 +120,12 @@ int TtyDriver::HandleInput(const char *input, size_t size)
             } else {
                 line_buffer->Write(&c, 1);
             }
-
-            break;
         }
+    } else {
+        read_pipe->Write(0, input, size);
     }
 
-    if (true)
+    if (termios.c_lflag & ECHO)
         driver->Write(input, size);
 
     return size;

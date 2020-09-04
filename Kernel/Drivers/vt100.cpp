@@ -155,9 +155,8 @@ void Vt100Driver::ClearLine(int line)
     int stride = mode->width * mode->depth / 8;
     int offset = stride * 16 * line;
 
-    if (mode->framebuffer) {
-        memset32(mode->framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
-    }
+    if (mode->framebuffer)
+        memset32((char *)mode->framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
 
     state.blink = false;
 
@@ -204,6 +203,21 @@ bool Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 {
     if (num_args == 0) {
         switch (cmd) {
+        case 'A':
+            Move(state.x, state.y - 1);
+            return true;
+        case 'B':
+            Move(state.x, state.y + 1);
+            return true;
+        case 'C':
+            Move(state.x + 1, state.y);
+            return true;
+        case 'D':
+            Move(state.x - 1, state.y);
+            return true;
+        case 'E':
+            Move(0, state.y + 1);
+            return true;
         case 'H':
             Move(0, 0);
             return true;
@@ -229,16 +243,16 @@ bool Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 
         switch (cmd) {
         case 'A':
-            Move(state.x, state.y - 1);
+            Move(state.x, state.y - arg);
             return true;
         case 'B':
-            Move(state.x, state.y + 1);
+            Move(state.x, state.y + arg);
             return true;
         case 'C':
-            Move(state.x + 1, state.y);
+            Move(state.x + arg, state.y);
             return true;
         case 'D':
-            Move(state.x - 1, state.y);
+            Move(state.x - arg, state.y);
             return true;
         case 'E':
             Move(0, state.y + arg);
@@ -476,12 +490,12 @@ void Vt100Driver::Putc(char c)
 
     default:
         DrawChar(state.x, state.y, c);
-        Move(state.x + 1, state.y);
-        break;
-    }
 
-    if (state.x > width - 1) {
-        Move(0, state.y + 1);
+        if (state.x == width - 1)
+            Move(0, state.y + 1);
+        else
+            Move(state.x + 1, state.y);
+        break;
     }
 }
 
