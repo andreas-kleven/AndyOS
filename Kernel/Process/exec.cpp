@@ -122,7 +122,7 @@ PROCESS *Exec(const char *path)
 {
     const char *argv[] = {0};
     const char *envp[] = {0};
-    Exec(path, argv, envp);
+    return Exec(path, argv, envp);
 }
 
 PROCESS *Exec(const char *path, char const *argv[], char const *envp[])
@@ -139,7 +139,7 @@ PROCESS *Exec(const char *path, char const *argv[], char const *envp[])
     size_t entry = ELF::Load(path, proc);
 
     if (entry) {
-        THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry);
+        THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry, 0, 0);
 
         if (thread) {
             PROCESS_START_INFO psi;
@@ -183,7 +183,7 @@ int Exec(PROCESS *proc, char const *path, char const *argv[], char const *envp[]
     if (!entry)
         return -1;
 
-    THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry);
+    THREAD *thread = ProcessManager::CreateThread(proc, (void (*)())entry, 0, 0);
 
     if (thread) {
         if (SetupMain(thread, &psi))

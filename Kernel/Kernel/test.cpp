@@ -310,8 +310,8 @@ void MessageLoop()
                     if (proc->message_handler) {
                         VMem::SwapAddressSpace(proc->addr_space);
 
-                        THREAD *thread =
-                            ProcessManager::CreateThread(proc, (void (*)())proc->message_handler);
+                        THREAD *thread = ProcessManager::CreateThread(
+                            proc, (void (*)())proc->message_handler, 0, 0);
 
                         REGS *regs = (REGS *)thread->stack;
                         char *data_ptr = (char *)regs->user_stack - msg->size - 4;

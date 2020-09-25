@@ -1,5 +1,6 @@
 #include <AndyOS.h>
 #include <andyos/msg.h>
+#include <pthread.h>
 #include <unistd.h>
 
 static MESSAGE (*_msg_handler)(MESSAGE);
@@ -16,7 +17,7 @@ static void __msg_handler(int id, int src_proc, int type, char *data, int size)
         syscall4(SYSCALL_SEND_MESSAGE_RESPONSE, id, response.type, (int)response.data,
                  response.size);
 
-    exit_thread(0);
+    pthread_exit(0);
 }
 
 int set_message(MESSAGE (*handler)(MESSAGE))

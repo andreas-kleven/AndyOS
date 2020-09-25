@@ -1,5 +1,7 @@
 #pragma once
 
+#define _POSIX_THREADS 1
+
 #include "andyos/api.h"
 #include "andyos/memory.h"
 

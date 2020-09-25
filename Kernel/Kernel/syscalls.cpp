@@ -379,7 +379,23 @@ void sys_exit(int code)
     ProcessManager::Exit(Dispatcher::CurrentProcess(), code);
 }
 
-void sys_exit_thread(int code)
+int sys_thread_create(pthread_t *pthread, const pthread_attr_t *attr, void (*stub)(),
+                      const void (*start_routine)(), void *arg)
+{
+    PROCESS *proc = Dispatcher::CurrentProcess();
+    THREAD *thread = ProcessManager::CreateThread(proc, stub, start_routine, arg);
+
+    if (!thread)
+        return -1;
+
+    if (pthread)
+        *pthread = thread->id;
+
+    Scheduler::InsertThread(thread);
+    return 0;
+}
+
+void sys_thread_exit(int code)
 {
     Scheduler::ExitThread(code, Dispatcher::CurrentThread());
 }
@@ -614,12 +630,14 @@ bool Init()
     InstallSyscall(SYSCALL_SENDTO, (SYSCALL_HANDLER)sys_sendto);
     InstallSyscall(SYSCALL_SHUTDOWN, (SYSCALL_HANDLER)sys_shutdown);
 
+    InstallSyscall(SYSCALL_THREAD_CREATE, (SYSCALL_HANDLER)sys_thread_create);
+    InstallSyscall(SYSCALL_THREAD_EXIT, (SYSCALL_HANDLER)sys_thread_exit);
+
     InstallSyscall(SYSCALL_HALT, (SYSCALL_HANDLER)sys_halt);
     InstallSyscall(SYSCALL_PRINT, (SYSCALL_HANDLER)sys_print);
     InstallSyscall(SYSCALL_COLOR, (SYSCALL_HANDLER)sys_color);
     InstallSyscall(SYSCALL_GETTIME, (SYSCALL_HANDLER)sys_gettime);
     InstallSyscall(SYSCALL_DRAW, (SYSCALL_HANDLER)sys_draw);
-    InstallSyscall(SYSCALL_EXIT_THREAD, (SYSCALL_HANDLER)sys_exit_thread);
     InstallSyscall(SYSCALL_SLEEP, (SYSCALL_HANDLER)sys_sleep);
     InstallSyscall(SYSCALL_GET_TICKS, (SYSCALL_HANDLER)sys_get_ticks);
     InstallSyscall(SYSCALL_ALLOC_SHARED, (SYSCALL_HANDLER)sys_alloc_shared);

@@ -120,7 +120,7 @@ namespace ProcessManager {
 pid_t AssignPid(PROCESS *proc);
 
 PROCESS *AddProcess(PROCESS *proc, PROCESS *parent);
-THREAD *CreateThread(PROCESS *proc, void (*entry)());
+THREAD *CreateThread(PROCESS *proc, void (*entry)(), const void (*start_routine)(), void *arg);
 bool AddThread(PROCESS *proc, THREAD *thread);
 bool RemoveThread(THREAD *thread);
 bool StopThreads(PROCESS *proc);

@@ -1,3 +1,4 @@
+#include <Arch/exec.h>
 #include <FS/vfs.h>
 #include <Kernel/task.h>
 #include <Process/dispatcher.h>
@@ -77,7 +78,7 @@ PROCESS *AddProcess(PROCESS *proc, PROCESS *parent)
 void RemoveProcess(PROCESS *proc)
 {}
 
-THREAD *CreateThread(PROCESS *proc, void (*entry)())
+THREAD *CreateThread(PROCESS *proc, void (*entry)(), const void (*start_routine)(), void *arg)
 {
     THREAD *thread = 0;
 
@@ -99,6 +100,12 @@ THREAD *CreateThread(PROCESS *proc, void (*entry)())
     VMem::MapPages(virt, phys, blocks, flags);
 
     thread = Task::CreateUserThread(entry, (void *)proc->stack_ptr);
+
+    if (start_routine) {
+        if (Exec::Arch::SetupThreadMain(thread, start_routine, arg))
+            return 0;
+    }
+
     Scheduler::Enable();
 
     if (AddThread(proc, thread))

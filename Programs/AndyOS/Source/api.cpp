@@ -34,11 +34,6 @@ uint32_t get_ticks()
     return syscall0(SYSCALL_GET_TICKS);
 }
 
-void exit_thread(int code)
-{
-    syscall1(SYSCALL_EXIT_THREAD, code);
-}
-
 /*uint32_t* alloc(uint32_t blocks)
 {
         return (uint32_t*)syscall1(SYSCALL_ALLOC, blocks);
