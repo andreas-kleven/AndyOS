@@ -22,30 +22,7 @@
 #include <video.h>
 
 namespace Syscalls {
-struct TMP_MSG
-{
-    int id;
-    THREAD *thread;
-    TMP_MSG *next;
-
-    bool received;
-    MESSAGE response;
-
-    TMP_MSG() { received = false; }
-};
-
-struct USER_MESSAGE
-{
-    int id;
-    int type;
-    int size;
-    char *data;
-};
-
 SYSCALL_HANDLER syscalls[MAX_SYSCALLS];
-int msg_id = 0;
-
-TMP_MSG *first_msg = 0;
 
 Filetable *CurrentFiletable()
 {
@@ -450,95 +427,6 @@ void sys_debug_reset()
     debug_clear(0xFF000000);
 }
 
-//
-int sys_set_message(MESSAGE_HANDLER handler)
-{
-    Dispatcher::CurrentProcess()->message_handler = handler;
-    return 1;
-}
-
-void sys_send_message(int proc_id, int type, char *buf, int size, bool async, int &id)
-{
-    PROCESS *src_proc = Dispatcher::CurrentProcess();
-    PROCESS *dst_proc = ProcessManager::GetProcess(proc_id);
-
-    if (!dst_proc)
-        return;
-
-    id = ++msg_id;
-
-    MESSAGE msg(MESSAGE_TYPE_MESSAGE, id, src_proc->id, type, size);
-    msg.data = new char[size];
-    memcpy(msg.data, buf, size);
-
-    dst_proc->messages->Add(msg);
-
-    if (!async) {
-        TMP_MSG *msg = new TMP_MSG();
-        msg->id = id;
-        msg->thread = Scheduler::CurrentThread();
-        msg->next = first_msg;
-        first_msg = msg;
-
-        Scheduler::BlockThread(msg->thread);
-    }
-}
-
-void sys_send_message_reponse(int msg_id, int type, char *buf, int size)
-{
-    PROCESS *src_proc = Dispatcher::CurrentProcess();
-    TMP_MSG *msg = first_msg;
-
-    while (msg) {
-        if (msg->id == msg_id) {
-            msg->received = true;
-            msg->response = MESSAGE(MESSAGE_TYPE_RESPONSE, ++msg_id, src_proc->id, type, size);
-            memcpy(msg->response.data, buf, size);
-
-            Scheduler::WakeThread(msg->thread);
-            break;
-        }
-
-        msg = msg->next;
-    }
-}
-
-bool sys_get_message_reponse(int msg_id, USER_MESSAGE &response)
-{
-    TMP_MSG *msg = first_msg;
-    TMP_MSG *prev = 0;
-
-    while (msg) {
-        if (msg->id == msg_id) {
-            if (msg->received) {
-                response.id = ++msg->id;
-                response.type = msg->response.type;
-                response.size = msg->response.size;
-
-                response.data = (char *)VMem::UserAlloc(BYTES_TO_BLOCKS(response.size));
-                memcpy(response.data, msg->response.data, response.size);
-
-                // Remove message
-                if (prev) {
-                    prev->next = msg->next;
-                } else {
-                    first_msg = msg->next;
-                }
-
-                delete msg;
-                return true;
-            }
-
-            break;
-        }
-
-        prev = msg;
-        msg = msg->next;
-    }
-
-    return false;
-}
-
 void InstallSyscall(int id, SYSCALL_HANDLER handler)
 {
     if (id >= MAX_SYSCALLS)
@@ -644,11 +532,6 @@ bool Init()
     InstallSyscall(SYSCALL_READ_FILE, (SYSCALL_HANDLER)sys_read_file);
     InstallSyscall(SYSCALL_CREATE_PROCESS, (SYSCALL_HANDLER)sys_create_process);
     InstallSyscall(SYSCALL_DEBUG_RESET, (SYSCALL_HANDLER)sys_debug_reset);
-
-    InstallSyscall(SYSCALL_SET_MESSAGE, (SYSCALL_HANDLER)sys_set_message);
-    InstallSyscall(SYSCALL_SEND_MESSAGE, (SYSCALL_HANDLER)sys_send_message);
-    InstallSyscall(SYSCALL_SEND_MESSAGE_RESPONSE, (SYSCALL_HANDLER)sys_send_message_reponse);
-    InstallSyscall(SYSCALL_GET_MESSAGE_RESPONSE, (SYSCALL_HANDLER)sys_get_message_reponse);
 
     return true;
 }

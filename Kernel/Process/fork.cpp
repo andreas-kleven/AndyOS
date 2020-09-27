@@ -60,8 +60,6 @@ PROCESS *Fork(PROCESS *proc)
 
     newproc->filetable = proc->filetable->Clone();
     memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
-    // newproc->message_handler = proc->message_handler;
-    newproc->message_handler = 0;
 
     THREAD *current_thread = Scheduler::CurrentThread();
 

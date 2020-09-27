@@ -1,43 +1,36 @@
 #pragma once
 #include "GUI/messages.h"
 #include "window.h"
-#include <andyos/msg.h>
-
-#define WINDOW_MANAGER_PID 9 // TODO
+#include <sys/socket.h>
 
 namespace gui {
-class Client
+namespace client {
+
+bool connected = false;
+
+bool SendRequest(int type, int id, const void *in, void *out, int in_size, int out_size);
+void MessageHandler(const MESSAGE &msg);
+void AddWindow(Window *wnd);
+void *Loop(void *arg);
+void Init();
+
+template <class IN, class OUT>
+bool SendRequest(int type, int id, const IN &req, OUT &res, bool ignore_disconnected = false)
 {
-  public:
-    static bool connected;
+    if (!connected && !ignore_disconnected)
+        return false;
 
-    static void Init();
-    static MESSAGE MessageHandler(MESSAGE msg);
+    return SendRequest(type, id, &req, &res, sizeof(IN), sizeof(OUT));
+}
 
-    static void AddWindow(Window *wnd);
+template <class IN>
+bool SendRequest(int type, int id, const IN &req, bool ignore_disconnected = false)
+{
+    if (!connected && !ignore_disconnected)
+        return false;
 
-    template <class IN, class OUT>
-    static bool SendRequest(IN req, OUT &res, bool ignore_disconnected = false)
-    {
-        if (!connected && !ignore_disconnected)
-            return false;
+    return SendRequest(type, id, &req, 0, sizeof(IN), 0);
+}
 
-        MESSAGE response = send_message(WINDOW_MANAGER_PID, GUI_MESSAGE_TYPE, &req, sizeof(IN));
-
-        if (response.size != sizeof(OUT))
-            return false;
-
-        res = *(OUT *)response.data;
-        return true;
-    }
-
-    template <class IN> static bool SendRequest(IN req, bool ignore_disconnected = false)
-    {
-        if (!connected && !ignore_disconnected)
-            return false;
-
-        post_message(1, GUI_MESSAGE_TYPE, &req, sizeof(IN));
-        return true;
-    }
-};
+}; // namespace client
 } // namespace gui

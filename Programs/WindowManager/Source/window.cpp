@@ -1,14 +1,13 @@
 #include "window.h"
 #include "GUI.h"
+#include "manager.h"
 #include <andyos/math.h>
 #include <string.h>
 #include <sys/types.h>
 
-using namespace gui::messages;
-
 static int new_id = 1;
 
-Window::Window(int proc_id, char *title, int width, int height, uint32_t *framebuffer)
+Window::Window(int proc_id, int sockfd, char *title, int width, int height, uint32_t *framebuffer)
 {
     color_background = Color(0, 0.5, 0.5);
     color_foreground = Color::White;
@@ -16,6 +15,7 @@ Window::Window(int proc_id, char *title, int width, int height, uint32_t *frameb
 
     this->id = new_id++;
     this->proc_id = proc_id;
+    this->sockfd = sockfd;
 
     this->title = new char[strlen(title) + 1];
     strcpy(this->title, title);
@@ -83,15 +83,12 @@ void Window::Resize(int w, int h)
 
     UpdateTitleButtons();
 
-    RESIZE_MESSAGE msg = RESIZE_MESSAGE(id, gc.width, gc.height);
-    post_message(this->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(msg));
+    gui::RESIZE_MESSAGE msg(gc.width, gc.height);
+    WindowManager::SendMessage(this, gui::MSGID_RESIZE, &msg, sizeof(msg));
 }
 
 void Window::Close()
-{
-    WINDOW_ACTION_MESSAGE msg = WINDOW_ACTION_MESSAGE(id, WINDOW_ACTION_CLOSE);
-    post_message(this->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(msg));
-}
+{}
 
 void Window::Minimize()
 {

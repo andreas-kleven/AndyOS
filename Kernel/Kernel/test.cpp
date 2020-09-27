@@ -293,53 +293,6 @@ void Mount()
         debug_print("Mount sockfs failed\n");
 }
 
-void MessageLoop()
-{
-#ifdef __i386__
-#include <Arch/regs.h>
-    while (1) {
-        Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
-        PROCESS *proc = ProcessManager::GetFirst();
-
-        while (proc) {
-            if (!proc->messages->IsEmpty()) {
-                disable();
-                MESSAGE *msg = proc->messages->Get();
-
-                if (msg) {
-                    if (proc->message_handler) {
-                        VMem::SwapAddressSpace(proc->addr_space);
-
-                        THREAD *thread = ProcessManager::CreateThread(
-                            proc, (void (*)())proc->message_handler, 0, 0);
-
-                        REGS *regs = (REGS *)thread->stack;
-                        char *data_ptr = (char *)regs->user_stack - msg->size - 4;
-                        memcpy(data_ptr, msg->data, msg->size);
-
-                        uint32 *stack_ptr = (uint32 *)data_ptr;
-                        *--stack_ptr = msg->size;
-                        *--stack_ptr = (uint32)data_ptr;
-                        *--stack_ptr = msg->param;
-                        *--stack_ptr = msg->src_proc;
-                        *--stack_ptr = msg->id;
-                        regs->user_stack = (uint32)(stack_ptr - 1);
-
-                        Scheduler::InsertThread(thread);
-
-                        proc->messages->Pop();
-                    }
-                }
-
-                enable();
-            }
-
-            proc = proc->next;
-        }
-    }
-#endif
-}
-
 void Start()
 {
     THREAD *dpc_thread = Task::CreateKernelThread(Dpc::Start);
@@ -357,7 +310,6 @@ void Start()
     // Audio();
     // COM();
     // MutexTest();
-    MessageLoop();
 
     Scheduler::ExitThread(0, Scheduler::CurrentThread());
     Scheduler::Switch();

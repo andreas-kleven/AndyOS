@@ -1,10 +1,9 @@
 #include "window.h"
 #include "GUI/messages.h"
 #include "client.h"
+#include <unistd.h>
 
 namespace gui {
-using namespace messages;
-
 static Element *active_element = 0;
 
 static int mouse_x = 0;
@@ -14,10 +13,11 @@ Window::Window(const char *title, int width, int height, Color background)
 {
     this->background = background;
 
-    Client::Init();
+    client::Init();
 
     CREATE_WINDOW_RESPONSE response;
-    if (Client::SendRequest(CREATE_WINDOW_REQUEST(title, width, height), response)) {
+    if (client::SendRequest(REQID_CREATE_WINDOW, this->id,
+                            CREATE_WINDOW_REQUEST(getpid(), title, width, height), response)) {
         this->id = response.id;
         this->width = response.width;
         this->height = response.height;
@@ -25,7 +25,7 @@ Window::Window(const char *title, int width, int height, Color background)
         this->gc = GC(response.width, response.height, response.framebuffer);
         this->gc.Clear(background);
 
-        Client::AddWindow(this);
+        client::AddWindow(this);
     }
 }
 
@@ -38,7 +38,7 @@ void Window::Paint()
         PaintElement(elements[i]);
     }
 
-    Client::SendRequest(PAINT_REQUEST(id, Rect(0, 0, width, height)));
+    client::SendRequest(REQID_PAINT, this->id, PAINT_REQUEST(Rect(0, 0, width, height)));
 }
 
 void Window::PaintElement(GUIBase *elem)
@@ -52,14 +52,13 @@ void Window::PaintElement(GUIBase *elem)
 
 void Window::SetCapture(bool capture)
 {
-    Client::SendRequest(SET_CAPTURE_REQUEST(this->id, capture));
+    client::SendRequest(REQID_SET_CAPTURE, this->id, SET_CAPTURE_REQUEST(capture));
 }
 
-void Window::HandleMessage(MESSAGE &message)
+void Window::HandleMessage(const MESSAGE &message)
 {
-    REQUEST_TYPE type = *(REQUEST_TYPE *)message.data;
-
-    if (type == REQUEST_TYPE_KEY_INPUT) {
+    switch (message.type) {
+    case MSGID_KEY_INPUT: {
         KEY_INPUT_MESSAGE *input = (KEY_INPUT_MESSAGE *)message.data;
         InputManager::HandleKey(input->code, input->pressed);
 
@@ -102,7 +101,9 @@ void Window::HandleMessage(MESSAGE &message)
                 }
             }
         }
-    } else if (type == REQUEST_TYPE_MOUSE_INPUT) {
+    } break;
+
+    case MSGID_MOUSE_INPUT: {
         MOUSE_INPUT_MESSAGE *input = (MOUSE_INPUT_MESSAGE *)message.data;
 
         mouse_x = input->x;
@@ -110,14 +111,18 @@ void Window::HandleMessage(MESSAGE &message)
 
         InputManager::HandleMouse(input->dx, input->dy);
         HoverElement(this, input->x, input->y);
-    } else if (type == REQUEST_TYPE_ACTION) {
+    } break;
+
+    case MSGID_ACTION: {
         WINDOW_ACTION_MESSAGE *msg = (WINDOW_ACTION_MESSAGE *)message.data;
 
         if (msg->action == WINDOW_ACTION_CLOSE) {
             OnClose();
             isClosed = true;
         }
-    } else if (type == REQUEST_TYPE_RESIZE) {
+    } break;
+
+    case MSGID_RESIZE: {
         RESIZE_MESSAGE *msg = (RESIZE_MESSAGE *)message.data;
         this->width = msg->width;
         this->height = msg->height;
@@ -125,6 +130,7 @@ void Window::HandleMessage(MESSAGE &message)
         this->gc.Clear(background);
 
         OnResize();
+    } break;
     }
 
     Paint();

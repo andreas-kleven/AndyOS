@@ -1,7 +1,6 @@
 #include "GUI.h"
 #include "math.h"
 #include <AndyOS.h>
-#include <andyos/msg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -20,13 +20,10 @@ PROCESS::PROCESS(ADDRESS_SPACE addr_space)
 
     for (int i = 0; i < SIGNAL_TABLE_SIZE; i++)
         ProcessManager::SetSignalHandler(this, i, SIG_DFL);
-
-    this->messages = new CircularBuffer<MESSAGE>(PROC_MAX_MESSAGES);
 }
 
 PROCESS::~PROCESS()
 {
-    delete this->messages;
     delete this->filetable;
 }
 

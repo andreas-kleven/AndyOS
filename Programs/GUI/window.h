@@ -1,9 +1,9 @@
 #pragma once
 #include "Elements/element.h"
+#include "GUI/messages.h"
 #include "guibase.h"
 #include <AndyOS.h>
 #include <andyos/drawing.h>
-#include <andyos/msg.h>
 #include <sys/types.h>
 
 namespace gui {
@@ -23,7 +23,7 @@ class Window : public GUIBase
 
     void SetCapture(bool capture);
 
-    void HandleMessage(MESSAGE &msg);
+    void HandleMessage(const MESSAGE &message);
 
   protected:
     virtual void OnClose() {}

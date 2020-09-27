@@ -1,16 +1,17 @@
 #include "manager.h"
 #include "GUI.h"
+#include "GUI/messages.h"
 #include "input.h"
 #include "window.h"
 #include <AndyOS.h>
 #include <andyos/drawing.h>
 #include <andyos/math.h>
-#include <andyos/msg.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <unistd.h>
-
-using namespace gui::messages;
 
 static uint32_t cursor_bitmap[8 * 14] = {
     0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -81,11 +82,13 @@ void WindowManager::Start()
     col_taskbar = Color(0.2, 0.3, 0.5);
     col_desktop_bg = Color(0.9, 0.9, 0.9);
 
-    // LoadBackground("sierra.bmp");
+    LoadBackground("/files/sierra.bmp");
 
     Input::Init();
 
-    set_message(MessageHandler);
+    pthread_t socket_thread;
+    pthread_create(&socket_thread, 0, SocketLoop, 0);
+
     UpdateLoop();
 }
 
@@ -102,7 +105,7 @@ void WindowManager::AddWindow(Window *wnd)
     }
 
     last_window = wnd;
-    window_count++;
+    window_count += 1;
 }
 
 void WindowManager::CloseWindow(Window *wnd)
@@ -120,6 +123,11 @@ void WindowManager::CloseWindow(Window *wnd)
 
     if (wnd == last_window)
         last_window = wnd->previous;
+
+    window_count -= 1;
+
+    gui::WINDOW_ACTION_MESSAGE msg(gui::WINDOW_ACTION_CLOSE);
+    SendMessage(wnd, gui::MSGID_ACTION, &msg, sizeof(msg));
 
     delete wnd;
 }
@@ -150,57 +158,124 @@ void WindowManager::LoadBackground(char *filename)
     bmp_background = new BMP(buf);
 }
 
-MESSAGE WindowManager::MessageHandler(MESSAGE msg)
+bool WindowManager::SendMessage(int sockfd, int id, int type, const void *data, int size)
 {
-    if (msg.type == GUI_MESSAGE_TYPE) {
-        if (msg.size < 4)
-            return MESSAGE(0);
+    char buf[512];
 
-        REQUEST_TYPE type = *(REQUEST_TYPE *)msg.data;
+    int msg_size = size + 8;
 
-        if (type == REQUEST_TYPE_CONNECT) {
-            debug_print("Client connected %i\n", msg.src_proc);
-
-            BOOL_RESPONSE *response = new BOOL_RESPONSE();
-            response->success = true;
-
-            return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(BOOL_RESPONSE));
-        } else if (type == REQUEST_TYPE_CREATE_WINDOW) {
-            CREATE_WINDOW_REQUEST *request = (CREATE_WINDOW_REQUEST *)msg.data;
-            debug_print("Create window request: %s\n", request->title);
-
-            int w = request->width;
-            int h = request->height;
-
-            void *addr1;
-            void *addr2;
-
-            alloc_shared(msg.src_proc, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
-
-            Window *wnd = new Window(msg.src_proc, request->title, w, h, (uint32_t *)addr1);
-            WindowManager::AddWindow(wnd);
-            WindowManager::SetFocusedWindow(wnd);
-            WindowManager::SetActiveWindow(wnd);
-
-            CREATE_WINDOW_RESPONSE *response = new CREATE_WINDOW_RESPONSE(
-                wnd->id, (uint32_t *)addr2, wnd->gc.width, wnd->gc.height);
-            return MESSAGE(GUI_MESSAGE_TYPE, response, sizeof(CREATE_WINDOW_RESPONSE));
-        } else if (type == REQUEST_TYPE_PAINT) {
-            PAINT_REQUEST *request = (PAINT_REQUEST *)msg.data;
-            Window *wnd = GetWindow(request->id);
-
-            if (wnd) {
-                wnd->dirty = true;
-            }
-        } else if (type == REQUEST_TYPE_SET_CAPTURE) {
-            SET_CAPTURE_REQUEST *request = (SET_CAPTURE_REQUEST *)msg.data;
-            Window *wnd = GetWindow(request->id);
-
-            wnd->capture = request->capture;
-        }
+    if (msg_size > sizeof(buf)) {
+        return false;
     }
 
-    return MESSAGE(0);
+    memcpy(&buf[0], &type, 4);
+    memcpy(&buf[4], &id, 4);
+    memcpy(&buf[8], data, size);
+
+    if (send(sockfd, buf, msg_size, 0) < 0)
+        return false;
+
+    return true;
+}
+
+bool WindowManager::SendMessage(Window *wnd, int type, const void *data, int size)
+{
+    return SendMessage(wnd->sockfd, wnd->id, type, data, size);
+}
+
+gui::MESSAGE WindowManager::MessageHandler(int sockfd, const gui::MESSAGE &msg)
+{
+    switch (msg.type) {
+    case gui::REQID_CREATE_WINDOW: {
+        gui::CREATE_WINDOW_REQUEST *request = (gui::CREATE_WINDOW_REQUEST *)msg.data;
+        debug_print("Create window request: %s\n", request->title);
+
+        int w = request->width;
+        int h = request->height;
+
+        void *addr1;
+        void *addr2;
+
+        alloc_shared(request->pid, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
+
+        Window *wnd = new Window(request->pid, sockfd, request->title, w, h, (uint32_t *)addr1);
+        WindowManager::AddWindow(wnd);
+        WindowManager::SetFocusedWindow(wnd);
+        WindowManager::SetActiveWindow(wnd);
+
+        gui::CREATE_WINDOW_RESPONSE response(wnd->id, (uint32_t *)addr2, wnd->gc.width,
+                                             wnd->gc.height);
+        return gui::MESSAGE(gui::RESID_CREATE_WINDOW, msg.id, &response, sizeof(response));
+
+    } break;
+
+    case gui::REQID_PAINT: {
+        gui::PAINT_REQUEST *request = (gui::PAINT_REQUEST *)msg.data;
+        Window *wnd = GetWindow(msg.id);
+
+        if (wnd) {
+            wnd->dirty = true;
+        }
+    } break;
+
+    case gui::REQID_SET_CAPTURE: {
+        gui::SET_CAPTURE_REQUEST *request = (gui::SET_CAPTURE_REQUEST *)msg.data;
+        Window *wnd = GetWindow(msg.id);
+
+        wnd->capture = request->capture;
+    } break;
+    }
+
+    return gui::MESSAGE(0);
+}
+
+void *WindowManager::SocketLoop(void *arg)
+{
+    int serverfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    if (serverfd == -1) {
+        perror("socket loop");
+        return 0;
+    }
+
+    sockaddr_un unixaddr;
+    unixaddr.sun_family = AF_UNIX;
+    strcpy(unixaddr.sun_path, "/winman-sock");
+
+    bind(serverfd, (sockaddr *)&unixaddr, sizeof(unixaddr));
+    listen(serverfd, 10);
+
+    while (true) {
+        int clientfd = accept(serverfd, 0, 0, 0);
+        debug_print("Client connected %d\n", clientfd);
+
+        if (clientfd < 0) {
+            perror("socket accept");
+            sleep(1);
+            continue;
+        }
+
+        pthread_create(0, 0, SocketHandler, (void *)clientfd);
+    }
+}
+
+void *WindowManager::SocketHandler(void *arg)
+{
+    int sockfd = (int)arg;
+    char buf[512];
+
+    while (true) {
+        int len = recv(sockfd, buf, sizeof(buf), 0);
+        gui::MESSAGE msg = gui::MESSAGE(buf, len);
+        gui::MESSAGE response = MessageHandler(sockfd, msg);
+
+        if (response.type != gui::MSGID_NONE) {
+            SendMessage(sockfd, response.id, response.type, response.data, response.size);
+
+            if (response.copied)
+                delete[] response.data;
+        }
+    }
 }
 
 void WindowManager::UpdateLoop()
@@ -208,7 +283,7 @@ void WindowManager::UpdateLoop()
     int last_ticks = get_ticks();
     float target_ticks = 1000000.0f / 60;
 
-    while (1) {
+    while (true) {
         cursor_enabled = !active_window || !active_window->capture;
 
         HandleMouseInput();
@@ -362,18 +437,18 @@ void WindowManager::HandleMouseInput()
 
     if (hovering_content) {
         if (left != cursor_left) {
-            KEY_INPUT_MESSAGE msg(wnd->id, KEY_LBUTTON, left);
-            post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+            gui::KEY_INPUT_MESSAGE msg(KEY_LBUTTON, left);
+            SendMessage(wnd, gui::MSGID_KEY_INPUT, &msg, sizeof(msg));
         }
 
         if (right != cursor_right) {
-            KEY_INPUT_MESSAGE msg(wnd->id, KEY_RBUTTON, right);
-            post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+            gui::KEY_INPUT_MESSAGE msg(KEY_RBUTTON, right);
+            SendMessage(wnd, gui::MSGID_KEY_INPUT, &msg, sizeof(msg));
         }
 
         if (middle != cursor_middle) {
-            KEY_INPUT_MESSAGE msg(wnd->id, KEY_MBUTTON, middle);
-            post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+            gui::KEY_INPUT_MESSAGE msg(KEY_MBUTTON, middle);
+            SendMessage(wnd, gui::MSGID_KEY_INPUT, &msg, sizeof(msg));
         }
     }
 
@@ -393,8 +468,8 @@ void WindowManager::HandleMouseInput()
             int _dx = (active_window == wnd) ? dx : 0;
             int _dy = (active_window == wnd) ? dy : 0;
 
-            MOUSE_INPUT_MESSAGE msg(wnd->id, relx, rely, _dx, _dy);
-            post_message(wnd->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(MOUSE_INPUT_MESSAGE));
+            gui::MOUSE_INPUT_MESSAGE msg(relx, rely, _dx, _dy);
+            SendMessage(wnd, gui::MSGID_MOUSE_INPUT, &msg, sizeof(msg));
         }
     }
 
@@ -529,8 +604,8 @@ void WindowManager::HandleKeyInput()
         gui::InputManager::HandleKey(code, pressed);
 
         if (active_window) {
-            KEY_INPUT_MESSAGE msg(active_window->id, code, pressed);
-            post_message(active_window->proc_id, GUI_MESSAGE_TYPE, &msg, sizeof(KEY_INPUT_MESSAGE));
+            gui::KEY_INPUT_MESSAGE msg(code, pressed);
+            SendMessage(active_window, gui::MSGID_KEY_INPUT, &msg, sizeof(msg));
         }
 
         // alt+tab

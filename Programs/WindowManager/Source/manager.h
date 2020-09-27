@@ -1,7 +1,6 @@
 #pragma once
+#include "GUI/messages.h"
 #include "window.h"
-#include <andyos/msg.h>
-
 struct MOUSE_CLICK_INFO
 {
     Window *window = 0;
@@ -29,6 +28,9 @@ class WindowManager
   public:
     static void Start();
 
+    static bool SendMessage(int sockfd, int id, int type, const void *data, int size);
+    static bool SendMessage(Window *wnd, int type, const void *data, int size);
+
     static void AddWindow(Window *wnd);
     static void CloseWindow(Window *wnd);
     static void MinimizeWindow(Window *wnd);
@@ -37,7 +39,9 @@ class WindowManager
     static void LoadBackground(char *filename);
 
   private:
-    static MESSAGE MessageHandler(MESSAGE msg);
+    static gui::MESSAGE MessageHandler(int sockfd, const gui::MESSAGE &msg);
+    static void *SocketLoop(void *arg);
+    static void *SocketHandler(void *arg);
     static void UpdateLoop();
 
     static void PaintBackground();

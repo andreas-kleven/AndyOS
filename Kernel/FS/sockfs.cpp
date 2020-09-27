@@ -89,14 +89,14 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
         return -1;
 
     sockaddr_un *unix_addr = (sockaddr_un *)addr;
+    char *copy;
     const char *filename = 0;
     const char *parentname = 0;
 
     if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0]) {
-        char *copy = strdup(unix_addr->sun_path);
+        copy = strdup(unix_addr->sun_path);
         filename = basename(copy);
         parentname = dirname(copy);
-        delete[] copy;
 
         parent = VFS::GetDentry(parentname);
 
@@ -104,8 +104,13 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
             return -ENOENT;
     }
 
-    if ((ret = socket->Bind(addr, addrlen)))
+    if ((ret = socket->Bind(addr, addrlen))) {
+
+        if (copy)
+            delete[] copy;
+
         return ret;
+    }
 
     if (addr->sa_family == AF_UNIX) {
         if (parent) {
@@ -114,6 +119,9 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
             VFS::AddDentry(parent, dentry);
         }
     }
+
+    if (copy)
+        delete[] copy;
 
     return 0;
 }

@@ -19,6 +19,7 @@ class Window
     Color color_title;
 
     int id;
+    int sockfd;
     int proc_id;
     char *title;
     bool capture;
@@ -40,7 +41,7 @@ class Window
     Window *next;
     Window *previous;
 
-    Window(int proc_id, char *title, int width, int height, uint32_t *framebuffer);
+    Window(int proc_id, int sockfd, char *title, int width, int height, uint32_t *framebuffer);
 
     void Paint(GC &main_gc);
     void Move(int x, int y);

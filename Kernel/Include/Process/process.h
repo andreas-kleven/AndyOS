@@ -8,7 +8,6 @@
 #include <sync.h>
 #include <types.h>
 
-#define PROC_MAX_MESSAGES 32
 #define FILE_TABLE_SIZE   256
 #define SIGNAL_TABLE_SIZE 32
 
@@ -25,7 +24,6 @@
 #define SIGCHLD 20
 
 typedef void (*sig_t)(int signo);
-typedef void MESSAGE_HANDLER(int id, int type, char *buf, int size);
 
 struct sigaction
 {
@@ -39,51 +37,6 @@ enum PROCESS_STATE
     PROCESS_STATE_RUNABLE,
     PROCESS_STATE_ZOMBIE,
     PROCESS_STATE_STOPPED
-};
-
-enum MESSAGE_TYPE
-{
-    MESSAGE_TYPE_MESSAGE,
-    MESSAGE_TYPE_RESPONSE
-};
-
-struct MESSAGE
-{
-    MESSAGE_TYPE type;
-    int id;
-    int src_proc;
-    int param;
-    int size;
-    char *data;
-
-    MESSAGE()
-    {
-        id = 0;
-        src_proc = 0;
-        param = 0;
-        size = 0;
-        data = 0;
-    }
-
-    MESSAGE(MESSAGE_TYPE type, int id, int src_proc, int param, int size, char *data)
-    {
-        this->type = type;
-        this->id = id;
-        this->src_proc = src_proc;
-        this->param = param;
-        this->size = size;
-        this->data = data;
-    }
-
-    MESSAGE(MESSAGE_TYPE type, int id, int src_proc, int param, int size)
-    {
-        this->type = type;
-        this->id = id;
-        this->src_proc = src_proc;
-        this->param = param;
-        this->size = size;
-        this->data = new char[size];
-    }
 };
 
 struct PROCESS
@@ -108,9 +61,6 @@ struct PROCESS
     Filetable *filetable;
     sig_t signal_table[SIGNAL_TABLE_SIZE];
     Mutex signal_mutex;
-
-    MESSAGE_HANDLER *message_handler = 0;
-    CircularBuffer<MESSAGE> *messages;
 
     PROCESS(ADDRESS_SPACE addr_space);
     ~PROCESS();

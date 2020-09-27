@@ -201,7 +201,7 @@ int Socket::Shutdown(int how)
 
 void Socket::HandleData(const void *data, int length)
 {
-    debug_print("Socket receive %d %d\n", length, PMem::NumFree());
+    debug_print("Socket receive %d %d\n", length, this->id);
 
     if (!length)
         return;
