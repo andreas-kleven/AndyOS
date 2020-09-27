@@ -43,6 +43,7 @@ class WindowManager
     static void *SocketLoop(void *arg);
     static void *SocketHandler(void *arg);
     static void UpdateLoop();
+    static bool ShouldRender();
 
     static void CreateCursorGC();
     static void CreateBackgroundGC();

@@ -39,5 +39,6 @@ void Draw(Vertex *verts, int count);
 void Clear(Color color);
 void SwapBuffers();
 
-void Init(GC gc);
+void InitGraphics(const GC &gc);
+void Init();
 }; // namespace GL

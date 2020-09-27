@@ -179,8 +179,8 @@ void Update()
 
     Input::Update();
 
-    float mouse_x = Input::GetAxis(AXIS_X);
-    float mouse_y = Input::GetAxis(AXIS_Y);
+    float mouse_x = Input::GetAxis(AXIS_X) * 0.2;
+    float mouse_y = Input::GetAxis(AXIS_Y) * 0.2;
 
     bool mouse_l = Input::GetKey(KEY_LBUTTON);
     bool mouse_r = Input::GetKey(KEY_RBUTTON);
@@ -549,9 +549,6 @@ void Collision()
 
 void Render()
 {
-    // marcher.Render(gc);
-    // return;
-
     // Raytracer tracer(gc);
     // tracer.Render();
     // return;
@@ -606,7 +603,7 @@ void StartGame(Game *game, gui::Window *wnd)
     GEngine::window = wnd;
 
     gc = wnd->gc;
-    GL::Init(gc);
+    GL::InitGraphics(gc);
 
     deltaTime = 1 / 100.0f;
     startTicks = get_ticks();
@@ -683,12 +680,14 @@ void StartGame(Game *game, gui::Window *wnd)
 
         if (window->gc.width != gc.width || window->gc.height != gc.height) {
             gc = window->gc;
-            GL::Init(gc);
+            GL::InitGraphics(gc);
         }
 
         Update();
         Collision();
         Render();
+
+        window->Paint();
 
         totalFrames++;
     }

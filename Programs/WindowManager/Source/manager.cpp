@@ -53,6 +53,7 @@ static Window *hover_window = 0;
 
 static float cursor_x = 0;
 static float cursor_y = 0;
+static bool cursor_moved = false;
 
 static int cursor_left = false;
 static int cursor_right = false;
@@ -280,14 +281,16 @@ void *WindowManager::SocketHandler(void *arg)
 
 void WindowManager::UpdateLoop()
 {
-    int last_ticks = get_ticks();
-    float target_ticks = 1000000.0f / 60;
-
     while (true) {
         cursor_enabled = !active_window || !active_window->capture;
 
         HandleMouseInput();
         HandleKeyInput();
+
+        if (!ShouldRender()) {
+            usleep(10000);
+            continue;
+        }
 
         if (active_window && active_window->fullscreen) {
             PaintWindows();
@@ -302,14 +305,24 @@ void WindowManager::UpdateLoop()
         }
 
         gc.Draw();
-
-        int ticks = get_ticks();
-        float delta = ticks - last_ticks;
-        last_ticks = ticks;
-
-        if (delta < target_ticks)
-            usleep((int)(target_ticks - delta));
     }
+}
+
+bool WindowManager::ShouldRender()
+{
+    if (cursor_moved)
+        return true;
+
+    Window *wnd = first_window;
+    while (wnd) {
+        if (wnd->dirty && wnd->state != WINDOW_STATE_MINIMIZED) {
+            return true;
+        }
+
+        wnd = wnd->next;
+    }
+
+    return false;
 }
 
 void WindowManager::CreateCursorGC()
@@ -432,9 +445,16 @@ void WindowManager::HandleMouseInput()
     Input::GetMouseButtons(left, right, middle);
     Input::GetMouseMovement(dx, dy);
 
+    cursor_moved = false;
+
     if (cursor_enabled) {
+        float prevx = cursor_x;
+        float prevy = cursor_y;
         cursor_x = clamp(cursor_x + sensitivity * dx, 0.0f, (float)width);
         cursor_y = clamp(cursor_y - sensitivity * dy, 0.0f, (float)height);
+
+        if (cursor_x != prevx || cursor_y != prevy)
+            cursor_moved = true;
     }
 
     Window *wnd = GetWindowAtCursor();

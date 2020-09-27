@@ -51,7 +51,7 @@ Matrix4 &SelectedMatrix()
 
 int AddTexture(BMP *bmp)
 {
-    if (tex_index == GL_MAX_TEXTURES + 1)
+    if (tex_index == GL_MAX_TEXTURES)
         return 0;
 
     m_textures[tex_index] = bmp;
@@ -174,7 +174,7 @@ void SwapBuffers()
     gc_buf.CopyTo(0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 }
 
-void Init(GC gc)
+void InitGraphics(const GC &gc)
 {
     gc_buf = GC(gc.width, gc.height);
     gc_out = gc;
@@ -182,17 +182,19 @@ void Init(GC gc)
     m_width = gc_buf.width;
     m_height = gc_buf.height;
     m_stride = gc_buf.stride;
+    rasterizer = Rasterizer(gc_buf);
+}
 
-    m_textures = new BMP *[GL_MAX_TEXTURES + 1];
-    m_textures[0] = 0;
-
+void Init()
+{
     mat_stack = new Matrix4[GL_MATRIX_STACK_LENGTH];
+
+    m_textures = new BMP *[GL_MAX_TEXTURES];
+    memset(m_textures, 0, sizeof(BMP *) * (GL_MAX_TEXTURES));
 
     tex_index = 1;
     bound_tex = 0;
     light_index = 0;
     mat_stack_index = 0;
-
-    rasterizer = Rasterizer(gc_buf);
 }
 } // namespace GL

@@ -35,12 +35,14 @@ bool any_key_down()
     return false;
 }
 
-void render(GC &gc, int scale)
+void render(Window *wnd, GC &gc, int scale)
 {
     int width = gc.width;
     int height = gc.height;
     int step = scale == max_scale ? scale : 1;
     int offset = scale == max_scale ? 0 : scale - 1;
+
+    uint64_t prev_time = get_ticks();
 
     for (int sy = offset; sy < height; sy += step) {
         if (scale != max_scale && any_key_down())
@@ -70,10 +72,17 @@ void render(GC &gc, int scale)
 
             gc.FillRect(sx, sy, scale, scale, color);
         }
+
+        if (raymarch) {
+            if (get_ticks() - prev_time > 100000) {
+                wnd->Paint();
+                prev_time = get_ticks();
+            }
+        }
     }
 }
 
-void run(GC &gc)
+void run(Window *wnd)
 {
     mandelbrot_init();
     raymarch_init();
@@ -85,6 +94,7 @@ void run(GC &gc)
     bool change_mode = false;
     bool done = false;
 
+    GC &gc = wnd->gc;
     GC gc_buf;
 
     while (1) {
@@ -124,8 +134,10 @@ void run(GC &gc)
             change_mode = false;
         }
 
-        if (!done)
-            render(gc, scale);
+        if (!done) {
+            render(wnd, gc, scale);
+            wnd->Paint();
+        }
 
         if (any_key_down()) {
             done = false;
@@ -147,19 +159,14 @@ void run(GC &gc)
 class MainWindow : public Window
 {
   public:
-    MainWindow() : Window("Mandelbrot")
-    {
-        SetCapture(true);
-        usleep(100 * 1000);
-        run(this->gc);
-    }
+    MainWindow() : Window("Mandelbrot") { SetCapture(true); }
 
     void OnClose() { exit(0); }
 };
 
 int main()
 {
-    setlinebuf(stdout);
     MainWindow wnd;
+    run(&wnd);
     return 0;
 }
