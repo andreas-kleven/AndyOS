@@ -70,8 +70,6 @@ static MOUSE_CLICK_INFO mouse_click_R_info;
 static MOUSE_CLICK_INFO mouse_click_M_info;
 static WINDOW_DRAG_INFO window_drag_info;
 
-static bool background_dirty = true;
-
 void WindowManager::Start()
 {
     gc = GC(width, height);
@@ -83,6 +81,8 @@ void WindowManager::Start()
     col_desktop_bg = Color(0.9, 0.9, 0.9);
 
     LoadBackground("/files/sierra.bmp");
+    CreateBackgroundGC();
+    CreateCursorGC();
 
     Input::Init();
 
@@ -289,9 +289,13 @@ void WindowManager::UpdateLoop()
         HandleMouseInput();
         HandleKeyInput();
 
-        PaintBackground();
-        PaintWindows();
-        PaintTaskbar();
+        if (active_window && active_window->fullscreen) {
+            PaintWindows();
+        } else {
+            PaintBackground();
+            PaintWindows();
+            PaintTaskbar();
+        }
 
         if (cursor_enabled) {
             PaintCursor();
@@ -308,33 +312,46 @@ void WindowManager::UpdateLoop()
     }
 }
 
+void WindowManager::CreateCursorGC()
+{
+    for (int y = 0; y < 14; y++) {
+        for (int x = 0; x < 8; x++) {
+            uint32_t c = cursor_bitmap[x + y * 8];
+
+            if (c != 0) {
+                Color col = Color(c);
+                gc_cursor.SetPixel(x, y, col);
+            }
+        }
+    }
+}
+
+void WindowManager::CreateBackgroundGC()
+{
+    if (bmp_background) {
+        gc_background.DrawImage(0, 0, bmp_background->width, bmp_background->height,
+                                bmp_background);
+        /*//Repeat
+
+        int x = 0;
+        while (x < width)
+        {
+                int  y = 0;
+                while (y < height)
+                {
+                        gc_background.DrawImage(x, y, bmp_background->width,
+        bmp_background->height, bmp_background); y += bmp_background->height;
+                }
+
+                x += bmp_background->width;
+        }*/
+    } else {
+        gc_background.FillRect(0, 0, gc.width, gc.height, col_desktop_bg);
+    }
+}
+
 void WindowManager::PaintBackground()
 {
-    if (background_dirty) {
-        if (bmp_background) {
-            gc_background.DrawImage(0, 0, bmp_background->width, bmp_background->height,
-                                    bmp_background);
-            /*//Repeat
-
-            int x = 0;
-            while (x < width)
-            {
-                    int  y = 0;
-                    while (y < height)
-                    {
-                            gc_background.DrawImage(x, y, bmp_background->width,
-            bmp_background->height, bmp_background); y += bmp_background->height;
-                    }
-
-                    x += bmp_background->width;
-            }*/
-        } else {
-            gc_background.FillRect(0, 0, gc.width, gc.height, col_desktop_bg);
-        }
-
-        background_dirty = false;
-    }
-
     gc_background.CopyTo(0, 0, gc_background.width, gc_background.height, gc, 0, 0);
 }
 
@@ -368,7 +385,6 @@ void WindowManager::PaintWindows()
 
 void WindowManager::PaintTaskbar()
 {
-
     int width = gc_taskbar.width;
     int height = gc_taskbar.height;
     int y = gc.height - gc_taskbar.height;
@@ -403,17 +419,6 @@ void WindowManager::PaintTaskbarWindows()
 
 void WindowManager::PaintCursor()
 {
-    for (int y = 0; y < 14; y++) {
-        for (int x = 0; x < 8; x++) {
-            uint32_t c = cursor_bitmap[x + y * 8];
-
-            if (c != 0) {
-                Color col = Color(c);
-                gc_cursor.SetPixel(x, y, col);
-            }
-        }
-    }
-
     gc_cursor.CopyTo(0, 0, gc_cursor.width, gc_cursor.height, gc, (int)cursor_x, (int)cursor_y, 1);
 }
 
@@ -528,7 +533,7 @@ void WindowManager::HandleMouseInput()
                     if (wnd->titlebar_bounds.Contains(mouse_click_L_info.click_x,
                                                       mouse_click_L_info.click_y)) {
                         window_drag = 1;
-                    } else if (wnd->content_bounds.Contains(mouse_click_L_info.click_x,
+                    } /*else if (wnd->content_bounds.Contains(mouse_click_L_info.click_x,
                                                             mouse_click_L_info.click_y)) {
                         if (!Rect(wnd->bounds.x + bw, wnd->bounds.y + bw,
                                   wnd->bounds.width - bw * 2, wnd->bounds.height - bw * 2)
@@ -537,7 +542,7 @@ void WindowManager::HandleMouseInput()
                             window_drag = 1;
                             window_drag_info.resize = true;
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -611,6 +616,14 @@ void WindowManager::HandleKeyInput()
         // alt+tab
         if (gui::InputManager::GetKeyDown(KEY_LALT) && gui::InputManager::GetKeyDown(KEY_TAB)) {
             active_window = 0;
+        }
+
+        // alt+enter
+        if (focused_window) {
+            if (gui::InputManager::GetKeyDown(KEY_LALT) &&
+                gui::InputManager::GetKeyDown(KEY_RETURN)) {
+                focused_window->SetFullscreen(!focused_window->fullscreen);
+            }
         }
     }
 }

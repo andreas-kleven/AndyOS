@@ -44,6 +44,9 @@ class WindowManager
     static void *SocketHandler(void *arg);
     static void UpdateLoop();
 
+    static void CreateCursorGC();
+    static void CreateBackgroundGC();
+
     static void PaintBackground();
     static void PaintWindows();
     static void PaintTaskbar();

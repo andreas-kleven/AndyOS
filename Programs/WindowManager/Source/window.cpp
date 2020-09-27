@@ -31,23 +31,29 @@ Window::Window(int proc_id, int sockfd, char *title, int width, int height, uint
 
 void Window::Paint(GC &main_gc)
 {
-    const int bw = GUI_WINDOW_BORDER_WIDTH;
-
     // if (dirty)
-    gc.CopyTo(0, 0, gc.width, gc.height, main_gc, bounds.x, bounds.y + GUI_TITLEBAR_HEIGHT);
 
-    Color _titlebar = focused ? color_background : Color::White;
-    Color _border = focused ? color_background : Color::Black;
+    if (fullscreen) {
+        gc.CopyTo(0, 0, gc.width, gc.height, main_gc, bounds.x, bounds.y);
+    } else {
+        const int bw = GUI_WINDOW_BORDER_WIDTH;
 
-    main_gc.FillRect(bounds.x, bounds.y, bounds.width, GUI_TITLEBAR_HEIGHT, _titlebar); // Title bar
-    main_gc.DrawText(bounds.x + 4, bounds.y + 4, title, color_title);                   // Title
+        gc.CopyTo(0, 0, gc.width, gc.height, main_gc, bounds.x, bounds.y + titlebar_bounds.height);
 
-    main_gc.FillRect(bclose_bounds, Color::Red);
-    main_gc.FillRect(bmin_bounds, Color::Yellow);
-    main_gc.FillRect(bmax_bounds, Color::Green);
+        Color _titlebar = focused ? color_background : Color::White;
+        Color _border = focused ? color_background : Color::Black;
 
-    main_gc.DrawRect(bounds.x - bw, bounds.y - bw, bounds.width + bw * 2, bounds.height + bw * 2,
-                     bw, _border); // Window border
+        main_gc.FillRect(bounds.x, bounds.y, bounds.width, titlebar_bounds.height,
+                         _titlebar);                                      // Title bar
+        main_gc.DrawText(bounds.x + 4, bounds.y + 4, title, color_title); // Title
+
+        main_gc.FillRect(bclose_bounds, Color::Red);
+        main_gc.FillRect(bmin_bounds, Color::Yellow);
+        main_gc.FillRect(bmax_bounds, Color::Green);
+
+        main_gc.DrawRect(bounds.x - bw, bounds.y - bw, bounds.width + bw * 2,
+                         bounds.height + bw * 2, bw, _border); // Window border
+    }
 
     dirty = false;
 }
@@ -59,7 +65,7 @@ void Window::Move(int x, int y)
     bounds.x = x;
     bounds.y = y;
     content_bounds.x = x;
-    content_bounds.y = y + GUI_TITLEBAR_HEIGHT;
+    content_bounds.y = y + titlebar_bounds.height;
     titlebar_bounds.x = x;
     titlebar_bounds.y = y;
 
@@ -71,13 +77,13 @@ void Window::Resize(int w, int h)
     w = max(w, 100);
     h = max(h, GUI_TITLEBAR_HEIGHT + 30);
 
+    titlebar_bounds.width = w;
+    titlebar_bounds.height = fullscreen ? 0 : GUI_TITLEBAR_HEIGHT;
+
     bounds.width = w;
     bounds.height = h;
     content_bounds.width = w;
-    content_bounds.height = h - GUI_TITLEBAR_HEIGHT;
-
-    titlebar_bounds.width = w;
-    titlebar_bounds.height = GUI_TITLEBAR_HEIGHT;
+    content_bounds.height = fullscreen ? h : (h - titlebar_bounds.height);
 
     gc.Resize(content_bounds.width, content_bounds.height);
 
@@ -119,9 +125,27 @@ void Window::SetFocus(bool focus)
     this->focused = focus;
 }
 
+void Window::SetFullscreen(bool fullscreen)
+{
+    if (fullscreen == this->fullscreen)
+        return;
+
+    this->fullscreen = fullscreen;
+
+    if (this->fullscreen)
+        SetState(WINDOW_STATE_MAXIMIZED, true);
+    else
+        SetState(WINDOW_STATE_NORMAL, true);
+}
+
 void Window::SetState(WINDOW_STATE ws)
 {
-    if (ws == state)
+    return SetState(ws, false);
+}
+
+void Window::SetState(WINDOW_STATE ws, bool force)
+{
+    if (ws == state && !force)
         return;
 
     if (state == WINDOW_STATE_NORMAL)
@@ -135,7 +159,7 @@ void Window::SetState(WINDOW_STATE ws)
 
     case WINDOW_STATE_MAXIMIZED:
         Move(0, 0);
-        Resize(1024, 768 - GUI_TASKBAR_HEIGHT);
+        Resize(1024, fullscreen ? 768 : (768 - GUI_TASKBAR_HEIGHT));
         break;
 
     case WINDOW_STATE_MINIMIZED:
@@ -151,7 +175,7 @@ void Window::UpdateTitleButtons()
     const int size = 14;
     const int margin = 20;
 
-    int y = bounds.y + GUI_TITLEBAR_HEIGHT / 2 - size / 2;
+    int y = bounds.y + titlebar_bounds.height / 2 - size / 2;
     int right = bounds.Right();
 
     bclose_bounds = Rect(right - margin, y, size, size);

@@ -23,6 +23,7 @@ class Window
     int proc_id;
     char *title;
     bool capture;
+    bool fullscreen;
     WINDOW_STATE state;
 
     Rect bounds;
@@ -53,7 +54,9 @@ class Window
     void ToggleMaximized();
 
     void SetFocus(bool focus);
+    void SetFullscreen(bool fullscreen);
     void SetState(WINDOW_STATE state);
+    void SetState(WINDOW_STATE state, bool force);
 
   private:
     WINDOW_STATE saved_state;
