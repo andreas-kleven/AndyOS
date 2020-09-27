@@ -111,7 +111,7 @@ int TtyDriver::HandleInput(const char *input, size_t size)
 
     if (termios.c_lflag & ICANON) {
         for (size_t i = 0; i < size; i++) {
-            char c = input[0];
+            char c = input[i];
 
             if (c == '\n') {
                 read_pipe->Write(0, line_buffer->buffer, line_buffer->written);
