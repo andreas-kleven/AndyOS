@@ -4,17 +4,13 @@
 GameObject::GameObject()
 {
     this->parent = 0;
+    this->type = ObjectType::Camera;
     this->name = "GameObject";
 }
 
 void GameObject::SetName(const std::string &name)
 {
     this->name = name;
-}
-
-std::string GameObject::GetName()
-{
-    return name;
 }
 
 Transform GameObject::GetWorldTransform()

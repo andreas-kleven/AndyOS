@@ -5,7 +5,7 @@
 #include <andyos/math.h>
 #include <stdio.h>
 
-const int numPhotons = 10000;
+const int numPhotons = 1000;
 static Photon *photonMap;
 static Photon *causticsMap;
 static int currentNumPhotons;
@@ -356,7 +356,7 @@ Color TraceColor(Vector3 &rayOrigin, Vector3 &rayDir, int maxRays = 5)
 
 void EmitPhotons()
 {
-    LightSource *lightSource = game->lights[0];
+    LightSource *lightSource = (LightSource *)game->GetObject(ObjectType::Light);
     Vector3 rayOrigin = lightSource->GetWorldPosition();
 
     srand(0);
@@ -433,7 +433,7 @@ void Raytracer::Render()
     int curMouseY = Input::GetAxis(AXIS_Y);
 
     // Resolution
-    const int maxResolution = 16;
+    const int maxResolution = 32;
     Transform camTransform = cam->GetWorldTransform();
 
     if (camTransform.position == prevCamTransform.position &&

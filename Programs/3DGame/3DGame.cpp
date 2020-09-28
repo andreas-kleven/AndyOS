@@ -1,6 +1,8 @@
 #include "3DGame.h"
 #include "GEngine.h"
 #include "MyBox.h"
+#include "MyCamera.h"
+#include "MyLight.h"
 #include "MySphere.h"
 #include "Thing.h"
 #include <andyos/float.h>
@@ -56,16 +58,16 @@ void CreateCornell(Game *game)
 
 MyGame::MyGame()
 {
-    Camera *cam = CreateCamera<Camera>("Cam1");
+    MyCamera *cam = CreateObject<MyCamera>("Camera1");
     cam->transform.position = Vector3(0, 0, -25);
 
-    // DirectionalLight* light = CreateLightSource<DirectionalLight>("Light");
-    // light->transform.position = Vector3(0, 100, 0);
-    // light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
+    MyLight *light = CreateObject<MyLight>("Light");
+    light->transform.position = Vector3(0, 100, 0);
+    light->transform.rotation = Quaternion::LookAt(Vector3(), Vector3(0.3, -1, 0.5));
 
-    PointLight *light = CreateLightSource<PointLight>("Light");
-    light->transform.position = Vector3(0, 3, 0);
-    light->intensity = 100;
+    // PointLight *light = CreateObject<PointLight>("Light");
+    // light->transform.position = Vector3(1, 1, 1);
+    // light->intensity = 1;
 
     // Objects
     Thing *thing = CreateObject<Thing>("Thing");

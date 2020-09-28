@@ -107,11 +107,3 @@ Vector3 Transform::GetForwardVector()
 {
     return this->rotation * Vector3(0, 0, 1);
 }
-
-char *Transform::ToString(char *buf)
-{
-    sprintf(buf, "[%f, %f, %f] [%f, %f, %f, %f] [%f, %f, %f]", position.x, position.y, position.z,
-            rotation.x, rotation.y, rotation.z, rotation.w, scale.x, scale.y, scale.z);
-
-    return buf;
-}

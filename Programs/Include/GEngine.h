@@ -7,6 +7,7 @@
 #include "GameEngine/Include/Input.h"
 #include "GameEngine/Include/Lighting/DirectionalLight.h"
 #include "GameEngine/Include/Lighting/PointLight.h"
+#include "GameEngine/Include/Math.h"
 #include "GameEngine/Include/Model3D.h"
 #include "GameEngine/Include/ModelLoader.h"
 #include "GameEngine/Include/Physics/Collision.h"

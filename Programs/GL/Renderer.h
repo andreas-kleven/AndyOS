@@ -38,6 +38,7 @@ void CameraDirection(Vector4 dir);
 void Draw(Vertex *verts, int count);
 void Clear(Color color);
 void SwapBuffers();
+GC &GetGC();
 
 void InitGraphics(const GC &gc);
 void Init();

@@ -32,6 +32,7 @@ const int width = 1024;
 const int height = 768;
 
 const float sensitivity = 0.5f;
+static bool has_rendered = false;
 
 static Color col_taskbar;
 static Color col_desktop_bg;
@@ -267,6 +268,12 @@ void *WindowManager::SocketHandler(void *arg)
 
     while (true) {
         int len = recv(sockfd, buf, sizeof(buf), 0);
+
+        if (len < 0) {
+            perror("socket recv");
+            continue;
+        }
+
         gui::MESSAGE msg = gui::MESSAGE(buf, len);
         gui::MESSAGE response = MessageHandler(sockfd, msg);
 
@@ -305,11 +312,15 @@ void WindowManager::UpdateLoop()
         }
 
         gc.Draw();
+        has_rendered = true;
     }
 }
 
 bool WindowManager::ShouldRender()
 {
+    if (!has_rendered)
+        return true;
+
     if (cursor_moved)
         return true;
 

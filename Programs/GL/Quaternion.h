@@ -215,4 +215,5 @@ struct Quaternion
     static Quaternion FromEuler(const Vector3 &euler);
     static Quaternion FromAxisAngle(const Vector3 &axis, float ang);
     static Quaternion LookAt(const Vector3 &from, const Vector3 &to);
+    static Quaternion LookAt(const Vector3 &from, const Vector3 &to, const Vector3 &up);
 };

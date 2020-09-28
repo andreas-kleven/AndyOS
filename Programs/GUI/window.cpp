@@ -1,6 +1,7 @@
 #include "window.h"
 #include "GUI/messages.h"
 #include "client.h"
+#include <stdlib.h>
 #include <unistd.h>
 
 namespace gui {
@@ -26,6 +27,9 @@ Window::Window(const char *title, int width, int height, Color background)
         this->gc.Clear(background);
 
         client::AddWindow(this);
+    } else {
+        debug_print("Create window error\n");
+        exit(1);
     }
 }
 

@@ -7,6 +7,13 @@
 #include <string>
 #include <vector>
 
+enum class ObjectType
+{
+    Object,
+    Camera,
+    Light
+};
+
 class GameObject
 {
   public:
@@ -23,9 +30,9 @@ class GameObject
 
     virtual void Start() {}
     virtual void Update(float deltaTime) {}
+    virtual void LateUpdate(float deltaTime) {}
 
     void SetName(const std::string &name);
-    std::string GetName();
 
     Transform GetWorldTransform();
     Vector3 GetWorldPosition();
@@ -35,7 +42,13 @@ class GameObject
     void AddComponent(Component *comp);
     Component *GetComponent(const std::string &name);
 
+    inline ObjectType GetType() const { return this->type; }
+    inline std::string GetName() const { return this->name; }
+
     template <class T> T *CreateComponent(const std::string &name);
+
+  protected:
+    ObjectType type;
 
   private:
     std::string name;

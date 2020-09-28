@@ -19,6 +19,4 @@ struct Transform
     Vector3 GetRightVector();
     Vector3 GetUpVector();
     Vector3 GetForwardVector();
-
-    char *ToString(char *buf);
 };

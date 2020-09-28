@@ -7,7 +7,7 @@ OBJ_DIR := obj
 SRC_FILES := $(shell find . -name '*.cpp')
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
-$(TARGET): $(OBJ_FILES)
+$(TARGET): $(BUILD_DIR)/gui.a $(BUILD_DIR)/gl.a $(OBJ_FILES)
 	$(AR) cr $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

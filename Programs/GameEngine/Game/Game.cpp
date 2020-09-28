@@ -10,19 +10,9 @@ Game::Game()
 void Game::AddObject(GameObject *object)
 {
     objects.push_back(object);
-}
 
-void Game::AddCamera(Camera *cam)
-{
-    cameras.push_back(cam);
-
-    if (!active_cam)
-        SetActiveCamera(cam);
-}
-
-void Game::AddLightSource(LightSource *light)
-{
-    lights.push_back(light);
+    if (!active_cam && object->GetType() == ObjectType::Camera)
+        SetActiveCamera((Camera *)object);
 }
 
 Camera *Game::GetActiveCamera()
@@ -38,8 +28,6 @@ void Game::SetActiveCamera(Camera *cam)
 GameObject *Game::GetObject(const std::string &name)
 {
     for (int i = 0; i < objects.size(); i++) {
-        printf(objects[i]->GetName().c_str());
-
         GameObject *obj = objects[i];
         if (obj->GetName() == name)
             return obj;
@@ -48,23 +36,12 @@ GameObject *Game::GetObject(const std::string &name)
     return 0;
 }
 
-Camera *Game::GetCamera(const std::string &name)
+GameObject *Game::GetObject(ObjectType type)
 {
-    for (int i = 0; i < cameras.size(); i++) {
-        Camera *cam = cameras[i];
-        if (cam->GetName() == name)
-            return cam;
-    }
-
-    return 0;
-}
-
-LightSource *Game::GetLightSource(const std::string &name)
-{
-    for (int i = 0; i < lights.size(); i++) {
-        LightSource *light = lights[i];
-        if (light->GetName() == name)
-            return light;
+    for (int i = 0; i < objects.size(); i++) {
+        GameObject *obj = objects[i];
+        if (obj->GetType() == type)
+            return obj;
     }
 
     return 0;

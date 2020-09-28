@@ -174,6 +174,11 @@ void SwapBuffers()
     gc_buf.CopyTo(0, 0, gc_buf.width, gc_buf.height, gc_out, 0, 0);
 }
 
+GC &GetGC()
+{
+    return gc_buf;
+}
+
 void InitGraphics(const GC &gc)
 {
     gc_buf = GC(gc.width, gc.height);

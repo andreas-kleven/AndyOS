@@ -18,6 +18,7 @@ int main()
 {
     GameWindow wnd;
     GL::Init();
-    GEngine::StartGame(new MyGame(), &wnd);
+    MyGame game;
+    GEngine::StartGame(&game, &wnd);
     return 0;
 }

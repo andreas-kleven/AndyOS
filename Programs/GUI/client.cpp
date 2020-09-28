@@ -2,6 +2,7 @@
 #include <AndyOS.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -110,6 +111,7 @@ void Init()
 
     if (connect(sockfd, (sockaddr *)&unixaddr, sizeof(unixaddr)) == -1) {
         perror("client connect");
+        exit(1);
     }
 
     connected = true;

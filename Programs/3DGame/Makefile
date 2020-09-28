@@ -15,7 +15,7 @@ $(TARGET): $(OBJ_FILES) $(BUILD_DIR)/engine.a $(BUILD_DIR)/gl.a $(BUILD_DIR)/gui
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) -Ofast -c -o $@ $<
+	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:

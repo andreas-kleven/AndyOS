@@ -66,6 +66,14 @@ struct Vector3
         return *this / mag;
     }
 
+    void Normalize()
+    {
+        float mag = Magnitude();
+        x /= mag;
+        y /= mag;
+        z /= mag;
+    }
+
     float Dot(const Vector3 &v) const { return x * v.x + y * v.y + z * v.z; }
 
     Vector3 Cross(const Vector3 &v) const
