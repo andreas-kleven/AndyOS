@@ -11,8 +11,8 @@ struct RAW_VERTEX
     float norm_y;
     float norm_z;
 
-    float tex_u;
-    float tex_v;
+    float u;
+    float v;
 };
 
 A3D::A3D(char *buffer)
@@ -29,8 +29,8 @@ A3D::A3D(char *buffer)
         Color col(1, 1, 1);
         Vector4 norm = Vector4(raw.norm_x, raw.norm_y, raw.norm_z, 1);
         Vertex vert(raw.pos_x, raw.pos_y, raw.pos_z, col, norm);
-        vert.tex_u = raw.tex_u;
-        vert.tex_v = raw.tex_v;
+        vert.u = raw.u;
+        vert.v = raw.v;
 
         vertex_buffer[i] = vert;
         vertices.push_back(&vertex_buffer[i]);

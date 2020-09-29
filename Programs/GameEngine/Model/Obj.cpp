@@ -90,8 +90,8 @@ void Obj::CreateVertices()
                     vert.normal = norm.ToVector4();
 
                     Vector3 uv = uvs[faces[i].uvs[j] - 1];
-                    vert.tex_u = uv.x;
-                    vert.tex_v = uv.y;
+                    vert.u = uv.x;
+                    vert.v = uv.y;
 
                     vert.color = Color(1, 1, 1);
 

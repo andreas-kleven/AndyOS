@@ -6,19 +6,22 @@
 struct Vertex
 {
     Vector4 pos;
-    Vector4 tmpPos;
+    Vector4 tmp_pos;
 
     Color color;
-    Color builtColor;
+    Color built_color;
 
     Vector4 normal;
-    Vector4 worldNormal;
+    Vector4 world_normal;
 
-    float tex_u;
-    float tex_v;
+    float u;
+    float v;
+
+    float tmp_u;
+    float tmp_v;
 
     Vertex();
     Vertex(float x, float y, float z, Color col, Vector4 normal);
 
-    void MulMatrix(const Matrix4 &mat);
+    void MulMatrix(const Matrix4 &mat, bool reset);
 };

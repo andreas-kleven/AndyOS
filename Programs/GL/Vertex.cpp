@@ -2,8 +2,8 @@
 
 Vertex::Vertex()
 {
-    this->tex_u = 0;
-    this->tex_v = 0;
+    this->u = 0;
+    this->v = 0;
 }
 
 Vertex::Vertex(float x, float y, float z, Color col, Vector4 normal) : Vertex()
@@ -14,13 +14,16 @@ Vertex::Vertex(float x, float y, float z, Color col, Vector4 normal) : Vertex()
     this->pos.w = 1;
 
     this->color = col;
-    this->builtColor = col;
+    this->built_color = col;
 
     this->normal = normal;
-    this->worldNormal = normal;
+    this->world_normal = normal;
 }
 
-void Vertex::MulMatrix(const Matrix4 &mat)
+void Vertex::MulMatrix(const Matrix4 &mat, bool reset)
 {
-    tmpPos = mat * pos;
+    if (reset)
+        tmp_pos = mat * pos;
+    else
+        tmp_pos = mat * tmp_pos;
 }

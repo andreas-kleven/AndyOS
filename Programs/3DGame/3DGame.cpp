@@ -59,7 +59,7 @@ void CreateCornell(Game *game)
 MyGame::MyGame()
 {
     MyCamera *cam = CreateObject<MyCamera>("Camera1");
-    cam->transform.position = Vector3(0, 0, -25);
+    cam->transform.position = Vector3(0, 0, -15);
 
     MyLight *light = CreateObject<MyLight>("Light");
     light->transform.position = Vector3(0, 100, 0);

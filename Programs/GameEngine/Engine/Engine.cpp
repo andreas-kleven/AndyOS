@@ -240,7 +240,7 @@ void Collision()
         }
     }
 
-    printf("Energy: %f\n", energy);
+    // printf("Energy: %f\n", energy);
 
     for (int i = 0; i < all.size(); i++) {
         int start = i + 1;
@@ -554,7 +554,7 @@ void Render()
             Matrix4 S = Matrix4::CreateScale(trans.scale.ToVector4());
 
             for (int v = 0; v < mesh->model->vertices.size(); v++)
-                model->vertex_buffer[v].worldNormal = R * model->vertex_buffer[v].normal;
+                model->vertex_buffer[v].world_normal = R * model->vertex_buffer[v].normal;
 
             Matrix4 M = T * R * S;
 

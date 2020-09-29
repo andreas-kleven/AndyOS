@@ -29,52 +29,27 @@ void Rasterizer::Clear()
     memset(this->depth_buffer, 0, gc.width * gc.height * sizeof(float));
 }
 
-void Rasterizer::DrawTriangle(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
+void Rasterizer::DrawTriangle(const Vertex &v0, const Vertex &v1, const Vertex &v2, BMP *texture)
 {
-    // Calculate values
-    v0.tmpPos.w = 1 / v0.tmpPos.w;
-    v1.tmpPos.w = 1 / v1.tmpPos.w;
-    v2.tmpPos.w = 1 / v2.tmpPos.w;
+    // gc.DrawLine((int)v0.tmp_pos.x, (int)v0.tmp_pos.y, (int)v1.tmp_pos.x, (int)v1.tmp_pos.y,
+    // Color::Red); gc.DrawLine((int)v1.tmp_pos.x, (int)v1.tmp_pos.y, (int)v2.tmp_pos.x,
+    // (int)v2.tmp_pos.y,
+    //            Color::Green);
+    // gc.DrawLine((int)v2.tmp_pos.x, (int)v2.tmp_pos.y, (int)v0.tmp_pos.x, (int)v0.tmp_pos.y,
+    //            Color::Blue);
 
-    v0.tmpPos.x = v0.tmpPos.x * gc.width * v0.tmpPos.w + gc.width * 0.5;
-    v1.tmpPos.x = v1.tmpPos.x * gc.width * v1.tmpPos.w + gc.width * 0.5;
-    v2.tmpPos.x = v2.tmpPos.x * gc.width * v2.tmpPos.w + gc.width * 0.5;
-
-    v0.tmpPos.y = v0.tmpPos.y * gc.height * v0.tmpPos.w + gc.height * 0.5;
-    v1.tmpPos.y = v1.tmpPos.y * gc.height * v1.tmpPos.w + gc.height * 0.5;
-    v2.tmpPos.y = v2.tmpPos.y * gc.height * v2.tmpPos.w + gc.height * 0.5;
-
-    // Backface culling
-    Vector4 pa(v0.tmpPos.x, v0.tmpPos.y, v0.tmpPos.z, 0);
-    Vector4 pb(v1.tmpPos.x, v1.tmpPos.y, v1.tmpPos.z, 0);
-    Vector4 pc(v2.tmpPos.x, v2.tmpPos.y, v2.tmpPos.z, 0);
-    Vector4 normal = Vector4::Cross(pb - pa, pc - pa);
-
-    if (normal.z < 0)
-        return;
-
-    DrawTriangle2(v0, v1, v2, texture);
-
-    // gc.DrawLine((int)v0.tmpPos.x, (int)v0.tmpPos.y, (int)v1.tmpPos.x, (int)v1.tmpPos.y, 0xFF);
-    // gc.DrawLine((int)v1.tmpPos.x, (int)v1.tmpPos.y, (int)v2.tmpPos.x, (int)v2.tmpPos.y, 0xFF00);
-    // gc.DrawLine((int)v2.tmpPos.x, (int)v2.tmpPos.y, (int)v0.tmpPos.x, (int)v0.tmpPos.y,
-    // 0xFF0000);
-}
-
-void Rasterizer::DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
-{
     // Clamping
-    int minx = min(floor(v0.tmpPos.x), floor(v1.tmpPos.x), floor(v2.tmpPos.x));
-    int maxx = max(floor(v0.tmpPos.x), floor(v1.tmpPos.x), floor(v2.tmpPos.x));
-    int miny = min(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
-    int maxy = max(floor(v0.tmpPos.y), floor(v1.tmpPos.y), floor(v2.tmpPos.y));
+    int minx = min(floor(v0.tmp_pos.x), floor(v1.tmp_pos.x), floor(v2.tmp_pos.x));
+    int maxx = max(floor(v0.tmp_pos.x), floor(v1.tmp_pos.x), floor(v2.tmp_pos.x));
+    int miny = min(floor(v0.tmp_pos.y), floor(v1.tmp_pos.y), floor(v2.tmp_pos.y));
+    int maxy = max(floor(v0.tmp_pos.y), floor(v1.tmp_pos.y), floor(v2.tmp_pos.y));
 
     minx = clamp(minx, gc.x, (int)gc.width - 1);
     maxx = clamp(maxx, gc.x, (int)gc.width - 1);
     miny = clamp(miny, gc.y, (int)gc.height - 1);
     maxy = clamp(maxy, gc.y, (int)gc.height - 1);
 
-    float area = EdgeFunction(v0.tmpPos, v1.tmpPos, v2.tmpPos);
+    float area = EdgeFunction(v0.tmp_pos, v1.tmp_pos, v2.tmp_pos);
     float inv_area = 1 / area;
 
     int line_delta = gc.width - (maxx - minx) - 1;
@@ -82,23 +57,23 @@ void Rasterizer::DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
     uint32_t *color_ptr = (uint32_t *)(gc.framebuffer + miny * gc.stride + minx);
     float *depth_ptr = (float *)(depth_buffer + miny * gc.width + minx);
 
-    float co[3][3] = {{v0.builtColor.r * v0.tmpPos.w, v1.builtColor.r * v1.tmpPos.w,
-                       v2.builtColor.r * v2.tmpPos.w},
-                      {v0.builtColor.g * v0.tmpPos.w, v1.builtColor.g * v1.tmpPos.w,
-                       v2.builtColor.g * v2.tmpPos.w},
-                      {v0.builtColor.b * v0.tmpPos.w, v1.builtColor.b * v1.tmpPos.w,
-                       v2.builtColor.b * v2.tmpPos.w}};
+    float co[3][3] = {{v0.built_color.r * v0.tmp_pos.w, v1.built_color.r * v1.tmp_pos.w,
+                       v2.built_color.r * v2.tmp_pos.w},
+                      {v0.built_color.g * v0.tmp_pos.w, v1.built_color.g * v1.tmp_pos.w,
+                       v2.built_color.g * v2.tmp_pos.w},
+                      {v0.built_color.b * v0.tmp_pos.w, v1.built_color.b * v1.tmp_pos.w,
+                       v2.built_color.b * v2.tmp_pos.w}};
 
-    float A01 = (v0.tmpPos.y - v1.tmpPos.y) * inv_area;
-    float B01 = (v1.tmpPos.x - v0.tmpPos.x) * inv_area;
-    float A12 = (v1.tmpPos.y - v2.tmpPos.y) * inv_area;
-    float B12 = (v2.tmpPos.x - v1.tmpPos.x) * inv_area;
-    float A20 = (v2.tmpPos.y - v0.tmpPos.y) * inv_area;
-    float B20 = (v0.tmpPos.x - v2.tmpPos.x) * inv_area;
+    float A01 = (v0.tmp_pos.y - v1.tmp_pos.y) * inv_area;
+    float B01 = (v1.tmp_pos.x - v0.tmp_pos.x) * inv_area;
+    float A12 = (v1.tmp_pos.y - v2.tmp_pos.y) * inv_area;
+    float B12 = (v2.tmp_pos.x - v1.tmp_pos.x) * inv_area;
+    float A20 = (v2.tmp_pos.y - v0.tmp_pos.y) * inv_area;
+    float B20 = (v0.tmp_pos.x - v2.tmp_pos.x) * inv_area;
 
-    float w0_row = EdgeFunction(v1.tmpPos, v2.tmpPos, minx, miny) * inv_area;
-    float w1_row = EdgeFunction(v2.tmpPos, v0.tmpPos, minx, miny) * inv_area;
-    float w2_row = EdgeFunction(v0.tmpPos, v1.tmpPos, minx, miny) * inv_area;
+    float w0_row = EdgeFunction(v1.tmp_pos, v2.tmp_pos, minx, miny) * inv_area;
+    float w1_row = EdgeFunction(v2.tmp_pos, v0.tmp_pos, minx, miny) * inv_area;
+    float w2_row = EdgeFunction(v0.tmp_pos, v1.tmp_pos, minx, miny) * inv_area;
 
     // Drawing loop
     for (int y = miny; y <= maxy; y++) {
@@ -108,14 +83,14 @@ void Rasterizer::DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture)
 
         for (int x = minx; x <= maxx; x++) {
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                float Z = 1 / (v0.tmpPos.w * w0 + v1.tmpPos.w * w1 + v2.tmpPos.w * w2);
+                float Z = 1 / (v0.tmp_pos.w * w0 + v1.tmp_pos.w * w1 + v2.tmp_pos.w * w2);
 
                 if (*depth_ptr == 0 || Z < *depth_ptr) {
-                    float U = ((w0 * v0.tex_u * v0.tmpPos.w) + (w1 * v1.tex_u * v1.tmpPos.w) +
-                               (w2 * v2.tex_u * v2.tmpPos.w)) *
+                    float U = ((w0 * v0.tmp_u * v0.tmp_pos.w) + (w1 * v1.tmp_u * v1.tmp_pos.w) +
+                               (w2 * v2.tmp_u * v2.tmp_pos.w)) *
                               Z;
-                    float V = ((w0 * v0.tex_v * v0.tmpPos.w) + (w1 * v1.tex_v * v1.tmpPos.w) +
-                               (w2 * v2.tex_v * v2.tmpPos.w)) *
+                    float V = ((w0 * v0.tmp_v * v0.tmp_pos.w) + (w1 * v1.tmp_v * v1.tmp_pos.w) +
+                               (w2 * v2.tmp_v * v2.tmp_pos.w)) *
                               Z;
 
                     float r = (co[0][0] * w0 + co[0][1] * w1 + co[0][2] * w2);

@@ -37,7 +37,7 @@ void swap(float &a, float &b)
 
 Vector3 GetPos(Vertex *vert)
 {
-    return vert->tmpPos.ToVector3();
+    return vert->tmp_pos.ToVector3();
 }
 
 Vector3 Reflect(Vector3 I, Vector3 N)
@@ -233,7 +233,7 @@ bool TracePhoton(Vector3 &rayOrigin, Vector3 &rayDir, Photon &photon, bool &caus
         return false;
 
     Shader &shader = mesh->shader;
-    Vector3 N = triangle->WorldNormal(u, v);
+    Vector3 N = triangle->world_normal(u, v);
 
     float rnd = frand();
 
@@ -291,7 +291,7 @@ Color TraceColor(Vector3 &rayOrigin, Vector3 &rayDir, int maxRays = 5)
     if (!Trace(rayOrigin, rayDir, hit, mesh, triangle, u, v, false, maxRays))
         return Color(0.5, 0.5, 0.5);
 
-    Vector3 N = triangle->WorldNormal(u, v);
+    Vector3 N = triangle->world_normal(u, v);
     Shader &shader = mesh->shader;
 
     if (shader.ior > 0) {
@@ -417,8 +417,8 @@ void CalculateVertices()
                 for (int k = 0; k < mesh->model->vertices.size(); k++) {
                     Vertex *vert = &mesh->model->vertex_buffer[k];
 
-                    vert->worldNormal = R * vert->normal;
-                    vert->MulMatrix(M);
+                    vert->world_normal = R * vert->normal;
+                    vert->MulMatrix(M, true);
                 }
             }
         }

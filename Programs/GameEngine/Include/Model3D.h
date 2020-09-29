@@ -30,9 +30,9 @@ struct Triangle
         return ((v0->normal * (1 - u - v)) + (v1->normal * u) + (v2->normal * v)).ToVector3();
     }
 
-    Vector3 WorldNormal(float u, float v)
+    Vector3 world_normal(float u, float v)
     {
-        return ((v0->worldNormal * (1 - u - v)) + (v1->worldNormal * u) + (v2->worldNormal * v))
+        return ((v0->world_normal * (1 - u - v)) + (v1->world_normal * u) + (v2->world_normal * v))
             .ToVector3();
     }
 

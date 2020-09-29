@@ -14,6 +14,5 @@ class Rasterizer
     Rasterizer(GC gc);
 
     void Clear();
-    void DrawTriangle(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture);
-    void DrawTriangle2(Vertex &v0, Vertex &v1, Vertex &v2, BMP *texture);
+    void DrawTriangle(const Vertex &v0, const Vertex &v1, const Vertex &v2, BMP *texture);
 };
