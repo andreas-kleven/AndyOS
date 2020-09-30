@@ -89,7 +89,7 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
         return -1;
 
     sockaddr_un *unix_addr = (sockaddr_un *)addr;
-    char *copy;
+    char *copy = 0;
     const char *filename = 0;
     const char *parentname = 0;
 
@@ -105,7 +105,6 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
     }
 
     if ((ret = socket->Bind(addr, addrlen))) {
-
         if (copy)
             delete[] copy;
 
