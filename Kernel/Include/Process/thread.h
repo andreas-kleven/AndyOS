@@ -41,4 +41,4 @@ struct THREAD
     Event signal_event;
     Event syscall_event;
     uint8 fpu_state[512];
-} __attribute__((aligned(16)));
+};

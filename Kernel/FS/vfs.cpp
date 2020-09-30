@@ -725,6 +725,10 @@ int SocketShutdown(Filetable *filetable, int fd, int how)
 uint32 ReadFile(const char *filename, char *&buffer)
 {
     DENTRY *dentry = GetDentry(0, filename);
+
+    if (PTR_ERR(dentry))
+        return 0;
+
     int size = dentry->inode->size;
     buffer = new char[size];
     FILE file = FILE(dentry);

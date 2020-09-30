@@ -1,5 +1,6 @@
 #include <Kernel/timer.h>
 #include <Process/scheduler.h>
+#include <hal.h>
 #include <sync.h>
 
 Event::Event(bool set, bool auto_reset)
@@ -10,12 +11,14 @@ Event::Event(bool set, bool auto_reset)
 
 bool Event::Wait(int timeout, bool interruptible)
 {
+    disable();
     Scheduler::Disable();
 
     THREAD *thread = Scheduler::CurrentThread();
 
     if (interruptible && thread->interrupted) {
         Scheduler::Enable();
+        enable();
         return false;
     }
 
@@ -32,6 +35,7 @@ bool Event::Wait(int timeout, bool interruptible)
 
         Scheduler::BlockThread(thread, false);
         Scheduler::Enable();
+        enable();
         Scheduler::Switch();
 
         if (thread->event_until) {
@@ -47,6 +51,7 @@ bool Event::Wait(int timeout, bool interruptible)
         if (auto_reset)
             set = false;
 
+        enable();
         Scheduler::Enable();
     }
 
