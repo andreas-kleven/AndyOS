@@ -1,6 +1,5 @@
 #pragma once
 #include <Net/address.h>
-#include <Net/netinterface.h>
 #include <types.h>
 
 uint16 htons(uint16 val);

@@ -30,10 +30,11 @@ class E1000 : public NetInterface
   public:
     E1000(PciDevice *pci_dev);
 
-    virtual void Send(NetPacket *pkt);
-    virtual void Poll();
-    virtual MacAddress GetMac();
-    virtual uint32 GetIP();
+    void Send(NetPacket *pkt);
+    void Poll();
+    MacAddress GetMac();
+    uint32 GetIP();
+    uint32 GetMask();
 
   private:
     int bar_type;

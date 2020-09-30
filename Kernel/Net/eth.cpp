@@ -38,6 +38,7 @@ bool Decode(EthPacket *ep, NetPacket *pkt)
 NetPacket *CreatePacket(NetInterface *intf, const MacAddress &dst, uint16 type, uint32 size)
 {
     NetPacket *pkt = new NetPacket();
+    pkt->interface = intf;
     pkt->start = new uint8[sizeof(EthHeader) + size];
     pkt->end = pkt->start + sizeof(EthHeader);
     pkt->length = sizeof(EthHeader) + size;

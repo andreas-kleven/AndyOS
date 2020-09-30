@@ -36,18 +36,32 @@ bool Decode(IPv4_Header *ih, NetPacket *pkt)
 NetPacket *CreatePacket(uint32 dst, uint8 protocol, uint32 size)
 {
     NetInterface *intf = PacketManager::GetInterface(dst);
+    uint32 mask = intf->GetMask();
     MacAddress mac;
 
     if (dst == INADDR_BROADCAST) {
         mac = Net::BroadcastMAC;
-    } else if (!memcmp(&dst, &intf->gateway_addr, 3)) {
-        mac = ARP::GetMac(intf, dst);
-    } else {
-        mac = ARP::GetMac(intf, intf->gateway_addr);
-    }
+    } else if (intf->GetMac() == Net::NullMAC) {
+        mac = Net::NullMAC;
 
-    if (mac == Net::NullMAC)
-        return 0;
+        if ((dst & mask) != (intf->GetIP() & mask)) {
+            dst = intf->GetIP(); // loopback
+        }
+    } else {
+        if ((dst & mask) == (intf->GetIP() & mask)) {
+            mac = ARP::GetMac(intf, dst);
+        } else {
+            if (!intf->gateway_addr) {
+                debug_print("No gateway\n", dst);
+                return 0;
+            }
+
+            mac = ARP::GetMac(intf, intf->gateway_addr);
+        }
+
+        if (mac == Net::NullMAC)
+            return 0;
+    }
 
     NetPacket *pkt = ETH::CreatePacket(intf, mac, ETHERTYPE_IPv4, sizeof(IPv4_Header) + size);
 

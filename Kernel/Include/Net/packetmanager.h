@@ -4,8 +4,8 @@
 #include <Net/socket.h>
 
 namespace PacketManager {
-int Send(NetPacket *pkt);
-void SetInterface(NetInterface *intf);
+void RegisterInterface(NetInterface *intf, bool loopback);
 NetInterface *GetInterface(uint32 ip);
-void Poll();
+void Poll(NetInterface *intf);
+int Send(NetPacket *pkt);
 } // namespace PacketManager

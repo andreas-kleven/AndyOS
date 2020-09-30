@@ -109,7 +109,7 @@ E1000::E1000(PciDevice *pci_dev) : NetInterface(pci_dev)
 
     ReadMac();
 
-    gateway_addr = htonl(0xC0A80001);
+    gateway_addr = htonl(0x00000000); // 0.0.0.0
 
     Net::PrintIP("IP: ", GetIP());
     Net::PrintMac("Mac: ", GetMac());
@@ -142,7 +142,12 @@ MacAddress E1000::GetMac()
 
 uint32 E1000::GetIP()
 {
-    return htonl(0xC0A800FE); // 192.168.0.254
+    return htonl(0x0A0000FE); // 10.0.0.254
+}
+
+uint32 E1000::GetMask()
+{
+    return htonl(0xFFFFFF00);
 }
 
 void E1000::Start()
@@ -177,6 +182,7 @@ void E1000::Poll()
         uint8 *end = buf + len;
 
         NetPacket pkt;
+        pkt.interface = instance;
         pkt.start = buf;
         pkt.end = end;
         pkt.length = len;
@@ -212,7 +218,7 @@ void E1000::E1000_Interrupt()
     }
 
     if (status & 0x80) {
-        Dpc::Create(PacketManager::Poll);
+        Dpc::Create((DPC_HANDLER)PacketManager::Poll, instance);
     }
 }
 

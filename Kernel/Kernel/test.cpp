@@ -18,6 +18,7 @@
 #include <Kernel/test.h>
 #include <Kernel/timer.h>
 #include <Net/arp.h>
+#include <Net/loopback.h>
 #include <Net/packetmanager.h>
 #include <Net/socketmanager.h>
 #include <Net/tcpsession.h>
@@ -128,8 +129,11 @@ void InitNet()
 
     debug_print("Found network card\n");
 
+    LoopbackInterface *loopback = new LoopbackInterface();
+    PacketManager::RegisterInterface(loopback, true);
+
     E1000 *intf = new E1000(pci_dev);
-    PacketManager::SetInterface(intf);
+    PacketManager::RegisterInterface(intf, false);
 }
 
 void _Net()
@@ -302,7 +306,7 @@ void Start()
     Scheduler::InsertThread(dispatcher_thread);
 
     Mount();
-    // InitNet();
+    InitNet();
     // GUI();
     TTY();
     //_Memory();

@@ -1,6 +1,7 @@
 #pragma once
 #include <Net/address.h>
 #include <Net/packet.h>
+#include <net.h>
 #include <pci.h>
 #include <types.h>
 
@@ -21,4 +22,5 @@ class NetInterface /*: public PciDevice*/
 
     virtual MacAddress GetMac() { return MacAddress(); }
     virtual uint32 GetIP() { return 0; }
+    virtual uint32 GetMask() { return htonl(0xFFFFFFFF); }
 };
