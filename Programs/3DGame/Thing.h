@@ -7,7 +7,4 @@ class Thing : public GameObject
     Thing();
 
     virtual void Update(float delta);
-
-  private:
-    bool key_jump = false;
 };

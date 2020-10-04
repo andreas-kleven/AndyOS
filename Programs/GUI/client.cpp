@@ -13,9 +13,9 @@ namespace client {
 
 int sockfd = 0;
 bool initialized = false;
-bool RESID_waiting = false;
-void *RESID_buffer = 0;
-int RESID_size = 0;
+bool response_waiting = false;
+void *response_buffer = 0;
+int response_size = 0;
 
 std::vector<Window *> windows;
 
@@ -28,9 +28,9 @@ bool SendRequest(int type, int id, const void *in, void *out, int in_size, int o
 {
     char buf[512];
 
-    RESID_waiting = out_size > 0;
-    RESID_size = out_size;
-    RESID_buffer = out;
+    response_waiting = out_size > 0;
+    response_size = out_size;
+    response_buffer = out;
 
     int msg_size = in_size + 8;
 
@@ -46,7 +46,7 @@ bool SendRequest(int type, int id, const void *in, void *out, int in_size, int o
     if (send(sockfd, buf, msg_size, 0) < 0)
         return false;
 
-    while (RESID_waiting)
+    while (response_waiting)
         usleep(10000);
 
     return true;
@@ -55,27 +55,30 @@ bool SendRequest(int type, int id, const void *in, void *out, int in_size, int o
 void MessageHandler(const MESSAGE &msg)
 {
     if (msg.response) {
-        if (!RESID_waiting || !RESID_buffer) {
-            debug_print("Response error %d %d %d\n", msg.type, RESID_waiting, RESID_buffer);
+        if (!response_waiting || !response_buffer) {
+            debug_print("Response error %d %d %d\n", msg.type, response_waiting, response_buffer);
             return;
         }
 
-        if (msg.size != RESID_size) {
-            debug_print("Response size error %d: %d != %d\n", msg.type, msg.size, RESID_size);
+        if (msg.size != response_size) {
+            debug_print("Response size error %d: %d != %d\n", msg.type, msg.size, response_size);
         } else {
-            memcpy(RESID_buffer, msg.data, RESID_size);
-            RESID_waiting = false;
+            memcpy(response_buffer, msg.data, response_size);
+            response_waiting = false;
         }
 
         return;
     }
 
-    for (int i = 0; i < windows.size(); i++) {
-        Window *wnd = windows[i];
+    // TODO
+    while (true) {
+        for (int i = 0; i < windows.size(); i++) {
+            Window *wnd = windows[i];
 
-        if (wnd->id == msg.id) {
-            wnd->HandleMessage(msg);
-            break;
+            if (wnd->id == msg.id) {
+                wnd->HandleMessage(msg);
+                return;
+            }
         }
     }
 }
@@ -86,8 +89,15 @@ void *Loop(void *arg)
 
     while (true) {
         int len = recv(sockfd, buf, sizeof(buf), 0);
-        gui::MESSAGE msg = gui::MESSAGE(buf, len);
-        MessageHandler(msg);
+        char *ptr = buf;
+
+        while (len >= 4) {
+            int size = *(int *)ptr;
+            gui::MESSAGE msg = gui::MESSAGE(&ptr[4], size);
+            MessageHandler(msg);
+            len -= size + 12;
+            ptr += size + 12;
+        }
     }
 }
 

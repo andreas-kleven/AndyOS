@@ -185,8 +185,6 @@ void Update()
     deltaTime = (get_ticks() - ticks) / 1000000.f;
     ticks = get_ticks();
 
-    Input::Update();
-
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
         PlayerManager::SetPlayer(obj->owner);
@@ -577,12 +575,14 @@ void StartGame(Game *game, gui::Window *wnd)
     GEngine::game = game;
     GEngine::window = wnd;
 
-    gc = wnd->gc;
-    GL::InitGraphics(gc);
-
     deltaTime = 1 / 100.0f;
     startTicks = get_ticks();
     ticks = startTicks;
+
+    Input::Init();
+
+    gc = wnd->gc;
+    GL::InitGraphics(gc);
 
     Start();
 
@@ -590,18 +590,16 @@ void StartGame(Game *game, gui::Window *wnd)
     GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10));
 
     while (true) {
-        if (Input::GetKey(KEY_ESCAPE)) {
-            window->SetCapture(paused);
+        PlayerManager::SetPlayer(0);
+        Input::Update(wnd->active);
+
+        if (Input::GetKeyDown(KEY_ESCAPE)) {
             paused = !paused;
-            while (Input::GetKey(KEY_ESCAPE))
-                ;
+            window->SetCapture(paused);
         }
 
-        if (Input::GetKey(KEY_P)) {
+        if (Input::GetKeyDown(KEY_P))
             raytrace = !raytrace;
-            while (Input::GetKey(KEY_P))
-                ;
-        }
 
         if (window->gc.width != gc.width || window->gc.height != gc.height) {
             gc = window->gc;

@@ -46,7 +46,7 @@ class Window
 
     void Paint(GC &main_gc);
     void Move(int x, int y);
-    void Resize(int w, int h);
+    void Resize(int w, int h, bool send = true);
 
     void Close();
     void Minimize();

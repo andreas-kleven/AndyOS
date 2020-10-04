@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 namespace gui {
+
 enum MSGID
 {
     MSGID_NONE,
@@ -16,6 +17,8 @@ enum MSGID
     MSGID_ACTION,
     MSGID_KEY_INPUT,
     MSGID_MOUSE_INPUT,
+    MSGID_ACTIVATED,
+    MSGID_DEACTIVATED,
 };
 
 enum WINDOW_ACTION
@@ -50,13 +53,13 @@ struct MESSAGE
         this->copied = true;
     }
 
-    MESSAGE(void *buf, int len)
+    MESSAGE(void *buf, int size)
     {
         char *cbuf = (char *)buf;
         this->type = *(int *)&cbuf[0];
         this->id = *(int *)&cbuf[4];
         this->data = &cbuf[8];
-        this->size = len - 8;
+        this->size = size;
         this->response = type == RESID_CREATE_WINDOW;
     }
 };
@@ -155,4 +158,15 @@ struct MOUSE_INPUT_MESSAGE
         this->dy = dy;
     }
 };
+
+struct ACTIVATED_MESSAGE
+{
+    ACTIVATED_MESSAGE() {}
+};
+
+struct DEACTIVATED_MESSAGE
+{
+    DEACTIVATED_MESSAGE() {}
+};
+
 } // namespace gui

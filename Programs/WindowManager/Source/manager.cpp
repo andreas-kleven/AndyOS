@@ -146,7 +146,7 @@ void WindowManager::RestoreWindow(Window *wnd)
     SetFocusedWindow(wnd);
 }
 
-void WindowManager::LoadBackground(char *filename)
+void WindowManager::LoadBackground(const char *filename)
 {
     char *buf;
     int size = read_file(buf, filename);
@@ -164,15 +164,16 @@ bool WindowManager::SendMessage(int sockfd, int id, int type, const void *data, 
 {
     char buf[512];
 
-    int msg_size = size + 8;
+    int msg_size = size + 12;
 
     if (msg_size > sizeof(buf)) {
         return false;
     }
 
-    memcpy(&buf[0], &type, 4);
-    memcpy(&buf[4], &id, 4);
-    memcpy(&buf[8], data, size);
+    memcpy(&buf[0], &size, 4);
+    memcpy(&buf[4], &type, 4);
+    memcpy(&buf[8], &id, 4);
+    memcpy(&buf[12], data, size);
 
     if (send(sockfd, buf, msg_size, 0) < 0)
         return false;
@@ -201,14 +202,14 @@ gui::MESSAGE WindowManager::MessageHandler(int sockfd, const gui::MESSAGE &msg)
         alloc_shared(request->pid, addr1, addr2, BYTES_TO_BLOCKS(width * height * 4));
 
         Window *wnd = new Window(request->pid, sockfd, request->title, w, h, (uint32_t *)addr1);
-        WindowManager::AddWindow(wnd);
-        WindowManager::SetFocusedWindow(wnd);
-        WindowManager::SetActiveWindow(wnd);
 
         gui::CREATE_WINDOW_RESPONSE response(wnd->id, (uint32_t *)addr2, wnd->gc.width,
                                              wnd->gc.height);
-        return gui::MESSAGE(gui::RESID_CREATE_WINDOW, msg.id, &response, sizeof(response));
+        SendMessage(wnd, gui::RESID_CREATE_WINDOW, &response, sizeof(response));
 
+        WindowManager::AddWindow(wnd);
+        WindowManager::SetFocusedWindow(wnd);
+        WindowManager::SetActiveWindow(wnd);
     } break;
 
     case gui::REQID_PAINT: {
@@ -534,7 +535,7 @@ void WindowManager::HandleMouseInput()
                 }
 
                 if (wnd->content_bounds.Contains(cursor_x, cursor_y)) {
-                    active_window = wnd;
+                    SetActiveWindow(wnd);
                 } else if (wnd->titlebar_bounds.Contains(cursor_x, cursor_y)) {
                     if (wnd->bclose_bounds.Contains(cursor_x, cursor_y)) {
                         CloseWindow(wnd);
@@ -646,7 +647,7 @@ void WindowManager::HandleKeyInput()
 
         // alt+tab
         if (gui::InputManager::GetKeyDown(KEY_LALT) && gui::InputManager::GetKeyDown(KEY_TAB)) {
-            active_window = 0;
+            SetActiveWindow(0);
         }
 
         // alt+enter
@@ -678,7 +679,7 @@ Window *WindowManager::GetWindowAtCursor()
 void WindowManager::SetFocusedWindow(Window *new_focused)
 {
     focused_window = new_focused;
-    active_window = 0;
+    SetActiveWindow(0);
 
     if (focused_window && !focused_window->focused) {
         if (focused_window != first_window) {
@@ -716,7 +717,20 @@ void WindowManager::SetFocusedWindow(Window *new_focused)
 
 void WindowManager::SetActiveWindow(Window *wnd)
 {
+    if (wnd == active_window)
+        return;
+
+    if (active_window) {
+        gui::DEACTIVATED_MESSAGE msg = gui::DEACTIVATED_MESSAGE();
+        SendMessage(active_window, gui::MSGID_DEACTIVATED, &msg, sizeof(msg));
+    }
+
     active_window = wnd;
+
+    if (active_window) {
+        gui::ACTIVATED_MESSAGE msg = gui::ACTIVATED_MESSAGE();
+        SendMessage(active_window, gui::MSGID_ACTIVATED, &msg, sizeof(msg));
+    }
 }
 
 Window *WindowManager::GetWindow(int id)

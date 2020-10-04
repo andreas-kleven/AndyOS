@@ -12,9 +12,10 @@ class Window : public GUIBase
   public:
     Color background;
 
-    int id;
-    int width;
-    int height;
+    int id = 0;
+    int width = 0;
+    int height = 0;
+    bool active = false;
 
     Window(const char *title, int width = 400, int height = 300, Color background = Color::White);
     ~Window();

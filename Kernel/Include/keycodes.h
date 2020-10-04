@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_KEYS 0xFF
+
 enum KEYCODE
 {
     KEY_INVALID,

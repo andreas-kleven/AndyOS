@@ -1,7 +1,6 @@
 #pragma once
 #include <AndyOS.h>
 
-#define MAX_KEYS          0xFF
 #define DOUBLE_CLICK_TIME 200
 
 namespace gui {

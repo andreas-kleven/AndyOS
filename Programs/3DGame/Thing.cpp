@@ -58,14 +58,8 @@ void Thing::Update(float deltaTime)
     if (Input::GetKey(KEY_S))
         transform.Translate(-transform.GetForwardVector() * movespeed);
 
-    if (Input::GetKey(KEY_SPACE)) {
-        if (!key_jump)
-            rigidbody->AddImpulse(Vector3::up * jumpspeed);
-
-        key_jump = true;
-    } else {
-        key_jump = false;
-    }
+    if (Input::GetKeyDown(KEY_SPACE))
+        rigidbody->AddImpulse(Vector3::up * jumpspeed);
 
     if (Input::GetKey(KEY_L)) {
         rigidbody->AddImpulse(Vector3::right * velspeed);

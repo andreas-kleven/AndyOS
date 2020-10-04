@@ -36,7 +36,7 @@ class WindowManager
     static void MinimizeWindow(Window *wnd);
     static void RestoreWindow(Window *wnd);
 
-    static void LoadBackground(char *filename);
+    static void LoadBackground(const char *filename);
 
   private:
     static gui::MESSAGE MessageHandler(int sockfd, const gui::MESSAGE &msg);

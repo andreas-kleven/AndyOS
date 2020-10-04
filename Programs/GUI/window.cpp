@@ -135,6 +135,14 @@ void Window::HandleMessage(const MESSAGE &message)
 
         OnResize();
     } break;
+
+    case MSGID_ACTIVATED: {
+        this->active = true;
+    } break;
+
+    case MSGID_DEACTIVATED: {
+        this->active = false;
+    } break;
     }
 
     Paint();

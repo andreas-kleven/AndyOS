@@ -24,9 +24,9 @@ Window::Window(int proc_id, int sockfd, char *title, int width, int height, uint
     focused = false;
     dirty = true;
 
-    Move(id * 80, id * 60);
+    Move((id - 1) * 300, (id - 1) * 300);
     gc = GC(content_bounds.width, content_bounds.height, framebuffer);
-    Resize(width, height);
+    Resize(width, height, false);
 }
 
 void Window::Paint(GC &main_gc)
@@ -72,7 +72,7 @@ void Window::Move(int x, int y)
     UpdateTitleButtons();
 }
 
-void Window::Resize(int w, int h)
+void Window::Resize(int w, int h, bool send)
 {
     w = max(w, 100);
     h = max(h, GUI_TITLEBAR_HEIGHT + 30);
@@ -89,8 +89,10 @@ void Window::Resize(int w, int h)
 
     UpdateTitleButtons();
 
-    gui::RESIZE_MESSAGE msg(gc.width, gc.height);
-    WindowManager::SendMessage(this, gui::MSGID_RESIZE, &msg, sizeof(msg));
+    if (send) {
+        gui::RESIZE_MESSAGE msg(gc.width, gc.height);
+        WindowManager::SendMessage(this, gui::MSGID_RESIZE, &msg, sizeof(msg));
+    }
 }
 
 void Window::Close()
