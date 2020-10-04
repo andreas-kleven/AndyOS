@@ -6,6 +6,7 @@ class GameObject;
 class Component
 {
   public:
+    int owner;
     GameObject *parent;
 
     Component();

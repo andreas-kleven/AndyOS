@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "Components/MeshComponent.h"
 #include "Components/Rigidbody.h"
+#include "Player.h"
 #include "Transform.h"
 #include <AndyOS.h>
 #include <string>
@@ -17,6 +18,7 @@ enum class ObjectType
 class GameObject
 {
   public:
+    int owner;
     Transform transform;
 
     GameObject *parent;
@@ -58,6 +60,7 @@ class GameObject
 template <class T> T *GameObject::CreateComponent(const std::string &name)
 {
     Component *t = new T;
+    t->owner = PlayerManager::GetCurrentPlayer()->id;
     t->SetName(name);
     AddComponent(t);
     return (T *)t;

@@ -18,6 +18,7 @@ class Socket
     int options;
     uint16 src_port;
     sockaddr *addr;
+    sockaddr *recv_addr;
     CircularDataBuffer *buffer;
     Mutex buffer_mutex;
     Event read_event;

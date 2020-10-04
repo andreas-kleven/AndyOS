@@ -74,8 +74,14 @@ void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt)
     default:
         Socket *socket = SocketManager::GetUdpSocket(dst_port);
 
-        if (socket)
+        if (socket) {
+            sockaddr_in *addr = new sockaddr_in();
+            addr->sin_family = AF_INET;
+            addr->sin_addr.s_addr = ip_hdr->src;
+            addr->sin_port = htons(src_port);
+            socket->recv_addr = (sockaddr *)addr;
             socket->HandleData(udp.data, udp.data_length);
+        }
         break;
     }
 }

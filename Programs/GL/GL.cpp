@@ -234,9 +234,9 @@ void Draw(Vertex *verts, int count)
         float diffB = clamp(-b.world_normal.Dot(light), 0.f, 1.f);
         float diffC = clamp(-c.world_normal.Dot(light), 0.f, 1.f);
 
-        a.built_color = a.color * (0.1 + diffuse * diffA + specular * pow(specA, 5));
-        b.built_color = b.color * (0.1 + diffuse * diffB + specular * pow(specB, 5));
-        c.built_color = c.color * (0.1 + diffuse * diffC + specular * pow(specC, 5));
+        a.built_color = a.color * (0.3 + diffuse * diffA + specular * pow(specA, 5));
+        b.built_color = b.color * (0.3 + diffuse * diffB + specular * pow(specB, 5));
+        c.built_color = c.color * (0.3 + diffuse * diffC + specular * pow(specC, 5));
 
         // UVs
         a.tmp_u = a.u;

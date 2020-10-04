@@ -9,7 +9,7 @@ MyBox::MyBox()
     Model3D *model = ModelLoader::LoadModel("gamedata/cube.a3d", Format3D::FORMAT_A3D);
 
     if (!img_buf) {
-        if (!read_file(img_buf, "gamedata/img.bmp")) {
+        if (!read_file(img_buf, "/gamedata/img_hd.bmp")) {
             debug_print("bmp not found");
             while (1)
                 ;

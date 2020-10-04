@@ -5,4 +5,6 @@ class MyGame : public Game
 {
   public:
     MyGame();
+    void Init();
+    void CreatePlayer();
 };

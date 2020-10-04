@@ -5,14 +5,7 @@
 Game::Game()
 {
     active_cam = 0;
-}
-
-void Game::AddObject(GameObject *object)
-{
-    objects.push_back(object);
-
-    if (!active_cam && object->GetType() == ObjectType::Camera)
-        SetActiveCamera((Camera *)object);
+    network_manager = new NetworkManager();
 }
 
 Camera *Game::GetActiveCamera()
@@ -45,4 +38,12 @@ GameObject *Game::GetObject(ObjectType type)
     }
 
     return 0;
+}
+
+void Game::AddObject(GameObject *object)
+{
+    objects.push_back(object);
+
+    if (!active_cam && object->GetType() == ObjectType::Camera)
+        SetActiveCamera((Camera *)object);
 }

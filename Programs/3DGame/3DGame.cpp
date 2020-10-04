@@ -6,6 +6,7 @@
 #include "MySphere.h"
 #include "Thing.h"
 #include <andyos/float.h>
+#include <unistd.h>
 
 #include "GL.h"
 
@@ -57,6 +58,9 @@ void CreateCornell(Game *game)
 }
 
 MyGame::MyGame()
+{}
+
+void MyGame::Init()
 {
     MyCamera *cam = CreateObject<MyCamera>("Camera1");
     cam->transform.position = Vector3(0, 0, -15);
@@ -70,14 +74,10 @@ MyGame::MyGame()
     // light->intensity = 1;
 
     // Objects
-    Thing *thing = CreateObject<Thing>("Thing");
-    // thing->transform.position = Vector3(-0.8, -0.6, 2);
-    // thing->transform.rotation = Quaternion::FromEuler(Vector3(0.1, 0.1, -M_PI / 8));
-    // thing->transform.scale = Vector3(0.05, 1.5, 0.05);
 
     MyBox *box = CreateObject<MyBox>("Ground");
-    box->transform.position = Vector3(0, -5, 0);
-    box->transform.scale = Vector3(10, 1, 10);
+    box->transform.position = Vector3(0, -15, 0);
+    box->transform.scale = Vector3(10, 10, 10);
 
     /*MySphere* sphere = CreateObject<MySphere>("Sphere");
     sphere->transform.position = Vector3(-1, -1, 2);
@@ -89,4 +89,19 @@ MyGame::MyGame()
     sphere2->meshComponents[0]->shader = Shader(0, 0, FLT_MAX);
 
     CreateCornell(this);*/
+
+    if (getpid() == 10) {
+        GetNetworkManager()->Host(1234);
+    } else {
+        GetNetworkManager()->Connect(1234);
+    }
+}
+
+void MyGame::CreatePlayer()
+{
+    debug_print("Create player %d\n", PlayerManager::IsLocal());
+    Thing *thing = CreateObject<Thing>("Thing");
+
+    if (!PlayerManager::IsLocal())
+        thing->transform.position = Vector3(4, 0, 0);
 }

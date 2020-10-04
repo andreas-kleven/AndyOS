@@ -4,7 +4,8 @@
 GameObject::GameObject()
 {
     this->parent = 0;
-    this->type = ObjectType::Camera;
+    this->rigidbody = 0;
+    this->type = ObjectType::Object;
     this->name = "GameObject";
 }
 

@@ -88,6 +88,15 @@ int Socket::Bind(const sockaddr *addr, socklen_t addrlen)
 
     this->addr = (sockaddr *)(new char[addrlen]);
     memcpy(this->addr, addr, addrlen);
+
+    // TODO
+    if (this->addr->sa_family == AF_INET) {
+        sockaddr_in *inet_addr = (sockaddr_in *)this->addr;
+
+        if (inet_addr->sin_port == 0)
+            inet_addr->sin_port = htons(this->src_port);
+    }
+    
     return 0;
 }
 
@@ -152,7 +161,12 @@ int Socket::Recv(void *buf, size_t len, int flags)
 int Socket::Recvfrom(void *buf, size_t len, int flags, sockaddr *src_addr, socklen_t addrlen)
 {
     // TODO
-    return Recv(buf, len, flags);
+    int ret = Recv(buf, len, flags);
+
+    if (ret > 0 && src_addr)
+        memcpy(src_addr, recv_addr, sizeof(sockaddr_in));
+
+    return ret;
 }
 
 int Socket::Recvmsg(msghdr *msg, int flags)

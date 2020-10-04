@@ -11,5 +11,6 @@
 #include "GameEngine/Include/Model3D.h"
 #include "GameEngine/Include/ModelLoader.h"
 #include "GameEngine/Include/Physics/Collision.h"
+#include "GameEngine/Include/Player.h"
 #include "GameEngine/Include/Raytracer.h"
 #include <AndyOS.h>

@@ -15,11 +15,6 @@ GC gc;
 bool paused = false;
 bool raytrace = false;
 
-std::vector<Component *> all_components;
-std::vector<MeshComponent *> meshComponents;
-std::vector<Rigidbody *> rigidbodies;
-std::vector<Component *> physics_components;
-
 float deltaTime;
 Game *game;
 gui::Window *window;
@@ -167,6 +162,9 @@ Vector3 FrictionForce(Rigidbody *body, Vector3 normal, Vector3 vrel, Vector3 net
 
 void Start()
 {
+    PlayerManager::CreatePlayer(0, "Player1");
+    game->Init();
+
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
         obj->Start();
@@ -191,6 +189,7 @@ void Update()
 
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
+        PlayerManager::SetPlayer(obj->owner);
         obj->Update(deltaTime);
     }
 
@@ -199,12 +198,14 @@ void Update()
 
         for (int j = 0; j < obj->components.size(); j++) {
             Component *comp = obj->components[j];
+            PlayerManager::SetPlayer(comp->owner);
             comp->Update(deltaTime);
         }
     }
 
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
+        PlayerManager::SetPlayer(obj->owner);
         obj->LateUpdate(deltaTime);
     }
 
@@ -213,6 +214,7 @@ void Update()
 
         for (int j = 0; j < obj->components.size(); j++) {
             Component *comp = obj->components[j];
+            PlayerManager::SetPlayer(comp->owner);
             comp->LateUpdate(deltaTime);
         }
     }
@@ -260,9 +262,10 @@ void Collision()
 
                 if (test.TestIntersection(*a, *b, &mtv, man, count)) {
                     a->velocity = Vector3(0, 0, 0);
+                    b->velocity = Vector3(0, 0, 0);
 
-                    a->parent->transform.position += mtv * b->mass / (a->mass + b->mass);
-                    b->parent->transform.position -= mtv * a->mass / (a->mass + b->mass);
+                    // a->parent->transform.position += mtv * b->mass / (a->mass + b->mass);
+                    // b->parent->transform.position -= mtv * a->mass / (a->mass + b->mass);
 
                     continue;
 
@@ -606,6 +609,9 @@ void StartGame(Game *game, gui::Window *wnd)
             GL::MatrixMode(GL_PROJECTION);
             GL::LoadMatrix(Matrix4::CreatePerspectiveProjection(gc.width, gc.height, 90, 1, 10));
         }
+
+        game->GetNetworkManager()->ProcessPackets();
+        game->GetNetworkManager()->SendPackets();
 
         Update();
         Collision();

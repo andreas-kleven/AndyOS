@@ -6,6 +6,7 @@ MyCamera::MyCamera()
     this->speed = 10;
     this->yaw = 0;
     this->distance = 10;
+    this->target = 0;
 }
 
 void MyCamera::Start()
