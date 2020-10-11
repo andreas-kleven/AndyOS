@@ -10,7 +10,7 @@
 #include <string.h>
 
 #define KEYBOARD_IRQ 33
-#define BUFFER_SIZE  256
+#define BUFFER_SIZE  128
 
 static uint8 buffer[BUFFER_SIZE];
 static fpos_t buffer_pos = 0;
@@ -21,8 +21,8 @@ void Keyboard_ISR()
     if (inb(0x64) & 1) {
         uint8 scan = inb(0x60);
         VTTY::QueueInput(scan);
-        buffer[buffer_pos] = scan;
-        buffer_pos = (buffer_pos + 1) % BUFFER_SIZE;
+        buffer[buffer_pos % BUFFER_SIZE] = scan;
+        buffer_pos += 1;
         data_event.Set();
     }
 }
