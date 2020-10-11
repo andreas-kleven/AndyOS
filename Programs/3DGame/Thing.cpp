@@ -4,9 +4,8 @@
 
 Thing::Thing()
 {
-    Model3D *model = ModelLoader::LoadModel("/gamedata/monkey.a3d", Format3D::FORMAT_A3D);
-    MeshComponent *mesh = CreateComponent<MeshComponent>("Mesh");
-    mesh->SetModel(model);
+    mesh = 0;
+    SetMesh(0);
 
     char *img_buf;
 
@@ -31,6 +30,43 @@ Thing::Thing()
     // rigidbody->bEnabledGravity = 0;
 }
 
+void Thing::SetMesh(int index)
+{
+    mesh_index = index % 5;
+    const char *path;
+
+    if (mesh_index == 0)
+        path = "/gamedata/monkey.a3d";
+    else if (mesh_index == 1)
+        path = "/gamedata/sphere.a3d";
+    else if (mesh_index == 2)
+        path = "/gamedata/bunny.a3d";
+    if (mesh_index == 3)
+        path = "/gamedata/fox.a3d";
+    if (mesh_index == 4)
+        path = "/gamedata/tank.a3d";
+
+    Model3D *model = ModelLoader::LoadModel(path, Format3D::FORMAT_A3D);
+
+    if (!mesh)
+        mesh = CreateComponent<MeshComponent>("Mesh");
+
+    mesh->SetModel(model);
+
+    for (int i = 0; i < mesh->model->vertices.size(); i++) {
+        Vertex &vert = mesh->model->vertex_buffer[i];
+
+        if (mesh_index == 3) {
+            vert.pos = vert.pos / 30.f;
+        }
+
+        if (mesh_index == 4) {
+            vert.color = Color::Gray;
+            mesh->texId = 0;
+        }
+    }
+}
+
 void Thing::Start()
 {
     if (!PlayerManager::IsLocal())
@@ -44,6 +80,9 @@ void Thing::Start()
 
 void Thing::Update(float deltaTime)
 {
+    if (Input::GetKeyDown(KEY_M))
+        SetMesh(mesh_index + 1);
+
     float sign = Input::GetKey(KEY_LSHIFT) ? -1 : 1;
     float jumpspeed = 5;
     float movespeed = deltaTime * 10;

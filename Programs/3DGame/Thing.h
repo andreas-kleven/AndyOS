@@ -8,4 +8,10 @@ class Thing : public GameObject
 
     virtual void Start();
     virtual void Update(float delta);
+
+  private:
+    int mesh_index;
+    MeshComponent *mesh;
+
+    void SetMesh(int index);
 };

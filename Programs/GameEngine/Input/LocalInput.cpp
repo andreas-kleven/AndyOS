@@ -51,9 +51,9 @@ void ReadMouse()
 
         // Scroll
         if (mb[3] & 1)
-            axes[AXIS_SCROLLX] += mb[3];
+            axes[AXIS_SCROLLY] += (signed char)mb[3];
         else
-            axes[AXIS_SCROLLY] += mb[3];
+            axes[AXIS_SCROLLX] += (signed char)mb[3];
     }
 }
 

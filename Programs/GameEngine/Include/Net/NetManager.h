@@ -17,11 +17,13 @@ class NetworkManager
     void ProcessPackets();
 
     inline bool IsServer() { return bServer; }
+    inline bool IsClient() { return bClient; }
     inline bool IsConnected() { return bConnected; }
 
   private:
     NetSocket *socket;
     bool bServer;
+    bool bClient;
     bool bConnected;
     int next_playerid;
     int next_objectnetid;

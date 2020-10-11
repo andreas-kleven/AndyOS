@@ -6,7 +6,6 @@
 #include "MySphere.h"
 #include "Thing.h"
 #include <andyos/float.h>
-#include <unistd.h>
 
 #include "GL.h"
 
@@ -57,8 +56,14 @@ void CreateCornell(Game *game)
     }
 }
 
-MyGame::MyGame()
-{}
+MyGame::MyGame(bool host, bool client)
+{
+    if (host) {
+        GetNetworkManager()->Host(1234);
+    } else if (client) {
+        GetNetworkManager()->Connect(1234);
+    }
+}
 
 void MyGame::Init()
 {
@@ -90,13 +95,9 @@ void MyGame::Init()
 
     CreateCornell(this);*/
 
-    if (getpid() == 10) {
-        GetNetworkManager()->Host(1234);
+    if (!GetNetworkManager()->IsClient()) {
         GameObject *player = CreatePlayer();
         player->SetNetId(1);
-
-    } else {
-        GetNetworkManager()->Connect(1234);
     }
 }
 
@@ -107,7 +108,7 @@ GameObject *MyGame::CreatePlayer()
     Transform transform;
 
     if (!PlayerManager::IsLocal())
-        transform.position = Vector3(4, 0, 0);
+        transform.position = Vector3(PlayerManager::GetCurrentPlayer()->id * 3, 0, 0);
 
     return CreatePlayer(transform);
 }

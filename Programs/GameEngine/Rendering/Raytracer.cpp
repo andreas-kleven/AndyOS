@@ -208,6 +208,9 @@ bool Trace(Vector3 &rayOrigin, Vector3 &rayDir, Vector3 &hit, MeshComponent *&hi
             if (!model)
                 continue;
 
+            if (!mesh->bvh->root)
+                printf("No bounding volume hierarchy\n");
+
             if (TraceNode(mesh->bvh->root, mesh, rayOrigin, rayDir, distance, hit, triangle, u, v,
                           backfaces)) {
                 hitMesh = mesh;

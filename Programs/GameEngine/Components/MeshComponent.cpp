@@ -17,5 +17,5 @@ void MeshComponent::SetModel(Model3D *_model)
     model = _model;
 
     bvh = new KDTree();
-    bvh->Build(_model);
+    // bvh->Build(_model);
 }

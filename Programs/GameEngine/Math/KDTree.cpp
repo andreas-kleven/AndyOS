@@ -109,7 +109,9 @@ KDNode *KDNode::Build(Triangle *tris[], int count, int depth)
 }
 
 KDTree::KDTree()
-{}
+{
+    root = 0;
+}
 
 KDTree::~KDTree()
 {

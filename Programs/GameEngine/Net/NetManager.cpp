@@ -38,6 +38,7 @@ NetworkManager::NetworkManager()
 {
     this->socket = new NetSocket();
     this->bServer = false;
+    this->bClient = false;
     this->bConnected = false;
     this->next_playerid = 2;
     this->next_objectnetid = 2;
@@ -62,6 +63,7 @@ bool NetworkManager::Connect(int port)
     strcpy(pkt.name, "Player name");
     AddPacket(0, 0, 0, PACKETTYPE_CONNECT, &pkt, sizeof(pkt));
 
+    bClient = true;
     bConnected = true;
 
     return true;
@@ -197,7 +199,7 @@ void NetworkManager::ProcessPacket(NetPacket *packet)
 
     case PACKETTYPE_KEYINPUT: {
         KeyInputPacket *pkt = (KeyInputPacket *)packet->data;
-        //printf("Key input %d %d %d\n", packet->player, pkt->key, pkt->state);
+        // printf("Key input %d %d %d\n", packet->player, pkt->key, pkt->state);
 
         if (PlayerManager::SetPlayer(packet->player)) {
             if (Input::SetKey(pkt->key, pkt->state)) {
@@ -210,7 +212,7 @@ void NetworkManager::ProcessPacket(NetPacket *packet)
 
     case PACKETTYPE_AXISINPUT: {
         AxisInputPacket *pkt = (AxisInputPacket *)packet->data;
-        //printf("Axis input %d %d %.1f\n", packet->player, pkt->axis, pkt->value);
+        // printf("Axis input %d %d %.1f\n", packet->player, pkt->axis, pkt->value);
 
         if (PlayerManager::SetPlayer(packet->player)) {
             if (Input::SetAxis(pkt->axis, pkt->value)) {

@@ -62,9 +62,9 @@ void ReadMouse()
 
         // Scroll
         if (mb[3] & 1)
-            _scroll_y += mb[3];
+            _scroll_y += (signed char)mb[3];
         else
-            _scroll_x += mb[3];
+            _scroll_x += (signed char)mb[3];
     }
 }
 

@@ -11,17 +11,24 @@ MyCamera::MyCamera()
 
 void MyCamera::LateUpdate(float deltaTime)
 {
+    if (Input::GetKey(KEY_LALT))
+        return;
+
     float camspeed = deltaTime * 0.02;
+    float scrollspeed = deltaTime * 10;
     float movespeed = deltaTime * this->speed;
     float lerpspeed = 30;
 
     float mouse_x = Input::GetAxis(AXIS_X) * camspeed;
     float mouse_y = Input::GetAxis(AXIS_Y) * camspeed;
+    float mouse_sy = Input::GetAxis(AXIS_SCROLLY) * scrollspeed;
 
     if (target) {
         Vector3 dir = -target->transform.GetForwardVector();
         dir.y = 0;
         dir.Normalize();
+
+        distance += mouse_sy;
 
         float pitch = atan2(-dir.x, dir.z);
         yaw += mouse_y;

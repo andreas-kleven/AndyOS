@@ -4,7 +4,7 @@
 class MyGame : public Game
 {
   public:
-    MyGame();
+    MyGame(bool host, bool client);
     void Init();
     GameObject *CreatePlayer();
     GameObject *CreatePlayer(const Transform &transform);
