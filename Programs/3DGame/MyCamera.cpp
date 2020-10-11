@@ -9,11 +9,6 @@ MyCamera::MyCamera()
     this->target = 0;
 }
 
-void MyCamera::Start()
-{
-    target = GEngine::game->GetObject("Thing");
-}
-
 void MyCamera::LateUpdate(float deltaTime)
 {
     float camspeed = deltaTime * 0.02;

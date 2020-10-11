@@ -62,7 +62,7 @@ MyGame::MyGame()
 
 void MyGame::Init()
 {
-    MyCamera *cam = CreateObject<MyCamera>("Camera1");
+    MyCamera *cam = CreateObject<MyCamera>("Camera");
     cam->transform.position = Vector3(0, 0, -15);
 
     MyLight *light = CreateObject<MyLight>("Light");
@@ -92,16 +92,29 @@ void MyGame::Init()
 
     if (getpid() == 10) {
         GetNetworkManager()->Host(1234);
+        GameObject *player = CreatePlayer();
+        player->SetNetId(1);
+
     } else {
         GetNetworkManager()->Connect(1234);
     }
 }
 
-void MyGame::CreatePlayer()
+GameObject *MyGame::CreatePlayer()
 {
     debug_print("Create player %d\n", PlayerManager::IsLocal());
-    Thing *thing = CreateObject<Thing>("Thing");
+
+    Transform transform;
 
     if (!PlayerManager::IsLocal())
-        thing->transform.position = Vector3(4, 0, 0);
+        transform.position = Vector3(4, 0, 0);
+
+    return CreatePlayer(transform);
+}
+
+GameObject *MyGame::CreatePlayer(const Transform &transform)
+{
+    Thing *thing = CreateObject<Thing>("Thing");
+    thing->transform = transform;
+    return thing;
 }

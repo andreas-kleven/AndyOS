@@ -20,8 +20,11 @@ class NetworkManager
     NetSocket *socket;
     bool bServer;
     bool bConnected;
+    int next_playerid;
+    int next_objectnetid;
     std::vector<RawPacket> packet_buffer;
 
-    void AddPacket(uint8_t destination, uint8_t player, uint8_t type, uint8_t length, const void *data);
+    void AddPacket(uint8_t destination, uint8_t player, uint32_t object, uint8_t type,
+                   const void *data, uint8_t length);
     void ProcessPacket(NetPacket *packet);
 };

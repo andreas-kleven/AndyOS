@@ -5,14 +5,13 @@ class MyCamera : public Camera
 {
   public:
     float speed;
+    GameObject *target;
 
     MyCamera();
 
-    virtual void Start();
     virtual void LateUpdate(float deltaTime);
 
   private:
-    GameObject *target;
     float yaw;
     float distance;
 };

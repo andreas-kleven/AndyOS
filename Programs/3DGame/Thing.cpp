@@ -1,5 +1,6 @@
 #include "Thing.h"
 #include "GEngine.h"
+#include "MyCamera.h"
 
 Thing::Thing()
 {
@@ -28,6 +29,17 @@ Thing::Thing()
     // rigidbody->collider = new BoxCollider();
     // rigidbody->bEnabled = 0;
     // rigidbody->bEnabledGravity = 0;
+}
+
+void Thing::Start()
+{
+    if (!PlayerManager::IsLocal())
+        return;
+
+    MyCamera *cam = (MyCamera *)GEngine::game->GetObject("Camera");
+
+    if (cam)
+        cam->target = this;
 }
 
 void Thing::Update(float deltaTime)

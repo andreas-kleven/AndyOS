@@ -1,4 +1,5 @@
 #pragma once
+#include <Transform.h>
 #include <deque>
 #include <map>
 #include <netinet/in.h>
@@ -7,13 +8,16 @@
 
 #define PACKET_BROADCAST 255
 
-#define PACKETTYPE_CONNECT 1
+#define PACKETTYPE_CONNECT   1
+#define PACKETTYPE_CONNECTED 2
+#define PACKETTYPE_SPAWN     3
 
 struct RawPacket
 {
     uint8_t seq;
     uint8_t destination;
     uint8_t player;
+    uint32_t object;
     uint8_t type;
     uint8_t length;
     uint8_t data[256];
@@ -21,10 +25,28 @@ struct RawPacket
 
 struct NetPacket
 {
+    uint8_t source;
     uint8_t player;
+    uint32_t object;
     uint8_t type;
     uint8_t length;
     uint8_t data[256];
+};
+
+struct ConnectPacket
+{
+    char name[32];
+};
+
+struct ConnectedPacket
+{
+    bool self;
+    char name[32];
+};
+
+struct SpawnPacket
+{
+    Transform transform;
 };
 
 struct PlayerAddress

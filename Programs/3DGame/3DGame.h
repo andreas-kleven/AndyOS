@@ -6,5 +6,6 @@ class MyGame : public Game
   public:
     MyGame();
     void Init();
-    void CreatePlayer();
+    GameObject *CreatePlayer();
+    GameObject *CreatePlayer(const Transform &transform);
 };

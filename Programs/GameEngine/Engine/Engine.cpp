@@ -162,7 +162,7 @@ Vector3 FrictionForce(Rigidbody *body, Vector3 normal, Vector3 vrel, Vector3 net
 
 void Start()
 {
-    PlayerManager::CreatePlayer(0, "Player1");
+    PlayerManager::CreatePlayer(1, "Player1");
     game->Init();
 
     for (int i = 0; i < game->objects.size(); i++) {
@@ -187,7 +187,7 @@ void Update()
 
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
-        PlayerManager::SetPlayer(obj->owner);
+        PlayerManager::SetPlayer(obj->GetOwner());
         obj->Update(deltaTime);
     }
 
@@ -196,14 +196,14 @@ void Update()
 
         for (int j = 0; j < obj->components.size(); j++) {
             Component *comp = obj->components[j];
-            PlayerManager::SetPlayer(comp->owner);
+            PlayerManager::SetPlayer(comp->GetOwner());
             comp->Update(deltaTime);
         }
     }
 
     for (int i = 0; i < game->objects.size(); i++) {
         GameObject *obj = game->objects[i];
-        PlayerManager::SetPlayer(obj->owner);
+        PlayerManager::SetPlayer(obj->GetOwner());
         obj->LateUpdate(deltaTime);
     }
 
@@ -212,7 +212,7 @@ void Update()
 
         for (int j = 0; j < obj->components.size(); j++) {
             Component *comp = obj->components[j];
-            PlayerManager::SetPlayer(comp->owner);
+            PlayerManager::SetPlayer(comp->GetOwner());
             comp->LateUpdate(deltaTime);
         }
     }

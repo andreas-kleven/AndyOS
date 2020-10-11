@@ -6,7 +6,7 @@ namespace PlayerManager {
 int current_id = 0;
 std::vector<Player *> players;
 
-void CreatePlayer(int id, const char *name)
+Player *CreatePlayer(int id, const char *name)
 {
     Player *player = new Player();
     player->id = id;
@@ -14,7 +14,7 @@ void CreatePlayer(int id, const char *name)
     players.push_back(player);
 
     current_id = id;
-    GEngine::game->CreatePlayer();
+    return player;
 }
 
 void DestroyPlayer(int id)
@@ -27,6 +27,9 @@ Player *GetCurrentPlayer()
 
 Player *GetPlayer(int id)
 {
+    if (id == 0)
+        return players[0];
+
     for (auto *player : players) {
         if (player->id == id)
             return player;
@@ -37,12 +40,25 @@ Player *GetPlayer(int id)
 
 bool IsLocal()
 {
-    return current_id == 0;
+    return current_id == players[0]->id;
 }
 
 bool SetPlayer(int id)
 {
-    current_id = id;
+    if (id == 0)
+        current_id = players[0]->id;
+    else
+        current_id = id;
+
+    return true;
+}
+
+bool SetPlayer(const Player *player)
+{
+    if (!player)
+        return false;
+
+    current_id = player->id;
     return true;
 }
 

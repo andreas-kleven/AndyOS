@@ -3,10 +3,21 @@
 
 GameObject::GameObject()
 {
+    this->netid = 0;
     this->parent = 0;
     this->rigidbody = 0;
     this->type = ObjectType::Object;
     this->name = "GameObject";
+}
+
+void GameObject::SetNetId(int netid)
+{
+    this->netid = netid;
+}
+
+void GameObject::SetOwner(Player *owner)
+{
+    this->owner = owner;
 }
 
 void GameObject::SetName(const std::string &name)

@@ -78,6 +78,16 @@ bool NetSocket::Send(const std::vector<RawPacket> &packets)
                     sockaddr_in addr = entry.addr;
                     sendto(sockfd, &rawpkt, size, 0, (sockaddr *)&addr, sizeof(addr));
                 }
+            } else if ((int8_t)rawpkt.destination < 0) {
+                // broadcast except
+                uint8_t except = ~rawpkt.destination;
+
+                for (auto &entry : addresses) {
+                    if (entry.player != except) {
+                        sockaddr_in addr = entry.addr;
+                        sendto(sockfd, &rawpkt, size, 0, (sockaddr *)&addr, sizeof(addr));
+                    }
+                }
             } else {
                 // unicast
                 sockaddr_in addr = GetAddress(rawpkt.destination);
@@ -120,7 +130,8 @@ void *NetSocket::ListenLoop(void *arg)
         int recv_len = recvfrom(inst->sockfd, recv_buf, sizeof(recv_buf), 0, (sockaddr *)&recv_addr,
                                 sizeof(recv_addr));
 
-        printf("Recv %p %d %d\n", inst->socket_addr.sin_addr.s_addr, recv_len, recv_addr.sin_port);
+        // printf("Recv %lu %d %d\n", inst->socket_addr.sin_addr.s_addr, recv_len,
+        // recv_addr.sin_port);
 
         if (inst->GetPlayer(recv_addr) == 0) {
             PlayerAddress entry;
@@ -129,15 +140,24 @@ void *NetSocket::ListenLoop(void *arg)
             inst->addresses.push_back(entry);
         }
 
-        RawPacket *rawpkt = (RawPacket *)recv_buf;
-        NetPacket *pkt = new NetPacket();
-        pkt->player = rawpkt->player ? rawpkt->player : inst->GetPlayer(recv_addr);
-        pkt->type = rawpkt->type;
-        pkt->length = rawpkt->length;
-        memcpy(pkt->data, rawpkt->data, min((size_t)pkt->length, sizeof(pkt->data)));
+        uint8_t *ptr = recv_buf;
 
-        // TODO: locking
-        inst->received_packets.push_back(pkt);
+        while (recv_len > 0) {
+            RawPacket *rawpkt = (RawPacket *)ptr;
+            NetPacket *pkt = new NetPacket();
+            pkt->source = inst->GetPlayer(recv_addr);
+            pkt->player = rawpkt->player;
+            pkt->object = rawpkt->object;
+            pkt->type = rawpkt->type;
+            pkt->length = rawpkt->length;
+            memcpy(pkt->data, rawpkt->data, min((size_t)pkt->length, sizeof(pkt->data)));
+
+            // TODO: locking
+            inst->received_packets.push_back(pkt);
+
+            ptr += rawpkt->length + sizeof(RawPacket) - sizeof(rawpkt->data);
+            recv_len -= rawpkt->length + sizeof(RawPacket) - sizeof(rawpkt->data);
+        }
     }
 }
 
