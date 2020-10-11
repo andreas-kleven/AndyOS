@@ -11,6 +11,8 @@
 #define PACKETTYPE_CONNECT   1
 #define PACKETTYPE_CONNECTED 2
 #define PACKETTYPE_SPAWN     3
+#define PACKETTYPE_KEYINPUT  4
+#define PACKETTYPE_AXISINPUT 5
 
 struct RawPacket
 {
@@ -31,22 +33,6 @@ struct NetPacket
     uint8_t type;
     uint8_t length;
     uint8_t data[256];
-};
-
-struct ConnectPacket
-{
-    char name[32];
-};
-
-struct ConnectedPacket
-{
-    bool self;
-    char name[32];
-};
-
-struct SpawnPacket
-{
-    Transform transform;
 };
 
 struct PlayerAddress

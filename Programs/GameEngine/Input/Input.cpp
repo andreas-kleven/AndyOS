@@ -1,6 +1,6 @@
 #include "Input.h"
+#include "Engine.h"
 #include "LocalInput.h"
-#include "Player.h"
 #include <AndyOS.h>
 #include <map>
 #include <string.h>
@@ -22,6 +22,9 @@ InputState &CurrentState()
 {
     int id = PlayerManager::GetCurrentPlayer()->id;
 
+    if (PlayerManager::IsLocal())
+        id = 0;
+
     if (states.find(id) == states.end())
         states[id] = InputState();
 
@@ -32,7 +35,14 @@ void UpdateLocal()
 {
     for (int i = 0; i < MAX_KEYS; i++) {
         KEYCODE key = (KEYCODE)i;
-        states[0].keys[key] = LocalInput::GetKey(key);
+        bool prevstate = states[0].keys[key];
+        bool newstate = LocalInput::GetKey(key);
+
+        if (prevstate != newstate) {
+            GEngine::game->GetNetworkManager()->SendKey(key, newstate);
+        }
+
+        states[0].keys[key] = newstate;
     }
 
     states[0].axes[AXIS_X] = LocalInput::GetAxis(AXIS_X);
@@ -43,9 +53,11 @@ void UpdateLocal()
 
 void Update(bool active)
 {
-    InputState &state = states[0];
-    memcpy(state.prev_keys, state.keys, sizeof(state.keys));
-    memcpy(state.prev_axes, state.axes, sizeof(state.axes));
+    for (auto &pair : states) {
+        InputState &state = pair.second;
+        memcpy(state.prev_keys, state.keys, sizeof(state.keys));
+        memcpy(state.prev_axes, state.axes, sizeof(state.axes));
+    }
 
     LocalInput::Update();
 
@@ -79,7 +91,35 @@ bool GetKeyUp(KEYCODE key)
 float GetAxis(INPUT_AXIS axis)
 {
     InputState &state = CurrentState();
-    return state.axes[axis] - state.prev_axes[axis];
+    float value = state.axes[axis] - state.prev_axes[axis];
+
+    if (PlayerManager::IsLocal() && fabs(value) > 0) {
+        GEngine::game->GetNetworkManager()->SendAxis(axis, state.axes[axis]);
+    }
+
+    return value;
+}
+
+bool SetKey(KEYCODE key, bool value)
+{
+    InputState &state = CurrentState();
+
+    if (key < 0 || key >= sizeof(state.keys) / sizeof(state.keys[0]))
+        return false;
+
+    state.keys[key] = value;
+    return true;
+}
+
+bool SetAxis(INPUT_AXIS axis, float value)
+{
+    InputState &state = CurrentState();
+
+    if (axis < 0 || axis >= sizeof(state.axes) / sizeof(state.axes[0]))
+        return false;
+
+    state.axes[axis] = value;
+    return true;
 }
 
 } // namespace Input

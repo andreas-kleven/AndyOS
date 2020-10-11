@@ -16,4 +16,6 @@ bool GetKey(KEYCODE key);
 bool GetKeyDown(KEYCODE key);
 bool GetKeyUp(KEYCODE key);
 float GetAxis(INPUT_AXIS axis);
+bool SetKey(KEYCODE key, bool state);
+bool SetAxis(INPUT_AXIS axis, float value);
 }; // namespace Input

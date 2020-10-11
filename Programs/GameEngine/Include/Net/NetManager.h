@@ -1,14 +1,17 @@
 #pragma once
 #include "Net/NetSocket.h"
+#include <Input.h>
 
 class NetworkManager
 {
   public:
     NetworkManager();
 
-    virtual bool Host(int port);
-    virtual bool Connect(int port);
-    virtual bool Disconnect();
+    bool Host(int port);
+    bool Connect(int port);
+    bool Disconnect();
+    bool SendKey(KEYCODE key, bool state, uint8_t destination = PACKET_BROADCAST);
+    bool SendAxis(INPUT_AXIS axis, float value, uint8_t destination = PACKET_BROADCAST);
 
     void SendPackets();
     void ProcessPackets();

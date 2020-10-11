@@ -2,8 +2,37 @@
 #include "Player.h"
 #include <Engine.h>
 #include <Player.h>
+#include <keycodes.h>
 #include <stdio.h>
 #include <string.h>
+
+struct ConnectPacket
+{
+    char name[32];
+};
+
+struct ConnectedPacket
+{
+    bool self;
+    char name[32];
+};
+
+struct SpawnPacket
+{
+    Transform transform;
+};
+
+struct KeyInputPacket
+{
+    KEYCODE key;
+    bool state;
+};
+
+struct AxisInputPacket
+{
+    INPUT_AXIS axis;
+    float value;
+};
 
 NetworkManager::NetworkManager()
 {
@@ -41,6 +70,28 @@ bool NetworkManager::Connect(int port)
 bool NetworkManager::Disconnect()
 {
     return socket->Disconnect();
+}
+
+bool NetworkManager::SendKey(KEYCODE key, bool state, uint8_t destination)
+{
+    KeyInputPacket pkt;
+    pkt.key = key;
+    pkt.state = state;
+
+    AddPacket(destination, PlayerManager::GetCurrentPlayer()->id, 0, PACKETTYPE_KEYINPUT, &pkt,
+              sizeof(pkt));
+    return true;
+}
+
+bool NetworkManager::SendAxis(INPUT_AXIS axis, float value, uint8_t destination)
+{
+    AxisInputPacket pkt;
+    pkt.axis = axis;
+    pkt.value = value;
+
+    AddPacket(destination, PlayerManager::GetCurrentPlayer()->id, 0, PACKETTYPE_AXISINPUT, &pkt,
+              sizeof(pkt));
+    return true;
 }
 
 void NetworkManager::SendPackets()
@@ -97,26 +148,25 @@ void NetworkManager::ProcessPacket(NetPacket *packet)
         strcpy(conpkt.name, player->name.c_str());
         AddPacket(packet->source, player->id, 0, PACKETTYPE_CONNECTED, &conpkt, sizeof(conpkt));
 
-        // send all players
         PlayerManager::SetPlayer(0);
 
+        // send all players
         do {
             Player *p = PlayerManager::GetCurrentPlayer();
+            uint8_t destination = p->id == player->id ? ~packet->source : packet->source;
             conpkt.self = false;
-
-            if (p->id != player->id) {
-                strcpy(conpkt.name, p->name.c_str());
-                AddPacket(packet->source, p->id, 0, PACKETTYPE_CONNECTED, &conpkt, sizeof(conpkt));
-            }
+            strcpy(conpkt.name, p->name.c_str());
+            AddPacket(destination, p->id, 0, PACKETTYPE_CONNECTED, &conpkt, sizeof(conpkt));
         } while (PlayerManager::NextPlayer());
 
         // send spawn
         for (auto &object : GEngine::game->objects) {
             if (object->GetNetId()) {
+                uint8_t destination = object == player_object ? PACKET_BROADCAST : packet->source;
                 SpawnPacket spawnpkt;
                 spawnpkt.transform = object->transform;
-                AddPacket(PACKET_BROADCAST, object->GetOwner()->id, object->GetNetId(),
-                          PACKETTYPE_SPAWN, &spawnpkt, sizeof(spawnpkt));
+                AddPacket(destination, object->GetOwner()->id, object->GetNetId(), PACKETTYPE_SPAWN,
+                          &spawnpkt, sizeof(spawnpkt));
             }
         }
     } break;
@@ -143,6 +193,32 @@ void NetworkManager::ProcessPacket(NetPacket *packet)
             object->SetOwner(PlayerManager::GetPlayer(packet->player));
             object->Start();
         }
+    } break;
+
+    case PACKETTYPE_KEYINPUT: {
+        KeyInputPacket *pkt = (KeyInputPacket *)packet->data;
+        //printf("Key input %d %d %d\n", packet->player, pkt->key, pkt->state);
+
+        if (PlayerManager::SetPlayer(packet->player)) {
+            if (Input::SetKey(pkt->key, pkt->state)) {
+                if (IsServer())
+                    SendKey(pkt->key, pkt->state, ~packet->source);
+            }
+        }
+
+    } break;
+
+    case PACKETTYPE_AXISINPUT: {
+        AxisInputPacket *pkt = (AxisInputPacket *)packet->data;
+        //printf("Axis input %d %d %.1f\n", packet->player, pkt->axis, pkt->value);
+
+        if (PlayerManager::SetPlayer(packet->player)) {
+            if (Input::SetAxis(pkt->axis, pkt->value)) {
+                if (IsServer())
+                    SendAxis(pkt->axis, pkt->value, ~packet->source);
+            }
+        }
+
     } break;
     }
 }
