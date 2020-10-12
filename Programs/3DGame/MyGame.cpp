@@ -1,4 +1,4 @@
-#include "3DGame.h"
+#include "MyGame.h"
 #include "GEngine.h"
 #include "MyBox.h"
 #include "MyCamera.h"

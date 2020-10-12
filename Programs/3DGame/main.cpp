@@ -1,4 +1,4 @@
-#include "3DGame.h"
+#include "MyGame.h"
 #include "GEngine.h"
 #include "GUI.h"
 #include <andyos/drawing.h>
