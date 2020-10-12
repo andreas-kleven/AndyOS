@@ -26,7 +26,9 @@ void panic(const char *err, const char *msg_fmt, ...)
     }
 
     kprintf("%s\n", err);
-    kprintf("%s\n", buffer);
+
+    if (buffer && strlen(buffer) > 0)
+        kprintf("%s\n", buffer);
 
     if (!prev_panic) {
         prev_panic = true;
