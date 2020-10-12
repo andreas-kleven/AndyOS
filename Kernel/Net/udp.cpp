@@ -1,3 +1,4 @@
+#include <Net/dhcp.h>
 #include <Net/packetmanager.h>
 #include <Net/socketmanager.h>
 #include <Net/udp.h>
@@ -20,11 +21,11 @@ bool Decode(UDP_Packet *up, NetPacket *pkt)
     return 1;
 }
 
-NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, const void *data, size_t len)
+NetPacket *CreatePacket(NetInterface *intf, const sockaddr_in *dest_addr, uint16 src_port,
+                        const void *data, size_t len)
 {
     uint32 dst = dest_addr->sin_addr.s_addr;
-    NetInterface *intf = PacketManager::GetInterface(dst);
-    NetPacket *pkt = IPv4::CreatePacket(dst, IP_PROTOCOL_UDP, sizeof(UDP_Header) + len);
+    NetPacket *pkt = IPv4::CreatePacket(intf, dst, IP_PROTOCOL_UDP, sizeof(UDP_Header) + len);
 
     if (!pkt)
         return 0;
@@ -71,6 +72,10 @@ void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt)
     uint16 dst_port = udp.header->dst_port;
 
     switch (dst_port) {
+    case PORT_DHCP_SRC: {
+        DHCP::HandlePacket(ip_hdr, &udp, pkt);
+    } break;
+
     default:
         Socket *socket = SocketManager::GetUdpSocket(dst_port);
 

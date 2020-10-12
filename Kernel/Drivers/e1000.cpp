@@ -187,7 +187,7 @@ void E1000::Poll()
         pkt.end = end;
         pkt.length = len;
 
-        ETH::HandlePacket(this, &pkt);
+        ETH::HandlePacket(&pkt);
 
         // TODO: Put in syscall handler?
         rx_descs[rx_cur]->status = 0;

@@ -116,7 +116,7 @@ void AddEntry(const MacAddress &mac, uint32 ip)
 
     for (int i = 0; i < ARP_CACHE_SIZE; i++) {
         if ((add && arp_cache[i].mac == Net::NullMAC) || (replace && arp_cache[i].ip == ip)) {
-            if (arp_cache[i].mac == Net::NullMAC) {
+            if (arp_cache[i].mac == Net::NullMAC && ip != htonl(LOOPBACK_ADDRESS)) {
                 Net::PrintIP("ARP added entry ", ip);
                 // Net::PrintMac("MAC: ", mac);
             }
@@ -134,18 +134,18 @@ void AddEntry(const MacAddress &mac, uint32 ip)
     debug_print("ARP add entry failed\n");
 }
 
-void HandlePacket(NetInterface *intf, NetPacket *pkt)
+void HandlePacket(NetPacket *pkt)
 {
     ARP_Header header;
     if (!Decode(&header, pkt))
         return;
 
-    if (header.recv_ip != intf->GetIP())
+    if (header.recv_ip != pkt->interface->GetIP())
         return;
 
     switch (header.op) {
     case ARP_REQUEST:
-        SendReply(intf, &header);
+        SendReply(pkt->interface, &header);
         break;
     case ARP_REPLY:
         AddEntry(header.send_mac, header.send_ip);

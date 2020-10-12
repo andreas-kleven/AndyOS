@@ -96,7 +96,7 @@ int Socket::Bind(const sockaddr *addr, socklen_t addrlen)
         if (inet_addr->sin_port == 0)
             inet_addr->sin_port = htons(this->src_port);
     }
-    
+
     return 0;
 }
 
@@ -195,7 +195,8 @@ int Socket::Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_
 {
     if (protocol == IPPROTO_UDP) {
         sockaddr_in *inet_addr = (sockaddr_in *)dest_addr;
-        NetPacket *pkt = UDP::CreatePacket(inet_addr, src_port, buf, len);
+        NetInterface *intf = PacketManager::GetInterface(inet_addr->sin_addr.s_addr);
+        NetPacket *pkt = UDP::CreatePacket(intf, inet_addr, src_port, buf, len);
         return UDP::Send(pkt);
     } else {
         return -1;

@@ -1,3 +1,4 @@
+#include <Net/packetmanager.h>
 #include <Net/socketmanager.h>
 #include <Net/tcp.h>
 #include <debug.h>
@@ -315,8 +316,9 @@ bool TcpSession::Send(uint8 flags)
 
 bool TcpSession::Send(uint8 flags, const void *buf, size_t len)
 {
-    NetPacket *pkt =
-        TCP::CreatePacket((sockaddr_in *)socket->addr, socket->src_port, flags, seq, ack, buf, len);
+    sockaddr_in *addr = (sockaddr_in *)socket->addr;
+    NetInterface *intf = PacketManager::GetInterface(addr->sin_addr.s_addr);
+    NetPacket *pkt = TCP::CreatePacket(intf, addr, socket->src_port, flags, seq, ack, buf, len);
 
     if (!pkt)
         return false;

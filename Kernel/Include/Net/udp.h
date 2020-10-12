@@ -22,8 +22,8 @@ struct UDP_Packet
 } __attribute__((packed));
 
 namespace UDP {
-NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, const void *data,
-                        size_t len);
+NetPacket *CreatePacket(NetInterface *intf, const sockaddr_in *dest_addr, uint16 src_port,
+                        const void *data, size_t len);
 
 int Send(NetPacket *pkt);
 void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt);

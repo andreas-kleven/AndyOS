@@ -1,9 +1,8 @@
 #pragma once
 #include <Net/netinterface.h>
+#include <net.h>
 #include <queue.h>
 #include <sync.h>
-
-#define LOOPBACK_ADDRESS 0x7F000001
 
 class LoopbackInterface : public NetInterface
 {

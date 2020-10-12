@@ -84,8 +84,13 @@ void Discover(NetInterface *intf)
     options[i++] = OPT_END;
     int length = (size_t)&options[i] - (size_t)header;
 
-    // NetPacket *pkt = UDP::CreatePacket(INADDR_BROADCAST, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8
-    // *)header, length); intf->Send(pkt);
+    sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(PORT_DHCP_DST);
+    addr.sin_addr.s_addr = INADDR_BROADCAST;
+
+    NetPacket *pkt = UDP::CreatePacket(intf, &addr, PORT_DHCP_SRC, (uint8 *)header, length);
+    intf->Send(pkt);
 }
 
 void Request(NetInterface *intf, uint32 requested, uint32 server)
@@ -111,8 +116,13 @@ void Request(NetInterface *intf, uint32 requested, uint32 server)
     options[i++] = OPT_END;
     int length = (size_t)&options[i] - (size_t)header;
 
-    // NetPacket *pkt = UDP::CreatePacket(INADDR_BROADCAST, PORT_DHCP_DST, PORT_DHCP_SRC, (uint8
-    // *)header, length); intf->Send(pkt);
+    sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(PORT_DHCP_DST);
+    addr.sin_addr.s_addr = 0xFFFFFFFF;
+
+    NetPacket *pkt = UDP::CreatePacket(intf, &addr, PORT_DHCP_SRC, (uint8 *)header, length);
+    intf->Send(pkt);
 }
 
 void ParseOptions(DHCP_Header *offer, DHCP_Options &options)
@@ -150,7 +160,7 @@ void ParseOptions(DHCP_Header *offer, DHCP_Options &options)
     }
 }
 
-void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt)
+void HandlePacket(IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt)
 {
     DHCP_Header *offer = (DHCP_Header *)udp->data;
 
@@ -166,7 +176,7 @@ void HandlePacket(NetInterface *intf, IPv4_Header *ip_hdr, UDP_Packet *udp, NetP
         debug_print("Lease time:		%ui", options.lease);
         debug_print("\n------------------------------\n");
 
-        Request(intf, offer->yiaddr, options.router);
+        Request(pkt->interface, offer->yiaddr, options.router);
     } else if (options.type == TYPE_ACK) {
         debug_print("dhcp: ack\n");
     } else if (options.type == TYPE_NAK) {

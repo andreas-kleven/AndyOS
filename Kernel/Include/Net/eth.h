@@ -25,5 +25,5 @@ namespace ETH {
 NetPacket *CreatePacket(NetInterface *intf, const MacAddress &dst, uint16 type, uint32 size);
 
 int Send(NetPacket *pkt);
-void HandlePacket(NetInterface *intf, NetPacket *pkt);
+void HandlePacket(NetPacket *pkt);
 } // namespace ETH

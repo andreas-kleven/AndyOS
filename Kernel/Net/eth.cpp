@@ -55,7 +55,7 @@ int Send(NetPacket *pkt)
     return PacketManager::Send(pkt);
 }
 
-void HandlePacket(NetInterface *intf, NetPacket *pkt)
+void HandlePacket(NetPacket *pkt)
 {
     EthPacket ep;
     if (!Decode(&ep, pkt))
@@ -65,11 +65,11 @@ void HandlePacket(NetInterface *intf, NetPacket *pkt)
 
     switch (ep.type) {
     case ETHERTYPE_IPv4:
-        IPv4::HandlePacket(intf, &ep, pkt);
+        IPv4::HandlePacket(&ep, pkt);
         break;
 
     case ETHERTYPE_ARP:
-        ARP::HandlePacket(intf, pkt);
+        ARP::HandlePacket(pkt);
         break;
     }
 }

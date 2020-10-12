@@ -2,6 +2,8 @@
 #include <Net/address.h>
 #include <types.h>
 
+#define LOOPBACK_ADDRESS 0x7F000001
+
 uint16 htons(uint16 val);
 uint16 ntohs(uint16 val);
 uint32 htonl(uint32 val);

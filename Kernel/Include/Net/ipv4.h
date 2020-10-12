@@ -29,7 +29,7 @@ struct IPv4_PSEUDO_HEADER
 } __attribute__((packed));
 
 namespace IPv4 {
-NetPacket *CreatePacket(uint32 dst, uint8 protocol, uint32 size);
+NetPacket *CreatePacket(NetInterface *intf, uint32 dst, uint8 protocol, uint32 size);
 int Send(NetPacket *pkt);
-void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt);
+void HandlePacket(EthPacket *eth, NetPacket *pkt);
 } // namespace IPv4

@@ -23,7 +23,7 @@ MacAddress GetMac(NetInterface *intf, uint32 ip);
 void AddEntry(const MacAddress &mac, uint32 ip);
 
 void SendRequest(NetInterface *intf, uint32 ip);
-void HandlePacket(NetInterface *intf, NetPacket *pkt);
+void HandlePacket(NetPacket *pkt);
 
 STATUS Init();
 }; // namespace ARP

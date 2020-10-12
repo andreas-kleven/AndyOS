@@ -120,12 +120,12 @@ bool Decode(TCP_Packet *tp, NetPacket *pkt)
     return 1;
 }
 
-NetPacket *CreatePacket(const sockaddr_in *dest_addr, uint16 src_port, uint8 flags, uint32 seq,
-                        uint32 ack, const void *data, uint32 data_length)
+NetPacket *CreatePacket(NetInterface *intf, const sockaddr_in *dest_addr, uint16 src_port,
+                        uint8 flags, uint32 seq, uint32 ack, const void *data, uint32 data_length)
 {
     uint32 dst = dest_addr->sin_addr.s_addr;
-    NetInterface *intf = PacketManager::GetInterface(dst);
-    NetPacket *pkt = IPv4::CreatePacket(dst, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
+    NetPacket *pkt =
+        IPv4::CreatePacket(intf, dst, IP_PROTOCOL_TCP, sizeof(TCP_Header) + data_length);
 
     if (!pkt)
         return 0;
@@ -178,11 +178,12 @@ void HandlePacket(IPv4_Header *ip_hdr, NetPacket *pkt)
         handled = session->HandlePacket(ip_hdr, &tcp);
 
     if (!handled) {
+        NetInterface *intf = PacketManager::GetInterface(ip_hdr->src);
         sockaddr_in addr;
         addr.sin_family = AF_INET;
         addr.sin_port = htons(tcp.header->src_port);
         addr.sin_addr.s_addr = ip_hdr->src;
-        NetPacket *rst_packet = CreatePacket(&addr, tcp.header->dst_port, TCP_RST | TCP_ACK,
+        NetPacket *rst_packet = CreatePacket(intf, &addr, tcp.header->dst_port, TCP_RST | TCP_ACK,
                                              tcp.header->ack, tcp.header->seq + 1, 0, 0);
         Send(rst_packet);
     }

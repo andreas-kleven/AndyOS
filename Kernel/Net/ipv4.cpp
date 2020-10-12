@@ -33,9 +33,8 @@ bool Decode(IPv4_Header *ih, NetPacket *pkt)
     return 1;
 }
 
-NetPacket *CreatePacket(uint32 dst, uint8 protocol, uint32 size)
+NetPacket *CreatePacket(NetInterface *intf, uint32 dst, uint8 protocol, uint32 size)
 {
-    NetInterface *intf = PacketManager::GetInterface(dst);
     uint32 mask = intf->GetMask();
     MacAddress mac;
 
@@ -92,7 +91,7 @@ int Send(NetPacket *pkt)
     return ETH::Send(pkt);
 }
 
-void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt)
+void HandlePacket(EthPacket *eth, NetPacket *pkt)
 {
     // debug_print("IP PACKET\n");
 
@@ -100,7 +99,7 @@ void HandlePacket(NetInterface *intf, EthPacket *eth, NetPacket *pkt)
     if (!Decode(&header, pkt))
         return;
 
-    uint32 intf_addr = intf->GetIP();
+    uint32 intf_addr = pkt->interface->GetIP();
     if (header.dst != intf_addr && header.dst != INADDR_BROADCAST)
         return;
 

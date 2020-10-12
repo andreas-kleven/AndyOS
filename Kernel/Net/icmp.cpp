@@ -29,7 +29,7 @@ void Send(ICMP_Packet *icmp, uint32 ip, uint8 type)
 {
     NetInterface *intf = PacketManager::GetInterface(ip);
     NetPacket *pkt =
-        IPv4::CreatePacket(ip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
+        IPv4::CreatePacket(intf, ip, IP_PROTOCOL_ICMP, sizeof(ICMP_Header) + icmp->data_length);
 
     if (!pkt)
         return;

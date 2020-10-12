@@ -33,6 +33,6 @@ void LoopbackInterface::Poll()
         if (!pkt)
             break;
 
-        ETH::HandlePacket(this, pkt);
+        ETH::HandlePacket(pkt);
     }
 }
