@@ -105,13 +105,13 @@ void AddDentry(DENTRY *parent, DENTRY *child)
 {
     if (child->name) {
         if (GetExistingChild(parent, child->name)) {
-            debug_print("dentry already added %s\n", child->name);
+            kprintf("dentry already added %s\n", child->name);
             return;
         }
     }
 
     if (!child->inode) {
-        debug_print("Missing inode\n");
+        kprintf("Missing inode\n");
     }
 
     child->parent = parent;

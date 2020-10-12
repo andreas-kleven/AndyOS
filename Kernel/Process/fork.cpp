@@ -35,7 +35,7 @@ bool CopyThreads(PROCESS *proc, PROCESS *newproc)
 PROCESS *Fork(PROCESS *proc)
 {
     Scheduler::Disable();
-    debug_print("Fork %d\n", proc->id);
+    kprintf("Fork %d\n", proc->id);
 
     VMem::SwapAddressSpace(proc->addr_space);
     ADDRESS_SPACE space;
@@ -76,7 +76,7 @@ PROCESS *Fork(PROCESS *proc)
         return 0;
     }
 
-    debug_print("Fork complete %d\n", newproc->id);
+    kprintf("Fork complete %d\n", newproc->id);
     Scheduler::Enable();
     return newproc;
 }

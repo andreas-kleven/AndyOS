@@ -300,7 +300,7 @@ int SwitchTerminal(int id, bool force)
     termid = id;
     terminals[termid]->Activate();
 
-    debug_print("Switch terminal %d\n", id);
+    kprintf("Switch terminal %d\n", id);
     return 0;
 }
 

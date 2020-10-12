@@ -101,7 +101,7 @@ MacAddress GetMac(NetInterface *intf, uint32 ip)
             if (mac != Net::NullMAC)
                 return mac;
         } else {
-            debug_print("ARP timeout\n");
+            kprintf("ARP timeout\n");
             return Net::NullMAC;
         }
     }
@@ -131,7 +131,7 @@ void AddEntry(const MacAddress &mac, uint32 ip)
     }
 
     table_mutex.Release();
-    debug_print("ARP add entry failed\n");
+    kprintf("ARP add entry failed\n");
 }
 
 void HandlePacket(NetPacket *pkt)

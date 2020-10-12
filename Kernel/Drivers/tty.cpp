@@ -63,7 +63,7 @@ int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
     case TCSETS: {
         struct termios *ptr = (struct termios *)arg;
         this->termios = *ptr;
-        debug_print("Set termios %p\n", termios.c_lflag);
+        kprintf("Set termios %p\n", termios.c_lflag);
         break;
     }
 
@@ -76,7 +76,7 @@ int TtyDriver::Ioctl(FILE *file, int request, unsigned int arg)
     case TIOCSPGRP: {
         pid_t *ptr = (pid_t *)arg;
         gid = *ptr;
-        debug_print("Set tcgid %d\n", gid);
+        kprintf("Set tcgid %d\n", gid);
         break;
     }
     }

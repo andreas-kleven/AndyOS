@@ -15,7 +15,7 @@ TcpSession::TcpSession()
 int TcpSession::Connect(const sockaddr_in *addr)
 {
     mutex.Aquire();
-    debug_print("Connecting...\n");
+    kprintf("Connecting...\n");
 
     if (state != TCP_CLOSED) {
         mutex.Release();
@@ -37,7 +37,7 @@ int TcpSession::Connect(const sockaddr_in *addr)
         return -ECONNREFUSED;
     }
 
-    debug_print("Connected\n");
+    kprintf("Connected\n");
     mutex.Release();
     return 0;
 }
@@ -46,7 +46,7 @@ int TcpSession::Close(int how)
 {
     mutex.Aquire();
 
-    debug_print("Closing...\n");
+    kprintf("Closing...\n");
 
     if (state == TCP_CLOSED)
         return -1;
@@ -55,7 +55,7 @@ int TcpSession::Close(int how)
     if (state == TCP_CLOSE_WAIT) {
         state = TCP_LAST_ACK;
         SendWait(TCP_FIN | TCP_ACK);
-        debug_print("Closed\n");
+        kprintf("Closed\n");
         Reset();
         socket->HandleClose();
     } else {
@@ -71,12 +71,12 @@ int TcpSession::Close(int how)
 
         if (state == TCP_TIME_WAIT) {
             // TODO: delay
-            debug_print("Wait closed\n");
+            kprintf("Wait closed\n");
             Reset();
             socket->HandleClose();
             mutex.Release();
         } else {
-            debug_print("Closed with state: %d\n", state);
+            kprintf("Closed with state: %d\n", state);
             Reset();
             socket->HandleClose();
             mutex.Release();
@@ -170,7 +170,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
             seq = rand();
             ack = header->seq + 1;
 
-            debug_print("New session\n");
+            kprintf("New session\n");
 
             sessions_mutex.Aquire();
 
@@ -203,7 +203,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 
             state = TCP_ESTABLISHED;
             ack_event.Set();
-            debug_print("Connected\n");
+            kprintf("Connected\n");
         }
         break;
 
@@ -233,7 +233,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
                 ack += tcp->data_length;
                 socket->HandleData(tcp->data, tcp->data_length);
             } else {
-                debug_print("Missing packet\n");
+                kprintf("Missing packet\n");
             }
 
             Send(TCP_ACK);
@@ -273,7 +273,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
             seq += 1;
             state = TCP_TIME_WAIT;
             Send(TCP_ACK); //
-            debug_print("Passive close\n");
+            kprintf("Passive close\n");
             Reset();
             socket->HandleClose();
         }
@@ -305,7 +305,7 @@ bool TcpSession::SendWait(uint8 flags, const void *buf, size_t len, int timeout)
     if (ack_event.Wait(timeout))
         return true;
 
-    debug_print("Timed out\n");
+    kprintf("Timed out\n");
     return false;
 }
 

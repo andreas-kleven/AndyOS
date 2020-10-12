@@ -51,7 +51,7 @@ NetPacket *CreatePacket(NetInterface *intf, uint32 dst, uint8 protocol, uint32 s
             mac = ARP::GetMac(intf, dst);
         } else {
             if (!intf->gateway_addr) {
-                debug_print("No gateway\n", dst);
+                kprintf("No gateway\n", dst);
                 return 0;
             }
 
@@ -93,7 +93,7 @@ int Send(NetPacket *pkt)
 
 void HandlePacket(EthPacket *eth, NetPacket *pkt)
 {
-    // debug_print("IP PACKET\n");
+    // kprintf("IP PACKET\n");
 
     IPv4_Header header;
     if (!Decode(&header, pkt))

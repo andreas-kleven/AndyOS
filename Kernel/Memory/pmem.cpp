@@ -19,7 +19,7 @@ inline uint8 GetBit(size_t bit)
 inline void SetBit(size_t bit)
 {
     if (GetBit(bit)) {
-        debug_print("PMem SetBit error\n");
+        kprintf("PMem SetBit error\n");
         sys_halt();
     }
 
@@ -30,7 +30,7 @@ inline void SetBit(size_t bit)
 inline void UnsetBit(size_t bit)
 {
     if (!GetBit(bit)) {
-        debug_print("PMem UnsetBit error\n");
+        kprintf("PMem UnsetBit error\n");
         sys_halt();
     }
 
@@ -50,7 +50,7 @@ size_t FirstFree()
     }
 
     Scheduler::Enable();
-    debug_print("Out of memory\n");
+    kprintf("Out of memory\n");
     return 0;
 }
 
@@ -84,7 +84,7 @@ size_t FirstFreeNum(size_t size)
         }
     }
 
-    debug_print("Out of memory %p %p\n\n", num_blocks, num_free);
+    kprintf("Out of memory %p %p\n\n", num_blocks, num_free);
     Scheduler::Enable();
     return 0;
 }

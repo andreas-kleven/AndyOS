@@ -371,7 +371,7 @@ void Vt100Driver::DrawText()
 
                     Putc(c);
 
-                    debug_print("[%s%c\n", state.escape_buffer, c);
+                    kprintf("[%s%c\n", state.escape_buffer, c);
                 }
 
                 draw_mutex.Release();

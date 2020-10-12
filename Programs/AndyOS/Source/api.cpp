@@ -65,7 +65,7 @@ void debug_reset()
     syscall0(SYSCALL_DEBUG_RESET);
 }
 
-void debug_print(const char *str, ...)
+void kprintf(const char *str, ...)
 {
     char buffer[256];
     memset(buffer, 0, 256);

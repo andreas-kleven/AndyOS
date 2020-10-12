@@ -33,7 +33,7 @@ THREAD *InterruptSyscalls(THREAD *thread)
 
     if (dispatcher_entry) {
         THREAD *handler_thread = dispatcher_entry->handler_thread;
-        debug_print("Handler thread %d %d\n", handler_thread->id,
+        kprintf("Handler thread %d %d\n", handler_thread->id,
                     dispatcher_entry->context.syscall);
 
         thread->signal_threads.Push(handler_thread);
@@ -42,7 +42,7 @@ THREAD *InterruptSyscalls(THREAD *thread)
 
         if (handler_thread->sleep_until ||
             (handler_thread->event && handler_thread->event_interruptible)) {
-            debug_print("Interrupting handler %d %d %d %d\n", handler_thread->id,
+            kprintf("Interrupting handler %d %d %d %d\n", handler_thread->id,
                         handler_thread->state, handler_thread->event, handler_thread->sleep_until);
 
             if (handler_thread->sleep_until)
@@ -60,7 +60,7 @@ THREAD *InterruptSyscalls(THREAD *thread)
 
 int HandleSignal(pid_t sid, gid_t gid, int signo)
 {
-    debug_print("Signal group %d %d\n", gid, signo);
+    kprintf("Signal group %d %d\n", gid, signo);
 
     PROCESS *proc = ProcessManager::GetFirst();
 
@@ -89,7 +89,7 @@ int HandleSignal(PROCESS *proc, int signo)
 
     sig_t &handler = proc->signal_table[signo];
 
-    debug_print("Signal pid:%d signal:%d handler:%p\n", proc->id, signo, handler);
+    kprintf("Signal pid:%d signal:%d handler:%p\n", proc->id, signo, handler);
 
     if (handler == SIG_IGN)
         return 0;
@@ -176,7 +176,7 @@ int HandleSignal(PROCESS *proc, int signo)
             handler_thread->signaled = true;
         }
 
-        debug_print("Waiting for syscall to finish...\n");
+        kprintf("Waiting for syscall to finish...\n");
 
         Scheduler::Enable();
         enable();
@@ -184,7 +184,7 @@ int HandleSignal(PROCESS *proc, int signo)
         disable();
         Scheduler::Disable();
 
-        debug_print("Syscall finished\n");
+        kprintf("Syscall finished\n");
 
         Arch::HandleSignal(thread, signo, handler);
 
@@ -205,7 +205,7 @@ int HandleSignal(PROCESS *proc, int signo)
 
 int FinishSignal(THREAD *thread)
 {
-    debug_print("Finish signal\n");
+    kprintf("Finish signal\n");
 
     PROCESS *proc = thread->process;
     proc->signal_mutex.Aquire();

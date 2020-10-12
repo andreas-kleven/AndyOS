@@ -20,4 +20,4 @@ int read_file(char *&buffer, const char *filename);
 int create_process(const char *filename);
 
 void debug_reset();
-void debug_print(const char *str, ...);
+void kprintf(const char *str, ...);

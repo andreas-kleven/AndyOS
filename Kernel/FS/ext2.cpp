@@ -10,7 +10,7 @@ int Ext2FS::Mount(BlockDriver *driver)
     driver->Read(EXT_SUPERBLOCK_OFFSET, superblock, sizeof(EXT2_SUPERBLOCK));
 
     if (superblock->signature != EXT2_SIGNATURE) {
-        debug_print("Invalid ext2 signature %p\n", superblock->signature);
+        kprintf("Invalid ext2 signature %p\n", superblock->signature);
         return -1;
     }
 
@@ -24,7 +24,7 @@ int Ext2FS::Mount(BlockDriver *driver)
     int block_groups2 = DIV_CEIL(superblock->inodes, superblock->group_inodes);
 
     if (superblock->state != EXT_STATE_CLEAN) {
-        debug_print("Ext2 state error %d\n", superblock->state);
+        kprintf("Ext2 state error %d\n", superblock->state);
         return -1;
     }
 

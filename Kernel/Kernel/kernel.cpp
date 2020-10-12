@@ -34,17 +34,17 @@ void Setup(size_t mem_start, size_t mem_end, VideoMode *video_mode)
     Syscalls::Init();
 
     Video::SetMode(video_mode);
-    debug_print("Init video: %i %i %i\n", Video::mode->width, Video::mode->height,
+    kprintf("Init video: %i %i %i\n", Video::mode->width, Video::mode->height,
                 Video::mode->depth);
 
     DriverManager::Init();
-    debug_print("Init devices\n");
+    kprintf("Init devices\n");
 
     VFS::Init();
-    debug_print("Init VFS\n");
+    kprintf("Init VFS\n");
 
     Scheduler::Init();
-    debug_print("Init Scheduler\n");
+    kprintf("Init Scheduler\n");
 
     Scheduler::Start(Test::Start);
 }

@@ -28,7 +28,7 @@ void PciDevice::EnableBusMastering()
 namespace PCI {
 void printdev(PciDevice *dev)
 {
-    debug_print(
+    kprintf(
         "Bus: %x Device: %x Function: %x Vendor: %x Device: %x Class: %x Subclass: %x ProgIf: %x\n",
         dev->bus, dev->device, dev->func, dev->config.vendor, dev->config.device,
         dev->config.classCode, dev->config.subclass, dev->config.progIf);

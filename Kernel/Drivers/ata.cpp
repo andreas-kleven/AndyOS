@@ -155,7 +155,7 @@ bool ATADriver::Identify(bool atapi)
     int status;
 
     if ((status = inb(bus + ATA_STATUS)) == 0) {
-        debug_print("Not present\n");
+        kprintf("Not present\n");
         return false;
     }
 
@@ -177,15 +177,15 @@ bool ATADriver::Identify(bool atapi)
 
         if (mid || high) {
             if (mid == 0x14 && high == 0xEB) {
-                debug_print("Detected ATAPI\n");
+                kprintf("Detected ATAPI\n");
                 is_atapi = true;
                 return false;
             } else {
-                debug_print("Not ATA drive\n");
+                kprintf("Not ATA drive\n");
                 return false;
             }
         } else {
-            debug_print("ATA err\n");
+            kprintf("ATA err\n");
             return false;
         }
     }
@@ -275,12 +275,12 @@ STATUS ATADriver::Init()
     PciDevice *pci_dev = PCI::GetDevice(1, 1, -1);
 
     if (!pci_dev) {
-        debug_print("Could not find IDE controller\n");
+        kprintf("Could not find IDE controller\n");
         return STATUS_FAILED;
     }
 
     if (pci_dev->config.progIf != 0x80 && pci_dev->config.progIf != 0x8A) {
-        debug_print("Unknown IDE device\n");
+        kprintf("Unknown IDE device\n");
         return STATUS_FAILED;
     }
 
@@ -299,7 +299,7 @@ void ATADriver::ATA_Interrupt(int bus)
     outb(io_base + REG_STATUS, 4);
 
     if (inb(bus + ATA_STATUS) & 1)
-        debug_print("ATA error %p\n", inb(bus + ATA_STATUS_ERR));
+        kprintf("ATA error %p\n", inb(bus + ATA_STATUS_ERR));
 }
 
 void ATADriver::ATA_Interrupt1()

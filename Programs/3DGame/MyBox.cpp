@@ -10,7 +10,7 @@ MyBox::MyBox()
 
     if (!img_buf) {
         if (!read_file(img_buf, "/gamedata/img_hd.bmp")) {
-            debug_print("bmp not found");
+            kprintf("bmp not found");
             while (1)
                 ;
         }

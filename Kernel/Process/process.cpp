@@ -89,7 +89,7 @@ THREAD *CreateThread(PROCESS *proc, void (*entry)(), const void (*start_routine)
     proc->stack_ptr = (size_t)virt + blocks * BLOCK_SIZE;
 
     if (proc->stack_ptr > STACK_END) {
-        debug_print("Out of stack memory\n");
+        kprintf("Out of stack memory\n");
         sys_halt();
     }
 
@@ -206,7 +206,7 @@ void *AdjustHeap(PROCESS *proc, int increment)
     int next_block = (next_end - 1) / BLOCK_SIZE + 1;
     int blocks = next_block - cur_block;
 
-    // debug_print("sbrk pid:%d %d=0x%x %i %i %p-%p\n", proc->id, increment, increment,
+    // kprintf("sbrk pid:%d %d=0x%x %i %i %p-%p\n", proc->id, increment, increment,
     // BYTES_TO_BLOCKS(increment), blocks, prev_end, next_end);
 
     if (next_end > HEAP_END)
@@ -218,7 +218,7 @@ void *AdjustHeap(PROCESS *proc, int increment)
         void *phys = PMem::AllocBlocks(blocks);
         VMem::MapPages((void *)virt, phys, blocks, flags);
 
-        // debug_print("%p-%p -> %p-%p  %p\n", virt, virt + blocks * BLOCK_SIZE, phys, (size_t)phys
+        // kprintf("%p-%p -> %p-%p  %p\n", virt, virt + blocks * BLOCK_SIZE, phys, (size_t)phys
         // + blocks * BLOCK_SIZE, next_end);
     } else if (blocks < 0) {
         // TODO
@@ -234,7 +234,7 @@ void *AdjustHeap(PROCESS *proc, int increment)
 void Exit(PROCESS *proc, int code)
 {
     // proc->signal_mutex.Aquire();
-    debug_print("Exit code:%d pid:%d\n", code, proc->id);
+    kprintf("Exit code:%d pid:%d\n", code, proc->id);
 
     proc->siginfo.si_pid = proc->id;
     proc->siginfo.si_status = code;

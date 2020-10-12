@@ -191,7 +191,7 @@ gui::MESSAGE WindowManager::MessageHandler(int sockfd, const gui::MESSAGE &msg)
     switch (msg.type) {
     case gui::REQID_CREATE_WINDOW: {
         gui::CREATE_WINDOW_REQUEST *request = (gui::CREATE_WINDOW_REQUEST *)msg.data;
-        debug_print("Create window request: %s\n", request->title);
+        kprintf("Create window request: %s\n", request->title);
 
         int w = request->width;
         int h = request->height;
@@ -250,7 +250,7 @@ void *WindowManager::SocketLoop(void *arg)
 
     while (true) {
         int clientfd = accept(serverfd, 0, 0, 0);
-        debug_print("Client connected %d\n", clientfd);
+        kprintf("Client connected %d\n", clientfd);
 
         if (clientfd < 0) {
             perror("socket accept");

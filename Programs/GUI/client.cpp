@@ -35,7 +35,7 @@ bool SendRequest(int type, int id, const void *in, void *out, int in_size, int o
     int msg_size = in_size + 8;
 
     if (msg_size > sizeof(buf)) {
-        debug_print("Message to big %d %d\n", type, in_size);
+        kprintf("Message to big %d %d\n", type, in_size);
         return false;
     }
 
@@ -56,12 +56,12 @@ void MessageHandler(const MESSAGE &msg)
 {
     if (msg.response) {
         if (!response_waiting || !response_buffer) {
-            debug_print("Response error %d %d %d\n", msg.type, response_waiting, response_buffer);
+            kprintf("Response error %d %d %d\n", msg.type, response_waiting, response_buffer);
             return;
         }
 
         if (msg.size != response_size) {
-            debug_print("Response size error %d: %d != %d\n", msg.type, msg.size, response_size);
+            kprintf("Response size error %d: %d != %d\n", msg.type, msg.size, response_size);
         } else {
             memcpy(response_buffer, msg.data, response_size);
             response_waiting = false;
@@ -111,7 +111,7 @@ void Init()
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
     if (sockfd < 0) {
-        debug_print("Error %d\n", sockfd);
+        kprintf("Error %d\n", sockfd);
         return;
     }
 

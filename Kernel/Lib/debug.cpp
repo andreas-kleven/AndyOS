@@ -52,7 +52,7 @@ void debug_color(uint32 foreground, uint32 background)
     bcolor = background;
 }
 
-void debug_print(const char *str, ...)
+void kprintf(const char *str, ...)
 {
     char buffer[256];
 
@@ -139,23 +139,23 @@ bool debug_dump_row(const uint8 *ptr, int width, bool str)
         pflags_t flags = VMem::GetFlags((size_t)&ptr[i]);
 
         if (!(flags & PAGE_PRESENT)) {
-            debug_print("\nMemory dump read error %d\n", flags);
+            kprintf("\nMemory dump read error %d\n", flags);
             return false;
         }
 
         uint8 val = ptr[i];
 
         if (val > 15)
-            debug_print("%x", val);
+            kprintf("%x", val);
         else
-            debug_print("0%x", val);
+            kprintf("0%x", val);
 
         if ((i + 1) % group == 0)
             debug_putc(' ');
     }
 
     if (str) {
-        debug_print(" |");
+        kprintf(" |");
 
         for (int i = 0; i < width; i++) {
             uint8 val = ptr[i];
@@ -188,12 +188,12 @@ void debug_dump(const void *addr, int length, bool str)
         if (bytes <= 0)
             break;
 
-        debug_print("%p  ", ptr);
+        kprintf("%p  ", ptr);
 
         if (!debug_dump_row(ptr, bytes, str))
             return;
 
-        debug_print("\n");
+        kprintf("\n");
 
         ptr += width;
     }

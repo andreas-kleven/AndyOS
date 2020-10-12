@@ -42,10 +42,10 @@ void ISR6(REGS *regs)
     debug_pos(0, 1);
     debug_color(0xFFFF0000);
 
-    debug_print("0x%X\t0x%X\t0x%X\t0x%X\n", regs->esp, regs->cs, regs->eip, regs->eflags);
+    kprintf("0x%X\t0x%X\t0x%X\t0x%X\n", regs->esp, regs->cs, regs->eip, regs->eflags);
     debug_dump((void *)regs->esp, 256);
 
-    debug_print("Instruction: %p\n", *(uint32 *)regs->eip);
+    kprintf("Instruction: %p\n", *(uint32 *)regs->eip);
     panic("Invalid opcode");
 }
 

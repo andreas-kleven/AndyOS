@@ -23,7 +23,7 @@ int PipeFS::Close(FILE *file)
         return -1;
 
     if (file->dentry->refs == 1) {
-        debug_print("Closing pipe...\n");
+        kprintf("Closing pipe...\n");
         return pipe->Close(file);
     }
 

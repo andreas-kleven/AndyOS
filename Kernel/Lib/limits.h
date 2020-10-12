@@ -143,7 +143,7 @@
 
 #define CHARCLASS_NAME_MAX 14 /* max # bytes in a char class name */
 #define NL_ARGMAX          9  /* max value of "digit" in calls to the	*/
-/* NLS debug_print() and scanf() */
+/* NLS kprintf() and scanf() */
 #define NL_LANGMAX 14    /* max # of bytes in a LANG name */
 #define NL_MSGMAX  32767 /* max message number */
 #define NL_NMAX    1     /* max # bytes in N-to-1 mapping characters */

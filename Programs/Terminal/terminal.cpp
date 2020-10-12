@@ -210,7 +210,7 @@ class MainWindow : public Window
                 memset(data, 0, len);
 
                 if (fread(data, 1, len, file) != -1) {
-                    debug_print("%s\n", data);
+                    kprintf("%s\n", data);
                     for (int i = 0; i < len; i++)
                         Putc(data[i]);
                 } else {
@@ -285,7 +285,7 @@ class MainWindow : public Window
             int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
             if (sockfd < 0) {
-                debug_print("Error %d\n", sockfd);
+                kprintf("Error %d\n", sockfd);
                 return;
             }
 
@@ -297,12 +297,12 @@ class MainWindow : public Window
             const char *msg = arg2.c_str();
             int r =
                 sendto(sockfd, msg, strlen(msg), 0, (sockaddr *)&clientaddr, sizeof(sockaddr_in));
-            debug_print("%d\n", r);
+            kprintf("%d\n", r);
         } else if (arg1 == "udpl") {
             int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
             if (sockfd < 0) {
-                debug_print("Error %d\n", sockfd);
+                kprintf("Error %d\n", sockfd);
                 return;
             }
 
@@ -314,11 +314,11 @@ class MainWindow : public Window
             int b = bind(sockfd, (sockaddr *)&servaddr, sizeof(servaddr));
 
             if (b < 0) {
-                debug_print("Bind error %d\n", b);
+                kprintf("Bind error %d\n", b);
                 return;
             }
 
-            debug_print("Waiting...\n");
+            kprintf("Waiting...\n");
 
             while (true) {
                 char buf[256];
@@ -337,20 +337,20 @@ class MainWindow : public Window
         int fd2[2];
 
         if (pipe(fd1) == -1) {
-            debug_print("Pipe Failed");
+            kprintf("Pipe Failed");
             return;
         }
 
         if (pipe(fd2) == -1) {
-            debug_print("Pipe Failed");
+            kprintf("Pipe Failed");
             return;
         }
 
         pid_t p = fork();
-        debug_print("pid:%d\n", p);
+        kprintf("pid:%d\n", p);
 
         if (p < 0) {
-            debug_print("fork Failed");
+            kprintf("fork Failed");
             return;
         } else if (p > 0) {
             close(fd1[1]);
@@ -392,7 +392,7 @@ class MainWindow : public Window
 
                 // execl(file, file, arg1, arg2, arg3, NULL);
             } else {
-                debug_print("Error\n");
+                kprintf("Error\n");
             }
 
             exit(0);

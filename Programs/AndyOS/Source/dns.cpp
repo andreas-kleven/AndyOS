@@ -125,7 +125,7 @@ void AddEntry(const char *name, uint32_t addr)
     for (int i = 0; i < DNS_CACHE_SIZE; i++) {
         if (!cache[i].name || strcmp(cache[i].name, name) == 0) {
             if (!cache[i].name)
-                debug_print("DNS added entry: %s %p\n", name, addr);
+                kprintf("DNS added entry: %s %p\n", name, addr);
 
             cache[i].name = strdup(name);
             cache[i].addr = addr;
@@ -175,7 +175,7 @@ uint32_t Query(const char *name)
     addr.sin_addr.s_addr = htonl(0xC0A80001);
 
     int res = sendto(fd, data, data_len, 0, (sockaddr *)&addr, sizeof(addr));
-    debug_print("Sent: %d\n", res);
+    kprintf("Sent: %d\n", res);
 
     delete[] data;
 
@@ -184,12 +184,12 @@ uint32_t Query(const char *name)
 
     uint8_t recv_buf[256];
     int recv_len = recvfrom(fd, recv_buf, sizeof(recv_buf), 0, (sockaddr *)&addr, sizeof(addr));
-    debug_print("Recv: %d\n", recv_len);
+    kprintf("Recv: %d\n", recv_len);
 
     if (recv_len <= 0)
         return 0;
 
-    debug_print("Received DNS\n");
+    kprintf("Received DNS\n");
 
     DNS_PACKET pkt;
     if (!Decode(&pkt, recv_buf, recv_len))

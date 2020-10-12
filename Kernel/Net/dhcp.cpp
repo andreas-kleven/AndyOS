@@ -168,19 +168,19 @@ void HandlePacket(IPv4_Header *ip_hdr, UDP_Packet *udp, NetPacket *pkt)
     ParseOptions(offer, options);
 
     if (options.type == TYPE_OFFER) {
-        debug_print("---------DHCP OFFER-----------\n");
+        kprintf("---------DHCP OFFER-----------\n");
         Net::PrintIP("Address:		", offer->yiaddr);
         Net::PrintIP("Subnet mask:	", options.subnet_mask);
         Net::PrintIP("Router:			", options.router);
         Net::PrintIP("DNS server:		", options.dns);
-        debug_print("Lease time:		%ui", options.lease);
-        debug_print("\n------------------------------\n");
+        kprintf("Lease time:		%ui", options.lease);
+        kprintf("\n------------------------------\n");
 
         Request(pkt->interface, offer->yiaddr, options.router);
     } else if (options.type == TYPE_ACK) {
-        debug_print("dhcp: ack\n");
+        kprintf("dhcp: ack\n");
     } else if (options.type == TYPE_NAK) {
-        debug_print("dhcp: nak\n");
+        kprintf("dhcp: nak\n");
     }
 }
 } // namespace DHCP

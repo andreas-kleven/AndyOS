@@ -25,8 +25,8 @@ void panic(const char *err, const char *msg_fmt, ...)
         debug_color(0xFFFF0000);
     }
 
-    debug_print("%s\n", err);
-    debug_print("%s\n", buffer);
+    kprintf("%s\n", err);
+    kprintf("%s\n", buffer);
 
     if (!prev_panic) {
         prev_panic = true;
@@ -34,9 +34,9 @@ void panic(const char *err, const char *msg_fmt, ...)
         THREAD *thread = Scheduler::CurrentThread();
 
         if (thread && thread->process)
-            debug_print("proc:%d thread:%d\n", thread->process->id, thread->id);
+            kprintf("proc:%d thread:%d\n", thread->process->id, thread->id);
 
-        debug_print("-STACK DUMP-\n");
+        kprintf("-STACK DUMP-\n");
         debug_stackdump(thread, 1024);
     }
 

@@ -137,7 +137,7 @@ bool PerformCopy(void *virt)
     pflags_t flags = GetFlags((size_t)virt);
     pflags_t newflags = flags | PAGE_WRITE;
 
-    debug_print("Copy %p cow=%d\n", virt, info->cow);
+    kprintf("Copy %p cow=%d\n", virt, info->cow);
 
     if (info->cow == 0)
         return false;
@@ -185,7 +185,7 @@ void *FirstFree(size_t count, size_t start, size_t end)
     void *ret = Arch::FirstFree(count, start, end);
 
     if (ret == 0)
-        debug_print("Out of virtual memory %p %p %p\n", count, start, end);
+        kprintf("Out of virtual memory %p %p %p\n", count, start, end);
 
     Scheduler::Enable();
     return ret;
@@ -196,7 +196,7 @@ bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
     Scheduler::Disable();
 
     if (flags != PAGE_NONE && (virt == 0 || phys == 0)) {
-        debug_print("Map address 0: %d, %p -> %p\n", virt, phys, flags);
+        kprintf("Map address 0: %d, %p -> %p\n", virt, phys, flags);
         panic("", "");
         return false;
     }
@@ -208,12 +208,12 @@ bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
         if (flags != PAGE_NONE)
             if ((flags != PAGE_NONE && GetFlags(virt_addr) != PAGE_NONE) ||
                 (flags == PAGE_NONE && GetFlags(virt_addr) == PAGE_NONE))
-                debug_print("Page already mapped %p, (%p, %p -> %p), (%p, %p -> %p)\n",
+                kprintf("Page already mapped %p, (%p, %p -> %p), (%p, %p -> %p)\n",
                             GetAddressSpace().ptr, flags, virt_addr, phys_addr, GetFlags(virt_addr),
                             virt_addr, GetAddress(virt_addr));
 
         if (!Arch::MapPages((void *)virt_addr, (void *)phys_addr, 1, flags)) {
-            debug_print("Map address error: %d, %p -> %p\n", virt, phys, flags);
+            kprintf("Map address error: %d, %p -> %p\n", virt, phys, flags);
             panic("", "");
         }
 

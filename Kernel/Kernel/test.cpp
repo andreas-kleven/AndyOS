@@ -42,16 +42,16 @@ void COM_Receive()
 {
     while (1) {
         char c = Serial::Receive(COM_PORT1);
-        debug_print("%c", c);
+        kprintf("%c", c);
     }
 }
 
 void COM()
 {
     if (!Serial::Init(COM_PORT1, 9600))
-        debug_print("COM init failed\n");
+        kprintf("COM init failed\n");
 
-    debug_print("COM initialized\n");
+    kprintf("COM initialized\n");
 
     THREAD *t = Task::CreateKernelThread(COM_Receive);
     Scheduler::InsertThread(t);
@@ -110,7 +110,7 @@ void TTY()
         VFS::DuplicateFile(proc->filetable, fd, 0);
         VFS::DuplicateFile(proc->filetable, fd, 1);
         VFS::DuplicateFile(proc->filetable, fd, 2);
-        debug_print("Fd %d\n", fd);
+        kprintf("Fd %d\n", fd);
     }
 
     Scheduler::Enable();
@@ -123,11 +123,11 @@ void InitNet()
     PciDevice *pci_dev = PCI::GetDevice(2, 0, 0);
 
     if (!pci_dev) {
-        debug_print("Network card not found\n");
+        kprintf("Network card not found\n");
         return;
     }
 
-    debug_print("Found network card\n");
+    kprintf("Found network card\n");
 
     LoopbackInterface *loopback = new LoopbackInterface();
     PacketManager::RegisterInterface(loopback, true);
@@ -153,12 +153,12 @@ void _Net()
 
     server->Bind((sockaddr *)&servaddr, sizeof(sockaddr_in));
     server->Listen(10);
-    debug_print("%p %p %d\n", server, server->tcp_session->socket, server->listening);
+    kprintf("%p %p %d\n", server, server->tcp_session->socket, server->listening);
 
     while (true) {
         int id = server->Accept((sockaddr *)&servaddr, sizeof(sockaddr_in), 0);
         Socket *client = SocketManager::GetSocket(id);
-        debug_print("Client: %p\n", client);
+        kprintf("Client: %p\n", client);
 
         if (client) {
             sprintf(buf, "Hello tcp %d\n", (int)Timer::Ticks() / 1000);
@@ -199,22 +199,22 @@ void _Net()
 
 void _Memory()
 {
-    debug_print("Free: %i\n", PMem::NumFree());
+    kprintf("Free: %i\n", PMem::NumFree());
 
     int *ptr1 = (int *)VMem::KernelAlloc(1);
-    debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr1);
+    kprintf("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr1);
 
     int *ptr2 = (int *)VMem::KernelAlloc(1);
-    debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr2);
+    kprintf("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr2);
 
     int *ptr3 = (int *)VMem::KernelAlloc(1);
-    debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr3);
+    kprintf("Free: %i\t Addr: %p\n", PMem::NumFree(), ptr3);
 
     VMem::FreePages(ptr2, 2);
-    debug_print("Free: %i\n", PMem::NumFree());
+    kprintf("Free: %i\n", PMem::NumFree());
 
     int *_ptr1 = (int *)VMem::KernelAlloc(2);
-    debug_print("Free: %i\t Addr: %p\n", PMem::NumFree(), _ptr1);
+    kprintf("Free: %i\t Addr: %p\n", PMem::NumFree(), _ptr1);
 }
 
 Mutex mutex;
@@ -228,17 +228,17 @@ void MutexFunc(int i)
         mutex.Aquire();
 
     count += 1;
-    debug_print("Before %i, %i\n", i, count);
+    kprintf("Before %i, %i\n", i, count);
     Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
-    debug_print("After %i, %i\n", i, count);
+    kprintf("After %i, %i\n", i, count);
 
     if (i == 1) {
         mutex.Release();
 
         count += 1;
-        debug_print("Before %i, %i\n", i, count);
+        kprintf("Before %i, %i\n", i, count);
         Scheduler::SleepThread(Timer::Ticks() + 100000, Scheduler::CurrentThread());
-        debug_print("After %i, %i\n", i, count);
+        kprintf("After %i, %i\n", i, count);
     }
 
     mutex.Release();
@@ -282,19 +282,19 @@ void Mount()
     SockFS *sockfs = new SockFS();
 
     if (!driver1 || VFS::Mount(driver1, fs1, "/"))
-        debug_print("Mount 1 failed\n");
+        kprintf("Mount 1 failed\n");
 
     if (!driver2 || VFS::Mount(driver2, fs2, "/mnt"))
-        debug_print("Mount 2 failed\n");
+        kprintf("Mount 2 failed\n");
 
     if (VFS::Mount(0, devfs, "/dev"))
-        debug_print("Mount devfs failed\n");
+        kprintf("Mount devfs failed\n");
 
     if (VFS::Mount(0, pipefs, "/pipe"))
-        debug_print("Mount pipefs failed\n");
+        kprintf("Mount pipefs failed\n");
 
     if (VFS::Mount(0, sockfs, "/sock"))
-        debug_print("Mount sockfs failed\n");
+        kprintf("Mount sockfs failed\n");
 }
 
 void Start()

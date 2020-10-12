@@ -22,7 +22,7 @@ void HandlePageFault(REGS *regs)
 
     uint32 err = Exceptions::error_code;
 
-    debug_print("Page fault %p %p %p\n", regs, err, fault_addr);
+    kprintf("Page fault %p %p %p\n", regs, err, fault_addr);
 
     const char *msg1 =
         (err & PAGE_FAULT_PRESENT) ? "Page-protection violation  " : "None-present page  ";

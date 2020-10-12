@@ -105,12 +105,12 @@ uint16 ChecksumDouble(void *d0, int l0, void *d1, int l1)
 void PrintIP(const char *str, uint32 ip)
 {
     uint8 *addr = (uint8 *)&ip;
-    debug_print("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
+    kprintf("%s%i.%i.%i.%i\n", str, addr[0], addr[1], addr[2], addr[3]);
 }
 
 void PrintMac(const char *str, MacAddress mac)
 {
     uint8 *addr = (uint8 *)&mac;
-    debug_print("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+    kprintf("%s%x:%x:%x:%x:%x:%x\n", str, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
 }
 } // namespace Net

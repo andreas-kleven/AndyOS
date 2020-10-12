@@ -25,7 +25,7 @@ void Enable()
     } else if (disable_count > 1) {
         disable_count--;
     } else {
-        debug_print("Scheduling error\n");
+        kprintf("Scheduling error\n");
         sys_halt();
     }
 }
@@ -225,7 +225,7 @@ THREAD *Schedule()
         }
 
         if (!current_thread->inserted) {
-            debug_print("Not inserted %d %p %p\n", current_thread->id, current_thread);
+            kprintf("Not inserted %d %p %p\n", current_thread->id, current_thread);
             sys_halt();
         }
 

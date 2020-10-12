@@ -140,10 +140,10 @@ int sys_kill(pid_t pid, int signo)
 
 int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
 {
-    debug_print("sigaction %d %p %p\n", signum, act, oldact);
+    kprintf("sigaction %d %p %p\n", signum, act, oldact);
 
     if (act)
-        debug_print("act %p %p %p\n", act->sa_handler, act->sa_mask, act->sa_flags);
+        kprintf("act %p %p %p\n", act->sa_handler, act->sa_mask, act->sa_flags);
 
     sig_t handler = act ? act->sa_handler : 0;
 
@@ -161,10 +161,10 @@ int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *old
 
 int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oset)
 {
-    debug_print("sigprocmask %p %p %p\n", how, set, oset);
+    kprintf("sigprocmask %p %p %p\n", how, set, oset);
 
     if (set)
-        debug_print("set %p\n", *set);
+        kprintf("set %p\n", *set);
 
     return 0;
 }
@@ -176,10 +176,10 @@ int sys_sigreturn()
 
 int sys_sigsuspend(const sigset_t *mask)
 {
-    debug_print("sigsuspend %d\n", mask);
+    kprintf("sigsuspend %d\n", mask);
 
     if (mask)
-        debug_print("mask %p\n", *mask);
+        kprintf("mask %p\n", *mask);
 
     return -EINTR;
 }
@@ -213,7 +213,7 @@ int sys_uname(utsname *name)
 
 int sys_ioctl(int fd, int request, unsigned int arg)
 {
-    debug_print("ioctl %d %p %p\n", fd, request, arg);
+    kprintf("ioctl %d %p %p\n", fd, request, arg);
     return VFS::Ioctl(CurrentFiletable(), fd, request, arg);
 }
 
@@ -221,7 +221,7 @@ int sys_ioctl(int fd, int request, unsigned int arg)
 
 int sys_getgroups(int size, gid_t list[])
 {
-    debug_print("Get groups %d\n", size);
+    kprintf("Get groups %d\n", size);
     return 0;
 }
 
@@ -265,7 +265,7 @@ int sys_setpgid(pid_t pid, pid_t pgid)
         return -ESRCH;
 
     process->gid = pgid ? pgid : current->sid;
-    debug_print("Set pgid %d %d\n", process->id, process->gid);
+    kprintf("Set pgid %d %d\n", process->id, process->gid);
     return 0;
 }
 

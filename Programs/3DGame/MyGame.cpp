@@ -103,7 +103,7 @@ void MyGame::Init()
 
 GameObject *MyGame::CreatePlayer()
 {
-    debug_print("Create player %d\n", PlayerManager::IsLocal());
+    kprintf("Create player %d\n", PlayerManager::IsLocal());
 
     Transform transform;
 

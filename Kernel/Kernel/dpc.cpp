@@ -31,7 +31,7 @@ void Create(DPC_HANDLER handler, void *arg)
 
 void Start()
 {
-    debug_print("Started dpc\n");
+    kprintf("Started dpc\n");
 
     while (true) {
         queue_event.Wait();

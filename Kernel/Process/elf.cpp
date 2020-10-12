@@ -7,13 +7,13 @@
 namespace ELF {
 size_t Load(const char *path, PROCESS *proc)
 {
-    debug_print("Loading ELF '%s'...\n", path);
+    kprintf("Loading ELF '%s'...\n", path);
 
     char *image;
     int size = VFS::ReadFile(path, image);
 
     if (!size) {
-        debug_print("File not found '%s'\n", path);
+        kprintf("File not found '%s'\n", path);
         return 0;
     }
 
@@ -23,7 +23,7 @@ size_t Load(const char *path, PROCESS *proc)
 
     if (memcmp(&header->e_ident, &sig, sizeof(sig))) {
         // Not elf file
-        debug_print("Invalid signature\n");
+        kprintf("Invalid signature\n");
         return 0;
     }
 
@@ -65,7 +65,7 @@ size_t Load(const char *path, PROCESS *proc)
     proc->heap_start = virt_end;
     proc->heap_end = virt_end;
 
-    debug_print("Loaded ELF\n");
+    kprintf("Loaded ELF\n");
 
     return header->e_entry;
 }

@@ -84,7 +84,7 @@ void HandlerFunc()
     Scheduler::Enable();
     Scheduler::Switch();
 
-    debug_print("Dispatcher error\n");
+    kprintf("Dispatcher error\n");
     sys_halt();
 }
 
@@ -119,7 +119,7 @@ DISPATCHER_ENTRY *GetAvailableThread(const DISPATCHER_CONTEXT &context)
         entry = CreateThread();
 
         if (entry)
-            debug_print("Created dispatcher thread %d\n", entry - &entries[0]);
+            kprintf("Created dispatcher thread %d\n", entry - &entries[0]);
     }
 
     if (entry) {
@@ -129,7 +129,7 @@ DISPATCHER_ENTRY *GetAvailableThread(const DISPATCHER_CONTEXT &context)
         active_count += 1;
 
         if (active_count == DISPATCHER_THREADS) {
-            debug_print("All dispatcher threads used\n");
+            kprintf("All dispatcher threads used\n");
             thread_event.Clear();
         }
 
@@ -159,7 +159,7 @@ void Start()
 {
     active_count = 0;
 
-    debug_print("Started dispatcher\n");
+    kprintf("Started dispatcher\n");
 
     while (true) {
         queue_event.Wait();
@@ -322,7 +322,7 @@ int Waitpid(pid_t pid, int *status, int options)
 {
     Scheduler::Disable();
 
-    debug_print("Waitpid %d %d\n", pid, options);
+    kprintf("Waitpid %d %d\n", pid, options);
 
     DISPATCHER_ENTRY *entry = Dispatcher::CurrentEntry();
     PROCESS *parent = entry->context.thread->process;
@@ -376,13 +376,13 @@ int Waitpid(pid_t pid, int *status, int options)
 
     if (!wait->event.WaitIntr()) {
         wait->siginfo = GetChildrenSiginfo(entry, true);
-        debug_print("Wait interrupted %d %d\n", wait->siginfo.si_code, wait->siginfo.si_status);
+        kprintf("Wait interrupted %d %d\n", wait->siginfo.si_code, wait->siginfo.si_status);
     }
 
     if (status)
         *status = SiginfoStatus(wait->siginfo);
 
-    debug_print("Waitpid done\n");
+    kprintf("Waitpid done\n");
     return wait->siginfo.si_pid;
 }
 

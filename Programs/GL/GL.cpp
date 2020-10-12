@@ -176,7 +176,7 @@ void DrawTriangle(const Vertex &a, const Vertex &b, const Vertex &c, BMP *textur
     if (a.tmp_pos.w > 0 && b.tmp_pos.w > 0 && c.tmp_pos.w > 0) {
         rasterizer.DrawTriangle(a, b, c, texture);
     } else {
-        debug_print("Draw warning %.2f %.2f %.2f\n", a.tmp_pos.w, b.tmp_pos.w, c.tmp_pos.w);
+        kprintf("Draw warning %.2f %.2f %.2f\n", a.tmp_pos.w, b.tmp_pos.w, c.tmp_pos.w);
     }
 }
 

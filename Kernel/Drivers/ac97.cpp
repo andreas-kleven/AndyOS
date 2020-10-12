@@ -60,23 +60,23 @@ void AC97_ISR()
 
     if (1) {
         uint16 sr = inw(device.nabmbar + AC97_PO_SR);
-        debug_print("SR: %x   \n", sr);
+        kprintf("SR: %x   \n", sr);
 
         if (sr & AC97_X_SR_LVBCI) {
-            debug_print("1\n");
+            kprintf("1\n");
             outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_LVBCI);
             // outb(device.nabmbar + AC97_PO_LVI, device.lvi);
             // outb(device.nabmbar + AC97_NABM_POCONTROL, 0x15); // Play, and then generate
             // interrupt!
         } else if (sr & AC97_X_SR_BCIS) {
-            debug_print("2\n");
+            kprintf("2\n");
             device.lvi = (device.lvi + 1) % AC97_BDL_LEN;
             outw(device.nabmbar + AC97_PO_LVI, device.lvi);
             outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_BCIS);
         } else if (sr & AC97_X_SR_FIFOE) {
-            debug_print("3\n");
+            kprintf("3\n");
         } else {
-            debug_print("4\n");
+            kprintf("4\n");
             outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_FIFOE);
         }
     }
@@ -95,9 +95,9 @@ STATUS Init(PciDevice *pci_dev)
     IRQ::Install(0x20 + device.irq, AC97_ISR);
     outb(device.nabmbar + AC97_PO_CR, (1 << 3) | (1 << 4));
 
-    debug_print("0x%X\n", device.nambar);
-    debug_print("0x%X\n", device.nabmbar);
-    debug_print("0x%X\n", device.irq);
+    kprintf("0x%X\n", device.nambar);
+    kprintf("0x%X\n", device.nabmbar);
+    kprintf("0x%X\n", device.irq);
 
     int volume; // Volume; Attention: 0 is full volume, 63 is as good as mute!
 
@@ -121,7 +121,7 @@ STATUS Init(PciDevice *pci_dev)
 
     if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1)) {
         /*Sample Rate fixed at 48kHz */
-        debug_print("Sample rate 48kHz\n");
+        kprintf("Sample rate 48kHz\n");
     } else {
         outw(device.nambar + AC97_NAM_EXT_AUDIO_STC,
              inw(device.nambar + AC97_NAM_EXT_AUDIO_STC) | 1); // Variable Rate Enable audio
@@ -129,7 +129,7 @@ STATUS Init(PciDevice *pci_dev)
         Timer::Sleep(10);
         if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1)) {
             /*Sample Rate fixed at 48kHz */
-            debug_print("Sample rate 48kHz\n");
+            kprintf("Sample rate 48kHz\n");
         }
 
         else {
@@ -139,7 +139,7 @@ STATUS Init(PciDevice *pci_dev)
             outw(device.nambar + AC97_NAM_LR_SPLRATE, 44100);    // Stereo Samplerate: 44100 Hz
             Timer::Sleep(10);
             // Actual Samplerate is now in AC97_NAM_FRONT_SPLRATE or AC97_NAM_LR_SPLRATE
-            debug_print("Sample rate 44.1kHz\n");
+            kprintf("Sample rate 44.1kHz\n");
         }
     }
 
