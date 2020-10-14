@@ -104,9 +104,9 @@ size_t NumUsed()
     return num_blocks - num_free;
 }
 
-void InitRegion(void *addr, size_t size)
+void InitRegion(size_t addr, size_t size)
 {
-    int align = (size_t)addr / BLOCK_SIZE;
+    int align = addr / BLOCK_SIZE;
     int num = size / BLOCK_SIZE;
 
     if (align == 0) {
@@ -118,9 +118,9 @@ void InitRegion(void *addr, size_t size)
         UnsetBit(align++);
 }
 
-void DeInitRegion(void *addr, size_t size)
+void DeInitRegion(size_t addr, size_t size)
 {
-    int align = (size_t)addr / BLOCK_SIZE;
+    int align = addr / BLOCK_SIZE;
     int blocks = size / BLOCK_SIZE;
 
     for (int i = 0; i < blocks; i++)
@@ -161,9 +161,9 @@ void FreeBlocks(void *addr, size_t size)
     Scheduler::Enable();
 }
 
-STATUS Init(size_t mem_end, void *map)
+STATUS Init(size_t size, void *map)
 {
-    mem_size = mem_end;
+    mem_size = size;
     mem_map = (uint32 *)map;
 
     num_blocks = BYTES_TO_BLOCKS(mem_size);

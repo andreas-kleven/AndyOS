@@ -25,13 +25,11 @@ struct ADDRESS_SPACE_MAPPING
 {
     PAGE_DIR *dir;
     PAGE_TABLE *tables;
-    bool is_phys;
 
     ADDRESS_SPACE_MAPPING()
     {
         this->dir = 0;
         this->tables = 0;
-        this->is_phys = false;
     }
 
     ~ADDRESS_SPACE_MAPPING()
@@ -46,10 +44,6 @@ struct ADDRESS_SPACE_MAPPING
     PAGE_TABLE *GetTable(size_t virt) const
     {
         int index = PAGE_DIR_INDEX(virt);
-
-        if (this->is_phys)
-            return dir->GetTable(index);
-
         return &tables[index];
     }
 
@@ -68,15 +62,9 @@ struct ADDRESS_SPACE_MAPPING
     pflags_t GetFlags(size_t virt) const { return F_PF(GetPTFlags(virt)); }
 };
 
-PAGE_DIR *main_dir;
+PAGE_DIR *main_dir = 0;
+PAGE_TABLE *main_tables = 0;
 ADDRESS_SPACE current_space;
-
-void EnablePaging()
-{
-    asm volatile("mov %cr0, %eax\n"
-                 "or $0x80000000, %eax\n"
-                 "mov %eax, %cr0");
-}
 
 void *_FirstFree(size_t count, size_t start, size_t end, ADDRESS_SPACE_MAPPING *mapping)
 {
@@ -163,8 +151,7 @@ ADDRESS_SPACE_MAPPING CurrentMapping()
         mapping.tables = (PAGE_TABLE *)FIRST_PAGE_ADDRESS;
     } else {
         mapping.dir = main_dir;
-        mapping.tables = 0;
-        mapping.is_phys = true;
+        mapping.tables = main_tables;
     }
 
     return mapping;
@@ -316,50 +303,47 @@ bool SwapAddressSpace(ADDRESS_SPACE &addr_space)
 
 bool CreateAddressSpace(ADDRESS_SPACE &space)
 {
-    pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
-    uint32 pt_flags = PF_F(flags);
-
     // Dir
     PAGE_DIR *dir_virt = (PAGE_DIR *)KernelAlloc(1);
     PAGE_DIR *dir_phys = (PAGE_DIR *)GetAddress((size_t)dir_virt);
 
     // Tables
-    PAGE_TABLE *tables_virt = (PAGE_TABLE *)(KernelAlloc(768));
+    PAGE_TABLE *tables_virt = (PAGE_TABLE *)(KernelAlloc(768 + 1));
     PAGE_TABLE *tables_phys = (PAGE_TABLE *)GetAddress((size_t)tables_virt);
-    memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768);
+    memset(tables_virt, 0, sizeof(PAGE_TABLE) * 768 + 1);
 
-    tables_phys -= 256;
-    tables_virt -= 256;
+    PAGE_DIR *cur_dir = (PAGE_DIR *)PAGE_DIR_ADDRESS;
+    PAGE_TABLE *cur_last_table = (PAGE_TABLE *)PAGE_TABLE_ADDRESS(PAGE_DIR_LENGTH - 1);
+    PAGE_TABLE *last_table = &tables_virt[768];
+    PAGE_TABLE *last_table_phys = &tables_phys[768];
 
-    for (int i = 0; i < 256; i++) {
-        dir_virt->values[i] = main_dir->values[i];
-    }
-
-    for (int i = 256; i < PAGE_DIR_LENGTH; i++) {
+    for (int i = 0; i < 768; i++) {
         dir_virt->SetFlags(i, PDE_PRESENT | PDE_WRITABLE | PDE_USER);
         dir_virt->SetTable(i, tables_phys + i);
     }
 
-    // Map tables and directory to last table
-    PAGE_TABLE *cur_last_table = main_dir->GetTable(PAGE_DIR_LENGTH - 1);
-    PAGE_TABLE *last_table = &tables_virt[PAGE_DIR_LENGTH - 1];
-
-    dir_virt->SetFlags(PAGE_DIR_LENGTH - 1, pt_flags);
-
-    for (int i = 0; i < 256; i++) {
-        last_table->values[i] = cur_last_table->values[i];
+    for (int i = 768; i < PAGE_TABLE_LENGTH - 1; i++) {
+        dir_virt->values[i] = cur_dir->values[i];
     }
 
-    for (int i = 256; i < 1023; i++) {
-        last_table->SetFlags(i, PDE_PRESENT | PDE_WRITABLE | PDE_USER);
+    // Map tables and directory to last table
+    dir_virt->SetFlags(PAGE_DIR_LENGTH - 1, PDE_PRESENT | PDE_WRITABLE);
+    dir_virt->SetTable(PAGE_DIR_LENGTH - 1, last_table_phys);
+
+    for (int i = 0; i < 768; i++) {
+        last_table->SetFlags(i, PDE_PRESENT | PDE_WRITABLE);
         last_table->SetAddr(i, tables_phys + i);
     }
 
-    last_table->SetFlags(PAGE_TABLE_LENGTH - 1, pt_flags);
+    for (int i = 768; i < PAGE_TABLE_LENGTH - 1; i++) {
+        last_table->values[i] = cur_last_table->values[i];
+    }
+
+    last_table->SetFlags(PAGE_TABLE_LENGTH - 1, PDE_PRESENT | PDE_WRITABLE);
     last_table->SetAddr(PAGE_TABLE_LENGTH - 1, dir_phys);
 
-    MapPages(dir_virt, 0, 1, PAGE_NONE);
-    MapPages(tables_virt + 256, 0, 768, PAGE_NONE);
+    MapPages(dir_virt, 0, 1, PAGE_NONE);          // unmap first page
+    MapPages(tables_virt, 0, 768 + 1, PAGE_NONE); // unmap temporary memory
 
     space.ptr = dir_phys;
     return true;
@@ -386,44 +370,51 @@ bool CopyAddressSpace(ADDRESS_SPACE &space)
     return true;
 }
 
-bool Init()
+bool Init(size_t dir_phys, size_t dir_virt, size_t stack_phys, size_t stack_size)
 {
     current_space.ptr = 0;
 
+    if ((dir_phys % PAGE_SIZE != 0) || (dir_virt % PAGE_SIZE != 0)) {
+        kprintf("Page directory not aligned\n");
+        return false;
+    }
+
+    size_t tables_virt = dir_virt + sizeof(PAGE_DIR);
+    size_t tables_phys = dir_phys + sizeof(PAGE_DIR);
+
     // Page dir
-    main_dir = (PAGE_DIR *)PMem::AllocBlocks(1);
+    main_dir = (PAGE_DIR *)dir_virt;
+    main_tables = (PAGE_TABLE *)tables_virt;
     memset(main_dir, 0, sizeof(PAGE_DIR));
 
     // Tables
-    PAGE_TABLE *tables = (PAGE_TABLE *)PMem::AllocBlocks(PAGE_DIR_LENGTH);
+    PAGE_TABLE *tables = (PAGE_TABLE *)tables_virt;
     memset(tables, 0, sizeof(PAGE_TABLE) * PAGE_DIR_LENGTH);
 
     pflags_t flags = PAGE_PRESENT | PAGE_WRITE;
 
     for (int i = 0; i < PAGE_DIR_LENGTH; i++) {
-        PAGE_TABLE *table = tables + i;
+        PAGE_TABLE *table = (PAGE_TABLE *)tables_phys + i;
         main_dir->SetFlags(i, flags);
         main_dir->SetTable(i, table);
     }
 
-    // Map page dir
-    MapPages(main_dir, main_dir, 1, flags);
-    MapPages((void *)PAGE_DIR_ADDRESS, main_dir, 1, flags);
-
-    // Map tables
-    MapPages(tables, tables, PAGE_DIR_LENGTH, flags);
-    MapPages((void *)PAGE_TABLE_ADDRESS(0), tables, PAGE_DIR_LENGTH - 1, flags);
+    // Map page dir and tables
+    MapPages((void *)PAGE_DIR_ADDRESS, (void *)dir_phys, 1, flags);
+    MapPages((void *)PAGE_TABLE_ADDRESS(0), (void *)tables_phys, PAGE_DIR_LENGTH - 1, flags);
 
     // Map kernel and memory map
-    MapPages((void *)KERNEL_BASE, (void *)KERNEL_BASE,
-             BYTES_TO_BLOCKS((size_t)&__KERNEL_END - (size_t)&__KERNEL_START + MEMORY_MAP_SIZE),
-             flags);
+    size_t blocks =
+        BYTES_TO_BLOCKS((size_t)&__KERNEL_END - (size_t)&__KERNEL_START + MEMORY_MAP_SIZE);
+    MapPages((void *)KERNEL_BASE, (void *)KERNEL_PHYS, blocks, flags);
+
+    // Map stack
+    MapPages((void *)KERNEL_STACK, (void *)stack_phys, BYTES_TO_BLOCKS(stack_size), flags);
 
     ADDRESS_SPACE addr_space;
-    addr_space.ptr = main_dir;
+    addr_space.ptr = (void *)dir_phys;
 
     SwapAddressSpace(addr_space);
-    EnablePaging();
 
     return true;
 }

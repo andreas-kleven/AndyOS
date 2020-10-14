@@ -6,7 +6,7 @@
 #include <string.h>
 
 namespace VMem {
-PAGE_INFO *page_list;
+PAGE_INFO *page_list = 0;
 
 PAGE_INFO *GetInfo(size_t virt)
 {
@@ -209,8 +209,8 @@ bool MapPages(void *virt, void *phys, size_t count, pflags_t flags)
             if ((flags != PAGE_NONE && GetFlags(virt_addr) != PAGE_NONE) ||
                 (flags == PAGE_NONE && GetFlags(virt_addr) == PAGE_NONE))
                 kprintf("Page already mapped %p, (%p, %p -> %p), (%p, %p -> %p)\n",
-                            GetAddressSpace().ptr, flags, virt_addr, phys_addr, GetFlags(virt_addr),
-                            virt_addr, GetAddress(virt_addr));
+                        GetAddressSpace().ptr, flags, virt_addr, phys_addr, GetFlags(virt_addr),
+                        virt_addr, GetAddress(virt_addr));
 
         if (!Arch::MapPages((void *)virt_addr, (void *)phys_addr, 1, flags)) {
             kprintf("Map address error: %d, %p -> %p\n", virt, phys, flags);
@@ -310,9 +310,9 @@ void InitPageList()
     }
 }
 
-bool Init()
+bool Init(size_t dir_phys, size_t dir_virt, size_t stack_phys, size_t stack_size)
 {
-    if (!Arch::Init())
+    if (!Arch::Init(dir_phys, dir_virt, stack_phys, stack_size))
         return false;
 
     InitPageList();

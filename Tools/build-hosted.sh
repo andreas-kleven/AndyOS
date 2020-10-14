@@ -119,7 +119,7 @@ automake
 echo '. ${srcdir}/emulparams/elf_i386.sh
 GENERATE_SHLIB_SCRIPT=yes
 GENERATE_PIE_SCRIPT=yes
-TEXT_START_ADDR=0x40000000' > $srcdir/binutils-2.30/ld/emulparams/elf_i386_$SYSTEM.sh
+TEXT_START_ADDR=0x10000000' > $srcdir/binutils-2.30/ld/emulparams/elf_i386_$SYSTEM.sh
 
 # emulparams/elf_x86_64.sh
 echo '. ${srcdir}/emulparams/elf_x86_64.sh' > $srcdir/binutils-2.30/ld/emulparams/elf_x86_64_$SYSTEM.sh

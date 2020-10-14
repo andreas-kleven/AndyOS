@@ -54,5 +54,5 @@ void *KernelMapFirstFree(void *phys, size_t count, pflags_t flags);
 void *UserMapFirstFree(void *phys, size_t count, pflags_t flags);
 bool UserAllocShared(ADDRESS_SPACE other_space, void *&addr1, void *&addr2, size_t count);
 
-bool Init();
+bool Init(size_t dir_phys, size_t dir_virt, size_t stack_phys, size_t stack_size);
 }; // namespace VMem

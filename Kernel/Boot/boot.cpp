@@ -17,17 +17,14 @@ void call_ctors()
     }
 }
 
-extern "C" void grub_main(uint32 magic, MULTIBOOT_INFO *bootinfo)
+extern "C" void grub_main(MULTIBOOT_INFO *bootinfo, size_t stack_phys, size_t stack_size)
 {
-    if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-        return;
-
     call_ctors();
 
-    size_t mem_end = bootinfo->mem_upper * 0x400;
+    size_t mem_size = bootinfo->mem_upper * 0x400;
 
     VBE_MODE_INFO *mode_info = (VBE_MODE_INFO *)bootinfo->vbe_mode_info;
     VBEVideoMode video_mode = VBEVideoMode(mode_info);
 
-    Kernel::Setup(0, mem_end, &video_mode);
+    Kernel::Setup(mem_size, stack_phys, stack_size, &video_mode);
 }

@@ -88,5 +88,5 @@ void *FirstFree(size_t count, size_t start, size_t end);
 bool MapPages(void *virt, void *phys, size_t count, pflags_t flags);
 bool CopyOnWrite(void *virt1, void *virt2, size_t count, ADDRESS_SPACE &to);
 
-bool Init();
+bool Init(size_t dir_phys, size_t dir_virt, size_t stack_phys, size_t stack_size);
 } // namespace VMem::Arch

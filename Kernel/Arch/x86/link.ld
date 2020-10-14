@@ -1,14 +1,18 @@
 ENTRY(_start)
 SECTIONS
 {
-	. = 16M;
-	__KERNEL_START = .;
+	. = 0x1000000;
+	__BOOT_START = .;
 
 	.multiboot BLOCK(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
 	}
 
+	__BOOT_END = .;
+	__KERNEL_START = 0xC0000000;
+	. += 0xC0000000-0x1000000;
+	
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.text)
@@ -33,10 +37,13 @@ SECTIONS
 		*(.data)
 	}
 
+	__DATA_END = .; 
+
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(.bss)
 	}
 
+	__BSS_END = .; 
 	__KERNEL_END = .; 
 }

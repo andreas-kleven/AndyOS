@@ -3,5 +3,5 @@
 #include <video.h>
 
 namespace Kernel {
-void Setup(size_t mem_start, size_t mem_end, VideoMode *video_mode);
+void Setup(size_t mem_size, size_t stack_phys, size_t stack_size, VideoMode *video_mode);
 };

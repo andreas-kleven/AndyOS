@@ -35,12 +35,12 @@ all: kernel programs
 
 iso: all
 	cp $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel
-	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman
-	cp $(BUILD_DIR)/terminal $(ISO_DIR)/1term
-	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
-	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
-	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/1mndlbrt
-	cp $(BUILD_DIR)/info $(ISO_DIR)/1info
+	cp $(BUILD_DIR)/winman $(ISO_DIR)/winman
+	cp $(BUILD_DIR)/terminal $(ISO_DIR)/term
+	cp $(BUILD_DIR)/test $(ISO_DIR)/test
+	cp $(BUILD_DIR)/game $(ISO_DIR)/game
+	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/mndlbrt
+	cp $(BUILD_DIR)/info $(ISO_DIR)/info
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
@@ -50,11 +50,11 @@ iso-kernel: kernel
 	fi
 
 iso-programs: programs
-	cp $(BUILD_DIR)/winman $(ISO_DIR)/1winman
-	cp $(BUILD_DIR)/terminal $(ISO_DIR)/1term
-	cp $(BUILD_DIR)/test $(ISO_DIR)/1test
-	cp $(BUILD_DIR)/game $(ISO_DIR)/1game
-	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/1mndlbrt
+	cp $(BUILD_DIR)/winman $(ISO_DIR)/winman
+	cp $(BUILD_DIR)/terminal $(ISO_DIR)/term
+	cp $(BUILD_DIR)/test $(ISO_DIR)/test
+	cp $(BUILD_DIR)/game $(ISO_DIR)/game
+	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)mndlbrt
 
 .PHONY: clean
 clean:
