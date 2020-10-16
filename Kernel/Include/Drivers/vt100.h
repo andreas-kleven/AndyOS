@@ -4,6 +4,7 @@
 #include <driver.h>
 #include <sync.h>
 #include <types.h>
+#include <video.h>
 
 #define ESCAPE_BUFFER_SIZE 32
 
@@ -30,6 +31,7 @@ class Vt100Driver : public TtyBaseDriver
     bool active;
     Mutex draw_mutex;
     VT100_STATE state;
+    VideoMode video;
 
   public:
     Vt100Driver();

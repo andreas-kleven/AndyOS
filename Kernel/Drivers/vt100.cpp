@@ -5,7 +5,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <video.h>
 
 // https://github.com/Mayccoll/Gogh/blob/master/themes/cobalt2.sh
 #define COLOR_01 0x000000
@@ -64,12 +63,19 @@ Vt100Driver::Vt100Driver()
 {
     InitColors();
 
-    width = Video::mode->width / 8;
-    height = Video::mode->height / 16;
+    video = *Video::mode;
+
+    void *virt = VMem::KernelAlloc(BYTES_TO_BLOCKS(video.memsize));
+    void *phys = (void *)VMem::GetAddress((size_t)virt);
+    video.SetFramebuffer(virt, phys);
+
+    width = video.width / 8;
+    height = video.height / 16;
     text_buffer = new CircularDataBuffer(width * height);
     active = false;
 
     ResetColors();
+    ClearScreen();
 }
 
 Vt100Driver::~Vt100Driver()
@@ -136,14 +142,14 @@ void Vt100Driver::ClearScreen()
 {
     draw_mutex.Aquire();
 
-    const VideoMode *mode = Video::mode;
+    if (video.framebuffer) {
+        memset32(video.framebuffer, BACKGROUND_COLOR, video.width * video.height);
 
-    if (mode->framebuffer) {
-        memset32(mode->framebuffer, BACKGROUND_COLOR, mode->width * mode->height);
+        if (active)
+            Video::mode->Draw(video.framebuffer);
     }
 
     state.blink = false;
-
     draw_mutex.Release();
 }
 
@@ -151,12 +157,15 @@ void Vt100Driver::ClearLine(int line)
 {
     draw_mutex.Aquire();
 
-    const VideoMode *mode = Video::mode;
-    int stride = mode->width * mode->depth / 8;
+    int stride = video.width * video.depth / 8;
     int offset = stride * 16 * line;
 
-    if (mode->framebuffer)
-        memset32((char *)mode->framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
+    if (video.framebuffer) {
+        memset32((char *)video.framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
+
+        if (active)
+            memset32((char *)Video::mode->framebuffer + offset, BACKGROUND_COLOR, stride * 16 / 4);
+    }
 
     state.blink = false;
 
@@ -165,11 +174,11 @@ void Vt100Driver::ClearLine(int line)
 
 void Vt100Driver::RedrawScreen()
 {
+    if (!active)
+        return;
+
     draw_mutex.Aquire();
-    Move(0, 0);
-    text_buffer->Seek(0, SEEK_SET);
-    ClearScreen();
-    DrawText();
+    Video::mode->Draw(video.framebuffer);
     draw_mutex.Release();
 }
 
@@ -338,9 +347,6 @@ bool Vt100Driver::HandleSequence(char cmd, int num_args, int *args)
 
 void Vt100Driver::DrawText()
 {
-    if (!active)
-        return;
-
     draw_mutex.Aquire();
 
     bool restore_blink = state.blink;
@@ -415,7 +421,10 @@ void Vt100Driver::DrawChar(int x, int y, int c)
             if ((c == -1) || (DEFAULT_FONT[i + 16 * c] >> j) & 1)
                 color = state.fg;
 
-            Video::SetPixel(x * 8 + (8 - j), y * 16 + i, color);
+            video.SetPixel(x * 8 + (8 - j), y * 16 + i, color);
+
+            if (active)
+                Video::mode->SetPixel(x * 8 + (8 - j), y * 16 + i, color);
         }
     }
 }
@@ -434,9 +443,12 @@ void Vt100Driver::InvertColors(int x, int y)
 
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 8; j++) {
-            uint32 color = Video::GetPixel(x * 8 + (8 - j), y * 16 + i);
+            uint32 color = video.GetPixel(x * 8 + (8 - j), y * 16 + i);
             uint32 newcolor = color == fg ? bg : fg;
-            Video::SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
+            video.SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
+
+            if (active)
+                Video::mode->SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
         }
     }
 }
@@ -445,7 +457,7 @@ int Vt100Driver::GetScreenColors(int x, int y, uint32 &fg, uint32 &bg)
 {
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 8; j++) {
-            uint32 color = Video::GetPixel(x * 8 + (8 - j), y * 16 + i);
+            uint32 color = video.GetPixel(x * 8 + (8 - j), y * 16 + i);
 
             if (i == 0 && j == 0) {
                 bg = color;
@@ -462,7 +474,7 @@ int Vt100Driver::GetScreenColors(int x, int y, uint32 &fg, uint32 &bg)
 
 void Vt100Driver::Putc(char c)
 {
-    if (!Video::mode->framebuffer)
+    if (!video.framebuffer)
         return;
 
     switch (c) {
@@ -513,13 +525,18 @@ void Vt100Driver::Move(int x, int y)
 
     while (state.y > height - 1) {
         Move(state.x, height - 1);
-        const VideoMode *mode = Video::mode;
-        int stride = mode->width * mode->depth / 8;
+        int stride = video.width * video.depth / 8;
         int offset = stride * 16;
         int count = stride * 16 * (height - 1);
-        char *start = (char *)mode->framebuffer + offset;
-        memcpy(mode->framebuffer, start, count);
-        memset32((char *)mode->framebuffer + count, BACKGROUND_COLOR, offset / 4);
+        char *start = (char *)video.framebuffer + offset;
+
+        memcpy(video.framebuffer, start, count);
+        memset32((char *)video.framebuffer + count, BACKGROUND_COLOR, offset / 4);
+
+        if (active) {
+            memcpy(Video::mode->framebuffer, start, count);
+            memset32((char *)Video::mode->framebuffer + count, BACKGROUND_COLOR, offset / 4);
+        }
     }
 
     if (restore_blink)

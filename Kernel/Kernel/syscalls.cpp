@@ -348,7 +348,7 @@ void sys_gettime(int &hour, int &minute, int &second)
 void sys_draw(uint32 *framebuffer)
 {
     if (VTTY::CurrentTerminal()->tty->sid == Dispatcher::CurrentProcess()->sid)
-        Video::Draw(framebuffer);
+        Video::mode->Draw(framebuffer);
 }
 
 void sys_exit(int code)

@@ -7,20 +7,3 @@ VBEVideoMode::VBEVideoMode(VBE_MODE_INFO *info)
 {
     this->info = *info;
 }
-
-void VBEVideoMode::Draw(void *pixels)
-{
-    memcpy(framebuffer, pixels, memsize);
-}
-
-void VBEVideoMode::SetPixel(int x, int y, unsigned int col)
-{
-    unsigned int *a = (unsigned int *)framebuffer + y * width + x;
-    *a = col;
-}
-
-unsigned int VBEVideoMode::GetPixel(int x, int y)
-{
-    unsigned int *a = (unsigned int *)framebuffer + y * width + x;
-    return *a;
-}

@@ -61,14 +61,3 @@ MVideoMode::MVideoMode(int width, int height, int depth)
         uart_puts("Unable to set screen resolution\n");
     }
 }
-
-void MVideoMode::Draw(void *pixels)
-{
-    memcpy(framebuffer, pixels, memsize);
-}
-
-void MVideoMode::SetPixel(int x, int y, unsigned int col)
-{
-    unsigned int *a = (unsigned int *)framebuffer + y * width + x;
-    *a = col;
-}

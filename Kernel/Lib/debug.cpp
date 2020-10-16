@@ -32,9 +32,9 @@ void draw_text(int x, int y, const char *c)
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 8; j++) {
                 if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-                    Video::SetPixel(x + index * 8 + (8 - j), y + i, color);
+                    Video::mode->SetPixel(x + index * 8 + (8 - j), y + i, color);
                 else
-                    Video::SetPixel(x + index * 8 + (8 - j), y + i, bcolor);
+                    Video::mode->SetPixel(x + index * 8 + (8 - j), y + i, bcolor);
             }
         }
     }
