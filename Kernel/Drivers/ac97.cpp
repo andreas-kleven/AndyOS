@@ -1,10 +1,12 @@
 #include <Drivers/ac97.h>
 #include <Kernel/timer.h>
+#include <Process/scheduler.h>
 #include <debug.h>
 #include <hal.h>
 #include <io.h>
 #include <irq.h>
 #include <math.h>
+#include <memory.h>
 #include <string.h>
 
 #define AC97_NAM_RESET          0x00
@@ -16,9 +18,6 @@
 #define AC97_NAM_EXT_AUDIO_STC  0x2A
 #define AC97_NAM_FRONT_SPLRATE  0x2C
 #define AC97_NAM_LR_SPLRATE     0x32
-#define AC97_NABM_POBDBAR       0x10
-#define AC97_NABM_POLVI         0x15
-#define AC97_NABM_POCONTROL     0x1B
 #define AC97_NABM_GLB_CTRL_STAT 0x60
 
 #define AC97_PO_BDBAR 0x10 /* PCM out buffer descriptor BAR */
@@ -32,53 +31,43 @@
 #define AC97_X_SR_CELV  (1 << 1) /* Current equals last valid */
 #define AC97_X_SR_LVBCI (1 << 2) /* Last valid buffer completion interrupt */
 #define AC97_X_SR_BCIS  (1 << 3) /* Buffer completion interrupt status */
-#define AC97_X_SR_FIFOE (1 << 3) /* FIFO error */
-
-#define AC97_BDL_LEN              32                  /* Buffer descriptor list length */
-#define AC97_BDL_BUFFER_LEN       0x1000              /* Length of buffer in BDL */
-#define AC97_CL_GET_LENGTH(cl)    ((cl)&0xFFFF)       /* Decode length from cl */
-#define AC97_CL_SET_LENGTH(cl, v) ((cl) = (v)&0xFFFF) /* Encode length to cl */
-#define AC97_CL_BUP               ((uint32)1 << 30)   /* Buffer underrun policy in cl */
-#define AC97_CL_IOC               ((uint32)1 << 31)   /* Interrupt on completion flag in cl */
+#define AC97_X_SR_FIFOE (1 << 4) /* FIFO error */
 
 namespace AC97 {
-uint8 *buf;
-
 AC97_DEVICE device;
 
 void AC97_ISR()
 {
-    //{
-    //	uint8 pi = inb(device.nabmbar + 0x0006) & 0x1C;
-    //	uint8 po = inb(device.nabmbar + 0x0016) & 0x1C;
-    //	uint8 mc = inb(device.nabmbar + 0x0026) & 0x1C;
-    //
-    //	outb(device.nabmbar + 0x0006, pi);
-    //	outb(device.nabmbar + 0x0016, po);
-    //	//outb(device.nabmbar + 0x0026, mc);
-    //}
+    uint16 sr = inw(device.nabmbar + AC97_PO_SR);
 
-    if (1) {
-        uint16 sr = inw(device.nabmbar + AC97_PO_SR);
-        kprintf("SR: %x   \n", sr);
+    if (!sr)
+        return;
 
-        if (sr & AC97_X_SR_LVBCI) {
-            kprintf("1\n");
-            outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_LVBCI);
-            // outb(device.nabmbar + AC97_PO_LVI, device.lvi);
-            // outb(device.nabmbar + AC97_NABM_POCONTROL, 0x15); // Play, and then generate
-            // interrupt!
-        } else if (sr & AC97_X_SR_BCIS) {
-            kprintf("2\n");
-            device.lvi = (device.lvi + 1) % AC97_BDL_LEN;
-            outw(device.nabmbar + AC97_PO_LVI, device.lvi);
-            outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_BCIS);
-        } else if (sr & AC97_X_SR_FIFOE) {
-            kprintf("3\n");
-        } else {
-            kprintf("4\n");
-            outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_FIFOE);
+    if (sr & AC97_X_SR_LVBCI) {
+        kprintf("1: %d %d\n", device.lvi, device.position);
+
+        outb(device.nabmbar + AC97_PO_CR, 25);
+        outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_LVBCI);
+    } else if (sr & AC97_X_SR_BCIS) {
+        device.lvi = (device.lvi + 1) % AC97_BDL_LEN;
+        kprintf("2: %d %d\n", device.lvi, device.position);
+
+        if (device.lvi == device.position) {
+            int next = (device.lvi + 1) % AC97_BDL_LEN;
+            size_t size = 0x1000;
+            memset(device.buffers[next], 0, size * 2);
+            device.bdl[next].ioc = 1;
+            device.bdl[next].bup = 0;
+            device.bdl[next].length = size;
+            device.position = next;
         }
+
+        outw(device.nabmbar + AC97_PO_SR, AC97_X_SR_BCIS);
+
+    } else if (sr & AC97_X_SR_FIFOE) {
+        kprintf("AC97 FIFOE\n");
+    } else {
+        kprintf("AC97 ERROR\n");
     }
 }
 
@@ -88,8 +77,23 @@ STATUS Init(PciDevice *pci_dev)
     device.nambar = pci_dev->config.bar0 & ~1;
     device.nabmbar = pci_dev->config.bar1 & ~1;
     device.irq = pci_dev->config.interruptLine;
-    device.bdl = new AC97_BUFFER_ENTRY[AC97_BDL_LEN];
-    memset(device.bdl, 0, AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY));
+    device.lvi = 0;
+    device.position = AC97_BDL_LEN - 1;
+
+    size_t bdl_size = AC97_BDL_LEN * sizeof(AC97_BUFFER_ENTRY);
+    size_t buffers_size = AC97_BDL_LEN * AC97_BDL_SAMPLES * 2;
+
+    device.bdl = (AC97_BUFFER_ENTRY *)VMem::KernelAlloc(BYTES_TO_BLOCKS(bdl_size), true);
+    memset(device.bdl, 0, bdl_size);
+
+    device.buffers = new uint16 *[AC97_BDL_LEN];
+    uint16 *buffers = (uint16 *)VMem::KernelAlloc(BYTES_TO_BLOCKS(buffers_size), true);
+
+    for (int i = 0; i < AC97_BDL_LEN; i++) {
+        device.buffers[i] = &buffers[i * AC97_BDL_SAMPLES];
+        // kprintf("B %d %p\n", i, device.buffers[i]);
+        device.bdl[i].buffer = (uint16 *)VMem::GetAddress((size_t)device.buffers[i]);
+    }
 
     // Enable interrupts
     IRQ::Install(0x20 + device.irq, AC97_ISR);
@@ -105,9 +109,9 @@ STATUS Init(PciDevice *pci_dev)
     outw(device.nambar + AC97_NAM_RESET, 0);              // resets (any value is possible here)
     outb(device.nabmbar + AC97_NABM_GLB_CTRL_STAT, 0x02); // Also here - 0x02 is however obligatory
 
-    Timer::Sleep(100);
+    Timer::Sleep(100 * 1000);
 
-    volume = 15;
+    volume = 10;
     outw(device.nambar + AC97_NAM_MASTER_VOLUME,
          (volume << 8) | volume); // General. Volume (left and right)
     outw(device.nambar + AC97_NAM_MONO_VOLUME,
@@ -117,7 +121,7 @@ STATUS Init(PciDevice *pci_dev)
     outw(device.nambar + AC97_NAM_PCM_VOLUME,
          (volume << 8) | volume); // Volume for PCM (left and right)
 
-    Timer::Sleep(10);
+    Timer::Sleep(10 * 1000);
 
     if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1)) {
         /*Sample Rate fixed at 48kHz */
@@ -126,7 +130,7 @@ STATUS Init(PciDevice *pci_dev)
         outw(device.nambar + AC97_NAM_EXT_AUDIO_STC,
              inw(device.nambar + AC97_NAM_EXT_AUDIO_STC) | 1); // Variable Rate Enable audio
 
-        Timer::Sleep(10);
+        Timer::Sleep(10 * 1000);
         if (!(inw(device.nambar + AC97_NAM_EXT_AUDIO_ID) & 1)) {
             /*Sample Rate fixed at 48kHz */
             kprintf("Sample rate 48kHz\n");
@@ -137,88 +141,70 @@ STATUS Init(PciDevice *pci_dev)
                  inw(device.nambar + AC97_NAM_EXT_AUDIO_STC) | 1);
             outw(device.nambar + AC97_NAM_FRONT_SPLRATE, 44100); // General.
             outw(device.nambar + AC97_NAM_LR_SPLRATE, 44100);    // Stereo Samplerate: 44100 Hz
-            Timer::Sleep(10);
+            Timer::Sleep(10 * 1000);
             // Actual Samplerate is now in AC97_NAM_FRONT_SPLRATE or AC97_NAM_LR_SPLRATE
             kprintf("Sample rate 44.1kHz\n");
         }
     }
 
-    // The following may again be in any function ...
-    // int final = 0; // Last valid buffer
-    //
-    // uint8** buffers;
-    //
-    // for (int i = 0; i < 32; i++)
-    //{
-    //	buffers[i] = new uint8[6553 * 2];
-    //	memset(buffers[i], 0, 6553 * 2);
-    //
-    //	for (int x = 0; x < 6553; x++)
-    //		buffers[i][x] = x;
-    //}
+    outl(device.nabmbar + AC97_PO_BDBAR, (uint32)VMem::GetAddress((uint32)device.bdl));
 
-    // for (int a = 0; a < 0x20000; a++)
-    //	device.bdl[i].buffer[a] = a / (i + 1);
+    size_t size = 64000;
+    uint16 *buffer = (uint16 *)VMem::KernelAlloc(BYTES_TO_BLOCKS(size * 2));
 
-    // for (int i = 0; i < size; i++)
-    //{
-    //	buf[i] = i;
-    //}
+    for (size_t x = 0; x < size; x++)
+        buffer[x] = (sin((double)x / 40 * 3.1415) + 1) / 2 * 32767;
 
-    /*for (i = 0; (i < 32) && size; i++)
-    {
-            device.bdl[i].buffer = buffers[i];
-            if (size >= 0x20000)  // Even more than 128 KB, so the buffer is full
-            {
-                    // Maximum length is 0xFFFE and NOT 0xFFFF!
-                    //Left and right // must have the same number of samples, so this number must be
-    even. device.bdl[i].length = 0xFFFE; size -= 0x20000; // 128 & nbsp; kB away
-            }
-            else
-            {
-                    // Half the length in bytes because 16-bit samples need two bytes
-                    device.bdl[i].length = size >> 1;
-                    size = 0; // Nix more now
-            }
+    Play(buffer, size);
+    Play(buffer, size);
 
-            //device.bdl[i].length |= ((uint32)1 << 31);
+    for (size_t x = 0; x < size; x++)
+        buffer[x] = (sin((double)x / 20 * 3.1415) + 1) / 2 * 32767;
 
-            device.bdl[i].ioc = 1;
+    outb(device.nabmbar + AC97_PO_LVI, AC97_BDL_LEN - 1);
+    outb(device.nabmbar + AC97_PO_CR, 25);
 
-            if (size)  // Another buffer
-                    device.bdl[i].bup = 0;
-            else  // No more buffers
-            {
-                    device.bdl[i].bup = 1;
-                    final = i; // Last valid buffer is this here
-            }
+    for (size_t x = 0; x < size; x++)
+        buffer[x] = (sin((double)x / 50 * 3.1415) + 1) / 2 * 32767;
 
-            final = i;
-    }*/
+    Scheduler::SleepThread(Timer::Ticks() + 3000 * 1000, Scheduler::CurrentThread());
+    Play(buffer, size);
+    Play(buffer, size);
 
-    int size = 0x1000;
+    for (size_t x = 0; x < size; x++)
+        buffer[x] = (sin((double)x / 20 * 3.1415) + 1) / 2 * 32767;
 
-    for (int i = 0; i < AC97_BDL_LEN; i++) {
-        // memset(&device.bdl[i], 0, sizeof(AC97_BUFFER_ENTRY));
-        device.bdl[i].buffer = new uint8[size];
-        memset(device.bdl[i].buffer, 0, size);
-
-        // for (int x = 0; x < size; x++)
-        //	device.bdl[i].buffer[x] = sin(x);
-
-        device.bdl[i].length = size;
-        device.bdl[i].ioc = 1;
-        device.bdl[i].bup = 0;
-    }
-
-    device.lvi = 2;
-    device.bdl[device.lvi].bup = 1;
-
-    outl(device.nabmbar + AC97_NABM_POBDBAR, (uint32)(size_t)device.bdl);
-    outb(device.nabmbar + AC97_NABM_POLVI, device.lvi);
-    outb(device.nabmbar + AC97_NABM_POCONTROL,
-         inb(device.nabmbar + AC97_PO_CR) | 1); // Play, and then generate interrupt!
+    Play(buffer, size);
 
     return STATUS_SUCCESS;
+}
+
+void WriteSingleBuffer(void *samples, size_t count)
+{
+    if (count > AC97_BDL_SAMPLES)
+        return;
+
+    device.position = (device.position + 1) % AC97_BDL_LEN;
+    device.bdl[device.position].ioc = 1;
+    device.bdl[device.position].bup = 1;
+    device.bdl[device.position].length = count;
+
+    uint16 *buffer = device.buffers[device.position];
+    memcpy(buffer, samples, count * 2);
+
+    kprintf("Buf %i %d\n", device.position, count);
+}
+
+void Play(void *samples, size_t count)
+{
+    size_t max = AC97_BDL_SAMPLES - 2;
+    uint16 *ptr = (uint16 *)samples;
+
+    while (count) {
+        size_t n = min(count, max);
+        WriteSingleBuffer(ptr, n);
+        ptr += n;
+        count -= n;
+    }
 }
 } // namespace AC97
