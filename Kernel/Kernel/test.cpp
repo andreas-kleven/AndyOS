@@ -197,18 +197,6 @@ void _Net()
     }*/
 }
 
-void Audio()
-{
-    PciDevice *pci_dev = PCI::GetDevice(4, 1, -1);
-
-    if (!pci_dev) {
-        kprintf("No pci device\n");
-        return;
-    }
-
-    AC97::Init(pci_dev);
-}
-
 void _Memory()
 {
     kprintf("Free: %i\n", PMem::NumFree());
@@ -316,11 +304,6 @@ void Start()
 
     THREAD *dispatcher_thread = Task::CreateKernelThread(Dispatcher::Start);
     Scheduler::InsertThread(dispatcher_thread);
-
-    Audio();
-    kprintf("Done\n");
-    Scheduler::ExitThread(0, Scheduler::CurrentThread());
-    Scheduler::Switch();
 
     Mount();
     InitNet();

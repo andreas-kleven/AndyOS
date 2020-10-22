@@ -9,6 +9,8 @@
 #define MAJOR_CDROM          11
 #define MAJOR_HARDDISK       13
 #define MAJOR_INPUT          13
+#define MAJOR_SOUND          14
+#define MINOR_SOUND          1
 #define MINOR_INPUT_MOUSE    1
 #define MINOR_INPUT_KEYBOARD 2
 

@@ -38,6 +38,7 @@ all: libs
 	$(MAKE) -C 3DGame
 	$(MAKE) -C Mandelbrot
 	$(MAKE) -C Info
+	$(MAKE) -C Audio
 
 .PHONY: clean
 clean:
@@ -51,4 +52,5 @@ clean:
 	$(MAKE) -C 3DGame clean
 	$(MAKE) -C Mandelbrot clean
 	$(MAKE) -C Info clean
+	$(MAKE) -C Audio clean
 	rm -f $(BUILD_DIR)/*

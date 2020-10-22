@@ -1,7 +1,10 @@
 #pragma once
+#include <driver.h>
 #include <hal.h>
 #include <pci.h>
 #include <types.h>
+
+#define AC97_IOCTL_SET_VOLUME 0x4101
 
 #define AC97_BDL_LEN     32      /* Buffer descriptor list length */
 #define AC97_BDL_SAMPLES 0x10000 /* Length of buffer in BDL */
@@ -15,8 +18,9 @@ struct AC97_BUFFER_ENTRY
     uint32 ioc : 1;
 } __attribute__((packed));
 
-struct AC97_DEVICE
+class AC97Driver : public CharDriver
 {
+  public:
     PciDevice *pci_device;
     uint16 nambar;
     uint16 nabmbar;
@@ -25,10 +29,20 @@ struct AC97_DEVICE
     uint8 lvi;
     AC97_BUFFER_ENTRY *bdl;
     uint16 **buffers;
-    size_t position;
-} __attribute__((packed));
+    uint8 position;
+    Event ready_event;
 
-namespace AC97 {
-STATUS Init(PciDevice *pci_dev);
-void Play(void *samples, size_t count);
-}; // namespace AC97
+    AC97Driver(PciDevice *pci_dev);
+
+    int Write(FILE *file, const void *buf, size_t size);
+    int Ioctl(FILE *file, int request, unsigned int arg);
+
+    static void Init();
+
+  private:
+    int WriteBuffer(void *samples, size_t count);
+    void SetVolume(int volume);
+    void SetSampleRate();
+
+    static void AC97_Interrupt();
+};

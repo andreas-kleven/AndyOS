@@ -1,3 +1,4 @@
+#include <Drivers/ac97.h>
 #include <Drivers/ata.h>
 #include <Drivers/keyboard.h>
 #include <Drivers/mouse.h>
@@ -62,6 +63,7 @@ Driver *GetDriver(dev_t dev)
 STATUS Init()
 {
     ATADriver::Init();
+    AC97Driver::Init();
     AddDriver(new MouseDriver());
     AddDriver(new KeyboardDriver());
 

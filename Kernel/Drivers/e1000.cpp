@@ -89,7 +89,7 @@
 #define TSTA_LC (1 << 2) // Late Collision
 #define LSTA_TU (1 << 3) // Transmit Underrun
 
-E1000 *instance;
+static E1000 *instance;
 
 E1000::E1000(PciDevice *pci_dev) : NetInterface(pci_dev)
 {

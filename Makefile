@@ -41,6 +41,7 @@ iso: all
 	cp $(BUILD_DIR)/game $(ISO_DIR)/game
 	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/mndlbrt
 	cp $(BUILD_DIR)/info $(ISO_DIR)/info
+	cp $(BUILD_DIR)/audio $(ISO_DIR)/audioplay
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
