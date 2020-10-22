@@ -32,7 +32,7 @@ Thing::Thing()
 
 void Thing::SetMesh(int index)
 {
-    mesh_index = index % 5;
+    mesh_index = index % 6;
     const char *path;
 
     if (mesh_index == 0)
@@ -45,6 +45,8 @@ void Thing::SetMesh(int index)
         path = "/gamedata/fox.a3d";
     if (mesh_index == 4)
         path = "/gamedata/tank.a3d";
+    if (mesh_index == 5)
+        path = "/gamedata/aventado.a3d";
 
     Model3D *model = ModelLoader::LoadModel(path, Format3D::FORMAT_A3D);
 
@@ -62,6 +64,11 @@ void Thing::SetMesh(int index)
 
         if (mesh_index == 4) {
             vert.color = Color::Gray;
+            mesh->texId = 0;
+        }
+
+        if (mesh_index == 5) {
+            vert.color = Color(0xbf870d);
             mesh->texId = 0;
         }
     }
