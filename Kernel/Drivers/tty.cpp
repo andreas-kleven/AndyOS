@@ -88,24 +88,34 @@ int TtyDriver::HandleInput(const char *input, size_t size)
 {
     if (size == 1) {
         char c = input[0];
+        bool handled = false;
 
         if (termios.c_lflag & ISIG) {
             switch (c) {
             case 0x03:
                 ProcessManager::HandleSignal(sid, gid, SIGINT);
-                line_buffer->Reset();
+                handled = true;
                 break;
 
             case 0x1A:
                 ProcessManager::HandleSignal(sid, gid, SIGSTOP);
-                line_buffer->Reset();
+                handled = true;
                 break;
 
             case 0x1C:
                 ProcessManager::HandleSignal(sid, gid, SIGQUIT);
-                line_buffer->Reset();
+                handled = true;
                 break;
             }
+        }
+
+        if (handled) {
+            line_buffer->Reset();
+
+            if (termios.c_lflag & ECHO)
+                driver->Write(input, size);
+
+            return size;
         }
     }
 

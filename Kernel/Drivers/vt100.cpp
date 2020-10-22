@@ -394,8 +394,7 @@ void Vt100Driver::DrawText()
                 c += 'A' - 1;
                 Putc('^');
                 Putc(c);
-            }
-            if (c == 0x1B) // ESC
+            } else if (c == 0x1B) // ESC
             {
                 state.escaped = true;
                 state.escape_buffer[0] = 0;
@@ -421,10 +420,10 @@ void Vt100Driver::DrawChar(int x, int y, int c)
             if ((c == -1) || (DEFAULT_FONT[i + 16 * c] >> j) & 1)
                 color = state.fg;
 
-            video.SetPixel(x * 8 + (8 - j), y * 16 + i, color);
+            video.SetPixel(x * 8 + (7 - j), y * 16 + i, color);
 
             if (active)
-                Video::mode->SetPixel(x * 8 + (8 - j), y * 16 + i, color);
+                Video::mode->SetPixel(x * 8 + (7 - j), y * 16 + i, color);
         }
     }
 }
@@ -443,12 +442,12 @@ void Vt100Driver::InvertColors(int x, int y)
 
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 8; j++) {
-            uint32 color = video.GetPixel(x * 8 + (8 - j), y * 16 + i);
+            uint32 color = video.GetPixel(x * 8 + (7 - j), y * 16 + i);
             uint32 newcolor = color == fg ? bg : fg;
-            video.SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
+            video.SetPixel(x * 8 + (7 - j), y * 16 + i, newcolor);
 
             if (active)
-                Video::mode->SetPixel(x * 8 + (8 - j), y * 16 + i, newcolor);
+                Video::mode->SetPixel(x * 8 + (7 - j), y * 16 + i, newcolor);
         }
     }
 }
@@ -457,7 +456,7 @@ int Vt100Driver::GetScreenColors(int x, int y, uint32 &fg, uint32 &bg)
 {
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 8; j++) {
-            uint32 color = video.GetPixel(x * 8 + (8 - j), y * 16 + i);
+            uint32 color = video.GetPixel(x * 8 + (7 - j), y * 16 + i);
 
             if (i == 0 && j == 0) {
                 bg = color;
@@ -523,8 +522,10 @@ void Vt100Driver::Move(int x, int y)
     state.x = clamp(x, 0, width - 1);
     state.y = max(y, 0);
 
-    while (state.y > height - 1) {
-        Move(state.x, height - 1);
+    if (state.y > height - 1) {
+        state.x = 0;
+        state.y -= 1;
+
         int stride = video.width * video.depth / 8;
         int offset = stride * 16;
         int count = stride * 16 * (height - 1);
@@ -533,10 +534,8 @@ void Vt100Driver::Move(int x, int y)
         memcpy(video.framebuffer, start, count);
         memset32((char *)video.framebuffer + count, BACKGROUND_COLOR, offset / 4);
 
-        if (active) {
-            memcpy(Video::mode->framebuffer, start, count);
-            memset32((char *)Video::mode->framebuffer + count, BACKGROUND_COLOR, offset / 4);
-        }
+        if (active)
+            RedrawScreen();
     }
 
     if (restore_blink)

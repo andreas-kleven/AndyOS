@@ -337,7 +337,7 @@ void GC::DrawText(int x, int y, const char *c, Color &fg)
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 8; j++) {
                 if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-                    SetPixel(x + index * 8 + (8 - j), y + i, fg);
+                    SetPixel(x + index * 8 + (7 - j), y + i, fg);
             }
         }
     }
@@ -349,9 +349,9 @@ void GC::DrawText(int x, int y, const char *c, Color &fg, Color &bg)
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 8; j++) {
                 if ((DEFAULT_FONT[i + 16 * c[index]] >> j) & 1)
-                    SetPixel(x + index * 8 + (8 - j), y + i, fg);
+                    SetPixel(x + index * 8 + (7 - j), y + i, fg);
                 else
-                    SetPixel(x + index * 8 + (8 - j), y + i, bg);
+                    SetPixel(x + index * 8 + (7 - j), y + i, bg);
             }
         }
     }
