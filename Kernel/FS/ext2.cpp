@@ -94,9 +94,7 @@ INODE *Ext2FS::ReadInode(int ino, DENTRY *dentry)
     if (!raw_inode)
         return 0;
 
-    INODE *inode = VFS::AllocInode(dentry);
-    inode->ino = ino;
-    inode->mode = raw_inode->type;
+    INODE *inode = VFS::AllocInode(dentry, ino, raw_inode->type);
     inode->size = raw_inode->size;
     inode->uid = raw_inode->uid;
     inode->gid = raw_inode->gid;

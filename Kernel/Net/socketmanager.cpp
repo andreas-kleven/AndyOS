@@ -8,7 +8,7 @@ namespace SocketManager {
 Mutex mutex;
 List<Socket *> sockets;
 int next_port = 32768;
-int next_id = 1;
+int next_id = 2;
 
 Socket *CreateSocket()
 {

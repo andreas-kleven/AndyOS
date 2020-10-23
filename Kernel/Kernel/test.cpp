@@ -96,7 +96,14 @@ void TTY()
     for (int i = 0; i < 8; i++) {
         char name[32];
         sprintf(name, "/dev/tty%d", i);
-        TtyDriver *tty = (TtyDriver *)DriverManager::GetDriver(VFS::GetDentry(name)->inode->dev);
+        DENTRY *dentry = VFS::GetDentry(name);
+
+        if (!dentry) {
+            kprintf("tty not found '%s'\n", name);
+            continue;
+        }
+
+        TtyDriver *tty = (TtyDriver *)DriverManager::GetDriver(dentry->inode->dev);
 
         const char *argv[] = {0};
         const char *envp[] = {"COLUMNS=80", "LINES=48", 0};

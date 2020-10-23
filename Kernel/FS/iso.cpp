@@ -183,12 +183,13 @@ time_t IsoFS::GetTime(ISO_DIRECTORY *dir)
 
 INODE *IsoFS::GetInode(ISO_DIRECTORY *dir, const ISO_RR_DATA *rr, DENTRY *dentry)
 {
-    INODE *inode = VFS::AllocInode(dentry);
-    inode->ino = dir->location_LSB;
+    ino_t ino = dir->location_LSB;
+    mode_t mode = rr->mode ? rr->mode : GetMode(dir);
+    INODE *inode = VFS::AllocInode(dentry, ino, mode);
+
     inode->size = dir->filesize_LSB;
     inode->uid = rr->uid;
     inode->gid = rr->gid;
-    inode->mode = rr->mode ? rr->mode : GetMode(dir);
 
     time_t rec_time = GetTime(dir);
     inode->atime = rr->atime ? rr->atime : rec_time;

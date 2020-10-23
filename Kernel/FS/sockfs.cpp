@@ -8,7 +8,7 @@
 
 int SockFS::Mount(BlockDriver *driver)
 {
-    VFS::AllocInode(root_dentry);
+    VFS::AllocInode(root_dentry, 1, S_IFDIR);
     return -1;
 }
 
@@ -93,7 +93,10 @@ int SockFS::Bind(FILE *file, const struct sockaddr *addr, socklen_t addrlen)
     const char *filename = 0;
     const char *parentname = 0;
 
-    if (addr->sa_family == AF_UNIX && unix_addr->sun_path[0]) {
+    if (addr->sa_family == AF_UNIX) {
+        if (!unix_addr->sun_path || !unix_addr->sun_path[0])
+            return -EINVAL;
+
         copy = strdup(unix_addr->sun_path);
         filename = basename(copy);
         parentname = dirname(copy);
@@ -205,10 +208,11 @@ Socket *SockFS::GetSocket(FILE *file)
 
 DENTRY *SockFS::CreateSocketDentry(int socket_id)
 {
-    DENTRY *dentry = VFS::AllocDentry(0, 0);
-    VFS::AllocInode(dentry);
-    dentry->inode->mode = S_IFSOCK;
-    dentry->inode->ino = socket_id;
+    char namebuf[32];
+    sprintf(namebuf, "socket:[%u]", socket_id);
+
+    DENTRY *dentry = VFS::AllocDentry(root_dentry, namebuf);
+    VFS::AllocInode(dentry, socket_id, S_IFSOCK);
     VFS::AddDentry(root_dentry, dentry);
     return dentry;
 }

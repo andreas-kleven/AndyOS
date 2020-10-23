@@ -75,18 +75,22 @@ DENTRY *GetExistingChild(DENTRY *parent, const char *name)
     return 0;
 }
 
-INODE *AllocInode(DENTRY *dentry)
+INODE *AllocInode(DENTRY *dentry, ino_t ino, mode_t mode)
 {
-    if (dentry->inode)
-        return dentry->inode;
+    if (!dentry->inode)
+        dentry->inode = new INODE();
 
-    dentry->inode = new INODE();
+    dentry->inode->ino = ino;
+    dentry->inode->mode = mode;
     return dentry->inode;
 }
 
 DENTRY *AllocDentry(DENTRY *parent, const char *name)
 {
-    if (parent && name) {
+    if (!name)
+        return 0;
+
+    if (parent) {
         DENTRY *dentry = GetExistingChild(parent, name);
 
         if (dentry)
@@ -94,10 +98,7 @@ DENTRY *AllocDentry(DENTRY *parent, const char *name)
     }
 
     DENTRY *dentry = new DENTRY();
-
-    if (name)
-        dentry->name = strdup(name);
-
+    dentry->name = strdup(name);
     return dentry;
 }
 
@@ -224,7 +225,21 @@ int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
     const char *filename = basename(copy);
     const char *parentname = dirname(copy);
 
-    DENTRY *dentry = AllocDentry(0, filename);
+    bool is_root = strcmp(mount_point, "/") == 0;
+
+    DENTRY *dentry;
+
+    if (is_root) {
+        dentry = AllocDentry(0, "/");
+    } else {
+        dentry = GetDentry(mount_point);
+    }
+
+    if (!dentry)
+        return -ENOENT;
+
+    if (!is_root && (dentry->inode->mode & S_IFMT) != S_IFDIR)
+        return -ENOTDIR;
 
     fs->root_dentry = dentry;
     fs->Mount(driver);
@@ -232,18 +247,9 @@ int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
     if (!dentry->inode)
         return -1;
 
-    if (strcmp(mount_point, "/")) {
-        DENTRY *parent = GetDentry(parentname);
-
-        if (!parent)
-            return -1;
-
-        AddDentry(parent, dentry);
-    } else {
+    if (is_root)
         root_dentry = dentry;
-    }
 
-    dentry->inode->mode = S_IFDIR;
     dentry->owner = fs;
 
     return 0;

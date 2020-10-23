@@ -6,7 +6,7 @@
 
 int PipeFS::Mount(BlockDriver *driver)
 {
-    VFS::AllocInode(root_dentry);
+    VFS::AllocInode(root_dentry, 1, S_IFDIR);
     return -1;
 }
 
@@ -67,12 +67,8 @@ int PipeFS::Create(DENTRY *&dentry, int flags)
     sprintf(namebuf, "pipe:[%u]", ino);
 
     dentry = VFS::AllocDentry(0, namebuf);
-    INODE *inode = VFS::AllocInode(dentry);
-
+    VFS::AllocInode(dentry, ino, S_IFIFO);
     pipes.Add(new Pipe());
-
-    inode->mode = S_IFIFO;
-    inode->ino = ino;
 
     return 0;
 }

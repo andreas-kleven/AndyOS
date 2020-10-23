@@ -5,7 +5,7 @@
 
 int DevFS::Mount(BlockDriver *driver)
 {
-    VFS::AllocInode(root_dentry);
+    VFS::AllocInode(root_dentry, 1, S_IFDIR);
     return 0;
 }
 
@@ -72,12 +72,9 @@ int DevFS::GetChildren(DENTRY *parent, const char *find_name)
 
                 if (!dentry->inode) {
                     int type = driver_type == DRIVER_TYPE_BLOCK ? S_IFBLK : S_IFCHR;
-                    mode_t mode = type;
 
-                    VFS::AllocInode(dentry);
-                    dentry->inode->mode = mode;
+                    VFS::AllocInode(dentry, driver->dev, type);
                     dentry->inode->dev = driver->dev;
-                    dentry->inode->ino = driver->dev;
                     VFS::AddDentry(parent, dentry);
 
                     if (find_name)

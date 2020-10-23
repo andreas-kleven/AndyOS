@@ -15,7 +15,7 @@ class BlockDriver;
 
 namespace VFS {
 char *TraversePath(DENTRY *dentry, char *buf, size_t size);
-INODE *AllocInode(DENTRY *dentry);
+INODE *AllocInode(DENTRY *dentry, ino_t ino, mode_t mode);
 DENTRY *AllocDentry(DENTRY *parent, const char *name);
 DENTRY *GetRoot();
 DENTRY *GetDentry(const char *path);
