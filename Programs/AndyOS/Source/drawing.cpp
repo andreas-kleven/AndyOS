@@ -14,6 +14,7 @@ GC::GC(int width, int height, uint32_t *framebuffer)
     this->height = height;
     this->stride = width;
     this->framebuffer = framebuffer;
+    memset(this->framebuffer, 0, this->stride * this->height);
 }
 
 GC::GC(int width, int height) : GC(width, height, new uint32_t[width * height])
