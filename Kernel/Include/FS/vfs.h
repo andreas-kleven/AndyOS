@@ -28,11 +28,11 @@ int DuplicateFile(Filetable *filetable, int oldfd, int newfd);
 int Fcntl(Filetable *filetable, int fd, int cmd, void *arg);
 int Getdents(Filetable *filetable, int fd, dirent *dirp, unsigned int count);
 int StatDentry(DENTRY *dentry, stat *st);
-int Stat(PROCESS *process, const char *filename, stat *st);
+int Stat(PROCESS *process, const char *path, stat *st);
 int Fstat(Filetable *filetable, int fd, stat *st);
 int Ioctl(Filetable *filetable, int fd, int request, unsigned int arg);
 
-int Open(PROCESS *process, const char *filename, int flags);
+int Open(PROCESS *process, const char *path, int flags, mode_t mode);
 int Close(Filetable *filetable, int fd);
 size_t Read(Filetable *filetable, int fd, char *buf, size_t size);
 size_t Write(Filetable *filetable, int fd, const char *buf, size_t size);
@@ -53,6 +53,6 @@ int SocketSendto(Filetable *filetable, int fd, const void *buf, size_t len, int 
                  const sockaddr *dest_addr, socklen_t addrlen);
 int SocketShutdown(Filetable *filetable, int fd, int how);
 
-uint32 ReadFile(const char *filename, char *&buffer);
+uint32 ReadFile(const char *path, char *&buffer);
 STATUS Init();
 }; // namespace VFS

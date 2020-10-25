@@ -29,9 +29,9 @@ Filetable *CurrentFiletable()
     return Dispatcher::CurrentProcess()->filetable;
 }
 
-int sys_open(const char *filename, int flags)
+int sys_open(const char *filename, int flags, mode_t mode)
 {
-    return VFS::Open(Dispatcher::CurrentProcess(), filename, flags);
+    return VFS::Open(Dispatcher::CurrentProcess(), filename, flags, mode);
 }
 
 int sys_close(int fd)

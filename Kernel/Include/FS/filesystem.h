@@ -10,5 +10,5 @@ class FileSystem : public Driver
 
     FileSystem() { this->type = DRIVER_TYPE_FS; }
 
-    virtual int Mount(BlockDriver *driver) { return 0; }
+    virtual int Mount(BlockDriver *driver) { return -1; }
 };

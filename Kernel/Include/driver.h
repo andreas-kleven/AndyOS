@@ -39,6 +39,7 @@ class FileIO
     virtual int Write(FILE *file, const void *buf, size_t size) { return 0; }
     virtual int Seek(FILE *file, long offset, int origin) { return 0; }
     virtual int GetChildren(DENTRY *parent, const char *find_name) { return 0; }
+    virtual int Create(DENTRY *parent, const char *name, mode_t mode) { return -1; }
 };
 
 class Driver : public FileIO

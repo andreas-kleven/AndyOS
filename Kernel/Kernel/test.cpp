@@ -11,6 +11,7 @@
 #include <FS/ext2.h>
 #include <FS/iso.h>
 #include <FS/pipefs.h>
+#include <FS/ramfs.h>
 #include <FS/sockfs.h>
 #include <FS/vfs.h>
 #include <Kernel/dpc.h>
@@ -113,7 +114,7 @@ void TTY()
         tty->sid = proc->id;
         proc->sid = proc->id;
 
-        int fd = VFS::Open(proc, name, 0);
+        int fd = VFS::Open(proc, name, 0, 0);
         VFS::DuplicateFile(proc->filetable, fd, 0);
         VFS::DuplicateFile(proc->filetable, fd, 1);
         VFS::DuplicateFile(proc->filetable, fd, 2);
@@ -287,21 +288,25 @@ void Mount()
     DevFS *devfs = new DevFS();
     PipeFS *pipefs = new PipeFS();
     SockFS *sockfs = new SockFS();
+    RamFS *ramfs = new RamFS();
 
     if (!driver1 || VFS::Mount(driver1, fs1, "/"))
-        kprintf("Mount 1 failed\n");
+        kprintf("Mount / failed\n");
 
     if (!driver2 || VFS::Mount(driver2, fs2, "/mnt"))
-        kprintf("Mount 2 failed\n");
+        kprintf("Mount /mnt failed\n");
 
     if (VFS::Mount(0, devfs, "/dev"))
-        kprintf("Mount devfs failed\n");
+        kprintf("Mount /dev failed\n");
 
     if (VFS::Mount(0, pipefs, "/pipe"))
-        kprintf("Mount pipefs failed\n");
+        kprintf("Mount /pipe failed\n");
 
     if (VFS::Mount(0, sockfs, "/sock"))
-        kprintf("Mount sockfs failed\n");
+        kprintf("Mount /sock failed\n");
+
+    if (VFS::Mount(0, ramfs, "/tmp"))
+        kprintf("Mount /tmp failed\n");
 }
 
 void Start()

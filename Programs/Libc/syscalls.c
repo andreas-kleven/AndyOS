@@ -315,6 +315,7 @@ int _gettimeofday(struct timeval *tv, void *tz)
 
 int ioctl(int fd, int request, ...)
 {
+    // TODO
     int arg = 0;
     va_list args;
     va_start(args, request);
@@ -345,12 +346,18 @@ off_t _lseek(int fd, off_t offset, int whence)
     return set_err(syscall3(SYSCALL_LSEEK, fd, offset, whence));
 }
 
-// TODO
-// int open(const char *pathname, int flags);
-// int open(const char *pathname, int flags, mode_t mode);
 int _open(const char *name, int flags, ...)
 {
-    return set_err(syscall2(SYSCALL_OPEN, name, flags));
+    mode_t mode = 0;
+
+    if (flags & O_CREAT) {
+        va_list args;
+        va_start(args, flags);
+        mode = va_arg(args, mode_t);
+        va_end(args);
+    }
+
+    return set_err(syscall3(SYSCALL_OPEN, name, flags, mode));
 }
 
 int pipe(int pipefd[2])

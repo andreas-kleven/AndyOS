@@ -221,7 +221,6 @@ int Mount(BlockDriver *driver, FileSystem *fs, const char *mount_point)
 
     char copy[PATH_MAX];
     strcpy(copy, mount_point);
-
     const char *filename = basename(copy);
     const char *parentname = dirname(copy);
 
@@ -391,9 +390,9 @@ int StatDentry(DENTRY *dentry, stat *st)
     return 0;
 }
 
-int Stat(PROCESS *process, const char *filename, stat *st)
+int Stat(PROCESS *process, const char *path, stat *st)
 {
-    DENTRY *dentry = GetDentry(process, filename);
+    DENTRY *dentry = GetDentry(process, path);
 
     if (PTR_ERR(dentry))
         return (int)dentry;
@@ -438,12 +437,39 @@ int Ioctl(Filetable *filetable, int fd, int request, unsigned int arg)
     return ret;
 }
 
-int Open(PROCESS *process, const char *filename, int flags)
+int Open(PROCESS *process, const char *path, int flags, mode_t mode)
 {
-    DENTRY *dentry = GetDentry(process, filename);
+    if (!path)
+        return -EINVAL;
 
-    if (PTR_ERR(dentry))
-        return (int)dentry;
+    DENTRY *dentry = GetDentry(process, path);
+
+    if (PTR_ERR(dentry)) {
+        if ((flags & O_CREAT) && (int)dentry == -ENOENT) {
+            char copy[PATH_MAX];
+            strcpy(copy, path);
+            const char *filename = basename(copy);
+            const char *parentname = dirname(copy);
+
+            DENTRY *parent = GetDentry(process, parentname);
+
+            if (PTR_ERR(parent))
+                return (int)parent;
+
+            mode_t create_mode = (mode & ~S_IFMT) | S_IFREG;
+            int err = parent->owner->Create(parent, filename, create_mode);
+
+            if (err)
+                return err;
+
+            dentry = GetDentry(process, path);
+
+            if (PTR_ERR(dentry))
+                return (int)dentry;
+        } else {
+            return (int)dentry;
+        }
+    }
 
     FILE *file = new FILE(dentry);
     file->lock.Aquire();
@@ -492,7 +518,7 @@ size_t Read(Filetable *filetable, int fd, char *dst, size_t size)
     file->lock.Aquire();
     Driver *owner = file->dentry->owner;
 
-    if (file->dentry->inode->mode & S_IFREG) {
+    if (S_ISREG(file->dentry->inode->mode)) {
         size = min(size, (size_t)(file->dentry->inode->size - file->pos));
 
         if ((int)size <= 0) {
@@ -519,8 +545,18 @@ size_t Write(Filetable *filetable, int fd, const char *buf, size_t size)
 
     file->lock.Aquire();
 
+    fpos_t prev_pos = file->pos;
+
+    if (file->flags & O_APPEND) {
+        prev_pos = file->pos;
+        file->pos = file->dentry->inode->size;
+    }
+
     Driver *owner = file->dentry->owner;
     int written = owner->Write(file, buf, size);
+
+    if (file->flags & O_APPEND)
+        file->pos = prev_pos;
 
     if (written < 0) {
         file->lock.Release();
@@ -728,9 +764,9 @@ int SocketShutdown(Filetable *filetable, int fd, int how)
     return sockfs->Shutdown(file, how);
 }
 
-uint32 ReadFile(const char *filename, char *&buffer)
+uint32 ReadFile(const char *path, char *&buffer)
 {
-    DENTRY *dentry = GetDentry(0, filename);
+    DENTRY *dentry = GetDentry(0, path);
 
     if (PTR_ERR(dentry))
         return 0;
