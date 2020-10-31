@@ -177,7 +177,7 @@ void NetworkManager::ProcessPacket(NetPacket *packet)
         ConnectedPacket *pkt = (ConnectedPacket *)packet->data;
 
         if (pkt->self) {
-            printf("Self connected %p '%s'\n", packet->player, pkt->name);
+            printf("Self connected %d '%s'\n", packet->player, pkt->name);
             PlayerManager::GetPlayer(0)->id = packet->player;
         } else {
             printf("Player connected %d '%s'\n", packet->player, pkt->name);

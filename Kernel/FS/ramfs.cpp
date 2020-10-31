@@ -30,7 +30,7 @@ int RamFS::Open(FILE *file)
 
         while (chunk) {
             RAMFS_CHUNK *next = chunk->next;
-            delete chunk->data;
+            delete[](char *) chunk->data;
             delete chunk;
             chunk = next;
         }
