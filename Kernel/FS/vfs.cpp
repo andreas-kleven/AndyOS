@@ -596,8 +596,9 @@ off_t Seek(Filetable *filetable, int fd, off_t offset, int whence)
         return -EINVAL;
     }
 
+    fpos_t pos = file->pos;
     file->lock.Release();
-    return 0;
+    return pos;
 }
 
 int CreatePipeDentry(DENTRY *&dentry, int flags)
