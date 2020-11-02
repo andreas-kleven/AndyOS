@@ -10,6 +10,7 @@ struct DHT_NODE
     bool leaf = false;
     DHT_NODE *left = 0;
     DHT_NODE *right = 0;
+    DHT_NODE *next_leaf = 0;
     uint8_t value = 0;
 };
 
@@ -73,6 +74,7 @@ bool DHT_TABLE::Parse(void *data, size_t length, DHT_TABLE *tables[8])
         uint8_t type = *ptr++;
         uint8_t type_index = ((type & 0x10) >> 4) | (type & 0x3) << 1;
         uint8_t *code_ptr = (uint8_t *)ptr + 16;
+        size_t code_count = 0;
 
         for (int i = 0; i < DHT_NUM_CODES; i++) {
             uint8_t count = *ptr++;
@@ -90,46 +92,68 @@ bool DHT_TABLE::Parse(void *data, size_t length, DHT_TABLE *tables[8])
                     prev_code->next = code;
 
                 prev_code = code;
+                code_count = i + 1;
             }
         }
 
         ptr = code_ptr;
 
-        DHT_TABLE *table = ConstructTable(codes);
+        if (tables[type_index])
+            delete tables[type_index];
+
+        DHT_TABLE *table = ConstructTable(codes, code_count);
         tables[type_index] = table;
 
         for (int i = 0; i < DHT_NUM_CODES; i++) {
-            if (codes[i])
-                delete codes[i];
+            DHT_CODE *code = codes[i];
+
+            while (code) {
+                DHT_CODE *next = code->next;
+                delete code;
+                code = next;
+            }
         }
     }
 
     return true;
 }
 
-DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes)
+DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes, size_t count)
 {
     DHT_NODE *root = new DHT_NODE();
+    DHT_NODE *first_leaf = root;
 
-    for (int i = 0; i < DHT_NUM_CODES; i++) {
+    for (int i = 0; i < count; i++) {
         DHT_CODE *code = codes[i];
         DHT_NODE *node;
 
-        while ((node = FindAvailableNode(root, i))) {
-            node->left = new DHT_NODE();
-            node->right = new DHT_NODE();
+        DHT_NODE *leaf = first_leaf;
+        DHT_NODE *prev_right = 0;
+
+        while (leaf) {
+            leaf->left = new DHT_NODE();
+            leaf->right = new DHT_NODE();
+
+            leaf->left->next_leaf = leaf->right;
+
+            if (leaf == first_leaf)
+                first_leaf = leaf->left;
+            else if (prev_right)
+                prev_right->next_leaf = leaf->left;
+
+            prev_right = leaf->right;
+            leaf = leaf->next_leaf;
         }
 
         while (code) {
-            node = FindAvailableNode(root, i + 1);
-
-            if (!node) {
+            if (!first_leaf) {
                 fprintf(stderr, "No node available %d\n", i + 1);
                 return 0;
             }
 
-            node->leaf = true;
-            node->value = code->value;
+            first_leaf->leaf = true;
+            first_leaf->value = code->value;
+            first_leaf = first_leaf->next_leaf;
             code = code->next;
         }
     }
@@ -138,28 +162,4 @@ DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes)
     table->root_node = root;
     table->current_node = root;
     return table;
-}
-
-DHT_NODE *DHT_TABLE::FindAvailableNode(DHT_NODE *root, int level)
-{
-    DHT_NODE *node;
-
-    if (level == 0) {
-        if (!root->leaf && !root->left && !root->right)
-            return root;
-
-        return 0;
-    }
-
-    if (root->left) {
-        if ((node = FindAvailableNode(root->left, level - 1)))
-            return node;
-    }
-
-    if (root->right) {
-        if ((node = FindAvailableNode(root->right, level - 1)))
-            return node;
-    }
-
-    return 0;
 }

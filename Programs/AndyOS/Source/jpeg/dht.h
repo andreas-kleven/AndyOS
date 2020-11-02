@@ -19,6 +19,5 @@ struct DHT_TABLE
     DHT_NODE *current_node = 0;
 
     void FreeNode(DHT_NODE *node);
-    static DHT_TABLE *ConstructTable(DHT_CODE **codes);
-    static DHT_NODE *FindAvailableNode(DHT_NODE *root, int level);
+    static DHT_TABLE *ConstructTable(DHT_CODE **codes, size_t count);
 };
