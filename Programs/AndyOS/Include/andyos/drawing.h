@@ -1,7 +1,7 @@
 #pragma once
-#include "bmp.h"
 #include "color.h"
 #include "font.h"
+#include "image.h"
 #include <sys/types.h>
 
 struct Point
@@ -87,8 +87,8 @@ struct GC
     void FillRect(Rect &bounds, Color &col);
     void FillRect(int x, int y, int w, int h, Color &col);
 
-    void DrawImage(Rect &bounds, BMP *bmp);
-    void DrawImage(int x, int y, int w, int h, BMP *bmp);
+    void DrawImage(Rect &bounds, IMAGE *img);
+    void DrawImage(int x, int y, int w, int h, IMAGE *img);
 
     void DrawText(int x, int y, const char *c, Color &fg);
     void DrawText(int x, int y, const char *c, Color &fg, Color &bg);

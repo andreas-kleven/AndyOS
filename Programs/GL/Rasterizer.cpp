@@ -29,7 +29,7 @@ void Rasterizer::Clear()
     memset(this->depth_buffer, 0, gc.width * gc.height * sizeof(float));
 }
 
-void Rasterizer::DrawTriangle(const Vertex &v0, const Vertex &v1, const Vertex &v2, BMP *texture)
+void Rasterizer::DrawTriangle(const Vertex &v0, const Vertex &v1, const Vertex &v2, IMAGE *texture)
 {
     // gc.DrawLine((int)v0.tmp_pos.x, (int)v0.tmp_pos.y, (int)v1.tmp_pos.x, (int)v1.tmp_pos.y,
     // Color::Red); gc.DrawLine((int)v1.tmp_pos.x, (int)v1.tmp_pos.y, (int)v2.tmp_pos.x,

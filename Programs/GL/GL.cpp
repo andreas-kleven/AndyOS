@@ -16,7 +16,7 @@ uint32_t m_stride;
 
 Rasterizer rasterizer;
 
-BMP **m_textures;
+IMAGE **m_textures;
 int tex_index;
 int bound_tex;
 
@@ -50,12 +50,12 @@ Matrix4 &SelectedMatrix()
     }
 }
 
-int AddTexture(BMP *bmp)
+int AddTexture(IMAGE *img)
 {
     if (tex_index == GL_MAX_TEXTURES)
         return 0;
 
-    m_textures[tex_index] = bmp;
+    m_textures[tex_index] = img;
     return tex_index++;
 }
 
@@ -162,7 +162,7 @@ void LerpVertex(const Vertex *a, Vertex *b, float clip_dist)
     b->tmp_v = b->tmp_v + s * (a->tmp_v - b->tmp_v);
 }
 
-void DrawTriangle(const Vertex &a, const Vertex &b, const Vertex &c, BMP *texture)
+void DrawTriangle(const Vertex &a, const Vertex &b, const Vertex &c, IMAGE *texture)
 {
     // Backface culling
     Vector4 pa(a.tmp_pos.x, a.tmp_pos.y, a.tmp_pos.z, 0);
@@ -190,7 +190,7 @@ void Draw(Vertex *verts, int count)
     float specular = 1;
 
     Matrix4 view_model = mat_view * mat_model;
-    BMP *texture = m_textures[bound_tex];
+    IMAGE *texture = m_textures[bound_tex];
 
     for (int i = 0; i < count; i += 3) {
         Vertex &a = verts[i];
@@ -304,8 +304,8 @@ void Init()
 {
     mat_stack = new Matrix4[GL_MATRIX_STACK_LENGTH];
 
-    m_textures = new BMP *[GL_MAX_TEXTURES];
-    memset(m_textures, 0, sizeof(BMP *) * (GL_MAX_TEXTURES));
+    m_textures = new IMAGE *[GL_MAX_TEXTURES];
+    memset(m_textures, 0, sizeof(IMAGE *) * (GL_MAX_TEXTURES));
 
     tex_index = 1;
     bound_tex = 0;

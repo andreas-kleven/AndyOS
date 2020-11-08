@@ -1,4 +1,5 @@
 #pragma once
+#include <andyos/image.h>
 #include <sys/types.h>
 
 struct DHT_TABLE;
@@ -6,12 +7,8 @@ struct JPEG_CHANNEL;
 struct JPEG_QTABLE;
 struct jpeg_frame;
 
-struct JPEG
+struct JPEG : public IMAGE
 {
-    uint32_t *pixels = 0;
-    int width = 0;
-    int height = 0;
-
     ~JPEG();
 
     bool Update(void *data, size_t length);

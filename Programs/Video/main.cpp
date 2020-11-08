@@ -111,8 +111,7 @@ int main(int argc, char *argv[])
             if (!window)
                 window = new MainWindow(filename, jpeg->width, jpeg->height);
 
-            GC img_gc(jpeg->width, jpeg->height, jpeg->pixels);
-            img_gc.CopyTo(0, 0, img_gc.width, img_gc.height, window->gc, 0, 0);
+            window->gc.DrawImage(0, 0, jpeg->width, jpeg->height, jpeg);
             window->Paint();
         } break;
 

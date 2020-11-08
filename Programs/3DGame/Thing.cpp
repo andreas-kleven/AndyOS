@@ -7,15 +7,14 @@ Thing::Thing()
     mesh = 0;
     SetMesh(0);
 
-    char *img_buf;
+    IMAGE *image = IMAGE::Load("/gamedata/fox.bmp");
 
-    if (read_file(img_buf, "/gamedata/fox.bmp")) {
-        BMP *bmp = new BMP(img_buf);
-        mesh->texId = GL::AddTexture(bmp);
-    } else {
+    if (!image) {
         printf("image not found\n");
         exit(1);
     }
+
+    mesh->texId = GL::AddTexture(image);
 
     /*for (int i = 0; i < mesh->model->vertices.size(); i++) {
         mesh->model->vertex_buffer[i].color = Color::Red;

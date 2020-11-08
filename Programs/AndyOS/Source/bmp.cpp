@@ -3,22 +3,26 @@
 #include <string.h>
 #include <sys/types.h>
 
-BMP::BMP(void *buffer)
+BMP *BMP::Parse(void *buffer, size_t size)
 {
-    header = *(BMP_HEADER *)buffer;
+    if (size < sizeof(BMP_HEADER))
+        return 0;
 
-    int bytes = header.bpp / 8;
-    int pitch = header.width * bytes;
+    BMP_HEADER *header = (BMP_HEADER *)buffer;
 
-    this->width = header.width;
-    this->height = header.height;
-    this->pixel_count = width * height;
-    this->size = pixel_count * bytes;
+    int bytes = header->bpp / 8;
+    int pitch = header->width * bytes;
 
-    uint8_t *p = (uint8_t *)buffer + header.dataOffset + size - bytes;
+    BMP *bmp = new BMP();
+    bmp->width = header->width;
+    bmp->height = header->height;
+    size_t pixel_count = bmp->width * bmp->height;
+    size_t data_size = pixel_count * bytes;
 
-    pixels = new uint32_t[pixel_count];
-    uint32_t *p_ptr = pixels;
+    uint8_t *p = (uint8_t *)buffer + header->dataOffset + data_size - bytes;
+
+    bmp->pixels = new uint32_t[pixel_count];
+    uint32_t *p_ptr = bmp->pixels;
 
     int count = pixel_count;
 
@@ -26,13 +30,7 @@ BMP::BMP(void *buffer)
         *p_ptr++ = *(uint32_t *)p;
         p -= bytes;
     }
-}
 
-BMP::BMP(void *pixels, int width, int height)
-{
-    this->width = width;
-    this->height = height;
-    this->size = width * height * 4;
-    pixels = new uint32_t[size];
-    memcpy(this->pixels, pixels, size);
+    bmp->header = *header;
+    return bmp;
 }

@@ -292,45 +292,15 @@ void GC::FillRect(int x, int y, int w, int h, Color &col)
     }
 }
 
-void GC::DrawImage(int x, int y, int w, int h, BMP *bmp)
+void GC::DrawImage(int x, int y, int w, int h, IMAGE *img)
 {
-    int ox = 0;
-    int oy = 0;
-
-    if (x < 0) {
-        w += x;
-        ox = -x;
-        x = 0;
-    }
-
-    if (y < 0) {
-        h += y;
-        oy = -y;
-        y = 0;
-    }
-
-    x = clamp(x, 0, this->width);
-    y = clamp(y, 0, this->height);
-
-    w = clamp(w, 0, min(this->width - x, bmp->width));
-    h = clamp(h, 0, min(this->height - y, bmp->height));
-
-    int delta = this->stride - w;
-    uint32_t *dst = this->framebuffer + (y + oy) * this->stride + (x + ox);
-    uint32_t *src = bmp->pixels;
-
-    for (int _y = 0; _y < h; _y++) {
-        for (int _x = 0; _x < w; _x++) {
-            *dst++ = *src++;
-        }
-
-        dst += delta;
-    }
+    GC img_gc(img->width, img->height, img->pixels);
+    img_gc.CopyTo(0, 0, w, h, *this, x, y);
 }
 
-void GC::DrawImage(Rect &bounds, BMP *bmp)
+void GC::DrawImage(Rect &bounds, IMAGE *img)
 {
-    GC::DrawImage(bounds.x, bounds.y, bounds.width, bounds.height, bmp);
+    GC::DrawImage(bounds.x, bounds.y, bounds.width, bounds.height, img);
 }
 
 void GC::DrawText(int x, int y, const char *c, Color &fg)

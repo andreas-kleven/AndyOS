@@ -40,6 +40,7 @@ all: libs
 	$(MAKE) -C Info
 	$(MAKE) -C Audio
 	$(MAKE) -C Video
+	$(MAKE) -C Image
 
 .PHONY: clean
 clean:
@@ -55,4 +56,5 @@ clean:
 	$(MAKE) -C Info clean
 	$(MAKE) -C Audio clean
 	$(MAKE) -C Video clean
+	$(MAKE) -C Image clean
 	rm -f $(BUILD_DIR)/*

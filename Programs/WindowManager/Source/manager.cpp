@@ -42,7 +42,7 @@ static GC gc_background;
 static GC gc_taskbar;
 static GC gc_cursor;
 
-static BMP *bmp_background = 0;
+static IMAGE *img_background = 0;
 
 static int window_count = 0;
 static Window *first_window = 0;
@@ -148,16 +148,8 @@ void WindowManager::RestoreWindow(Window *wnd)
 
 void WindowManager::LoadBackground(const char *filename)
 {
-    char *buf;
-    int size = read_file(buf, filename);
-
-    if (size == 0) {
-        col_desktop_bg = Color::Magenta;
-        bmp_background = 0;
-        return;
-    }
-
-    bmp_background = new BMP(buf);
+    col_desktop_bg = Color::Magenta;
+    img_background = IMAGE::Load(filename);
 }
 
 bool WindowManager::SendMessage(int sockfd, int id, int type, const void *data, int size)
@@ -193,8 +185,8 @@ gui::MESSAGE WindowManager::MessageHandler(int sockfd, const gui::MESSAGE &msg)
         gui::CREATE_WINDOW_REQUEST *request = (gui::CREATE_WINDOW_REQUEST *)msg.data;
         kprintf("Create window request: %s\n", request->title);
 
-        int w = request->width;
-        int h = request->height;
+        int w = min(request->width, width);   // Hack
+        int h = min(request->height, height); // Hack
 
         void *addr1;
         void *addr2;
@@ -353,9 +345,9 @@ void WindowManager::CreateCursorGC()
 
 void WindowManager::CreateBackgroundGC()
 {
-    if (bmp_background) {
-        gc_background.DrawImage(0, 0, bmp_background->width, bmp_background->height,
-                                bmp_background);
+    if (img_background) {
+        gc_background.DrawImage(0, 0, img_background->width, img_background->height,
+                                img_background);
         /*//Repeat
 
         int x = 0;
@@ -364,11 +356,11 @@ void WindowManager::CreateBackgroundGC()
                 int  y = 0;
                 while (y < height)
                 {
-                        gc_background.DrawImage(x, y, bmp_background->width,
-        bmp_background->height, bmp_background); y += bmp_background->height;
+                        gc_background.DrawImage(x, y, img_background->width,
+        img_background->height, img_background); y += img_background->height;
                 }
 
-                x += bmp_background->width;
+                x += img_background->width;
         }*/
     } else {
         gc_background.FillRect(0, 0, gc.width, gc.height, col_desktop_bg);

@@ -19,7 +19,7 @@ enum GLMatrixMode
 };
 
 namespace GL {
-int AddTexture(BMP *bmp);
+int AddTexture(IMAGE *img);
 void BindTexture(int id);
 
 int LightSource(Vector4 light);

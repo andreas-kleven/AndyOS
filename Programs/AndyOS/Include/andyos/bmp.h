@@ -1,4 +1,5 @@
 #pragma once
+#include <andyos/image.h>
 #include <sys/types.h>
 
 struct BMP_HEADER
@@ -16,17 +17,9 @@ struct BMP_HEADER
     uint32_t compression;
 } __attribute__((packed));
 
-struct BMP
+struct BMP : public IMAGE
 {
     BMP_HEADER header;
 
-    uint32_t *pixels;
-    uint32_t pixel_count;
-    uint32_t size;
-
-    int width;
-    int height;
-
-    BMP(void *buffer);
-    BMP(void *pixels, int width, int height);
+    static BMP *Parse(void *buffer, size_t size);
 };

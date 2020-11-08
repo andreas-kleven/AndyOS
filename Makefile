@@ -45,6 +45,7 @@ iso: all
 	cp $(BUILD_DIR)/info $(PROG_DIR)/info
 	cp $(BUILD_DIR)/audio $(PROG_DIR)/audio
 	cp $(BUILD_DIR)/video $(PROG_DIR)/video
+	cp $(BUILD_DIR)/image $(PROG_DIR)/image
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
