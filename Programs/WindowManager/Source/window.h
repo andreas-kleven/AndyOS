@@ -18,13 +18,15 @@ class Window
     Color color_foreground;
     Color color_title;
 
-    int id;
-    int sockfd;
-    int proc_id;
-    char *title;
-    bool capture;
-    bool fullscreen;
-    WINDOW_STATE state;
+    int id = 0;
+    int sockfd = 0;
+    int proc_id = 0;
+    char *title = 0;
+    bool capture = false;
+    bool focused = false;
+    bool dirty = true;
+    bool fullscreen = false;
+    WINDOW_STATE state = WINDOW_STATE_NORMAL;
 
     Rect bounds;
     Rect content_bounds;
@@ -33,9 +35,6 @@ class Window
     Rect bclose_bounds;
     Rect bmin_bounds;
     Rect bmax_bounds;
-
-    bool focused;
-    bool dirty;
 
     GC gc;
 

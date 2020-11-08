@@ -20,13 +20,10 @@ Window::Window(int proc_id, int sockfd, char *title, int width, int height, uint
     this->title = new char[strlen(title) + 1];
     strcpy(this->title, title);
 
-    state = WINDOW_STATE_NORMAL;
-    focused = false;
-    dirty = true;
-
-    Move((id - 1) * 300, (id - 1) * 300);
-    gc = GC(content_bounds.width, content_bounds.height, framebuffer);
+    gc = GC(0, 0, framebuffer);
     Resize(width, height, false);
+
+    Move(((id - 1) * 200) % (1024 * 3 / 4), ((id - 1) * 200) % (768 * 3 / 4));
 }
 
 void Window::Paint(GC &main_gc)
@@ -84,6 +81,7 @@ void Window::Resize(int w, int h, bool send)
     bounds.height = h;
     content_bounds.width = w;
     content_bounds.height = fullscreen ? h : (h - titlebar_bounds.height);
+    content_bounds.y = bounds.y + titlebar_bounds.height;
 
     gc.Resize(content_bounds.width, content_bounds.height);
 
