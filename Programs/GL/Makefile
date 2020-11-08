@@ -10,7 +10,7 @@ $(TARGET): $(OBJ_FILES)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) -Ofast -msse4 -c -o $@ $<
 
 .PHONY: clean
 clean:
