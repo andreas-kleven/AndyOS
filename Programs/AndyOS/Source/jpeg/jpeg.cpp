@@ -585,11 +585,11 @@ static inline bool ParseSOS(jpeg_buffer *buffer, jpeg_frame *frame, uint16_t mar
             channel_seq[5] = 2;
             channel_seqlen = 6;
         } else {
-            fprintf(stderr, "Invalid subsampling");
+            fprintf(stderr, "Invalid subsampling\n");
             return false;
         }
     } else {
-        fprintf(stderr, "Number of channels not supported");
+        fprintf(stderr, "Number of channels not supported\n");
         return false;
     }
 
