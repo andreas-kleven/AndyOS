@@ -696,7 +696,7 @@ static inline void Render1(jpeg_frame *frame, uint32_t *pixels)
                     if (absx >= frame->width)
                         break;
 
-                    int bw = block->result[i * 8 + j] / NUMBER_SCALE;
+                    int bw = block->result[i * 8 + j];
 
                     bw = min(max(bw, 0), 255);
                     uint32_t col = ((uint8_t)bw << 16) | ((uint8_t)bw << 8) | (uint8_t)bw;
