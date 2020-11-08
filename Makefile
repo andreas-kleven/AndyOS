@@ -6,6 +6,7 @@ PROGRAMS_DIR = $(MAKE_DIR)/Programs
 
 ISO_DIR = $(MAKE_DIR)/Root
 BOOT_DIR = $(ISO_DIR)/boot
+PROG_DIR = $(ISO_DIR)/usr/bin
 ISO_NAME =  $(MAKE_DIR)/AndyOS.iso
 
 ifeq ($(ARCH),x86)
@@ -24,6 +25,7 @@ export ARCH SYSROOT CC AR LD OBJCOPY MAKE_DIR PROGRAMS_DIR BUILD_DIR
 create_dir:
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BOOT_DIR)
+	mkdir -p $(PROG_DIR)
 
 programs:
 	$(MAKE) -C $(PROGRAMS_DIR) all
@@ -35,13 +37,14 @@ all: kernel programs
 
 iso: all
 	cp $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel
-	cp $(BUILD_DIR)/winman $(ISO_DIR)/winman
-	cp $(BUILD_DIR)/terminal $(ISO_DIR)/term
-	cp $(BUILD_DIR)/test $(ISO_DIR)/test
-	cp $(BUILD_DIR)/game $(ISO_DIR)/game
-	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)/mndlbrt
-	cp $(BUILD_DIR)/info $(ISO_DIR)/info
-	cp $(BUILD_DIR)/audio $(ISO_DIR)/audioplay
+	cp $(BUILD_DIR)/winman $(PROG_DIR)/winman
+	cp $(BUILD_DIR)/terminal $(PROG_DIR)/term
+	cp $(BUILD_DIR)/test $(PROG_DIR)/test
+	cp $(BUILD_DIR)/game $(PROG_DIR)/game
+	cp $(BUILD_DIR)/mandelbrot $(PROG_DIR)/mndlbrt
+	cp $(BUILD_DIR)/info $(PROG_DIR)/info
+	cp $(BUILD_DIR)/audio $(PROG_DIR)/audio
+	cp $(BUILD_DIR)/video $(PROG_DIR)/video
 	grub-mkrescue -o $(ISO_NAME) $(ISO_DIR)
 
 iso-kernel: kernel
@@ -49,13 +52,6 @@ iso-kernel: kernel
 		cp $(BUILD_DIR)/kernel $(BOOT_DIR)/kernel; \
 		grub-mkrescue -o $(ISO_NAME) $(ISO_DIR); \
 	fi
-
-iso-programs: programs
-	cp $(BUILD_DIR)/winman $(ISO_DIR)/winman
-	cp $(BUILD_DIR)/terminal $(ISO_DIR)/term
-	cp $(BUILD_DIR)/test $(ISO_DIR)/test
-	cp $(BUILD_DIR)/game $(ISO_DIR)/game
-	cp $(BUILD_DIR)/mandelbrot $(ISO_DIR)mndlbrt
 
 .PHONY: clean
 clean:

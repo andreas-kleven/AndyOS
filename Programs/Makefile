@@ -39,6 +39,7 @@ all: libs
 	$(MAKE) -C Mandelbrot
 	$(MAKE) -C Info
 	$(MAKE) -C Audio
+	$(MAKE) -C Video
 
 .PHONY: clean
 clean:
@@ -53,4 +54,5 @@ clean:
 	$(MAKE) -C Mandelbrot clean
 	$(MAKE) -C Info clean
 	$(MAKE) -C Audio clean
+	$(MAKE) -C Video clean
 	rm -f $(BUILD_DIR)/*
