@@ -45,7 +45,7 @@ void Thing::SetMesh(int index)
     if (mesh_index == 4)
         path = "/gamedata/tank.a3d";
     if (mesh_index == 5)
-        path = "/gamedata/aventado.a3d";
+        path = "/gamedata/aventador.a3d";
 
     Model3D *model = ModelLoader::LoadModel(path, Format3D::FORMAT_A3D);
 

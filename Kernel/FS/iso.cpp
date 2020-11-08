@@ -77,6 +77,9 @@ void IsoFS::ReadRockRidge(ISO_DIRECTORY *dir, ISO_RR_DATA *rr)
     char *end = (char *)dir + dir->length;
     char *ptr = &dir->identifier + dir->idLength;
 
+    if ((size_t)ptr % 2 == 1)
+        ptr += 1;
+
     while (end - ptr > 3) {
         uint8 length = ptr[2];
 
