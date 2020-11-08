@@ -8,6 +8,7 @@
 struct DHT_NODE
 {
     bool leaf = false;
+    DHT_NODE *parent = 0;
     DHT_NODE *left = 0;
     DHT_NODE *right = 0;
     DHT_NODE *next_leaf = 0;
@@ -19,6 +20,11 @@ struct DHT_CODE
     DHT_CODE *next;
     uint8_t value;
 };
+
+DHT_TABLE::DHT_TABLE()
+{
+    memset(prefix_map, 0, sizeof(prefix_map));
+}
 
 DHT_TABLE::~DHT_TABLE()
 {
@@ -118,8 +124,39 @@ bool DHT_TABLE::Parse(void *data, size_t length, DHT_TABLE *tables[8])
     return true;
 }
 
+void DHT_TABLE::UpdateMap(DHT_NODE *node)
+{
+    int size = 0;
+    uint8_t index = 0;
+    DHT_NODE *cur = node;
+
+    while (cur && cur->parent) {
+        index >>= 1;
+
+        if (cur == cur->parent->right)
+            index |= 1 << 7;
+
+        cur = cur->parent;
+        size += 1;
+
+        if (size > 8)
+            return;
+    }
+
+    for (int i = 0; i < (1 << (8 - size)); i++) {
+        if (prefix_map[index + i].size) {
+            fprintf(stderr, "Already mapped\n");
+            fprintf(stderr, "%d %d %x\n", index + i, size, node->value);
+        }
+
+        prefix_map[index + i].size = size;
+        prefix_map[index + i].value = node->value;
+    }
+}
+
 DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes, size_t count)
 {
+    DHT_TABLE *table = new DHT_TABLE();
     DHT_NODE *root = new DHT_NODE();
     DHT_NODE *first_leaf = root;
 
@@ -133,6 +170,9 @@ DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes, size_t count)
         while (leaf) {
             leaf->left = new DHT_NODE();
             leaf->right = new DHT_NODE();
+
+            leaf->left->parent = leaf;
+            leaf->right->parent = leaf;
 
             leaf->left->next_leaf = leaf->right;
 
@@ -153,12 +193,14 @@ DHT_TABLE *DHT_TABLE::ConstructTable(DHT_CODE **codes, size_t count)
 
             first_leaf->leaf = true;
             first_leaf->value = code->value;
+
+            table->UpdateMap(first_leaf);
+
             first_leaf = first_leaf->next_leaf;
             code = code->next;
         }
     }
 
-    DHT_TABLE *table = new DHT_TABLE();
     table->root_node = root;
     table->current_node = root;
     return table;

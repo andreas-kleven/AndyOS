@@ -14,5 +14,10 @@ struct JPEG
 
     ~JPEG();
 
+    bool Update(void *data, size_t length);
+
     static JPEG *Parse(void *data, size_t length);
+
+  private:
+    jpeg_frame *frame = 0;
 };
