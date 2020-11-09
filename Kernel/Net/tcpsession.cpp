@@ -24,6 +24,7 @@ int TcpSession::Connect(const sockaddr_in *addr)
 
     socket->addr = (sockaddr *)(new sockaddr_in(*addr));
 
+    seq = rand();
     state = TCP_SYN_SENT;
 
     if (!SendWait(TCP_SYN)) {
@@ -49,7 +50,7 @@ int TcpSession::Close(int how)
     kprintf("Closing...\n");
 
     if (state == TCP_CLOSED)
-        return -1;
+        return -ENOTCONN;
     // else if (state == ...)
 
     if (state == TCP_CLOSE_WAIT) {
@@ -134,7 +135,7 @@ int TcpSession::SendData(const void *buf, size_t len, int flags)
 
     if (state != TCP_ESTABLISHED) {
         mutex.Release();
-        return -1;
+        return -ENOTCONN;
     }
 
     if (SendWait(TCP_PSH | TCP_ACK, buf, len)) {
@@ -208,6 +209,9 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
         break;
 
     case TCP_SYN_SENT:
+        ack = header->seq + 1;
+        seq += 1;
+
         if (flags & TCP_RST) {
             Send(TCP_ACK);
             Reset();

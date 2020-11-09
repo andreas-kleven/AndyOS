@@ -34,6 +34,13 @@ NetInterface *GetInterface(uint32 ip)
             return intf;
     }
 
+    for (size_t i = 0; i < interfaces.Count(); i++) {
+        NetInterface *intf = interfaces[i];
+
+        if (intf->gateway_addr)
+            return intf;
+    }
+
     panic("No network interface found", "IP: %p", ip);
     return 0;
 }

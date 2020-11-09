@@ -144,9 +144,9 @@ int Socket::Recv(void *buf, size_t len, int flags)
 
     buffer_mutex.Aquire();
 
-    if (closed) {
+    if (buffer->IsEmpty() && closed) {
         buffer_mutex.Release();
-        return -1;
+        return -ENOTCONN;
     }
 
     int ret = buffer->Read(len, buf);
