@@ -35,7 +35,7 @@ template <class T> class List
 
     ~List<T>() { Clear(); }
 
-    void Add(T value)
+    void Add(const T &value)
     {
         if (count == 0) {
             root = new Node<T>(value);
@@ -48,7 +48,7 @@ template <class T> class List
         }
     }
 
-    void Insert(T value, int index)
+    void Insert(const T &value, int index)
     {
         if (index > count)
             panic("Index out of range", "List::Insert");
@@ -73,9 +73,10 @@ template <class T> class List
             panic("Index out of range", "List::RemoveAt");
 
         if (index == 0) {
+            Node<T> *next = root->next;
             last->next = root->next;
             delete root;
-            root = last->next;
+            root = next;
             count--;
         } else if (index == count - 1) {
             Node<T> *node = NodeAt(count - 1);
@@ -93,7 +94,7 @@ template <class T> class List
         }
     }
 
-    void Remove(T rem)
+    void Remove(const T &rem)
     {
         Node<T> *node = root;
 
@@ -108,7 +109,7 @@ template <class T> class List
         }
     }
 
-    int IndexOf(T value)
+    int IndexOf(const T &value)
     {
         Node<T> *node = root;
 

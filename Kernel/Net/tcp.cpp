@@ -68,12 +68,25 @@ Socket *SessionAccept(Socket *socket, const sockaddr_in *addr, int flags)
     return socket->tcp_session->Accept(addr, flags);
 }
 
-int SessionClose(Socket *socket, int how)
+int SessionShutdown(Socket *socket, int how)
 {
     if (!socket->tcp_session)
         return -1;
 
-    return socket->tcp_session->Close(how);
+    return socket->tcp_session->Shutdown(how);
+}
+
+int SessionClose(Socket *socket)
+{
+    if (!socket->tcp_session)
+        return -1;
+
+    socket->tcp_session->Shutdown(SHUT_RDWR);
+
+    sessions_mutex.Aquire();
+    sessions.Remove(socket->tcp_session);
+    sessions_mutex.Release();
+    return 0;
 }
 
 int SessionListen(Socket *socket, int backlog)
@@ -100,6 +113,14 @@ int SessionSend(Socket *socket, const void *buf, size_t len, int flags)
     return socket->tcp_session->SendData(buf, len, flags);
 }
 
+int SessionRecv(Socket *socket, void *buf, size_t len, int flags)
+{
+    if (!socket->tcp_session)
+        return -1;
+
+    return socket->tcp_session->RecvData(buf, len, flags);
+}
+
 bool Decode(TCP_Packet *tp, NetPacket *pkt)
 {
     TCP_Header *header = (TCP_Header *)pkt->start;
@@ -117,7 +138,7 @@ bool Decode(TCP_Packet *tp, NetPacket *pkt)
 
     tp->data = (uint8 *)header + header->offset / 4;
     tp->data_length = pkt->end - tp->data;
-    return 1;
+    return true;
 }
 
 NetPacket *CreatePacket(NetInterface *intf, const sockaddr_in *dest_addr, uint16 src_port,

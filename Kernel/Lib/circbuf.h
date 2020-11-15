@@ -88,6 +88,20 @@ class CircularDataBuffer
         return 0;
     }
 
+    int Available()
+    {
+        if (IsEmpty())
+            return false;
+
+        if (IsFull())
+            return size;
+
+        if (head > tail)
+            return head - tail;
+        else
+            return head - tail + size;
+    }
+
     bool IsEmpty() { return empty; }
 
     bool IsFull() { return !empty && head == tail; }

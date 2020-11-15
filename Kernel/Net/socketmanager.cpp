@@ -1,13 +1,14 @@
 #include <FS/vfs.h>
 #include <Net/socketmanager.h>
 #include <list.h>
+#include <math.h>
 #include <net.h>
 #include <sync.h>
 
 namespace SocketManager {
 Mutex mutex;
 List<Socket *> sockets;
-int next_port = 32768;
+int next_port = 0;
 int next_id = 2;
 
 Socket *CreateSocket()
@@ -35,6 +36,9 @@ int Shutdown(Socket *socket, int how)
 
 int AllocPort()
 {
+    if (!next_port)
+        next_port = 32768 + rand() / 4;
+
     return next_port++;
 }
 

@@ -54,7 +54,7 @@ void debug_color(uint32 foreground, uint32 background)
 
 void kprintf(const char *str, ...)
 {
-    char buffer[256];
+    char buffer[1024];
 
     va_list va;
     va_start(va, str);

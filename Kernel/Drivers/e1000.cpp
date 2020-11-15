@@ -125,6 +125,7 @@ void E1000::Send(NetPacket *pkt)
     tx_descs[tx_cur]->addr = (uint64)phys;
     tx_descs[tx_cur]->length = pkt->length;
     tx_descs[tx_cur]->cmd = ((1 << 3) | 3);
+    tx_descs[tx_cur]->status = 0;
 
     uint8 old_cur = tx_cur;
 
@@ -132,7 +133,7 @@ void E1000::Send(NetPacket *pkt)
     WriteCommand(REG_TXDESCTAIL, tx_cur);
 
     while (!(tx_descs[old_cur]->status & 0xff))
-        ;
+        pause();
 }
 
 MacAddress E1000::GetMac()

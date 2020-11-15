@@ -10,6 +10,8 @@
 #define TCP_ECE (1 << 6)
 #define TCP_CWR (1 << 7)
 
+#define TCP_WINDOW_SIZE 4096
+
 enum TCP_STATE
 {
     TCP_LISTEN,

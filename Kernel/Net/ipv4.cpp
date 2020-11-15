@@ -22,7 +22,7 @@ bool Decode(IPv4_Header *ih, NetPacket *pkt)
     ih->dscp_ecn = header->dscp_ecn;
     ih->length = ntohs(header->length);
     ih->id = ntohs(header->id);
-    ih->flags_frag = header->flags_frag; // ntohs???
+    ih->flags_frag = ntohs(header->flags_frag);
     ih->ttl = header->ttl;
     ih->protocol = header->protocol;
     ih->checksum = ntohs(header->checksum);

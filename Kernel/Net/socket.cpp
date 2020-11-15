@@ -139,7 +139,10 @@ int Socket::Listen(int backlog)
 
 int Socket::Recv(void *buf, size_t len, int flags)
 {
-    if (!read_event.WaitIntr())
+    if (protocol == IPPROTO_TCP)
+        return TCP::SessionRecv(this, buf, len, flags);
+
+    if (!recv_event.WaitIntr())
         return -EINTR;
 
     buffer_mutex.Aquire();
@@ -152,7 +155,7 @@ int Socket::Recv(void *buf, size_t len, int flags)
     int ret = buffer->Read(len, buf);
 
     if (buffer->IsEmpty())
-        read_event.Clear();
+        recv_event.Clear();
 
     buffer_mutex.Release();
     return ret;
@@ -207,9 +210,16 @@ int Socket::Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_
 
 int Socket::Shutdown(int how)
 {
-    if (protocol == IPPROTO_TCP) {
-        return TCP::SessionClose(this, how);
-    }
+    if (protocol == IPPROTO_TCP)
+        return TCP::SessionShutdown(this, how);
+
+    return 0;
+}
+
+int Socket::Close()
+{
+    if (protocol == IPPROTO_TCP)
+        return TCP::SessionClose(this);
 
     return 0;
 }
@@ -223,15 +233,15 @@ void Socket::HandleData(const void *data, int length)
     buffer->Write(data, length);
 
     if (!buffer->IsEmpty())
-        read_event.Set();
+        recv_event.Set();
 
     buffer_mutex.Release();
 }
 
-void Socket::HandleClose()
+void Socket::HandleShutdown()
 {
     buffer_mutex.Aquire();
     closed = true;
-    read_event.Set();
+    recv_event.Set();
     buffer_mutex.Release();
 }

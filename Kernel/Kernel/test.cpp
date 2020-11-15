@@ -7,6 +7,7 @@
 #include <Drivers/tty.h>
 #include <Drivers/vt100.h>
 #include <Drivers/vtty.h>
+#include <Net/dhcp.h>
 #include <FS/devfs.h>
 #include <FS/ext2.h>
 #include <FS/iso.h>
@@ -156,8 +157,6 @@ void _Net()
     // TcpSession *session = TCP::CreateSession();
     Socket *server = SocketManager::CreateSocket();
     server->Init(AF_INET, SOCK_STREAM, 0);
-
-    srand(Timer::Ticks() + RTC::Minute() * 1000 + RTC::Second());
 
     server->Bind((sockaddr *)&servaddr, sizeof(sockaddr_in));
     server->Listen(10);
@@ -311,6 +310,8 @@ void Mount()
 
 void Start()
 {
+    srand(Timer::Ticks() + RTC::Minute() * 1000 + RTC::Second());
+
     THREAD *dpc_thread = Task::CreateKernelThread(Dpc::Start);
     Scheduler::InsertThread(dpc_thread);
 

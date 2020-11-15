@@ -21,7 +21,7 @@ class Socket
     sockaddr *recv_addr;
     CircularDataBuffer *buffer;
     Mutex buffer_mutex;
-    Event read_event;
+    Event recv_event;
     Event accept_event;
     Event connect_event;
     Mutex connect_mutex;
@@ -48,7 +48,8 @@ class Socket
     int Sendto(const void *buf, size_t len, int flags, const sockaddr *dest_addr,
                socklen_t addrlen);
     int Shutdown(int how);
+    int Close();
 
     void HandleData(const void *data, int length);
-    void HandleClose();
+    void HandleShutdown();
 };

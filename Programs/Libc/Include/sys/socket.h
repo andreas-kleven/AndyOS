@@ -20,6 +20,10 @@
 #define IPPROTO_TCP  6
 #define IPPROTO_UDP  17
 
+#define SHUT_RD   0
+#define SHUT_WR   1
+#define SHUT_RDWR 2
+
 #define INADDR_ANY       (uint32_t)0x00000000
 #define INADDR_BROADCAST (uint32_t)0xffffffff
 

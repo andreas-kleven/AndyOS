@@ -25,6 +25,7 @@ int TcpSession::Connect(const sockaddr_in *addr)
     socket->addr = (sockaddr *)(new sockaddr_in(*addr));
 
     seq = rand();
+    first_seq = seq;
     state = TCP_SYN_SENT;
 
     if (!SendWait(TCP_SYN)) {
@@ -43,7 +44,7 @@ int TcpSession::Connect(const sockaddr_in *addr)
     return 0;
 }
 
-int TcpSession::Close(int how)
+int TcpSession::Shutdown(int how)
 {
     mutex.Aquire();
 
@@ -58,7 +59,9 @@ int TcpSession::Close(int how)
         SendWait(TCP_FIN | TCP_ACK);
         kprintf("Closed\n");
         Reset();
-        socket->HandleClose();
+
+        recv_buffer.Shutdown();
+        socket->HandleShutdown();
     } else {
         state = TCP_FIN_WAIT_1;
 
@@ -74,12 +77,16 @@ int TcpSession::Close(int how)
             // TODO: delay
             kprintf("Wait closed\n");
             Reset();
-            socket->HandleClose();
+
+            recv_buffer.Shutdown();
+            socket->HandleShutdown();
             mutex.Release();
         } else {
             kprintf("Closed with state: %d\n", state);
             Reset();
-            socket->HandleClose();
+
+            recv_buffer.Shutdown();
+            socket->HandleShutdown();
             mutex.Release();
         }
     }
@@ -146,21 +153,33 @@ int TcpSession::SendData(const void *buf, size_t len, int flags)
     return 0;
 }
 
+int TcpSession::RecvData(void *buf, size_t len, int flags)
+{
+    return recv_buffer.Recv(buf, len, flags);
+}
+
 bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 {
     TCP_Header *header = tcp->header;
     uint8 flags = tcp->header->flags;
     bool has_data = tcp->data_length > 0;
 
+    // kprintf("Tcp recv %d %d (seq:%d) (seq:%d ack:%d))\n", tcp->data_length, flags,
+    //        tcp->header->seq - first_ack, seq - first_seq, ack - first_ack);
+
     if ((state == TCP_CLOSED || state == TCP_LISTEN) && flags != TCP_SYN)
         return false;
+
+    lock.Aquire();
 
     switch (state) {
     case TCP_CLOSED:
         if (flags == TCP_SYN) {
             if (state == TCP_CLOSED) {
                 seq = rand();
+                first_seq = seq;
                 ack = header->seq + 1;
+                first_ack = header->seq;
                 state = TCP_SYN_RECEIVED;
             }
         }
@@ -169,7 +188,9 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
     case TCP_LISTEN:
         if (flags == TCP_SYN) {
             seq = rand();
+            first_seq = seq;
             ack = header->seq + 1;
+            first_ack = header->seq;
 
             kprintf("New session\n");
 
@@ -177,7 +198,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 
             if (new_sockets.Count() >= backlog) {
                 sessions_mutex.Release();
-                return false;
+                break;
             }
 
             sockaddr_in *addr = new sockaddr_in();
@@ -210,6 +231,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 
     case TCP_SYN_SENT:
         ack = header->seq + 1;
+        first_ack = header->seq;
         seq += 1;
 
         if (flags & TCP_RST) {
@@ -228,19 +250,36 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
     case TCP_ESTABLISHED:
         if (flags & TCP_FIN) {
             state = TCP_CLOSE_WAIT;
+            ack += 1;
             Send(TCP_ACK);
-
             Reset();
-            socket->HandleClose();
-        } else if (has_data) {
-            if (header->seq == ack) {
-                ack += tcp->data_length;
-                socket->HandleData(tcp->data, tcp->data_length);
-            } else {
-                kprintf("Missing packet\n");
-            }
 
-            Send(TCP_ACK);
+            recv_buffer.Shutdown();
+            socket->HandleShutdown();
+        } else if (has_data) {
+            if (recv_buffer.CanReceive(tcp)) {
+                if (recv_buffer.HandleReceive(tcp, socket)) {
+                    int next_seq = recv_buffer.NextSeq();
+
+                    if (next_seq) {
+                        while (next_seq) {
+                            ack = next_seq;
+                            Send(TCP_ACK);
+                            next_seq = recv_buffer.NextSeq();
+                        }
+
+                        break;
+                    }
+                } else {
+                    kprintf("Tcp missing packet 1\n");
+                }
+
+                Send(TCP_ACK);
+            } else {
+                kprintf("Tcp dropped %d %d\n", tcp->header->seq - first_ack, tcp->data_length);
+            }
+        } else {
+            // Received ack
         }
 
         if (flags & TCP_ACK)
@@ -253,9 +292,10 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
         if (flags == TCP_FIN) {
             state = TCP_CLOSING;
         } else if (flags & TCP_ACK) {
-            if (flags & TCP_FIN)
+            if (flags & TCP_FIN) {
                 state = TCP_TIME_WAIT;
-            else
+                ack += 1;
+            } else
                 state = TCP_FIN_WAIT_2;
 
             Send(TCP_ACK);
@@ -265,6 +305,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
 
     case TCP_FIN_WAIT_2:
         if (flags & TCP_FIN) {
+            ack += 1;
             Send(TCP_ACK);
             state = TCP_TIME_WAIT;
             fin_event.Set();
@@ -279,7 +320,9 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
             Send(TCP_ACK); //
             kprintf("Passive close\n");
             Reset();
-            socket->HandleClose();
+
+            recv_buffer.Shutdown();
+            socket->HandleShutdown();
         }
         break;
 
@@ -291,6 +334,7 @@ bool TcpSession::HandlePacket(IPv4_Header *ip_hdr, TCP_Packet *tcp)
         break;
     }
 
+    lock.Release();
     return true;
 }
 
@@ -303,7 +347,7 @@ bool TcpSession::SendWait(uint8 flags, const void *buf, size_t len, int timeout)
 {
     ack_event.Clear();
 
-    if (!Send(flags, buf, len))
+    if (!Send(flags, ack, buf, len))
         return false;
 
     if (ack_event.Wait(timeout))
@@ -315,14 +359,14 @@ bool TcpSession::SendWait(uint8 flags, const void *buf, size_t len, int timeout)
 
 bool TcpSession::Send(uint8 flags)
 {
-    return Send(flags, 0, 0);
+    return Send(flags, ack, 0, 0);
 }
 
-bool TcpSession::Send(uint8 flags, const void *buf, size_t len)
+bool TcpSession::Send(uint8 flags, uint32 _ack, const void *buf, size_t len)
 {
     sockaddr_in *addr = (sockaddr_in *)socket->addr;
     NetInterface *intf = PacketManager::GetInterface(addr->sin_addr.s_addr);
-    NetPacket *pkt = TCP::CreatePacket(intf, addr, socket->src_port, flags, seq, ack, buf, len);
+    NetPacket *pkt = TCP::CreatePacket(intf, addr, socket->src_port, flags, seq, _ack, buf, len);
 
     if (!pkt)
         return false;
@@ -335,6 +379,8 @@ void TcpSession::Reset()
 {
     seq = 0;
     ack = 0;
+    first_seq = 0;
+    first_ack = 0;
     state = TCP_CLOSED;
 
     ack_event.Set();

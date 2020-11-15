@@ -24,8 +24,7 @@ int SockFS::Close(FILE *file)
     if (!socket)
         return -1;
 
-    // return socket->Shutdown();
-    return -1;
+    return socket->Close();
 }
 
 int SockFS::Read(FILE *file, void *buf, size_t size)
