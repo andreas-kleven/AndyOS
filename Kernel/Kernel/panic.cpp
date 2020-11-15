@@ -35,7 +35,7 @@ void panic(const char *err, const char *msg_fmt, ...)
 
         THREAD *thread = Scheduler::CurrentThread();
 
-        if (thread && thread->process)
+        if (thread->process)
             kprintf("proc:%d thread:%d\n", thread->process->id, thread->id);
 
         kprintf("-STACK DUMP-\n");

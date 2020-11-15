@@ -27,7 +27,11 @@ BASEFLAGS := $(INC_SRCH_PATH) -nostdinc -nostdlib -nostartfiles
 LINKSCRIPT := $(ARCH_DIR)/link.ld
 
 CPPFLAGS := $(BASEFLAGS)
-CPPFLAGS += -Wno-shift-count-overflow -Wno-unused-variable -Wall -g -fno-rtti -fno-exceptions -fstack-protector-strong -ffreestanding -mstack-protector-guard=global
+CPPFLAGS += -g
+CPPFLAGS += -Wno-shift-count-overflow -Wno-unused-variable -Wall
+CPPFLAGS += -ffreestanding  -fno-rtti -fno-exceptions -fstack-protector-strong -mstack-protector-guard=global
+CPPFLAGS += -Ofast
+CPPFLAGS += -msse4
 
 LDFLAGS := $(BASEFLAGS) -T $(LINKSCRIPT)
 

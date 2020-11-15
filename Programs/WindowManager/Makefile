@@ -10,7 +10,7 @@ $(TARGET): $(OBJ_FILES) $(BUILD_DIR)/gui.a $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) -Ofast -c -o $@ $<
 
 .PHONY: clean
 clean:

@@ -8,6 +8,7 @@ void Enable();
 void Disable();
 void InterruptEnter();
 void InterruptExit();
+bool IsInterrupt();
 
 void ExitThread(int code, THREAD *thread);
 void SleepThread(uint64 until, THREAD *thread);
@@ -20,6 +21,7 @@ void RemoveThread(THREAD *thread);
 THREAD *CurrentThread();
 THREAD *Schedule();
 
+void PreInit();
 void Init();
 void Start(void (*entry)());
 void Switch();

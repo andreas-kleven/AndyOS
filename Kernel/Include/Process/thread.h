@@ -12,7 +12,6 @@ enum THREAD_STATE
     THREAD_STATE_RUNNING,
     THREAD_STATE_BLOCKING,
     THREAD_STATE_TERMINATED
-
 };
 
 struct PROCESS;
@@ -40,5 +39,5 @@ struct THREAD
     Stack<THREAD *> signal_threads;
     Event signal_event;
     Event syscall_event;
-    uint8 fpu_state[512];
+    uint8 __attribute__((aligned(16))) fpu_state[512];
 };

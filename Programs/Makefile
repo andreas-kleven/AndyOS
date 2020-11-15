@@ -13,7 +13,7 @@ INC_SRCH_PATH += -I$(PROGRAMS_DIR)
 INC_SRCH_PATH += -I$(PROGRAMS_DIR)/Include
 
 CPPFLAGS := $(INC_SRCH_PATH)
-CPPFLAGS += -g
+CPPFLAGS += -g -msse4
 CPPFLAGS += -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wall
 
 LDFLAGS := -Wl,--allow-multiple-definition # __errno

@@ -1,4 +1,6 @@
+#include <Arch/fpu.h>
 #include <Arch/idt.h>
+#include <Arch/nmfault.h>
 #include <Arch/regs.h>
 #include <Arch/task.h>
 #include <Process/thread.h>
@@ -18,11 +20,12 @@ THREAD *ResetKernelThread(THREAD *thread, void (*entry)())
     memset(thread, 0, sizeof(THREAD));
 
     thread->stack = (size_t)thread - sizeof(THREAD) - sizeof(REGS) - 1;
+    thread->stack = (thread->stack / 16) * 16; // align
     thread->state = THREAD_STATE_INITIALIZED;
     thread->signal_event = Event(true);
     thread->syscall_event = Event(true);
 
-    asm volatile("fxsave (%0)" ::"r"(thread->fpu_state));
+    FPU::CleanState(&thread->fpu_state);
 
     REGS *regs = (REGS *)thread->stack;
     regs->ebp = 0;
@@ -81,6 +84,9 @@ THREAD *CopyThread(THREAD *old)
 
     if (thread->kernel_esp)
         thread->kernel_esp = old->kernel_esp + offset;
+
+    NMFault::Arch::Trigger(); // make sure fpu state is saved
+    memcpy(&thread->fpu_state, &old->fpu_state, sizeof(thread->fpu_state));
 
     return thread;
 }

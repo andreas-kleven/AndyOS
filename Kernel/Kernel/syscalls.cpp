@@ -450,7 +450,8 @@ void DoSyscall(DISPATCHER_CONTEXT &context, bool noreturn)
     THREAD *thread = context.thread;
     DISPATCHER_ENTRY *entry = Dispatcher::CurrentEntry();
 
-    int ret = Arch::DoSyscall(context, location);
+    SYSCALL_FUNC syscall_func = (SYSCALL_FUNC)location;
+    int ret = syscall_func(context.p1, context.p2, context.p3, context.p4, context.p5, context.p6);
 
     Scheduler::Disable();
     disable();

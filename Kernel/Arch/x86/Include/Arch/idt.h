@@ -39,8 +39,11 @@ struct IDT_REG
 } __attribute__((packed));
 
 namespace IDT {
+
 bool SetISR(uint32 i, ISR isr, int flags);
 bool InstallIRQ(uint32 i, void (*handler)());
 bool InstallIRQ(uint32 i, void (*handler)(REGS *));
 bool Init();
+bool Enable();
+
 }; // namespace IDT

@@ -61,8 +61,6 @@ PROCESS *Fork(PROCESS *proc)
     newproc->filetable = proc->filetable->Clone();
     memcpy(newproc->signal_table, proc->signal_table, SIGNAL_TABLE_SIZE);
 
-    THREAD *current_thread = Scheduler::CurrentThread();
-
     if (!CopyThreads(proc, newproc)) {
         // Todo: cleanup
         Scheduler::Enable();

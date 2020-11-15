@@ -66,7 +66,7 @@ void HandleSignal(THREAD *thread, int signo, sig_t handler)
 
     memcpy(code, instructions, sizeof(instructions));
 
-    regs->user_stack = ((uint32)code / sizeof(size_t)) * sizeof(size_t);
+    regs->user_stack = ((uint32)code / 16) * 16;
     regs->eip = (uint32)code;
 }
 

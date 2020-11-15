@@ -1,3 +1,4 @@
+#include <Arch/fpu.h>
 #include <Arch/idt.h>
 #include <Arch/pagefault.h>
 #include <Arch/pic.h>
@@ -28,18 +29,18 @@ void Switch()
 
 void ScheduleTask(int irq)
 {
+    FPU::SetTS();
+    Scheduler::InterruptEnter();
+
     if (irq == SCHEDULE_IRQ && !switched)
         PIT::ticks++;
-    
+
     switched = false;
 
     THREAD *current_thread = Scheduler::CurrentThread();
 
     // Save stack
     current_thread->stack = tmp_stack;
-
-    // Save fpu state
-    asm volatile("fxsave (%0)" ::"r"(current_thread->fpu_state));
 
     REGS *regs = (REGS *)current_thread->stack;
 
@@ -63,14 +64,14 @@ void ScheduleTask(int irq)
     // Schedule
     current_thread = Scheduler::Schedule();
 
-    // Restore fpu state
-    asm volatile("fxrstor (%0)" ::"r"(current_thread->fpu_state));
-
     // Restore stack
     tmp_stack = current_thread->stack;
 
     TSS::SetStack(KERNEL_SS, current_thread->kernel_esp);
     PIC::InterruptDone(irq);
+
+    Scheduler::InterruptExit();
+    FPU::SetTS();
 }
 
 void INTERRUPT Schedule_ISR()
@@ -87,6 +88,8 @@ void INTERRUPT Schedule_ISR()
                  "mov %%esp, %0\n"
 
                  // Schedule
+                 "and $0xFFFFFFF0, %%esp\n"
+                 "sub $12, %%esp\n"
                  "push %1\n"
                  "call %P2\n"
 
@@ -108,6 +111,8 @@ void Start(THREAD *thread)
 {
     disable();
     IDT::SetISR(SCHEDULE_IRQ, Schedule_ISR, 0);
+
+    FPU::SetTS();
 
     asm volatile("mov %0, %%esp\n"
                  "pop %%gs\n"

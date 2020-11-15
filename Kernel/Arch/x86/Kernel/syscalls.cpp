@@ -8,25 +8,6 @@
 #include <syscalls.h>
 
 namespace Syscalls::Arch {
-int DoSyscall(DISPATCHER_CONTEXT &context, void *location)
-{
-    uint32 ret;
-
-    asm volatile("push %1\n"
-                 "push %2\n"
-                 "push %3\n"
-                 "push %4\n"
-                 "push %5\n"
-                 "push %6\n"
-                 "call *%7\n"
-                 "add $24, %%esp\n"
-                 : "=a"(ret)
-                 : "m"(context.p6), "m"(context.p5), "m"(context.p4), "m"(context.p3),
-                   "m"(context.p2), "m"(context.p1), "m"(location));
-
-    return ret;
-}
-
 void ReturnSyscall(DISPATCHER_CONTEXT &context, int value)
 {
     THREAD *thread = context.thread;
@@ -48,6 +29,8 @@ void INTERRUPT Syscall_ISR()
                  "mov %%esp, %0\n"
 
                  // Schedule
+                 "and $0xFFFFFFF0, %%esp\n"
+                 "sub $12, %%esp\n"
                  "push %1\n"
                  "call %P2\n"
 

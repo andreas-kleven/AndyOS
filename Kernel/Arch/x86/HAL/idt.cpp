@@ -1,9 +1,11 @@
+#include <Arch/fpu.h>
 #include <Arch/idt.h>
 #include <Arch/pic.h>
 #include <Process/scheduler.h>
 #include <string.h>
 
 namespace IDT {
+
 struct ISR_DESC
 {
     void *handler;
@@ -18,8 +20,6 @@ IDT_REG idt_reg;
 const uint8 irs_code[] = {0x50, 0x6A, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xE0};
 char isrs[MAX_INTERRUPTS * sizeof(irs_code)];
 
-char fpustate[512];
-
 IDT_DESCRIPTOR *GetIR(uint32 i)
 {
     return &idt[i];
@@ -27,8 +27,10 @@ IDT_DESCRIPTOR *GetIR(uint32 i)
 
 void CommonHandler(int i, REGS *regs)
 {
-    ISR_DESC &desc = handlers[i];
+    FPU::SetTS();
     Scheduler::InterruptEnter();
+
+    ISR_DESC &desc = handlers[i];
 
     if (desc.handler) {
         if (desc.pass_regs)
@@ -37,20 +39,19 @@ void CommonHandler(int i, REGS *regs)
             ((void (*)())desc.handler)();
     }
 
-    Scheduler::InterruptExit();
     PIC::InterruptDone(i);
+
+    Scheduler::InterruptExit();
+    FPU::SetTS();
 }
 
 void INTERRUPT CommonISR()
 {
     asm volatile("cli\n"
-
-                 "pop %%eax\n"
+                 "pop %%eax\n" // pop irq
                  "and $0xFF, %%eax\n"
-                 "sub $48, %%esp\n"
-                 "push %%eax\n"
-                 "add $52, %%esp\n"
-                 "pop %%eax\n"
+                 "mov %%eax, -48(%%esp)\n"
+                 "pop %%eax\n" // restore eax
 
                  "pusha\n"
                  "push %%ds\n"
@@ -58,10 +59,22 @@ void INTERRUPT CommonISR()
                  "push %%fs\n"
                  "push %%gs\n"
 
-                 "push %%esp\n"
+                 // pop irq argument into eax
+                 "mov %%esp, %%ebx\n"
                  "sub $4, %%esp\n"
+                 "pop %%eax\n"
+
+                 // save esp
+                 "and $0xFFFFFFF0, %%esp\n"
+                 "sub $8, %%esp\n"
+
+                 // call
+                 "push %%ebx\n"
+                 "push %%eax\n"
                  "call %P0\n"
-                 "add $8, %%esp\n"
+
+                 // restore esp
+                 "mov %%ebx, %%esp\n"
 
                  "pop %%gs\n"
                  "pop %%fs\n"
@@ -114,6 +127,7 @@ bool Init()
     idt_reg.limit = sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1;
 
     memset(idt, 0, sizeof(IDT_DESCRIPTOR) * MAX_INTERRUPTS - 1);
+    memset(handlers, 0, sizeof(handlers));
 
     for (int i = 0; i < MAX_INTERRUPTS; i++) {
         // Copy irq code
@@ -130,11 +144,15 @@ bool Init()
         ptr[7] = (target_addr >> 24) & 0xFF;
 
         SetISR(i, (ISR)ptr, 0);
-
-        handlers[i].handler = 0;
     }
 
+    return true;
+}
+
+bool Enable()
+{
     asm volatile("lidt (%0)" ::"r"(&idt_reg));
     return true;
 }
+
 } // namespace IDT

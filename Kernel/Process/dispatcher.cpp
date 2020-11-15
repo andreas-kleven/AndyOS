@@ -202,12 +202,7 @@ THREAD *CurrentThread()
 
 PROCESS *CurrentProcess()
 {
-    THREAD *thread = CurrentThread();
-
-    if (thread)
-        return thread->process;
-
-    return 0;
+    return CurrentThread()->process;
 }
 
 siginfo_t GetSiginfo(DISPATCHER_ENTRY *entry, PROCESS *child, bool consume)

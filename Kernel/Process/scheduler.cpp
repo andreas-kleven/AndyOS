@@ -8,6 +8,7 @@
 #include <string.h>
 
 namespace Scheduler {
+char early_thread[sizeof(THREAD)];
 THREAD *first_thread;
 THREAD *last_thread;
 THREAD *current_thread;
@@ -44,6 +45,11 @@ void InterruptEnter()
 void InterruptExit()
 {
     is_interrupt = false;
+}
+
+bool IsInterrupt()
+{
+    return is_interrupt;
 }
 
 int ReadyCount()
@@ -191,7 +197,7 @@ THREAD *CurrentThread()
 
 THREAD *Schedule()
 {
-    if (!enabled)
+    if (!enabled || (current_thread->id == 0 && !first_thread))
         return current_thread;
 
     current_thread->addr_space = VMem::GetAddressSpace();
@@ -262,12 +268,18 @@ THREAD *Schedule()
     return current_thread;
 }
 
-void Init()
+void PreInit()
 {
     first_thread = 0;
     last_thread = 0;
-    current_thread = 0;
 
+    memset(&early_thread, 0, sizeof(early_thread));
+    current_thread = (THREAD *)&early_thread;
+    current_thread->state = THREAD_STATE_RUNNING;
+}
+
+void Init()
+{
     idle_thread = Task::CreateKernelThread(Arch::Idle);
 }
 

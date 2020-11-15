@@ -1,5 +1,6 @@
 #include "exceptions.h"
 #include <Arch/idt.h>
+#include <Arch/nmfault.h>
 #include <Arch/scheduler.h>
 #include <debug.h>
 #include <panic.h>
@@ -49,11 +50,6 @@ void ISR6(REGS *regs)
     panic("Invalid opcode");
 }
 
-void ISR7(REGS *regs)
-{
-    panic("Device not available");
-}
-
 void ISR8(REGS *regs)
 {
     panic("Double fault");
@@ -81,7 +77,13 @@ void ISR12(REGS *regs)
 
 void ISR13(REGS *regs)
 {
-    panic("General protection fault");
+    regs = (REGS *)((char *)regs + 4);
+
+    panic("General protection fault",
+          "EFLAGS:%X  CS:%X  EIP:%X  ESP:%X  EBP:%X\nEAX:%X  EBX:%X  ECX:%X  "
+          "EDX:%X  ESI:%X  EDI:%X\nUser ESP:%X",
+          regs->eflags, regs->cs, regs->eip, regs->esp, regs->ebp, regs->eax, regs->ebx, regs->ecx,
+          regs->edx, regs->esi, regs->edi, regs->user_stack);
 }
 
 void ISR15(REGS *regs)
@@ -109,14 +111,43 @@ void ISR19(REGS *regs)
     panic("SIMD floating-point exception");
 }
 
-void INTERRUPT PageFaultISR()
+void INTERRUPT NM_ISR()
 {
     asm volatile("cli\n"
 
-                 // Save error code
+                 // save registers
+                 "pusha\n"
+                 "push %%ds\n"
+                 "push %%es\n"
+                 "push %%fs\n"
+                 "push %%gs\n"
+                 "mov %%esp, %%ebx\n"
+
+                 // call handler
+                 "and $0xFFFFFFF0, %%esp\n"
+                 "call %P0\n"
+
+                 // restore registers
+                 "mov %%ebx, %%esp\n"
+                 "pop %%gs\n"
+                 "pop %%fs\n"
+                 "pop %%es\n"
+                 "pop %%ds\n"
+                 "popa\n"
+
+                 "iret"
+                 :
+                 : "i"(&NMFault::Arch::HandleNMFault));
+}
+
+void INTERRUPT PageFault_ISR()
+{
+    asm volatile("cli\n"
+
+                 // save error code
                  "pop %P0\n"
 
-                 // Save registers
+                 // save registers
                  "pusha\n"
                  "push %%ds\n"
                  "push %%es\n"
@@ -125,11 +156,13 @@ void INTERRUPT PageFaultISR()
 
                  "mov %%esp, %1\n"
 
-                 // Schedule
+                 // schedule
+                 "and $0xFFFFFFF0, %%esp\n"
+                 "sub $12, %%esp\n"
                  "push %2\n"
                  "call %P3\n"
 
-                 // Load registers
+                 // load registers
                  "mov %4, %%esp\n"
 
                  "pop %%gs\n"
@@ -145,6 +178,8 @@ void INTERRUPT PageFaultISR()
 
 bool Init()
 {
+    NMFault::Arch::Init();
+
     IDT::InstallIRQ(0, ISR0);
     IDT::InstallIRQ(1, ISR1);
     IDT::InstallIRQ(2, ISR2);
@@ -152,14 +187,14 @@ bool Init()
     IDT::InstallIRQ(4, ISR4);
     IDT::InstallIRQ(5, ISR5);
     IDT::InstallIRQ(6, ISR6);
-    IDT::InstallIRQ(7, ISR7);
+    IDT::SetISR(7, NM_ISR, 0);
     IDT::InstallIRQ(8, ISR8);
     IDT::InstallIRQ(9, ISR9);
     IDT::InstallIRQ(10, ISR10);
     IDT::InstallIRQ(11, ISR11);
     IDT::InstallIRQ(12, ISR12);
     IDT::InstallIRQ(13, ISR13);
-    IDT::SetISR(14, PageFaultISR, 0);
+    IDT::SetISR(14, PageFault_ISR, 0);
     IDT::InstallIRQ(15, ISR15);
     IDT::InstallIRQ(16, ISR16);
     IDT::InstallIRQ(17, ISR17);

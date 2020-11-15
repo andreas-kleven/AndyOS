@@ -46,10 +46,13 @@ _start:
 	jne .halt
 
 	mov	esp, stack + STACK_SIZE
-	
+
+	call enable_cpu_features
 	call copy_info
 	call setup_paging
 
+	and esp, 0xFFFFFFF0
+	sub esp, 4
 	push STACK_SIZE
 	push stack
 	push bootinfo
@@ -58,6 +61,22 @@ _start:
 .halt:
 	cli
 	hlt
+
+enable_cpu_features:
+.fpu:
+	fninit
+    fldcw [fcw]
+
+.sse:
+	mov eax, cr0
+	and ax, 0xFFFB
+	or ax, 0x22
+	mov cr0, eax
+
+	mov eax, cr4
+	or eax, 0x600
+	mov cr4, eax
+	ret
 
 copy_info:
 	cld
@@ -147,6 +166,8 @@ enable_paging:
 	mov cr0, eax
 	ret
 
+
+fcw: dw 0x037F
 
 ;section .bss ; TODO
 bootinfo: resb BOOTINFO_SIZE

@@ -34,6 +34,7 @@ void Setup(size_t mem_size, size_t stack_phys, size_t stack_size, VideoMode *vid
     debug_color(0xFF00FF00);
     debug_pos(0, 2);
 
+    Scheduler::PreInit();
     Arch::Init();
 
     PMem::Init(mem_size, (void *)kernel_end);

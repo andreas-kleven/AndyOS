@@ -1,5 +1,5 @@
 #include "exceptions.h"
-#include <Arch/cpu.h>
+#include <Arch/fpu.h>
 #include <Arch/gdt.h>
 #include <Arch/idt.h>
 #include <Arch/init.h>
@@ -14,7 +14,7 @@ void Init()
 {
     disable();
 
-    CPU::Init();
+    FPU::Init();
     GDT::Init();
     TSS::Init(5, 0x9000);
     PIC::Init();
@@ -23,6 +23,7 @@ void Init()
 
     Exceptions::Init();
     Syscalls::Arch::Init();
+    IDT::Enable();
 
     enable();
 }

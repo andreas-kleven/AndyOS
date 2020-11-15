@@ -6,6 +6,8 @@
 
 #define DISPATCHER_THREADS 256
 
+typedef int (*SYSCALL_FUNC)(int p1, int p2, int p3, int p4, int p5, int p6);
+
 struct DISPATCHER_CONTEXT
 {
     THREAD *thread;

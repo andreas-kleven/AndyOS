@@ -12,6 +12,7 @@
 #define PAGE_FAULT_INSTRUCTION_FETCH (1 << 4)
 
 namespace PageFault::Arch {
+
 static int fault_addr = 0;
 
 void HandlePageFault(REGS *regs)
@@ -23,6 +24,9 @@ void HandlePageFault(REGS *regs)
     uint32 err = Exceptions::error_code;
 
     kprintf("Page fault %p %p %p\n", regs, err, fault_addr);
+
+    if (!regs)
+        panic("Page fault - no regs", "ADDR:%X  ERR:%X", fault_addr, err);
 
     const char *msg1 =
         (err & PAGE_FAULT_PRESENT) ? "Page-protection violation  " : "None-present page  ";
@@ -46,4 +50,5 @@ void HandlePageFault(REGS *regs)
           regs->ebx, regs->ecx, regs->edx, regs->esi, regs->edi, msg1, msg2, msg3, msg4, msg5,
           regs->user_stack);
 }
-}; // namespace PageFault::Arch
+
+} // namespace PageFault::Arch
