@@ -112,8 +112,11 @@ DISPATCHER_ENTRY *GetAvailableThread(const DISPATCHER_CONTEXT &context)
 
     DISPATCHER_ENTRY *entry = GetFirstAvailable();
 
-    if (entry)
+    if (entry) {
+        int id = entry->handler_thread->id;
         Task::ResetKernelThread(entry->handler_thread, HandlerFunc);
+        entry->handler_thread->id = id;
+    }
 
     if (!entry) {
         entry = CreateThread();

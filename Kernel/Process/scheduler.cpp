@@ -140,7 +140,9 @@ void WakeThread(THREAD *thread)
 void InsertThread(THREAD *thread)
 {
     Disable();
-    AssignId(thread);
+
+    if (!thread->id)
+        AssignId(thread);
 
     if (first_thread) {
         thread->prev = last_thread;
