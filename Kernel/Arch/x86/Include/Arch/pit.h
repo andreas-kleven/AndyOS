@@ -2,7 +2,7 @@
 #include <Arch/idt.h>
 #include <types.h>
 
-#define PIT_FREQUENCY 1000
+#define PIT_FREQUENCY 100
 
 #define PIT_REG_COUNTER0 0x40
 #define PIT_REG_COUNTER1 0x41

@@ -4,6 +4,6 @@
 namespace Timer::Arch {
 uint64 Ticks()
 {
-    return (uint64)PIT::ticks * 1000;
+    return (uint64)PIT::ticks * 10000;
 }
 } // namespace Timer::Arch
